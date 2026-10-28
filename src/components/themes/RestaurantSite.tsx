@@ -7,7 +7,7 @@ import {
   ChevronDown, X, Star, Flame, Sparkles, Menu, ExternalLink,
   ShoppingCart, Plus, Minus, Trash2, Check,
 } from 'lucide-react';
-import { ThemeConfig, defaultThemes, getGoogleFontsUrl } from '@/lib/themes';
+import { ThemeConfig, defaultThemes, getGoogleFontsUrl, resolveBg } from '@/lib/themes';
 import { formatPrice, formatWhatsAppUrl } from '@/lib/utils';
 import SplashScreen, { SplashConfig } from './SplashScreen';
 
@@ -118,7 +118,8 @@ function ItemModal({
         transition={{ type: 'spring', damping: 30, stiffness: 350 }}
         onClick={(e) => e.stopPropagation()}
         style={{
-          background: theme.backgroundColor, width: '100%', maxWidth: 600,
+          background: resolveBg(theme.formBgType, theme.formBgColor, theme.formGradientFrom, theme.formGradientTo, theme.formGradientDir, theme.backgroundColor),
+          width: '100%', maxWidth: 600,
           borderRadius: `${theme.borderRadius} ${theme.borderRadius} 0 0`,
           maxHeight: '90vh', overflowY: 'auto',
         }}
@@ -296,7 +297,7 @@ function CartDrawer({
             transition={{ type: 'spring', damping: 28, stiffness: 300 }}
             onClick={(e) => e.stopPropagation()}
             style={{
-              background: theme.backgroundColor,
+              background: resolveBg(theme.formBgType, theme.formBgColor, theme.formGradientFrom, theme.formGradientTo, theme.formGradientDir, theme.backgroundColor),
               width: '100%', maxWidth: 440, height: '100%',
               display: 'flex', flexDirection: 'column',
               boxShadow: '-8px 0 32px rgba(0,0,0,0.3)',
@@ -653,6 +654,11 @@ export default function RestaurantSite({ data }: { data: SiteData }) {
     instagram: '📷', facebook: '📘', tiktok: '🎵', youtube: '▶️', twitter: '🐦',
   };
 
+  const navbarBg = resolveBg(theme.navbarBgType, theme.navbarBgColor, theme.navbarGradientFrom, theme.navbarGradientTo, theme.navbarGradientDir, `${theme.backgroundColor}E0`);
+  const formBg = resolveBg(theme.formBgType, theme.formBgColor, theme.formGradientFrom, theme.formGradientTo, theme.formGradientDir, theme.backgroundColor);
+  const siteBg = resolveBg(theme.siteBgType, theme.siteBgColor, theme.siteGradientFrom, theme.siteGradientTo, theme.siteGradientDir, theme.backgroundColor);
+  const footerBg = resolveBg(theme.footerBgType, theme.footerBgColor, theme.footerGradientFrom, theme.footerGradientTo, theme.footerGradientDir, theme.secondaryColor);
+
   return (
     <>
       {/* Google Fonts */}
@@ -672,7 +678,7 @@ export default function RestaurantSite({ data }: { data: SiteData }) {
         style={{
           background: theme.backgroundImageUrl
             ? `linear-gradient(rgba(0,0,0,${theme.backgroundOverlay ?? 0.4}), rgba(0,0,0,${theme.backgroundOverlay ?? 0.4})), url(${theme.backgroundImageUrl}) center/cover fixed no-repeat`
-            : theme.backgroundColor,
+            : siteBg,
           color: theme.textColor,
           fontFamily: theme.bodyFont,
           minHeight: '100vh',
@@ -683,7 +689,7 @@ export default function RestaurantSite({ data }: { data: SiteData }) {
           style={{
             position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
             backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)',
-            background: `${theme.backgroundColor}E0`,
+            background: navbarBg,
             borderBottom: `1px solid ${theme.primaryColor}20`,
           }}
         >
@@ -788,7 +794,7 @@ export default function RestaurantSite({ data }: { data: SiteData }) {
           <div style={{
             position: 'absolute', bottom: 0, left: 0, right: 0,
             height: '35%',
-            background: `linear-gradient(to bottom, transparent 0%, ${theme.backgroundColor} 100%)`,
+            background: `linear-gradient(to bottom, transparent 0%, ${theme.siteBgType === 'gradient' ? (theme.siteGradientFrom || theme.siteBgColor || theme.backgroundColor) : (theme.siteBgColor || theme.backgroundColor)} 100%)`,
             zIndex: 2,
             pointerEvents: 'none',
           }} />
@@ -903,7 +909,7 @@ export default function RestaurantSite({ data }: { data: SiteData }) {
                     transition={{ delay: i * 0.1 }}
                     onClick={() => setSelectedItem(item)}
                     style={{
-                      background: theme.backgroundColor, borderRadius: theme.borderRadius,
+                      background: formBg, borderRadius: theme.borderRadius,
                       overflow: 'hidden', cursor: 'pointer',
                       boxShadow: `0 2px 16px ${theme.secondaryColor}18`,
                       border: `1px solid ${theme.primaryColor}15`,
@@ -1015,7 +1021,7 @@ export default function RestaurantSite({ data }: { data: SiteData }) {
                     onClick={() => setSelectedItem(item)}
                     style={{
                       display: 'flex', gap: 16, padding: 16, cursor: 'pointer',
-                      background: theme.backgroundColor,
+                      background: formBg,
                       borderRadius: theme.borderRadius,
                       border: `1px solid ${theme.primaryColor}15`,
                       boxShadow: `0 1px 8px ${theme.secondaryColor}10`,
@@ -1117,7 +1123,7 @@ export default function RestaurantSite({ data }: { data: SiteData }) {
                   viewport={{ once: true }}
                   style={{
                     display: 'flex', alignItems: 'center', gap: 16, padding: 24,
-                    background: theme.backgroundColor, borderRadius: theme.borderRadius,
+                    background: formBg, borderRadius: theme.borderRadius,
                     border: `1px solid ${theme.primaryColor}20`, textDecoration: 'none', color: theme.textColor,
                     boxShadow: `0 2px 12px ${theme.secondaryColor}10`, transition: 'all 0.2s',
                   }}
@@ -1142,7 +1148,7 @@ export default function RestaurantSite({ data }: { data: SiteData }) {
                   transition={{ delay: 0.1 }}
                   style={{
                     display: 'flex', alignItems: 'center', gap: 16, padding: 24,
-                    background: theme.backgroundColor, borderRadius: theme.borderRadius,
+                    background: formBg, borderRadius: theme.borderRadius,
                     border: `1px solid ${theme.primaryColor}20`, textDecoration: 'none', color: theme.textColor,
                     boxShadow: `0 2px 12px ${theme.secondaryColor}10`,
                   }}
@@ -1166,7 +1172,7 @@ export default function RestaurantSite({ data }: { data: SiteData }) {
                   transition={{ delay: 0.15 }}
                   style={{
                     display: 'flex', alignItems: 'center', gap: 16, padding: 24,
-                    background: theme.backgroundColor, borderRadius: theme.borderRadius,
+                    background: formBg, borderRadius: theme.borderRadius,
                     border: `1px solid ${theme.primaryColor}20`,
                     boxShadow: `0 2px 12px ${theme.secondaryColor}10`,
                   }}
@@ -1194,7 +1200,7 @@ export default function RestaurantSite({ data }: { data: SiteData }) {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                style={{ marginTop: 32, background: theme.backgroundColor, borderRadius: theme.borderRadius, border: `1px solid ${theme.primaryColor}20`, padding: 28, boxShadow: `0 2px 12px ${theme.secondaryColor}10` }}
+                style={{ marginTop: 32, background: formBg, borderRadius: theme.borderRadius, border: `1px solid ${theme.primaryColor}20`, padding: 28, boxShadow: `0 2px 12px ${theme.secondaryColor}10` }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
                   <div style={{ width: 40, height: 40, borderRadius: 10, background: `${theme.primaryColor}15`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -1218,7 +1224,7 @@ export default function RestaurantSite({ data }: { data: SiteData }) {
         </section>
 
         {/* Footer */}
-        <footer style={{ background: theme.secondaryColor, padding: '48px 24px 32px' }}>
+        <footer style={{ background: footerBg, padding: '48px 24px 32px' }}>
           <div style={{ maxWidth: 1200, margin: '0 auto', textAlign: 'center' }}>
             {organization.logo && (
               <img

@@ -28,6 +28,30 @@ export interface ThemeConfig {
   logoHasFrame?: boolean;
   logoSpacing?: number;
   logoMarginTop?: number;
+  // Backgrounds (Navbar, Form/Cards, Site, Footer)
+  navbarBgType?: 'solid' | 'gradient';
+  navbarBgColor?: string;
+  navbarGradientFrom?: string;
+  navbarGradientTo?: string;
+  navbarGradientDir?: string;
+
+  formBgType?: 'solid' | 'gradient';
+  formBgColor?: string;
+  formGradientFrom?: string;
+  formGradientTo?: string;
+  formGradientDir?: string;
+
+  siteBgType?: 'solid' | 'gradient';
+  siteBgColor?: string;
+  siteGradientFrom?: string;
+  siteGradientTo?: string;
+  siteGradientDir?: string;
+
+  footerBgType?: 'solid' | 'gradient';
+  footerBgColor?: string;
+  footerGradientFrom?: string;
+  footerGradientTo?: string;
+  footerGradientDir?: string;
 }
 
 export const defaultThemes: Record<string, ThemeConfig> = {
@@ -117,3 +141,21 @@ export function getGoogleFontsUrl(theme: Partial<ThemeConfig>): string {
   
   return `https://fonts.googleapis.com/css2?${fontParams}&display=swap`;
 }
+
+export function resolveBg(
+  type?: 'solid' | 'gradient',
+  solid?: string,
+  from?: string,
+  to?: string,
+  dir?: string,
+  fallback?: string
+): string {
+  if (type === 'gradient') {
+    const f = from || solid || '#1A1A2E';
+    const t = to || '#16213E';
+    const d = dir || '135deg';
+    return `linear-gradient(${d}, ${f}, ${t})`;
+  }
+  return solid || fallback || 'transparent';
+}
+

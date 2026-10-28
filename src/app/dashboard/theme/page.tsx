@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Loader2, Save, Globe, Eye, Check, Palette, MessageCircle } from 'lucide-react';
-import { defaultThemes, ThemeConfig } from '@/lib/themes';
+import { Loader2, Save, Globe, Eye, Check, Palette, MessageCircle, Layers } from 'lucide-react';
+import { defaultThemes, ThemeConfig, resolveBg } from '@/lib/themes';
 
 function useCurrentOrg() {
   const [orgId, setOrgId] = useState<string | null>(null);
@@ -18,6 +18,180 @@ function useCurrentOrg() {
 }
 
 const FONTS = ['Inter', 'Playfair Display', 'Outfit', 'Merriweather', 'Source Sans 3', 'Lora', 'Raleway', 'Poppins'];
+
+function BgControlItem({
+  title,
+  subtitle,
+  type,
+  solidColor,
+  fromColor,
+  toColor,
+  direction,
+  fallbackSolid,
+  fallbackFrom,
+  fallbackTo,
+  onChangeType,
+  onChangeSolid,
+  onChangeFrom,
+  onChangeTo,
+  onChangeDir,
+}: {
+  title: string;
+  subtitle: string;
+  type?: 'solid' | 'gradient';
+  solidColor?: string;
+  fromColor?: string;
+  toColor?: string;
+  direction?: string;
+  fallbackSolid: string;
+  fallbackFrom: string;
+  fallbackTo: string;
+  onChangeType: (type: 'solid' | 'gradient') => void;
+  onChangeSolid: (c: string) => void;
+  onChangeFrom: (c: string) => void;
+  onChangeTo: (c: string) => void;
+  onChangeDir: (d: string) => void;
+}) {
+  const currentType = type || 'solid';
+  const currentSolid = solidColor || fallbackSolid;
+  const currentFrom = fromColor || fallbackFrom;
+  const currentTo = toColor || fallbackTo;
+  const currentDir = direction || '135deg';
+
+  const previewStyle = currentType === 'gradient'
+    ? `linear-gradient(${currentDir}, ${currentFrom}, ${currentTo})`
+    : currentSolid;
+
+  const sanitizeColor = (c: string) => {
+    if (c.startsWith('#')) {
+      return c.slice(0, 7);
+    }
+    return '#1A1A2E';
+  };
+
+  return (
+    <div style={{
+      padding: 14,
+      borderRadius: 10,
+      background: 'rgba(255,255,255,0.03)',
+      border: '1px solid #2A2A3A',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 12,
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
+        <div>
+          <span style={{ fontSize: 13, fontWeight: 600, color: '#E8E8F0', display: 'block' }}>{title}</span>
+          <span style={{ fontSize: 11, color: '#8888A0' }}>{subtitle}</span>
+        </div>
+        {/* Type toggle */}
+        <div style={{ display: 'flex', background: 'rgba(0,0,0,0.3)', padding: 2, borderRadius: 8, border: '1px solid #2A2A3A' }}>
+          <button
+            type="button"
+            onClick={() => onChangeType('solid')}
+            style={{
+              padding: '4px 10px',
+              borderRadius: 6,
+              border: 'none',
+              fontSize: 11,
+              fontWeight: 600,
+              cursor: 'pointer',
+              background: currentType === 'solid' ? '#7C5CFC' : 'transparent',
+              color: currentType === 'solid' ? '#fff' : '#8888A0',
+              transition: 'all 0.15s',
+            }}
+          >
+            Solid
+          </button>
+          <button
+            type="button"
+            onClick={() => onChangeType('gradient')}
+            style={{
+              padding: '4px 10px',
+              borderRadius: 6,
+              border: 'none',
+              fontSize: 11,
+              fontWeight: 600,
+              cursor: 'pointer',
+              background: currentType === 'gradient' ? '#7C5CFC' : 'transparent',
+              color: currentType === 'gradient' ? '#fff' : '#8888A0',
+              transition: 'all 0.15s',
+            }}
+          >
+            Gradient
+          </button>
+        </div>
+      </div>
+
+      {/* Mini preview strip */}
+      <div style={{
+        height: 18,
+        borderRadius: 6,
+        background: previewStyle,
+        border: '1px solid rgba(255,255,255,0.15)',
+        boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.2)',
+      }} />
+
+      {currentType === 'solid' ? (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <label style={{ fontSize: 12, color: '#8888A0' }}>Rəng</label>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ fontSize: 12, color: '#8888A0', fontFamily: 'monospace' }}>{currentSolid}</span>
+            <input
+              type="color"
+              value={sanitizeColor(currentSolid)}
+              onChange={(e) => onChangeSolid(e.target.value)}
+              style={{ width: 32, height: 32, border: 'none', borderRadius: 6, cursor: 'pointer', background: 'transparent' }}
+            />
+          </div>
+        </div>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <label style={{ fontSize: 12, color: '#8888A0' }}>Başlanğıc rəng (From)</label>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ fontSize: 12, color: '#8888A0', fontFamily: 'monospace' }}>{currentFrom}</span>
+              <input
+                type="color"
+                value={sanitizeColor(currentFrom)}
+                onChange={(e) => onChangeFrom(e.target.value)}
+                style={{ width: 28, height: 28, border: 'none', borderRadius: 6, cursor: 'pointer', background: 'transparent' }}
+              />
+            </div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <label style={{ fontSize: 12, color: '#8888A0' }}>Son rəng (To)</label>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ fontSize: 12, color: '#8888A0', fontFamily: 'monospace' }}>{currentTo}</span>
+              <input
+                type="color"
+                value={sanitizeColor(currentTo)}
+                onChange={(e) => onChangeTo(e.target.value)}
+                style={{ width: 28, height: 28, border: 'none', borderRadius: 6, cursor: 'pointer', background: 'transparent' }}
+              />
+            </div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <label style={{ fontSize: 12, color: '#8888A0' }}>İstiqamət</label>
+            <select
+              className="dash-input"
+              value={currentDir}
+              onChange={(e) => onChangeDir(e.target.value)}
+              style={{ width: 140, padding: '4px 8px', fontSize: 11 }}
+            >
+              <option value="135deg">Diaqonal ↘ (135°)</option>
+              <option value="45deg">Diaqonal ↗ (45°)</option>
+              <option value="to bottom">Yuxarıdan aşağı ↓</option>
+              <option value="to top">Aşağıdan yuxarı ↑</option>
+              <option value="to right">Soldan sağa →</option>
+              <option value="to left">Sağdan sola ←</option>
+            </select>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function ThemePage() {
   const orgId = useCurrentOrg();
@@ -74,6 +248,11 @@ export default function ThemePage() {
   const applyTheme = (t: ThemeConfig) => setTheme(t);
 
   if (loading) return <div style={{ display: 'grid', gap: 16 }}>{[...Array(5)].map((_, i) => <div key={i} className="skeleton" style={{ height: 60, borderRadius: 12 }} />)}</div>;
+
+  const previewNavbarBg = resolveBg(theme.navbarBgType, theme.navbarBgColor, theme.navbarGradientFrom, theme.navbarGradientTo, theme.navbarGradientDir, `${theme.backgroundColor}E0`);
+  const previewFormBg = resolveBg(theme.formBgType, theme.formBgColor, theme.formGradientFrom, theme.formGradientTo, theme.formGradientDir, theme.backgroundColor);
+  const previewSiteBg = resolveBg(theme.siteBgType, theme.siteBgColor, theme.siteGradientFrom, theme.siteGradientTo, theme.siteGradientDir, theme.backgroundColor);
+  const previewFooterBg = resolveBg(theme.footerBgType, theme.footerBgColor, theme.footerGradientFrom, theme.footerGradientTo, theme.footerGradientDir, theme.secondaryColor);
 
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: 24, alignItems: 'start', maxWidth: 1200 }}>
@@ -156,6 +335,90 @@ export default function ThemePage() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+
+        {/* Arxa Plan Tənzimləmələri: Navbar, Form/Kart, Sayt, Footer */}
+        <div className="dash-card" style={{ padding: 20 }}>
+          <h3 style={{ fontSize: 14, fontWeight: 600, color: '#E8E8F0', marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Layers size={16} color="#7C5CFC" /> Arxa Planlar (Solid & Gradient)
+          </h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            {/* 1. Navbar */}
+            <BgControlItem
+              title="Navbar Arxa Planı"
+              subtitle="Naviqasiya paneli (header)"
+              type={theme.navbarBgType}
+              solidColor={theme.navbarBgColor}
+              fromColor={theme.navbarGradientFrom}
+              toColor={theme.navbarGradientTo}
+              direction={theme.navbarGradientDir}
+              fallbackSolid={`${theme.backgroundColor}E0`}
+              fallbackFrom={theme.primaryColor}
+              fallbackTo={theme.secondaryColor}
+              onChangeType={(type) => setTheme(p => ({ ...p, navbarBgType: type }))}
+              onChangeSolid={(c) => setTheme(p => ({ ...p, navbarBgColor: c }))}
+              onChangeFrom={(c) => setTheme(p => ({ ...p, navbarGradientFrom: c }))}
+              onChangeTo={(c) => setTheme(p => ({ ...p, navbarGradientTo: c }))}
+              onChangeDir={(d) => setTheme(p => ({ ...p, navbarGradientDir: d }))}
+            />
+
+            {/* 2. Form & Kartlar */}
+            <BgControlItem
+              title="Form və Kart Arxa Planı"
+              subtitle="Yemək kartları, Səbət & Detal form pəncərələri"
+              type={theme.formBgType}
+              solidColor={theme.formBgColor}
+              fromColor={theme.formGradientFrom}
+              toColor={theme.formGradientTo}
+              direction={theme.formGradientDir}
+              fallbackSolid={theme.backgroundColor}
+              fallbackFrom={theme.backgroundColor}
+              fallbackTo={`${theme.primaryColor}15`}
+              onChangeType={(type) => setTheme(p => ({ ...p, formBgType: type }))}
+              onChangeSolid={(c) => setTheme(p => ({ ...p, formBgColor: c }))}
+              onChangeFrom={(c) => setTheme(p => ({ ...p, formGradientFrom: c }))}
+              onChangeTo={(c) => setTheme(p => ({ ...p, formGradientTo: c }))}
+              onChangeDir={(d) => setTheme(p => ({ ...p, formGradientDir: d }))}
+            />
+
+            {/* 3. Sayt Arxa Planı */}
+            <BgControlItem
+              title="Sayt Arxa Planı"
+              subtitle="Bütün səhifənin ümumi fonu"
+              type={theme.siteBgType}
+              solidColor={theme.siteBgColor}
+              fromColor={theme.siteGradientFrom}
+              toColor={theme.siteGradientTo}
+              direction={theme.siteGradientDir}
+              fallbackSolid={theme.backgroundColor}
+              fallbackFrom={theme.backgroundColor}
+              fallbackTo={`${theme.secondaryColor}25`}
+              onChangeType={(type) => setTheme(p => ({ ...p, siteBgType: type }))}
+              onChangeSolid={(c) => setTheme(p => ({ ...p, siteBgColor: c }))}
+              onChangeFrom={(c) => setTheme(p => ({ ...p, siteGradientFrom: c }))}
+              onChangeTo={(c) => setTheme(p => ({ ...p, siteGradientTo: c }))}
+              onChangeDir={(d) => setTheme(p => ({ ...p, siteGradientDir: d }))}
+            />
+
+            {/* 4. Footer */}
+            <BgControlItem
+              title="Footer Arxa Planı"
+              subtitle="Səhifənin alt hissəsi"
+              type={theme.footerBgType}
+              solidColor={theme.footerBgColor}
+              fromColor={theme.footerGradientFrom}
+              toColor={theme.footerGradientTo}
+              direction={theme.footerGradientDir}
+              fallbackSolid={theme.secondaryColor}
+              fallbackFrom={theme.secondaryColor}
+              fallbackTo="#0D0D15"
+              onChangeType={(type) => setTheme(p => ({ ...p, footerBgType: type }))}
+              onChangeSolid={(c) => setTheme(p => ({ ...p, footerBgColor: c }))}
+              onChangeFrom={(c) => setTheme(p => ({ ...p, footerGradientFrom: c }))}
+              onChangeTo={(c) => setTheme(p => ({ ...p, footerGradientTo: c }))}
+              onChangeDir={(d) => setTheme(p => ({ ...p, footerGradientDir: d }))}
+            />
           </div>
         </div>
 
@@ -534,12 +797,35 @@ export default function ThemePage() {
             height: '75vh',
             background: theme.backgroundImageUrl
               ? `linear-gradient(rgba(0,0,0,${theme.backgroundOverlay ?? 0.4}), rgba(0,0,0,${theme.backgroundOverlay ?? 0.4})), url(${theme.backgroundImageUrl}) center/cover fixed no-repeat`
-              : theme.backgroundColor,
+              : previewSiteBg,
             fontFamily: theme.bodyFont,
           }}
         >
           {/* Mini preview of the site */}
           <div style={{ height: '100%', overflowY: 'auto' }}>
+            {/* Navbar Preview */}
+            <div style={{
+              padding: '10px 16px',
+              background: previewNavbarBg,
+              borderBottom: `1px solid ${theme.primaryColor}20`,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              position: 'sticky',
+              top: 0,
+              zIndex: 20,
+              backdropFilter: 'blur(8px)',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                {orgLogo && <img src={orgLogo} alt="Logo" style={{ width: 20, height: 20, objectFit: 'contain' }} />}
+                <span style={{ fontSize: 13, fontWeight: 700, color: theme.textColor, fontFamily: theme.headingFont }}>{orgName || 'Restoran'}</span>
+              </div>
+              <div style={{ display: 'flex', gap: 6 }}>
+                <span style={{ fontSize: 10, padding: '3px 8px', borderRadius: 6, background: `${theme.primaryColor}20`, color: theme.primaryColor, fontWeight: 600 }}>Menyu</span>
+                <span style={{ fontSize: 10, padding: '3px 8px', borderRadius: 6, background: 'rgba(255,255,255,0.08)', color: theme.textColor, fontWeight: 600 }}>Səbət</span>
+              </div>
+            </div>
+
             {/* Hero Preview */}
             <div style={{
               height: 240,
@@ -585,13 +871,13 @@ export default function ThemePage() {
             </div>
 
             {/* Featured Items Preview */}
-            <div style={{ padding: 24, background: theme.backgroundColor }}>
+            <div style={{ padding: 24, background: 'transparent' }}>
               <h2 style={{ fontFamily: theme.headingFont, color: theme.textColor, fontSize: 20, fontWeight: 700, marginBottom: 16, textAlign: 'center' }}>
                 Seçilmiş Yeməklər
               </h2>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
                 {['Margherita Pizza', 'Baş Şorba', 'Çeizkeyk'].map((name) => (
-                  <div key={name} style={{ background: theme.secondaryColor + '15', borderRadius: theme.borderRadius, overflow: 'hidden', border: `1px solid ${theme.primaryColor}30` }}>
+                  <div key={name} style={{ background: previewFormBg, borderRadius: theme.borderRadius, overflow: 'hidden', border: `1px solid ${theme.primaryColor}30`, boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
                     <div style={{ height: 80, background: `linear-gradient(135deg, ${theme.primaryColor}44, ${theme.accentColor}44)` }} />
                     <div style={{ padding: 10 }}>
                       <p style={{ fontFamily: theme.headingFont, color: theme.textColor, fontSize: 13, fontWeight: 600 }}>{name}</p>
@@ -603,7 +889,7 @@ export default function ThemePage() {
             </div>
 
             {/* Footer Preview */}
-            <div style={{ padding: 20, background: theme.secondaryColor, textAlign: 'center', position: 'relative' }}>
+            <div style={{ padding: 20, background: previewFooterBg, textAlign: 'center', position: 'relative' }}>
               <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12, fontFamily: theme.bodyFont }}>
                 © 2026 Restoranınız · Bütün hüquqlar qorunur
               </p>
