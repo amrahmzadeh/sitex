@@ -784,9 +784,17 @@ export default function RestaurantSite({ data }: { data: SiteData }) {
         >
           <HeaderMedia theme={theme} />
           <div style={{ position: 'absolute', inset: 0, background: `rgba(0,0,0,${theme.backgroundOverlay ?? theme.heroOverlay ?? 0.4})`, zIndex: 1 }} />
+          {/* Bottom fade: smooth transition from hero into page background */}
+          <div style={{
+            position: 'absolute', bottom: 0, left: 0, right: 0,
+            height: '35%',
+            background: `linear-gradient(to bottom, transparent 0%, ${theme.backgroundColor} 100%)`,
+            zIndex: 2,
+            pointerEvents: 'none',
+          }} />
           <div style={{
             position: 'relative',
-            zIndex: 1,
+            zIndex: 3,
             padding: '0 24px',
             maxWidth: 800,
             margin: '0 auto',
