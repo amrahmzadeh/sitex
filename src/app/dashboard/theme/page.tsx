@@ -555,7 +555,7 @@ export default function ThemePage() {
                   <span style={{ fontSize: 13, color: '#fff' }}>📹 Video Fon Aktivdir</span>
                 </div>
               )}
-              <div style={{ position: 'absolute', inset: 0, background: `rgba(0,0,0,${theme.heroOverlay * 0.7})` }} />
+              <div style={{ position: 'absolute', inset: 0, background: `rgba(0,0,0,${theme.backgroundOverlay ?? theme.heroOverlay ?? 0.4})` }} />
               <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 {orgLogo ? (
                   <img

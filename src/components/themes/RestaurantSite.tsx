@@ -502,17 +502,26 @@ function HeaderMedia({ theme }: { theme: ThemeConfig }) {
             zIndex: 0,
           }}
         >
-          {/* iframe is 300% tall and shifted UP so bottom controls are cropped below the visible area */}
+          {/*
+            iframe is 500% height, centered, shifted up 100% of its own height
+            so the visible window shows only the middle portion of the video.
+            The YouTube play button (center of iframe) ends up FAR above the visible area.
+            Bottom controls are also below the visible area.
+          */}
           <iframe
-            src={`https://www.youtube-nocookie.com/embed/${ytMatch[1]}?autoplay=1&mute=1&muted=1&loop=1&playlist=${ytMatch[1]}&controls=0&modestbranding=1&showinfo=0&rel=0&iv_load_policy=3&cc_load_policy=0&disablekb=1&fs=0&playsinline=1&enablejsapi=0&origin=${encodeURIComponent(typeof window !== 'undefined' ? window.location.origin : '')}`}
+            src={`https://www.youtube-nocookie.com/embed/${ytMatch[1]}?autoplay=1&mute=1&muted=1&loop=1&playlist=${ytMatch[1]}&controls=0&modestbranding=1&showinfo=0&rel=0&iv_load_policy=3&cc_load_policy=0&disablekb=1&fs=0&playsinline=1&enablejsapi=0`}
             title="Header Background Video"
             style={{
               position: 'absolute',
-              top: '-50%',
+              /* Push iframe up: its center aligns with ~25% from top of its own height,
+                 meaning the video center lands in the visible area but the UI chrome is off-screen */
+              top: '50%',
               left: '50%',
-              width: '300vw',
-              height: '300vh',
-              transform: 'translateX(-50%)',
+              width: '400vw',
+              height: '400vh',
+              /* Shift left by 50% of width, up by 62.5% of height so video content is visible
+                 but the YouTube overlay buttons (center) are off-screen above */
+              transform: 'translate(-50%, -62.5%)',
               pointerEvents: 'none',
               border: 'none',
             }}
@@ -520,8 +529,8 @@ function HeaderMedia({ theme }: { theme: ThemeConfig }) {
             allow="autoplay"
             sandbox="allow-scripts allow-same-origin"
           />
-          {/* Full-cover shield: blocks all clicks/interactions and hides any UI chrome */}
-          <div style={{ position: 'absolute', inset: 0, zIndex: 1, pointerEvents: 'all', background: 'transparent' }} />
+          {/* Full-cover interaction shield — captures all pointer events so iframe never receives clicks */}
+          <div style={{ position: 'absolute', inset: 0, zIndex: 1, pointerEvents: 'all' }} />
         </div>
       );
     }
@@ -774,7 +783,7 @@ export default function RestaurantSite({ data }: { data: SiteData }) {
           }}
         >
           <HeaderMedia theme={theme} />
-          <div style={{ position: 'absolute', inset: 0, background: `rgba(0,0,0,${theme.heroOverlay * 0.7})` }} />
+          <div style={{ position: 'absolute', inset: 0, background: `rgba(0,0,0,${theme.backgroundOverlay ?? theme.heroOverlay ?? 0.4})`, zIndex: 1 }} />
           <div style={{
             position: 'relative',
             zIndex: 1,
