@@ -36,7 +36,13 @@ export async function GET(
         workingHours: { orderBy: { dayOfWeek: 'asc' } },
         menuCategories: {
           orderBy: { sortOrder: 'asc' },
-          include: { _count: { select: { menuItems: true } } },
+          include: {
+            menuItems: {
+              where: { isVisible: true },
+              orderBy: { sortOrder: 'asc' },
+            },
+            _count: { select: { menuItems: true } },
+          },
         },
         _count: { select: { menuItems: true, mediaAssets: true } },
       },

@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Loader2, Save, Globe, Eye, Check, Palette, MessageCircle, Layers } from 'lucide-react';
-import { defaultThemes, ThemeConfig, resolveBg } from '@/lib/themes';
+import { Loader2, Save, Globe, Eye, Check, Palette, MessageCircle, Layers, Monitor, Smartphone, Sparkles, Clock, Utensils, BookOpen, FileText } from 'lucide-react';
+import { defaultThemes, ThemeConfig, resolveBg, BRAND_FONTS } from '@/lib/themes';
+import RestaurantSite, { SiteData } from '@/components/themes/RestaurantSite';
 
 function useCurrentOrg() {
   const [orgId, setOrgId] = useState<string | null>(null);
@@ -193,12 +194,119 @@ function BgControlItem({
   );
 }
 
+function ImageUploadField({
+  label,
+  value,
+  onChange,
+  orgId,
+  placeholder = "Şəkil linki və ya kompüterdən yükləyin..."
+}: {
+  label: string;
+  value?: string;
+  onChange: (url: string) => void;
+  orgId?: string | null;
+  placeholder?: string;
+}) {
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !orgId) return;
+    setUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      const res = await fetch(`/api/organizations/${orgId}/upload`, {
+        method: 'POST',
+        body: fd,
+      });
+      const data = await res.json();
+      if (data.url) {
+        onChange(data.url);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  return (
+    <div style={{ marginBottom: 12 }}>
+      <label className="dash-label" style={{ marginBottom: 4, display: 'block' }}>{label}</label>
+      <div style={{ display: 'flex', gap: 8 }}>
+        <input
+          className="dash-input"
+          placeholder={placeholder}
+          value={value || ''}
+          onChange={(e) => onChange(e.target.value)}
+          style={{ flex: 1 }}
+        />
+        {orgId && (
+          <>
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              accept="image/*"
+              style={{ display: 'none' }}
+            />
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading}
+              style={{
+                border: '1px solid #2A2A3A',
+                background: '#282a2c',
+                color: '#E8E8F0',
+                borderRadius: 8,
+                padding: '0 12px',
+                cursor: 'pointer',
+                fontSize: 12,
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {uploading ? 'Yüklənir...' : '📁 Yüklə'}
+            </button>
+          </>
+        )}
+        {value && (
+          <button
+            type="button"
+            onClick={() => onChange('')}
+            style={{
+              border: '1px solid #2A2A3A',
+              background: 'rgba(248,113,113,0.15)',
+              color: '#F87171',
+              borderRadius: 8,
+              padding: '0 10px',
+              cursor: 'pointer',
+              fontSize: 12,
+            }}
+          >
+            Sil
+          </button>
+        )}
+      </div>
+      {value && (
+        <div style={{ marginTop: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <img src={value} alt="Preview" style={{ width: 44, height: 44, borderRadius: 6, objectFit: 'cover', border: '1px solid #2A2A3A' }} />
+          <span style={{ fontSize: 11, color: '#8888A0', wordBreak: 'break-all' }}>{value}</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function ThemePage() {
   const orgId = useCurrentOrg();
   const [theme, setTheme] = useState<ThemeConfig>(defaultThemes.elegant);
   const [slug, setSlug] = useState('');
   const [orgLogo, setOrgLogo] = useState('');
   const [orgName, setOrgName] = useState('');
+  const [orgData, setOrgData] = useState<any>(null);
+  const [previewDevice, setPreviewDevice] = useState<'desktop' | 'mobile'>('desktop');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [publishing, setPublishing] = useState(false);
@@ -210,12 +318,20 @@ export default function ThemePage() {
     fetch(`/api/organizations/${orgId}`)
       .then(r => r.json())
       .then(d => {
-        if (d.organization?.website?.draftTheme) {
-          setTheme({ ...defaultThemes.elegant, ...(d.organization.website.draftTheme as Partial<ThemeConfig>) });
+        if (d.organization) {
+          setOrgData(d.organization);
+          if (d.organization.website?.draftTheme) {
+            const dt = d.organization.website.draftTheme as Partial<ThemeConfig>;
+            setTheme({
+              ...defaultThemes.elegant,
+              ...dt,
+              isProTemplate: Boolean(dt.isProTemplate),
+            });
+          }
+          setSlug(d.organization.slug || '');
+          setOrgLogo(d.organization.logo || '');
+          setOrgName(d.organization.name || '');
         }
-        setSlug(d.organization?.slug || '');
-        setOrgLogo(d.organization?.logo || '');
-        setOrgName(d.organization?.name || '');
       })
       .finally(() => setLoading(false));
   }, [orgId]);
@@ -245,17 +361,139 @@ export default function ThemePage() {
     } finally { setPublishing(false); }
   };
 
-  const applyTheme = (t: ThemeConfig) => setTheme(t);
+  const applyTheme = (t: ThemeConfig) => {
+    setTheme(prev => ({
+      ...prev,
+      ...t,
+      isProTemplate: Boolean(t.isProTemplate),
+    }));
+  };
+
+  const isProActive = Boolean(theme.isProTemplate);
+
+  const previewSiteData = useMemo<SiteData>(() => {
+    const rawCategories = orgData?.menuCategories || [];
+    const validCategories = rawCategories.filter((c: any) => c.menuItems && c.menuItems.length > 0);
+
+    const categories = validCategories.length > 0 ? validCategories : [
+      {
+        id: 'cat-1',
+        name: 'Aş Çeşidləri',
+        slug: 'as-cesidleri',
+        isVisible: true,
+        menuItems: [
+          {
+            id: 'item-1',
+            name: 'Toyuq Plov (kiçik)',
+            slug: 'toyuq-plov-kicik',
+            description: 'Zəfəranlı uzun düyü, zərif bişmiş toyuq əti, təbii kərə yağı ilə doyumlu kiçik porsiya.',
+            price: 2.80,
+            image: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80',
+            isFeatured: true,
+            isNew: false,
+            isPopular: true,
+            portionSize: 'Kiçik porsiya',
+          },
+          {
+            id: 'item-2',
+            name: 'Toyuq Plov (böyük)',
+            slug: 'toyuq-plov-boyuk',
+            description: 'Bol toyuq tikələri və ətirli plov ilə zənginləşdirilmiş doyurucu böyük porsiya.',
+            price: 4.20,
+            image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80',
+            video: 'https://assets.mixkit.co/videos/preview/mixkit-top-view-of-a-dish-with-rice-and-chicken-42861-large.mp4',
+            isFeatured: true,
+            isNew: false,
+            isPopular: true,
+            portionSize: 'Böyük porsiya',
+          },
+        ],
+      },
+      {
+        id: 'cat-2',
+        name: 'Qulyaşlar',
+        slug: 'qulyaslar',
+        isVisible: true,
+        menuItems: [
+          {
+            id: 'item-3',
+            name: 'Ətli Qulyaş',
+            slug: 'etli-qulyas',
+            description: 'Yumşaq mal əti, qatı ətirli sous və istəyə uyğun qarnir.',
+            price: 3.80,
+            image: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=800&q=80',
+            isFeatured: false,
+            isNew: true,
+            isPopular: false,
+            portionSize: 'Klassik',
+          },
+          {
+            id: 'item-4',
+            name: 'Toyuqlu Qulyaş',
+            slug: 'toyuqlu-qulyas',
+            description: 'Zərif toyuq filesi, şirin bibər və xüsusi tomat sousu ilə ləzzətli seçim.',
+            price: 3.20,
+            image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=800&q=80',
+            isFeatured: false,
+            isNew: false,
+            isPopular: true,
+            portionSize: 'Yüngül & Dadlı',
+          },
+        ],
+      },
+    ];
+
+    return {
+      organization: {
+        name: orgName || orgData?.name || 'Restoran',
+        slug: slug || orgData?.slug || 'restoran',
+        logo: orgLogo || orgData?.logo || undefined,
+        description: orgData?.description || 'Ənənəvi dad və keyfiyyəti bir araya gətirən məkan.',
+        phone: orgData?.phone || '+994 55 366 77 07',
+        email: orgData?.email || '',
+        address: orgData?.address || 'Bakı, Azərbaycan',
+        city: orgData?.city || 'Bakı',
+        mapUrl: orgData?.mapUrl || '',
+        currency: orgData?.currency || 'AZN',
+      },
+      website: {
+        theme: {
+          ...theme,
+          isProTemplate: isProActive,
+        },
+        seoTitle: orgName,
+        seoDescription: orgData?.description,
+      },
+      whatsapp: orgData?.whatsappSettings || {
+        countryCode: '994',
+        phoneNumber: orgData?.phone || '553667707',
+        orderMessage: 'Salam! Sifariş vermək istəyirəm: {name} - {price} AZN',
+        buttonText: 'WhatsApp Sifariş',
+        isEnabled: true,
+      },
+      socialLinks: orgData?.socialLinks || [],
+      workingHours: orgData?.workingHours && orgData.workingHours.length > 0 ? orgData.workingHours : [
+        { dayOfWeek: 1, openTime: '09:00', closeTime: '22:00', isClosed: false },
+        { dayOfWeek: 2, openTime: '09:00', closeTime: '22:00', isClosed: false },
+        { dayOfWeek: 3, openTime: '09:00', closeTime: '22:00', isClosed: false },
+        { dayOfWeek: 4, openTime: '09:00', closeTime: '22:00', isClosed: false },
+        { dayOfWeek: 5, openTime: '09:00', closeTime: '22:00', isClosed: false },
+        { dayOfWeek: 6, openTime: '09:00', closeTime: '22:00', isClosed: false },
+        { dayOfWeek: 0, openTime: '', closeTime: '', isClosed: true },
+      ],
+      menuCategories: categories,
+    };
+  }, [orgData, orgName, slug, orgLogo, theme, isProActive]);
 
   if (loading) return <div style={{ display: 'grid', gap: 16 }}>{[...Array(5)].map((_, i) => <div key={i} className="skeleton" style={{ height: 60, borderRadius: 12 }} />)}</div>;
 
-  const previewNavbarBg = resolveBg(theme.navbarBgType, theme.navbarBgColor, theme.navbarGradientFrom, theme.navbarGradientTo, theme.navbarGradientDir, `${theme.backgroundColor}E0`);
-  const previewFormBg = resolveBg(theme.formBgType, theme.formBgColor, theme.formGradientFrom, theme.formGradientTo, theme.formGradientDir, theme.backgroundColor);
-  const previewSiteBg = resolveBg(theme.siteBgType, theme.siteBgColor, theme.siteGradientFrom, theme.siteGradientTo, theme.siteGradientDir, theme.backgroundColor);
-  const previewFooterBg = resolveBg(theme.footerBgType, theme.footerBgColor, theme.footerGradientFrom, theme.footerGradientTo, theme.footerGradientDir, theme.secondaryColor);
-
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: 24, alignItems: 'start', maxWidth: 1200 }}>
+    <>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Bebas+Neue&family=Cinzel:wght@600;700;900&family=Cormorant+Garamond:ital,wght@0,600;1,600&family=Dancing+Script:wght@700&family=DM+Serif+Display:ital@0;1&family=Great+Vibes&family=Kaushan+Script&family=Lobster&family=Marcellus&family=Montserrat:wght@700;800&family=Oswald:wght@600&family=Outfit:wght@700;800&family=Pacifico&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Prata&family=Righteous&family=Satisfy&display=swap"
+      />
+      <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: 24, alignItems: 'start', maxWidth: '100%' }}>
       {/* Left Panel */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
         <div style={{ display: 'flex', gap: 10 }}>
@@ -279,13 +517,108 @@ export default function ThemePage() {
           </button>
         </div>
 
+        {/* Pro Template Module */}
+        <div
+          className="dash-card"
+          style={{
+            padding: 20,
+            border: theme.isProTemplate ? '1.5px solid #E5A93C' : '1px solid #2A2A3A',
+            background: theme.isProTemplate
+              ? 'linear-gradient(135deg, rgba(229, 169, 60, 0.12), rgba(24, 27, 30, 0.9))'
+              : undefined,
+            position: 'relative',
+            boxShadow: theme.isProTemplate ? '0 8px 24px rgba(229, 169, 60, 0.15)' : 'none',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span
+                style={{
+                  background: 'linear-gradient(135deg, #E5A93C, #F59E0B)',
+                  color: '#111315',
+                  fontSize: 10,
+                  fontWeight: 900,
+                  padding: '2px 8px',
+                  borderRadius: 9999,
+                  letterSpacing: '0.08em',
+                }}
+              >
+                PRO
+              </span>
+              <h3 style={{ fontSize: 14, fontWeight: 700, color: '#F7F8F9', margin: 0 }}>
+                Pro Şablon Modulu
+              </h3>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                if (!theme.isProTemplate) {
+                  setTheme(p => ({
+                    ...p,
+                    ...defaultThemes.warmGourmetPro,
+                    isProTemplate: true,
+                    templateId: 'warm-gourmet-pro',
+                    id: 'warmGourmetPro',
+                  }));
+                } else {
+                  setTheme(p => ({
+                    ...p,
+                    isProTemplate: false,
+                    templateId: 'elegant',
+                    id: 'elegant',
+                  }));
+                }
+              }}
+              style={{
+                padding: '6px 14px',
+                borderRadius: 9999,
+                border: 'none',
+                cursor: 'pointer',
+                fontSize: 12,
+                fontWeight: 700,
+                background: theme.isProTemplate
+                  ? 'linear-gradient(135deg, #E5A93C, #F59E0B)'
+                  : '#282a2c',
+                color: theme.isProTemplate ? '#111315' : '#8888A0',
+                transition: 'all 0.2s',
+              }}
+            >
+              {theme.isProTemplate ? 'Aktivdir ✓' : 'Aktiv et'}
+            </button>
+          </div>
+
+          <p style={{ fontSize: 12, color: '#9BA3AF', margin: 0, lineHeight: '18px' }}>
+            <strong>Warm Gourmet Street Food</strong> — Qaranlıq şifer dərinlikləri, zəfəran qızılı işıltılar, interaktiv səbət və sürətli WhatsApp sifariş sistemi.
+          </p>
+
+          {theme.isProTemplate && (
+            <div
+              style={{
+                marginTop: 12,
+                padding: '8px 12px',
+                borderRadius: 8,
+                background: 'rgba(229, 169, 60, 0.15)',
+                border: '1px solid rgba(229, 169, 60, 0.3)',
+                fontSize: 12,
+                color: '#ffc665',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+              }}
+            >
+              <Check size={14} />
+              <span>Pro Şablon aktivdir. Saytınız yeni dizaynla işləyəcək.</span>
+            </div>
+          )}
+        </div>
+
         {/* Preset Themes */}
         <div className="dash-card" style={{ padding: 20 }}>
           <h3 style={{ fontSize: 14, fontWeight: 600, color: '#E8E8F0', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
             <Palette size={16} color="#7C5CFC" /> Hazır Temalar
           </h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {Object.values(defaultThemes).map((t) => (
+            {Object.values(defaultThemes).filter(t => !t.isProTemplate).map((t) => (
               <button
                 key={t.id}
                 onClick={() => applyTheme(t)}
@@ -495,18 +828,142 @@ export default function ThemePage() {
           </div>
         </div>
 
-        {/* Typography */}
+        {/* Typography & Brand Font */}
         <div className="dash-card" style={{ padding: 20 }}>
-          <h3 style={{ fontSize: 14, fontWeight: 600, color: '#E8E8F0', marginBottom: 14 }}>🖊 Tipografiya</h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+            <h3 style={{ fontSize: 14, fontWeight: 700, color: '#E8E8F0', display: 'flex', alignItems: 'center', gap: 8, margin: 0 }}>
+              <span style={{ fontSize: 16 }}>👑</span>
+              <span>Mağaza Adı Xüsusi Fontu</span>
+            </h3>
+            {theme.brandFont && (
+              <button
+                type="button"
+                onClick={() => setTheme(p => ({ ...p, brandFont: undefined }))}
+                style={{
+                  background: 'rgba(255,255,255,0.06)',
+                  border: '1px solid #333',
+                  borderRadius: 6,
+                  color: '#A0A0B0',
+                  fontSize: 11,
+                  padding: '2px 8px',
+                  cursor: 'pointer',
+                }}
+              >
+                Sıfırla
+              </button>
+            )}
+          </div>
+          <p style={{ fontSize: 11, color: '#8888A0', marginBottom: 12, lineHeight: 1.4 }}>
+            Navbar-dakı loqo yanı, Hero əsas başlığı və Footer-dəki restoran adınız üçün havalı və xüsusi şrift:
+          </p>
+
+          {/* Live Preview Box */}
+          <div style={{
+            padding: '14px 16px',
+            borderRadius: 10,
+            background: 'linear-gradient(135deg, rgba(124, 92, 252, 0.15), rgba(20, 20, 30, 0.9))',
+            border: '1px solid rgba(124, 92, 252, 0.35)',
+            marginBottom: 14,
+            textAlign: 'center',
+          }}>
+            <div style={{ fontSize: 10, color: '#A78BFA', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6, fontWeight: 600 }}>
+              Cari Şrift: {theme.brandFont || `${theme.headingFont || 'Playfair Display'} (Standart)`}
+            </div>
+            <div style={{
+              fontFamily: theme.brandFont ? `'${theme.brandFont}', serif` : `'${theme.headingFont || 'Playfair Display'}', serif`,
+              fontSize: 24,
+              color: '#FFFFFF',
+              letterSpacing: '0.02em',
+              lineHeight: 1.25,
+              wordBreak: 'break-word',
+            }}>
+              {orgName || 'Aş Xana'}
+            </div>
+          </div>
+
+          {/* Quick Select Dropdown */}
+          <div style={{ marginBottom: 14 }}>
+            <label className="dash-label">Sürətli Seçim</label>
+            <select
+              className="dash-input"
+              value={theme.brandFont || ''}
+              onChange={(e) => setTheme(p => ({ ...p, brandFont: e.target.value || undefined }))}
+            >
+              <option value="">Standart (Başlıq Fontu ilə eyni)</option>
+              {BRAND_FONTS.map(f => (
+                <option key={f.name} value={f.name}>
+                  {f.label} — {f.category}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Visual Font Cards Grid */}
+          <label className="dash-label" style={{ marginBottom: 8, display: 'block' }}>
+            Havalı Şriftlər Qalereyası (Klikləyin)
+          </label>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(2, 1fr)',
+            gap: 8,
+            maxHeight: 260,
+            overflowY: 'auto',
+            paddingRight: 4,
+            marginBottom: 16,
+          }}>
+            {BRAND_FONTS.map(f => {
+              const isSelected = (theme.brandFont || '') === f.name;
+              return (
+                <button
+                  key={f.name}
+                  type="button"
+                  onClick={() => setTheme(p => ({ ...p, brandFont: f.name }))}
+                  style={{
+                    padding: '8px 10px',
+                    borderRadius: 8,
+                    background: isSelected ? 'rgba(124, 92, 252, 0.25)' : 'rgba(255, 255, 255, 0.03)',
+                    border: isSelected ? '1.5px solid #7C5CFC' : '1px solid #2A2A3A',
+                    textAlign: 'left',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 3,
+                    transition: 'all 0.15s ease',
+                  }}
+                >
+                  <span style={{
+                    fontFamily: `'${f.name}', sans-serif`,
+                    fontSize: 15,
+                    color: isSelected ? '#A78BFA' : '#FFFFFF',
+                    lineHeight: 1.2,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                  }}>
+                    {orgName || f.label}
+                  </span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: 10, color: '#8888A0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{f.name}</span>
+                    <span style={{ fontSize: 9, color: isSelected ? '#7C5CFC' : '#555566' }}>{f.category.split(' ')[0]}</span>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* General Typography */}
+          <div style={{ borderTop: '1px solid #2A2A3A', paddingTop: 14, display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <h4 style={{ fontSize: 12, fontWeight: 600, color: '#8888A0', textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0 }}>
+              Ümumi Sayt Şriftləri
+            </h4>
             <div>
-              <label className="dash-label">Başlıq fontu</label>
+              <label className="dash-label">Ümumi Başlıq fontu</label>
               <select className="dash-input" value={theme.headingFont} onChange={(e) => setTheme(p => ({ ...p, headingFont: e.target.value }))}>
                 {FONTS.map(f => <option key={f} value={f}>{f}</option>)}
               </select>
             </div>
             <div>
-              <label className="dash-label">Mətn fontu</label>
+              <label className="dash-label">Mətn (Body) fontu</label>
               <select className="dash-input" value={theme.bodyFont} onChange={(e) => setTheme(p => ({ ...p, bodyFont: e.target.value }))}>
                 {FONTS.map(f => <option key={f} value={f}>{f}</option>)}
               </select>
@@ -772,154 +1229,375 @@ export default function ThemePage() {
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Preview */}
-      <div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 600, color: '#E8E8F0' }}>Canlı Önizləmə</h2>
-          {slug && (
-            <a
-              href={`/site/${slug}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#7C5CFC', textDecoration: 'none' }}
-            >
-              <Eye size={14} /> Yayınlanmış saytı aç
-            </a>
-          )}
-        </div>
-        <div
-          style={{
-            borderRadius: 16,
-            overflow: 'hidden',
-            border: '1px solid #2A2A3A',
-            height: '75vh',
-            background: theme.backgroundImageUrl
-              ? `linear-gradient(rgba(0,0,0,${theme.backgroundOverlay ?? 0.4}), rgba(0,0,0,${theme.backgroundOverlay ?? 0.4})), url(${theme.backgroundImageUrl}) center/cover fixed no-repeat`
-              : previewSiteBg,
-            fontFamily: theme.bodyFont,
-          }}
-        >
-          {/* Mini preview of the site */}
-          <div style={{ height: '100%', overflowY: 'auto' }}>
-            {/* Navbar Preview */}
-            <div style={{
-              padding: '10px 16px',
-              background: previewNavbarBg,
-              borderBottom: `1px solid ${theme.primaryColor}20`,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              position: 'sticky',
-              top: 0,
-              zIndex: 20,
-              backdropFilter: 'blur(8px)',
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                {orgLogo && <img src={orgLogo} alt="Logo" style={{ width: 20, height: 20, objectFit: 'contain' }} />}
-                <span style={{ fontSize: 13, fontWeight: 700, color: theme.textColor, fontFamily: theme.headingFont }}>{orgName || 'Restoran'}</span>
+        {/* Template Məzmunu və Şəkilləri */}
+        <div className="dash-card" style={{ padding: 20 }}>
+          <h3 style={{ fontSize: 14, fontWeight: 700, color: '#F7F8F9', marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Sparkles size={16} color="#E5A93C" /> Hero Məzmunu və Şəkilləri
+          </h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div>
+              <label className="dash-label">Hero Badge Mətni (Yuxarı nişan)</label>
+              <input
+                className="dash-input"
+                placeholder="Məs: ORİJİNAL STREET FOOD DADI"
+                value={theme.heroBadgeText ?? ''}
+                onChange={(e) => setTheme(p => ({ ...p, heroBadgeText: e.target.value }))}
+              />
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 140px), 1fr))', gap: 8 }}>
+              <div>
+                <label className="dash-label">1-ci Xüsusiyyət</label>
+                <input
+                  className="dash-input"
+                  placeholder="Təbii inqrediyentlər"
+                  value={theme.heroFeature1 ?? ''}
+                  onChange={(e) => setTheme(p => ({ ...p, heroFeature1: e.target.value }))}
+                />
               </div>
-              <div style={{ display: 'flex', gap: 6 }}>
-                <span style={{ fontSize: 10, padding: '3px 8px', borderRadius: 6, background: `${theme.primaryColor}20`, color: theme.primaryColor, fontWeight: 600 }}>Menyu</span>
-                <span style={{ fontSize: 10, padding: '3px 8px', borderRadius: 6, background: 'rgba(255,255,255,0.08)', color: theme.textColor, fontWeight: 600 }}>Səbət</span>
+              <div>
+                <label className="dash-label">2-ci Xüsusiyyət</label>
+                <input
+                  className="dash-input"
+                  placeholder="Gündəlik təzə bişirilir"
+                  value={theme.heroFeature2 ?? ''}
+                  onChange={(e) => setTheme(p => ({ ...p, heroFeature2: e.target.value }))}
+                />
+              </div>
+              <div>
+                <label className="dash-label">3-cü Xüsusiyyət</label>
+                <input
+                  className="dash-input"
+                  placeholder="Sürətli çatdırılma"
+                  value={theme.heroFeature3 ?? ''}
+                  onChange={(e) => setTheme(p => ({ ...p, heroFeature3: e.target.value }))}
+                />
               </div>
             </div>
 
-            {/* Hero Preview */}
-            <div style={{
-              height: 240,
-              background: theme.headerImageUrl
-                ? `url(${theme.headerImageUrl}) center/cover no-repeat`
-                : `linear-gradient(${theme.heroOverlay * 100}deg, ${theme.secondaryColor}CC, ${theme.primaryColor}44)`,
-              display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column',
-              padding: 24, textAlign: 'center', position: 'relative',
-              overflow: 'hidden',
-            }}>
-              {theme.headerMediaType === 'video' && theme.headerVideoUrl && (
-                <div style={{ position: 'absolute', inset: 0, background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0.8 }}>
-                  <span style={{ fontSize: 13, color: '#fff' }}>📹 Video Fon Aktivdir</span>
-                </div>
-              )}
-              <div style={{ position: 'absolute', inset: 0, background: `rgba(0,0,0,${theme.backgroundOverlay ?? theme.heroOverlay ?? 0.4})` }} />
-              <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                {orgLogo ? (
-                  <img
-                    src={orgLogo}
-                    alt={orgName || 'Logo'}
-                    style={{
-                      maxHeight: Math.min(theme.heroLogoSize ?? 120, 140),
-                      maxWidth: 180,
-                      width: 'auto',
-                      height: 'auto',
-                      borderRadius: theme.logoHasFrame ? 16 : 0,
-                      objectFit: 'contain',
-                      display: 'block',
-                      marginTop: `${theme.logoMarginTop ?? 0}px`,
-                      marginBottom: `${theme.logoSpacing ?? 16}px`,
-                      boxShadow: theme.logoHasFrame ? '0 8px 32px rgba(0,0,0,0.3)' : 'none',
-                      background: 'transparent',
-                    }}
-                  />
-                ) : null}
-                <h1 style={{ fontFamily: theme.headingFont, color: '#fff', fontSize: 28, fontWeight: 800, marginTop: 0, marginBottom: 8 }}>{orgName || 'Restoranınızın Adı'}</h1>
-                <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: 14, marginBottom: 16 }}>Ən dadlı yeməklərimizi kəşf edin</p>
-                <button style={{ background: theme.primaryColor, color: '#fff', border: 'none', borderRadius: theme.borderRadius, padding: '10px 24px', fontWeight: 600, fontSize: 14, cursor: 'pointer' }}>
-                  Menyuya bax
-                </button>
-              </div>
-            </div>
-
-            {/* Featured Items Preview */}
-            <div style={{ padding: 24, background: 'transparent' }}>
-              <h2 style={{ fontFamily: theme.headingFont, color: theme.textColor, fontSize: 20, fontWeight: 700, marginBottom: 16, textAlign: 'center' }}>
-                Seçilmiş Yeməklər
-              </h2>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
-                {['Margherita Pizza', 'Baş Şorba', 'Çeizkeyk'].map((name) => (
-                  <div key={name} style={{ background: previewFormBg, borderRadius: theme.borderRadius, overflow: 'hidden', border: `1px solid ${theme.primaryColor}30`, boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
-                    <div style={{ height: 80, background: `linear-gradient(135deg, ${theme.primaryColor}44, ${theme.accentColor}44)` }} />
-                    <div style={{ padding: 10 }}>
-                      <p style={{ fontFamily: theme.headingFont, color: theme.textColor, fontSize: 13, fontWeight: 600 }}>{name}</p>
-                      <p style={{ color: theme.primaryColor, fontSize: 12, fontWeight: 700, marginTop: 4 }}>12.50 AZN</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Footer Preview */}
-            <div style={{ padding: 20, background: previewFooterBg, textAlign: 'center', position: 'relative' }}>
-              <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12, fontFamily: theme.bodyFont }}>
-                © 2026 Restoranınız · Bütün hüquqlar qorunur
+            <div style={{ borderTop: '1px solid #2A2A3A', paddingTop: 12, marginTop: 4 }}>
+              <p style={{ fontSize: 13, fontWeight: 600, color: '#E5A93C', margin: '0 0 10px' }}>
+                🌟 Sağ Tərəfdəki Yemək Kartı (Günün Təamı)
               </p>
+              
+              <ImageUploadField
+                label="Yemək Kartı Şəkli"
+                value={theme.heroDishImage}
+                onChange={(url) => setTheme(p => ({ ...p, heroDishImage: url }))}
+                orgId={orgId}
+                placeholder="Yemək şəklinin linki və ya yükləyin..."
+              />
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 12 }}>
+                <div>
+                  <label className="dash-label">Şəkil Üstü Nişan</label>
+                  <input
+                    className="dash-input"
+                    placeholder="Günün Sevimli Təamı"
+                    value={theme.heroDishBadge ?? ''}
+                    onChange={(e) => setTheme(p => ({ ...p, heroDishBadge: e.target.value }))}
+                  />
+                </div>
+                <div>
+                  <label className="dash-label">Kart Başlığı</label>
+                  <input
+                    className="dash-input"
+                    placeholder="Toyuq Plov (kiçik)"
+                    value={theme.heroDishTitle ?? ''}
+                    onChange={(e) => setTheme(p => ({ ...p, heroDishTitle: e.target.value }))}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                <div>
+                  <label className="dash-label">Kart Alt Mətni</label>
+                  <input
+                    className="dash-input"
+                    placeholder="Ənənəvi kərə yağı və xüsusi ədviyyatlarla"
+                    value={theme.heroDishSubtitle ?? ''}
+                    onChange={(e) => setTheme(p => ({ ...p, heroDishSubtitle: e.target.value }))}
+                  />
+                </div>
+                <div>
+                  <label className="dash-label">Qiymət Alt Qeydi</label>
+                  <input
+                    className="dash-input"
+                    placeholder="təzə və isti"
+                    value={theme.heroDishPriceNote ?? ''}
+                    onChange={(e) => setTheme(p => ({ ...p, heroDishPriceNote: e.target.value }))}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Menyu Mətni */}
+        <div className="dash-card" style={{ padding: 20 }}>
+          <h3 style={{ fontSize: 14, fontWeight: 700, color: '#F7F8F9', marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Utensils size={16} color="#E5A93C" /> Menyu Bölməsi Mətni
+          </h3>
+          <div>
+            <label className="dash-label">Menyu Alt Başlığı</label>
+            <textarea
+              className="dash-input"
+              rows={2}
+              placeholder="Məs: Hər gün sevgi və ənənəvi reseptlərlə təzə bişirilən street food ləzzətləri."
+              value={theme.menuSubtitle ?? ''}
+              onChange={(e) => setTheme(p => ({ ...p, menuSubtitle: e.target.value }))}
+              style={{ resize: 'vertical' }}
+            />
+          </div>
+        </div>
+
+        {/* Haqqımızda Məzmunu və Şəkilləri */}
+        <div className="dash-card" style={{ padding: 20 }}>
+          <h3 style={{ fontSize: 14, fontWeight: 700, color: '#F7F8F9', marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <BookOpen size={16} color="#E5A93C" /> Haqqımızda Bölməsi Məzmunu
+          </h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+              <div>
+                <label className="dash-label">1-ci Kart Başlığı</label>
+                <input
+                  className="dash-input"
+                  placeholder="Müştəri Məmnuniyyəti"
+                  value={theme.aboutFeature1Title ?? ''}
+                  onChange={(e) => setTheme(p => ({ ...p, aboutFeature1Title: e.target.value }))}
+                />
+              </div>
+              <div>
+                <label className="dash-label">1-ci Kart İzahı</label>
+                <input
+                  className="dash-input"
+                  placeholder="Hər bir qonağımıza səmimi münasibət..."
+                  value={theme.aboutFeature1Desc ?? ''}
+                  onChange={(e) => setTheme(p => ({ ...p, aboutFeature1Desc: e.target.value }))}
+                />
+              </div>
             </div>
 
-            {/* Floating WhatsApp preview */}
-            <div
-              style={{
-                position: 'sticky',
-                bottom: 16,
-                marginLeft: 'auto',
-                marginRight: 16,
-                width: 48,
-                height: 48,
-                borderRadius: '50%',
-                background: theme.whatsappColor || '#25D366',
-                color: theme.whatsappIconColor || '#FFFFFF',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                boxShadow: `0 4px 16px ${(theme.whatsappColor || '#25D366')}80`,
-                zIndex: 10,
-              }}
-              title="WhatsApp İkon Önizləməsi"
-            >
-              <MessageCircle size={24} color={theme.whatsappIconColor || '#FFFFFF'} />
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+              <div>
+                <label className="dash-label">2-ci Kart Başlığı</label>
+                <input
+                  className="dash-input"
+                  placeholder="Gündəlik Təzəlik"
+                  value={theme.aboutFeature2Title ?? ''}
+                  onChange={(e) => setTheme(p => ({ ...p, aboutFeature2Title: e.target.value }))}
+                />
+              </div>
+              <div>
+                <label className="dash-label">2-ci Kart İzahı</label>
+                <input
+                  className="dash-input"
+                  placeholder="Yeməklər yalnız gün ərzində..."
+                  value={theme.aboutFeature2Desc ?? ''}
+                  onChange={(e) => setTheme(p => ({ ...p, aboutFeature2Desc: e.target.value }))}
+                />
+              </div>
+            </div>
+
+            <div style={{ borderTop: '1px solid #2A2A3A', paddingTop: 12 }}>
+              <ImageUploadField
+                label="Haqqımızda Sağ Şəkli"
+                value={theme.aboutImageUrl}
+                onChange={(url) => setTheme(p => ({ ...p, aboutImageUrl: url }))}
+                orgId={orgId}
+                placeholder="Haqqımızda şəkil linki və ya kompüterdən yükləyin..."
+              />
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                <div>
+                  <label className="dash-label">Şəkil Üstü Sol Nişan</label>
+                  <input
+                    className="dash-input"
+                    placeholder="Məkan: Salyan"
+                    value={theme.aboutBadgeLeft ?? ''}
+                    onChange={(e) => setTheme(p => ({ ...p, aboutBadgeLeft: e.target.value }))}
+                  />
+                </div>
+                <div>
+                  <label className="dash-label">Şəkil Üstü Sağ Nişan</label>
+                  <input
+                    className="dash-input"
+                    placeholder="Sürətli Çatdırılma"
+                    value={theme.aboutBadgeRight ?? ''}
+                    onChange={(e) => setTheme(p => ({ ...p, aboutBadgeRight: e.target.value }))}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Əlaqə & İş Saatları Məzmunu */}
+        <div className="dash-card" style={{ padding: 20 }}>
+          <h3 style={{ fontSize: 14, fontWeight: 700, color: '#F7F8F9', marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Clock size={16} color="#E5A93C" /> Əlaqə & İş Saatları Məzmunu
+          </h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div>
+              <label className="dash-label">Əlaqə Bölməsi Alt Başlığı</label>
+              <textarea
+                className="dash-input"
+                rows={2}
+                placeholder="Sualınız var və ya sifariş vermək istəyirsiniz? Bizimlə dərhal əlaqə saxlayın."
+                value={theme.contactSubtitle ?? ''}
+                onChange={(e) => setTheme(p => ({ ...p, contactSubtitle: e.target.value }))}
+                style={{ resize: 'vertical' }}
+              />
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+              <div>
+                <label className="dash-label">İş Saatları Başlığı</label>
+                <input
+                  className="dash-input"
+                  placeholder="İş saatları"
+                  value={theme.workingHoursTitle ?? ''}
+                  onChange={(e) => setTheme(p => ({ ...p, workingHoursTitle: e.target.value }))}
+                />
+              </div>
+              <div>
+                <label className="dash-label">İş Saatları Alt İzahı</label>
+                <input
+                  className="dash-input"
+                  placeholder="Həftəlik iş qrafiki"
+                  value={theme.workingHoursSubtitle ?? ''}
+                  onChange={(e) => setTheme(p => ({ ...p, workingHoursSubtitle: e.target.value }))}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer Mətnləri */}
+        <div className="dash-card" style={{ padding: 20 }}>
+          <h3 style={{ fontSize: 14, fontWeight: 700, color: '#F7F8F9', marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <FileText size={16} color="#E5A93C" /> Footer Mətnləri
+          </h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div>
+              <label className="dash-label">Müəllif Hüququ (Copyright) Mətni</label>
+              <input
+                className="dash-input"
+                placeholder={`© ${new Date().getFullYear()} ${orgName || 'Aş Xana'}. Bütün hüquqlar qorunur.`}
+                value={theme.footerCopyrightText ?? ''}
+                onChange={(e) => setTheme(p => ({ ...p, footerCopyrightText: e.target.value }))}
+              />
+            </div>
+            <div>
+              <label className="dash-label">Platforma / Yaradıcı Qeydi</label>
+              <input
+                className="dash-input"
+                placeholder="Sayt MyRestoran platforması ilə yaradılıb"
+                value={theme.footerPlatformText ?? ''}
+                onChange={(e) => setTheme(p => ({ ...p, footerPlatformText: e.target.value }))}
+              />
             </div>
           </div>
         </div>
       </div>
+
+      {/* Preview */}
+      <div style={{ position: 'sticky', top: 20 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <h2 style={{ fontSize: 18, fontWeight: 700, color: '#E8E8F0', margin: 0 }}>Canlı Önizləmə</h2>
+            {isProActive && (
+              <span style={{ background: 'linear-gradient(135deg, #E5A93C, #F59E0B)', color: '#111315', fontSize: 11, fontWeight: 800, padding: '2px 8px', borderRadius: 9999 }}>
+                PRO ŞABLON AKTİV
+              </span>
+            )}
+            {slug && (
+              <a
+                href={`/site/${slug}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#7C5CFC', textDecoration: 'none' }}
+              >
+                <Eye size={14} /> Yayınlanmış saytı aç
+              </a>
+            )}
+          </div>
+
+          {/* Device switcher */}
+          <div style={{ display: 'flex', alignItems: 'center', background: '#1e2022', padding: 3, borderRadius: 8, border: '1px solid #2A2A3A', gap: 4 }}>
+            <button
+              type="button"
+              onClick={() => setPreviewDevice('desktop')}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                padding: '4px 10px',
+                borderRadius: 6,
+                border: 'none',
+                cursor: 'pointer',
+                fontSize: 12,
+                fontWeight: 600,
+                background: previewDevice === 'desktop' ? '#7C5CFC' : 'transparent',
+                color: previewDevice === 'desktop' ? '#fff' : '#8888A0',
+                transition: 'all 0.15s',
+              }}
+            >
+              <Monitor size={14} /> Masaüstü
+            </button>
+            <button
+              type="button"
+              onClick={() => setPreviewDevice('mobile')}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                padding: '4px 10px',
+                borderRadius: 6,
+                border: 'none',
+                cursor: 'pointer',
+                fontSize: 12,
+                fontWeight: 600,
+                background: previewDevice === 'mobile' ? '#7C5CFC' : 'transparent',
+                color: previewDevice === 'mobile' ? '#fff' : '#8888A0',
+                transition: 'all 0.15s',
+              }}
+            >
+              <Smartphone size={14} /> Mobil
+            </button>
+          </div>
+        </div>
+
+        {/* Real Live Site Viewport Container */}
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            background: previewDevice === 'mobile' ? '#0c0e10' : 'transparent',
+            padding: previewDevice === 'mobile' ? '16px 0' : 0,
+            borderRadius: 18,
+          }}
+        >
+          <div
+            style={{
+              width: previewDevice === 'mobile' ? 390 : '100%',
+              height: 'calc(100vh - 120px)',
+              minHeight: 800,
+              borderRadius: 16,
+              overflow: 'hidden',
+              overflowY: 'auto',
+              border: previewDevice === 'mobile' ? '8px solid #282a2c' : '1px solid #2A2A3A',
+              boxShadow: previewDevice === 'mobile' ? '0 16px 40px rgba(0,0,0,0.8)' : '0 8px 30px rgba(0,0,0,0.4)',
+              transform: 'translateZ(0)',
+              position: 'relative',
+              background: theme.backgroundColor || '#121416',
+            }}
+          >
+            <RestaurantSite data={previewSiteData} />
+          </div>
+        </div>
+      </div>
     </div>
+    </>
   );
 }

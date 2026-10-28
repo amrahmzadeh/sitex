@@ -38,6 +38,7 @@ export const menuItemSchema = z.object({
   discountPrice: z.number().positive().nullable().optional(),
   categoryId: z.string().min(1, 'Kateqoriya seçin'),
   image: z.string().nullable().optional(),
+  video: z.string().nullable().optional(),
   ingredients: z.string().nullable().optional(),
   allergens: z.string().nullable().optional(),
   portionSize: z.string().nullable().optional(),

@@ -13,30 +13,33 @@
     "db:studio": "prisma studio"
   },
   "dependencies": {
+    "@prisma/client": "^6.9.0",
+    "@types/qrcode": "^1.5.6",
+    "bcryptjs": "^2.4.3",
+    "clsx": "^2.1.1",
+    "framer-motion": "^12.7.3",
+    "jspdf": "^4.2.1",
+    "lucide-react": "^0.511.0",
     "next": "16.4.3",
+    "next-auth": "^4.24.11",
+    "qrcode": "^1.5.4",
     "react": "19.3.0",
     "react-dom": "19.3.0",
-    "@prisma/client": "^6.9.0",
-    "next-auth": "^4.24.11",
-    "bcryptjs": "^2.4.3",
-    "zod": "^3.24.4",
-    "framer-motion": "^12.7.3",
-    "lucide-react": "^0.511.0",
-    "clsx": "^2.1.1",
+    "sharp": "^0.34.1",
     "slugify": "^1.6.6",
-    "sharp": "^0.34.1"
+    "zod": "^3.24.4"
   },
   "devDependencies": {
     "@tailwindcss/turbopack": "^4",
+    "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@types/bcryptjs": "^2.4.6",
     "eslint": "^9",
     "eslint-config-next": "16.4.3",
-    "tailwindcss": "^4",
-    "typescript": "^5",
     "prisma": "^6.9.0",
-    "tsx": "^4.19.4"
+    "tailwindcss": "^4",
+    "tsx": "^4.19.4",
+    "typescript": "^5"
   }
 }

@@ -4,13 +4,13 @@ import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Plus, Pencil, Trash2, X, Loader2, UtensilsCrossed,
-  Tag, DollarSign, Eye, EyeOff, Star, Flame, Sparkles, Upload, ChevronDown,
+  Tag, DollarSign, Eye, EyeOff, Star, Flame, Sparkles, Upload, ChevronDown, Film,
 } from 'lucide-react';
 
 interface Category { id: string; name: string; description?: string; isVisible: boolean; sortOrder: number; _count?: { menuItems: number }; }
 interface MenuItem {
   id: string; name: string; description?: string; price: number; discountPrice?: number;
-  categoryId: string; image?: string; isFeatured: boolean; isNew: boolean; isPopular: boolean;
+  categoryId: string; image?: string; video?: string; isFeatured: boolean; isNew: boolean; isPopular: boolean;
   isVisible: boolean; ingredients?: string; allergens?: string; portionSize?: string;
   prepTime?: string;
 }
@@ -44,7 +44,9 @@ export default function MenuPage() {
   const [itemForm, setItemForm] = useState<Partial<MenuItem> & { categoryId: string }>({ name: '', price: 0, categoryId: '', isVisible: true, isFeatured: false, isNew: false, isPopular: false });
   const [saving, setSaving] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadingVideo, setUploadingVideo] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const videoInputRef = useRef<HTMLInputElement>(null);
   const [currency, setCurrency] = useState('AZN');
 
   useEffect(() => {
@@ -97,7 +99,7 @@ export default function MenuPage() {
 
   const openItemModal = (item?: MenuItem) => {
     setEditItem(item || null);
-    setItemForm(item ? { ...item } : { name: '', price: 0, categoryId: activeCategory || '', isVisible: true, isFeatured: false, isNew: false, isPopular: false });
+    setItemForm(item ? { ...item, video: item.video || '' } : { name: '', price: 0, categoryId: activeCategory || '', isVisible: true, isFeatured: false, isNew: false, isPopular: false, video: '' });
     setShowItemModal(true);
   };
 
@@ -122,6 +124,27 @@ export default function MenuPage() {
     }
   };
 
+  const handleVideoUpload = async (file: File) => {
+    if (!orgId) return;
+    setUploadingVideo(true);
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      const res = await fetch(`/api/organizations/${orgId}/upload`, { method: 'POST', body: fd });
+      const data = await res.json();
+      if (res.ok && data.url) {
+        setItemForm(p => ({ ...p, video: data.url }));
+      } else {
+        alert(data.error || 'Video yüklənərkən xəta baş verdi');
+      }
+    } catch (e: any) {
+      alert(e?.message || 'Video yüklənərkən xəta baş verdi');
+    } finally {
+      setUploadingVideo(false);
+      if (videoInputRef.current) videoInputRef.current.value = '';
+    }
+  };
+
   const saveItem = async () => {
     if (!orgId || !itemForm.name || !itemForm.categoryId) {
       alert('Yemək adı və kateqoriya mütləqdir');
@@ -137,6 +160,7 @@ export default function MenuPage() {
         discountPrice: itemForm.discountPrice ? Number(itemForm.discountPrice) : null,
         categoryId: itemForm.categoryId,
         image: itemForm.image ? itemForm.image.trim() : null,
+        video: itemForm.video ? itemForm.video.trim() : null,
         description: itemForm.description ? itemForm.description.trim() : null,
         ingredients: itemForm.ingredients ? itemForm.ingredients.trim() : null,
         portionSize: itemForm.portionSize ? itemForm.portionSize.trim() : null,
@@ -282,6 +306,7 @@ export default function MenuPage() {
                             {item.isFeatured && <span style={{ background: 'rgba(251,191,36,0.15)', color: '#FBBF24', fontSize: 10, padding: '1px 6px', borderRadius: 100 }}>Seçilmiş</span>}
                             {item.isNew && <span style={{ background: 'rgba(52,211,153,0.15)', color: '#34D399', fontSize: 10, padding: '1px 6px', borderRadius: 100 }}>Yeni</span>}
                             {item.isPopular && <span style={{ background: 'rgba(248,113,113,0.15)', color: '#F87171', fontSize: 10, padding: '1px 6px', borderRadius: 100 }}>Populyar</span>}
+                            {item.video && <span style={{ background: 'rgba(255,159,28,0.18)', color: '#FF9F1C', fontSize: 10, padding: '1px 6px', borderRadius: 100, display: 'inline-flex', alignItems: 'center', gap: 3 }}>🎬 Video</span>}
                           </div>
                           {item.description && <p style={{ fontSize: 12, color: '#8888A0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.description}</p>}
                           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 4 }}>
@@ -452,6 +477,88 @@ export default function MenuPage() {
                     onChange={(e) => { if (e.target.files?.[0]) handleImageUpload(e.target.files[0]); }}
                   />
                 </div>
+              </div>
+
+              {/* Video upload */}
+              <div>
+                <label className="dash-label" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span>Yemək videosu (Boydan video / Reels)</span>
+                  <span style={{ fontSize: 11, color: '#FF9F1C' }}>Popup solunda boydan görünəcək</span>
+                </label>
+                <div
+                  onClick={() => !uploadingVideo && videoInputRef.current?.click()}
+                  style={{
+                    border: '2px dashed #2A2A3A',
+                    borderRadius: 12,
+                    padding: itemForm.video ? 10 : 16,
+                    textAlign: 'center',
+                    cursor: 'pointer',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    background: 'rgba(255,255,255,0.02)',
+                  }}
+                >
+                  {itemForm.video ? (
+                    <div style={{ position: 'relative' }}>
+                      <video
+                        src={itemForm.video}
+                        controls
+                        playsInline
+                        style={{ width: '100%', maxHeight: 180, objectFit: 'cover', borderRadius: 8, backgroundColor: '#000' }}
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                      <div style={{ display: 'flex', gap: 8, justifyContent: 'center', marginTop: 8 }}>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            videoInputRef.current?.click();
+                          }}
+                          className="dash-btn-secondary"
+                          style={{ padding: '4px 10px', fontSize: 12 }}
+                        >
+                          Başqa video seç
+                        </button>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setItemForm(p => ({ ...p, video: '' }));
+                          }}
+                          className="dash-btn-danger"
+                          style={{ padding: '4px 10px', fontSize: 12 }}
+                        >
+                          Videonu sil
+                        </button>
+                      </div>
+                    </div>
+                  ) : uploadingVideo ? (
+                    <div style={{ height: 80, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
+                      <Loader2 size={24} color="#FF9F1C" style={{ animation: 'spin 1s linear infinite' }} />
+                      <span style={{ fontSize: 13, color: '#E8E8F0' }}>Video yüklənir...</span>
+                    </div>
+                  ) : (
+                    <div style={{ color: '#8888A0', fontSize: 13 }}>
+                      <Film size={24} style={{ margin: '0 auto 8px', color: '#FF9F1C' }} />
+                      <p style={{ color: '#E8E8F0', fontWeight: 500 }}>Kompüterdən video yükləmək üçün klikləyin</p>
+                      <p style={{ fontSize: 11, marginTop: 4 }}>MP4, WebM, MOV — maksimum 100MB (boydan video)</p>
+                    </div>
+                  )}
+                  <input
+                    ref={videoInputRef}
+                    type="file"
+                    accept="video/mp4,video/webm,video/quicktime,video/*"
+                    style={{ display: 'none' }}
+                    onChange={(e) => { if (e.target.files?.[0]) handleVideoUpload(e.target.files[0]); }}
+                  />
+                </div>
+                <input
+                  className="dash-input"
+                  style={{ marginTop: 8, fontSize: 12, padding: '8px 12px' }}
+                  value={itemForm.video || ''}
+                  onChange={(e) => setItemForm(p => ({ ...p, video: e.target.value }))}
+                  placeholder="və ya video linki (/uploads/... və ya https://...)"
+                />
               </div>
 
               <div style={{ display: 'grid', gap: 14 }}>

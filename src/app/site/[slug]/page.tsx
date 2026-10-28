@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import RestaurantSite from '@/components/themes/RestaurantSite';
+import { SplashConfig } from '@/components/themes/SplashScreen';
 
 interface SiteData {
   organization: {
@@ -9,6 +10,7 @@ interface SiteData {
   };
   website: {
     theme: Record<string, unknown>; pages: unknown; seoTitle?: string; seoDescription?: string; ogImage?: string;
+    splashEnabled?: boolean; splashConfig?: SplashConfig;
   };
   whatsapp?: {
     countryCode: string; phoneNumber: string; orderMessage: string; buttonText: string; isEnabled: boolean;
@@ -19,7 +21,7 @@ interface SiteData {
     id: string; name: string; slug: string; isVisible: boolean;
     menuItems: Array<{
       id: string; name: string; slug: string; description?: string; price: number; discountPrice?: number;
-      image?: string; isFeatured: boolean; isNew: boolean; isPopular: boolean;
+      image?: string; video?: string; isFeatured: boolean; isNew: boolean; isPopular: boolean;
       ingredients?: string; allergens?: string; portionSize?: string;
     }>;
   }>;
@@ -52,9 +54,42 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   };
 }
 
-export default async function SitePage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function SitePage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ slug: string }>;
+  searchParams?: Promise<{ table?: string; masa?: string; [key: string]: string | string[] | undefined }>;
+}) {
   const { slug } = await params;
+  const sp = searchParams ? await searchParams : {};
+  const rawTable = (typeof sp.table === 'string' ? sp.table : typeof sp.masa === 'string' ? sp.masa : undefined)?.trim();
+  const initialTable = rawTable
+    ? (rawTable.toLowerCase().startsWith('masa') ? rawTable : `Masa ${rawTable}`)
+    : undefined;
+
   const data = await getSiteData(slug);
   if (!data) notFound();
-  return <RestaurantSite data={data} />;
+
+  const splashEnabled = Boolean(data.website?.splashEnabled && data.website?.splashConfig);
+  const splashConfig = data.website?.splashConfig as { backgroundColor?: string } | undefined;
+  const splashBg = splashConfig?.backgroundColor || '#0A0A0F';
+
+  return (
+    <>
+      {splashEnabled && (
+        <div
+          id="instant-splash-shield"
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 999998,
+            backgroundColor: splashBg,
+            transition: 'opacity 0.3s ease',
+          }}
+        />
+      )}
+      <RestaurantSite data={data} initialTable={initialTable} />
+    </>
+  );
 }

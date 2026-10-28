@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Play } from 'lucide-react';
+import { X } from 'lucide-react';
 
 export interface SplashConfig {
   type?: 'video' | 'code';
@@ -12,7 +12,7 @@ export interface SplashConfig {
   html?: string;
   css?: string;
   js?: string;
-  duration?: number; // seconds, 0 = no auto close
+  duration?: number; // seconds, 0 = auto close when background site is ready
   showSkipButton?: boolean;
   skipButtonText?: string;
   backgroundColor?: string;
@@ -45,8 +45,7 @@ function getEmbedUrl(url: string, muted: boolean, loop: boolean): string | null 
 }
 
 export default function SplashScreen({ config, siteSlug }: SplashScreenProps) {
-  const [visible, setVisible] = useState(false);
-  const [timeLeft, setTimeLeft] = useState<number | null>(null);
+  const parsedConfig: SplashConfig = typeof config === 'string' ? JSON.parse(config) : (config || {});
 
   const {
     type = 'video',
@@ -56,47 +55,121 @@ export default function SplashScreen({ config, siteSlug }: SplashScreenProps) {
     html = '',
     css = '',
     js = '',
-    duration = 5,
-    showSkipButton = true,
+    duration = 0,
+    showSkipButton = false,
     skipButtonText = 'Keç',
     backgroundColor = '#0A0A0F',
     alwaysShow = false,
-  } = config;
+  } = parsedConfig;
 
+  // Immediately visible on first paint with 0ms delay so site loads silently in the background
+  const [visible, setVisible] = useState<boolean>(() => {
+    if (typeof window !== 'undefined' && !alwaysShow) {
+      try {
+        if (sessionStorage.getItem(`splash_seen_${siteSlug}`)) {
+          return false;
+        }
+      } catch { /* ignore */ }
+    }
+    return true;
+  });
+
+  const [timeLeft, setTimeLeft] = useState<number | null>(duration > 0 ? duration : null);
+  const [videoLoaded, setVideoLoaded] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  // Clean up server-side instant shield as soon as client component mounts
   useEffect(() => {
-    // Check session storage
-    if (!alwaysShow && typeof window !== 'undefined') {
-      const seen = sessionStorage.getItem(`splash_seen_${siteSlug}`);
-      if (seen) return;
+    if (typeof document !== 'undefined') {
+      const shield = document.getElementById('instant-splash-shield');
+      if (shield) {
+        shield.style.opacity = '0';
+        setTimeout(() => shield.remove(), 400);
+      }
+    }
+  }, []);
+
+  const handleDismiss = () => {
+    setVisible(false);
+    if (typeof document !== 'undefined') {
+      document.body.style.overflow = '';
+      const shield = document.getElementById('instant-splash-shield');
+      if (shield) shield.remove();
+    }
+    if (typeof window !== 'undefined') {
+      try {
+        sessionStorage.setItem(`splash_seen_${siteSlug}`, 'true');
+      } catch { /* ignore */ }
+    }
+  };
+
+  // Immediate Video Play
+  useEffect(() => {
+    if (!visible || type !== 'video') return;
+    const video = videoRef.current;
+    if (!video) return;
+
+    video.play().catch(() => {
+      // Browser autoplay policy requires muted
+      video.muted = true;
+      video.play().catch(() => {
+        handleDismiss();
+      });
+    });
+  }, [visible, type, videoUrl]);
+
+  // Lifecycle & Auto-Dismiss when background site is ready
+  useEffect(() => {
+    if (!visible) return;
+
+    if (typeof document !== 'undefined') {
+      document.body.style.overflow = 'hidden';
     }
 
-    setVisible(true);
+    let autoCloseTimer: NodeJS.Timeout | null = null;
+    let countdownInterval: NodeJS.Timeout | null = null;
 
     if (duration > 0) {
       setTimeLeft(duration);
-      const interval = setInterval(() => {
+
+      countdownInterval = setInterval(() => {
         setTimeLeft((prev) => {
-          if (prev === null || prev <= 1) {
-            clearInterval(interval);
-            handleDismiss();
-            return 0;
-          }
+          if (prev === null || prev <= 1) return 0;
           return prev - 1;
         });
       }, 1000);
 
-      return () => clearInterval(interval);
-    }
-  }, [siteSlug, duration, alwaysShow]);
+      autoCloseTimer = setTimeout(() => {
+        handleDismiss();
+      }, duration * 1000);
+    } else {
+      // duration === 0: "site arka planda açılana kadar o gösterilsin"
+      // Wait until the site finishes loading in the background (grace period 2.2s so splash is seen), then open site!
+      const onSiteReady = () => {
+        autoCloseTimer = setTimeout(() => {
+          handleDismiss();
+        }, 2200);
+      };
 
-  const handleDismiss = () => {
-    setVisible(false);
-    if (typeof window !== 'undefined') {
-      sessionStorage.setItem(`splash_seen_${siteSlug}`, 'true');
+      if (typeof document !== 'undefined' && document.readyState === 'complete') {
+        onSiteReady();
+      } else if (typeof window !== 'undefined') {
+        window.addEventListener('load', onSiteReady, { once: true });
+        // Max safety fallback: 3.5s if window.load already passed or video hangs
+        autoCloseTimer = setTimeout(() => {
+          handleDismiss();
+        }, 3500);
+      }
     }
-  };
 
-  if (!visible) return null;
+    return () => {
+      if (typeof document !== 'undefined') {
+        document.body.style.overflow = '';
+      }
+      if (autoCloseTimer) clearTimeout(autoCloseTimer);
+      if (countdownInterval) clearInterval(countdownInterval);
+    };
+  }, [visible, duration, siteSlug]);
 
   const embedUrl = getEmbedUrl(videoUrl, videoMuted, videoLoop);
 
@@ -104,14 +177,14 @@ export default function SplashScreen({ config, siteSlug }: SplashScreenProps) {
     <AnimatePresence>
       {visible && (
         <motion.div
-          initial={{ opacity: 0 }}
+          key="splash-screen-overlay"
+          initial={false}
           animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.5 }}
+          exit={{ opacity: 0, transition: { duration: 0.4, ease: 'easeInOut' } }}
           style={{
             position: 'fixed',
             inset: 0,
-            zIndex: 99999,
+            zIndex: 999999,
             backgroundColor,
             display: 'flex',
             flexDirection: 'column',
@@ -120,24 +193,24 @@ export default function SplashScreen({ config, siteSlug }: SplashScreenProps) {
             overflow: 'hidden',
           }}
         >
-          {/* Skip Button */}
-          {showSkipButton && (
+          {/* Skip Button - ONLY show when explicitly enabled in config (fixes item 3) */}
+          {Boolean(showSkipButton) && (
             <button
               onClick={handleDismiss}
               style={{
                 position: 'absolute',
                 top: 24,
                 right: 24,
-                zIndex: 100000,
+                zIndex: 1000000,
                 display: 'flex',
                 alignItems: 'center',
                 gap: 8,
                 padding: '10px 18px',
                 borderRadius: 100,
-                background: 'rgba(255, 255, 255, 0.15)',
+                background: 'rgba(255, 255, 255, 0.18)',
                 backdropFilter: 'blur(10px)',
                 WebkitBackdropFilter: 'blur(10px)',
-                border: '1px solid rgba(255, 255, 255, 0.25)',
+                border: '1px solid rgba(255, 255, 255, 0.3)',
                 color: '#fff',
                 fontSize: 14,
                 fontWeight: 600,
@@ -145,13 +218,13 @@ export default function SplashScreen({ config, siteSlug }: SplashScreenProps) {
                 transition: 'all 0.2s',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.3)';
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.35)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.18)';
               }}
             >
-              <span>{skipButtonText}</span>
+              <span>{skipButtonText || 'Keç'}</span>
               {timeLeft !== null && timeLeft > 0 && (
                 <span style={{ opacity: 0.7, fontSize: 12 }}>({timeLeft}s)</span>
               )}
@@ -161,7 +234,14 @@ export default function SplashScreen({ config, siteSlug }: SplashScreenProps) {
 
           {/* Content: Video Mode */}
           {type === 'video' && videoUrl && (
-            <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              {/* Subtle spinner while remote video buffers from CDN */}
+              {!videoLoaded && !embedUrl && (
+                <div style={{ position: 'absolute', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, zIndex: 1 }}>
+                  <div style={{ width: 40, height: 40, borderRadius: '50%', border: '3px solid rgba(255,255,255,0.15)', borderTopColor: '#f2a60b', animation: 'spin 0.8s linear infinite' }} />
+                </div>
+              )}
+
               {embedUrl ? (
                 <iframe
                   src={embedUrl}
@@ -176,15 +256,22 @@ export default function SplashScreen({ config, siteSlug }: SplashScreenProps) {
                 />
               ) : (
                 <video
+                  ref={videoRef}
                   src={videoUrl}
                   autoPlay
-                  muted={videoMuted}
+                  muted={true}
                   loop={videoLoop}
                   playsInline
+                  preload="auto"
+                  onLoadedData={() => setVideoLoaded(true)}
+                  onCanPlay={() => setVideoLoaded(true)}
                   style={{
                     width: '100%',
                     height: '100%',
                     objectFit: 'cover',
+                  }}
+                  onError={() => {
+                    handleDismiss();
                   }}
                   onEnded={() => {
                     if (!videoLoop) handleDismiss();
@@ -238,6 +325,14 @@ export default function SplashScreen({ config, siteSlug }: SplashScreenProps) {
                 border: 'none',
               }}
             />
+          )}
+
+          {/* Fallback if type is video but videoUrl is empty */}
+          {type === 'video' && !videoUrl && (
+            <div style={{ textAlign: 'center', color: '#fff' }}>
+              <div style={{ fontSize: 48, marginBottom: 16 }}>🍽️</div>
+              <h2 style={{ fontSize: 22, fontWeight: 700, margin: 0 }}>Xoş Gəlmisiniz</h2>
+            </div>
           )}
         </motion.div>
       )}

@@ -14,14 +14,31 @@ async function verifyAccess(orgId: string) {
   });
 }
 
-const ALLOWED_TYPES = [
+const ALLOWED_IMAGE_TYPES = [
   'image/jpeg',
   'image/png',
   'image/webp',
   'image/gif',
   'image/svg+xml',
 ];
-const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+
+const ALLOWED_VIDEO_TYPES = [
+  'video/mp4',
+  'video/webm',
+  'video/quicktime',
+  'video/ogg',
+  'video/x-m4v',
+];
+
+const ALLOWED_TYPES = [...ALLOWED_IMAGE_TYPES, ...ALLOWED_VIDEO_TYPES];
+const MAX_IMAGE_SIZE = 15 * 1024 * 1024; // 15MB
+const MAX_VIDEO_SIZE = 100 * 1024 * 1024; // 100MB
+
+function getSiteRoot(cwd: string): string {
+  if (cwd.includes('versions')) return cwd.split(/versions[/\\]/)[0];
+  if (cwd.includes('current')) return path.dirname(cwd);
+  return cwd;
+}
 
 export async function POST(
   req: Request,
@@ -41,45 +58,71 @@ export async function POST(
       return NextResponse.json({ error: 'Fayl tələb olunur' }, { status: 400 });
     }
 
-    if (!ALLOWED_TYPES.includes(file.type)) {
+    const isVideo = ALLOWED_VIDEO_TYPES.includes(file.type) || file.type.startsWith('video/');
+    const isImage = ALLOWED_IMAGE_TYPES.includes(file.type) || file.type.startsWith('image/');
+
+    if (!isImage && !isVideo) {
       return NextResponse.json(
-        { error: 'Yalnız JPEG, PNG, WebP, GIF və SVG faylları qəbul edilir' },
+        { error: 'Yalnız şəkil (JPEG, PNG, WebP) və video (MP4, WebM, MOV) faylları qəbul edilir' },
         { status: 400 }
       );
     }
 
-    if (file.size > MAX_SIZE) {
+    const maxSize = isVideo ? MAX_VIDEO_SIZE : MAX_IMAGE_SIZE;
+    if (file.size > maxSize) {
       return NextResponse.json(
-        { error: 'Fayl ölçüsü 5MB-dan böyük ola bilməz' },
+        { error: `Fayl ölçüsü ${isVideo ? '100MB' : '15MB'}-dan böyük ola bilməz` },
         { status: 400 }
       );
     }
 
-    // Create upload directory
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads', orgId);
-    await mkdir(uploadDir, { recursive: true });
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
 
     // Generate unique filename
-    const ext = path.extname(file.name);
+    const ext = path.extname(file.name) || (isVideo ? '.mp4' : '.jpg');
     const filename = `${Date.now()}-${Math.random().toString(36).substring(7)}${ext}`;
-    const filepath = path.join(uploadDir, filename);
 
-    // Write file
-    const bytes = await file.arrayBuffer();
-    await writeFile(filepath, Buffer.from(bytes));
+    const cwd = process.cwd();
+    const siteRoot = getSiteRoot(cwd);
+
+    // Write to all persistent locations (primary + shared outside version dirs)
+    const writeDirs = [
+      path.join(cwd, 'public', 'uploads', orgId),
+      path.join(siteRoot, 'shared_uploads', orgId),
+      path.join(siteRoot, 'uploads', orgId),
+    ];
+
+    let written = false;
+    for (const dir of writeDirs) {
+      try {
+        await mkdir(dir, { recursive: true });
+        await writeFile(path.join(dir, filename), buffer);
+        written = true;
+      } catch (e) {
+        console.error('[upload] write failed for', dir, e);
+      }
+    }
 
     const url = `/uploads/${orgId}/${filename}`;
 
-    // Save to database
-    const mediaAsset = await prisma.mediaAsset.create({
-      data: {
-        organizationId: orgId,
-        filename: file.name,
-        url,
-        mimeType: file.type,
-        size: file.size,
-      },
-    });
+    // For images or reasonably sized files, store base64 in DB for multi-instance fallback
+    let mediaAsset = null;
+    try {
+      const base64Data = buffer.length <= 15 * 1024 * 1024 ? buffer.toString('base64') : null;
+      mediaAsset = await prisma.mediaAsset.create({
+        data: {
+          organizationId: orgId,
+          filename: file.name,
+          url,
+          mimeType: file.type || (isVideo ? 'video/mp4' : 'image/jpeg'),
+          size: file.size,
+          data: base64Data,
+        },
+      });
+    } catch (dbErr) {
+      console.warn('[upload] mediaAsset save to DB failed, file written to disk:', dbErr);
+    }
 
     return NextResponse.json({ url, mediaAsset }, { status: 201 });
   } catch (error) {

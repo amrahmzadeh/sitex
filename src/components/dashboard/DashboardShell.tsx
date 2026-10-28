@@ -9,7 +9,7 @@ import {
   ChefHat, LayoutDashboard, Globe, Palette, BookOpen,
   UtensilsCrossed, Image, MessageCircle, Settings,
   LogOut, ChevronRight, Menu, X, Building2,
-  BarChart3, CreditCard, ExternalLink, Sparkles,
+  BarChart3, CreditCard, ExternalLink, Sparkles, QrCode,
 } from 'lucide-react';
 
 const navItems = [
@@ -20,6 +20,7 @@ const navItems = [
   { href: '/dashboard/menu', icon: UtensilsCrossed, label: 'Menyu' },
   { href: '/dashboard/media', icon: Image, label: 'Media Kitabxanası' },
   { href: '/dashboard/whatsapp', icon: MessageCircle, label: 'Sifariş Ayarları' },
+  { href: '/dashboard/qr', icon: QrCode, label: 'QR Yaradıcı' },
   { href: '/dashboard/analytics', icon: BarChart3, label: 'Analitika' },
   { href: '/dashboard/billing', icon: CreditCard, label: 'Abunəlik' },
   { href: '/dashboard/settings', icon: Settings, label: 'Parametrlər' },

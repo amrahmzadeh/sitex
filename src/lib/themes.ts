@@ -8,6 +8,7 @@ export interface ThemeConfig {
   textColor: string;
   headingFont: string;
   bodyFont: string;
+  brandFont?: string;
   borderRadius: string;
   heroHeight: string;
   heroOverlay: number;
@@ -52,6 +53,37 @@ export interface ThemeConfig {
   footerGradientFrom?: string;
   footerGradientTo?: string;
   footerGradientDir?: string;
+  // Pro Template Module
+  isProTemplate?: boolean;
+  proTemplateId?: string;
+
+  // Template Content & Image Customizations
+  heroBadgeText?: string;
+  heroFeature1?: string;
+  heroFeature2?: string;
+  heroFeature3?: string;
+  heroDishBadge?: string;
+  heroDishImage?: string;
+  heroDishTitle?: string;
+  heroDishSubtitle?: string;
+  heroDishPriceNote?: string;
+
+  menuSubtitle?: string;
+
+  aboutFeature1Title?: string;
+  aboutFeature1Desc?: string;
+  aboutFeature2Title?: string;
+  aboutFeature2Desc?: string;
+  aboutImageUrl?: string;
+  aboutBadgeLeft?: string;
+  aboutBadgeRight?: string;
+
+  contactSubtitle?: string;
+  workingHoursTitle?: string;
+  workingHoursSubtitle?: string;
+
+  footerCopyrightText?: string;
+  footerPlatformText?: string;
 }
 
 export const defaultThemes: Record<string, ThemeConfig> = {
@@ -112,6 +144,53 @@ export const defaultThemes: Record<string, ThemeConfig> = {
     headerStyle: 'solid',
     footerStyle: 'dark',
   },
+  warmGourmetPro: {
+    id: 'warmGourmetPro',
+    name: 'Warm Gourmet (PRO)',
+    primaryColor: '#ffc665',
+    secondaryColor: '#1e2022',
+    accentColor: '#e5a93c',
+    backgroundColor: '#121416',
+    textColor: '#e2e2e5',
+    headingFont: 'Playfair Display',
+    bodyFont: 'Plus Jakarta Sans',
+    borderRadius: '12px',
+    heroHeight: '85vh',
+    heroOverlay: 0.5,
+    templateId: 'warm-gourmet-pro',
+    buttonStyle: 'solid',
+    cardStyle: 'elevated',
+    headerStyle: 'glass',
+    footerStyle: 'dark',
+    isProTemplate: true,
+    proTemplateId: 'warm-gourmet',
+    whatsappColor: '#25D366',
+    whatsappIconColor: '#FFFFFF',
+    siteBgType: 'solid',
+    siteBgColor: '#121416',
+    navbarBgType: 'solid',
+    navbarBgColor: '#111315',
+    formBgType: 'solid',
+    formBgColor: '#181B1E',
+    footerBgType: 'solid',
+    footerBgColor: '#0c0e10',
+    heroBadgeText: 'ORİJİNAL STREET FOOD DADI',
+    heroFeature1: 'Təbii inqrediyentlər',
+    heroFeature2: 'Gündəlik təzə bişirilir',
+    heroFeature3: 'Sürətli çatdırılma',
+    heroDishBadge: 'Günün Sevimli Təamı',
+    heroDishSubtitle: 'Ənənəvi kərə yağı və xüsusi ədviyyatlarla',
+    heroDishPriceNote: 'təzə və isti',
+    menuSubtitle: 'Hər gün sevgi və ənənəvi reseptlərlə təzə bişirilən street food ləzzətləri.',
+    aboutFeature1Title: 'Müştəri Məmnuniyyəti',
+    aboutFeature1Desc: 'Hər bir qonağımıza səmimi münasibət və yüksək keyfiyyət zəmanəti.',
+    aboutFeature2Title: 'Gündəlik Təzəlik',
+    aboutFeature2Desc: 'Yeməklər yalnız gün ərzində sifarişlə təzə şəkildə hazırlanır.',
+    aboutBadgeRight: 'Sürətli Çatdırılma',
+    contactSubtitle: 'Sualınız var və ya sifariş vermək istəyirsiniz? Bizimlə dərhal əlaqə saxlayın.',
+    workingHoursTitle: 'İş saatları',
+    workingHoursSubtitle: 'Həftəlik iş qrafiki',
+  },
 };
 
 export function getThemeCSS(theme: Partial<ThemeConfig>): Record<string, string> {
@@ -134,6 +213,7 @@ export function getGoogleFontsUrl(theme: Partial<ThemeConfig>): string {
   const fonts = new Set<string>();
   if (theme.headingFont) fonts.add(theme.headingFont);
   if (theme.bodyFont) fonts.add(theme.bodyFont);
+  if (theme.brandFont) fonts.add(theme.brandFont);
   
   const fontParams = Array.from(fonts)
     .map((f) => `family=${f.replace(/ /g, '+')}:wght@300;400;500;600;700;800;900`)
@@ -141,6 +221,27 @@ export function getGoogleFontsUrl(theme: Partial<ThemeConfig>): string {
   
   return `https://fonts.googleapis.com/css2?${fontParams}&display=swap`;
 }
+
+export const BRAND_FONTS = [
+  { name: 'Playfair Display', label: 'Playfair Display', category: 'Klassik Lüks Serif' },
+  { name: 'Cinzel', label: 'Cinzel', category: 'Kral & Qədim Roma' },
+  { name: 'Cormorant Garamond', label: 'Cormorant Garamond', category: 'Gourmet Zərif Serif' },
+  { name: 'Abril Fatface', label: 'Abril Fatface', category: 'Qalın & Dəbdəbəli Display' },
+  { name: 'DM Serif Display', label: 'DM Serif Display', category: 'Müasir Editorial' },
+  { name: 'Marcellus', label: 'Marcellus', category: 'Aralıq Dənizi Zərifliyi' },
+  { name: 'Prata', label: 'Prata', category: 'Zərif Moda & Lüks' },
+  { name: 'Righteous', label: 'Righteous', category: 'Modern & Enerji' },
+  { name: 'Bebas Neue', label: 'Bebas Neue', category: 'Güclü Street Food' },
+  { name: 'Oswald', label: 'Oswald', category: 'Möhkəm & Kompakt' },
+  { name: 'Montserrat', label: 'Montserrat', category: 'Modern Həndəsi Qalın' },
+  { name: 'Outfit', label: 'Outfit', category: 'Minimalist Premium' },
+  { name: 'Pacifico', label: 'Pacifico', category: 'İsti & Səmimi Əl Yazısı' },
+  { name: 'Lobster', label: 'Lobster', category: 'Məşhur Retro Şrift' },
+  { name: 'Satisfy', label: 'Satisfy', category: 'Usta Əl İşləməsi' },
+  { name: 'Great Vibes', label: 'Great Vibes', category: 'Lüks Xəttatlıq (Script)' },
+  { name: 'Dancing Script', label: 'Dancing Script', category: 'Canlı Əl Yazısı' },
+  { name: 'Kaushan Script', label: 'Kaushan Script', category: 'Dinamik Fırça' },
+];
 
 export function resolveBg(
   type?: 'solid' | 'gradient',

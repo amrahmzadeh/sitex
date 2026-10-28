@@ -64,6 +64,20 @@ model Organization {
   whatsappSettings WhatsAppSettings?
   socialLinks      SocialLink[]
   workingHours     WorkingHours[]
+  qrSettings       QRSettings?
+}
+
+// ==================== QR SETTINGS ====================
+
+model QRSettings {
+  id              String       @id @default(cuid())
+  organizationId  String       @unique
+  tableCount      Int          @default(10)
+  designConfig    String       @db.Text @default("{}")
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 }
 
 // ==================== WEBSITE & THEME ====================
@@ -128,6 +142,7 @@ model MenuItem {
   price          Float
   discountPrice  Float?
   image          String?
+  video          String?
   ingredients    String?
   allergens      String?
   portionSize    String?
@@ -172,6 +187,7 @@ model MediaAsset {
   width          Int?
   height         Int?
   alt            String?
+  data           String?      @db.LongText
   createdAt      DateTime     @default(now())
 
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)

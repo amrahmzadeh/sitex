@@ -217,3 +217,37 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ==================== FOOD POPUP VIDEO ==================== */
+.food-popup-wrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: center;
+  gap: 18px;
+  width: 100%;
+  max-width: 860px;
+}
+
+.food-popup-video-card {
+  width: 300px;
+  flex: 0 0 300px;
+  min-height: 480px;
+}
+
+@media (max-width: 768px) {
+  .food-popup-wrapper {
+    flex-direction: column;
+    max-width: 480px;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding-bottom: 20px;
+  }
+  .food-popup-video-card {
+    width: 100% !important;
+    flex: none !important;
+    min-height: 280px !important;
+    height: 320px !important;
+  }
+}
+

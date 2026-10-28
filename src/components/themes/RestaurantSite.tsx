@@ -10,19 +10,21 @@ import {
 import { ThemeConfig, defaultThemes, getGoogleFontsUrl, resolveBg } from '@/lib/themes';
 import { formatPrice, formatWhatsAppUrl } from '@/lib/utils';
 import SplashScreen, { SplashConfig } from './SplashScreen';
+import ProRestaurantSite from './ProRestaurantSite';
+import FoodVideoPlayer from './FoodVideoPlayer';
 
-interface MenuItem {
+export interface MenuItem {
   id: string; name: string; slug: string; description?: string; price: number; discountPrice?: number;
-  image?: string; isFeatured: boolean; isNew: boolean; isPopular: boolean;
+  image?: string; video?: string; isFeatured: boolean; isNew: boolean; isPopular: boolean;
   ingredients?: string; allergens?: string; portionSize?: string;
 }
 
-interface MenuCategory {
+export interface MenuCategory {
   id: string; name: string; slug: string; isVisible: boolean;
   menuItems: MenuItem[];
 }
 
-interface SiteData {
+export interface SiteData {
   organization: {
     name: string; slug: string; logo?: string; description?: string;
     phone?: string; email?: string; address?: string; city?: string; mapUrl?: string; currency: string;
@@ -42,13 +44,14 @@ interface SiteData {
 
 const DAY_NAMES = ['Bazar', 'Bazar ertəsi', 'Çərşənbə axşamı', 'Çərşənbə', 'Cümə axşamı', 'Cümə', 'Şənbə'];
 
-function WhatsAppButton({ theme, whatsapp, item }: { theme: ThemeConfig; whatsapp: SiteData['whatsapp']; item?: MenuItem }) {
+function WhatsAppButton({ theme, whatsapp, item, table }: { theme: ThemeConfig; whatsapp: SiteData['whatsapp']; item?: MenuItem; table?: string | null }) {
   if (!whatsapp?.isEnabled || !whatsapp.phoneNumber) return null;
 
-  const message = item
+  const baseMsg = item
     ? whatsapp.orderMessage.replace('{name}', item.name).replace('{price}', (item.discountPrice || item.price).toFixed(2))
     : whatsapp.orderMessage.replace('{name}', '').replace('{price}', '');
 
+  const message = table ? `${baseMsg}\n📍 *MASA:* ${table}` : baseMsg;
   const url = formatWhatsAppUrl(whatsapp.countryCode, whatsapp.phoneNumber, message);
   const waBg = theme.whatsappColor || '#25D366';
   const waColor = theme.whatsappIconColor || '#FFFFFF';
@@ -83,6 +86,7 @@ function ItemModal({
   currency,
   onClose,
   onAddToCart,
+  table,
 }: {
   item: MenuItem;
   theme: ThemeConfig;
@@ -90,6 +94,7 @@ function ItemModal({
   currency: string;
   onClose: () => void;
   onAddToCart: (item: MenuItem, qty: number) => void;
+  table?: string | null;
 }) {
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
@@ -102,7 +107,7 @@ function ItemModal({
     setTimeout(() => setAdded(false), 1500);
   };
 
-  const singleOrderMsg = `Salam! Sifariş vermək istəyirəm:\n\n🍽️ ${item.name} — ${qty} ədəd x ${unitPrice.toFixed(2)} ${currency} = ${totalPrice.toFixed(2)} ${currency}`;
+  const singleOrderMsg = `Salam! Sifariş vermək istəyirəm:${table ? `\n📍 *MASA:* ${table}` : ''}\n\n🍽️ ${item.name} — ${qty} ədəd x ${unitPrice.toFixed(2)} ${currency} = ${totalPrice.toFixed(2)} ${currency}`;
   const singleWhatsAppUrl = whatsapp?.isEnabled && whatsapp.phoneNumber
     ? formatWhatsAppUrl(whatsapp.countryCode, whatsapp.phoneNumber, singleOrderMsg)
     : null;
@@ -110,20 +115,43 @@ function ItemModal({
   return (
     <motion.div
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-      style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', zIndex: 1000, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', padding: 0 }}
+      style={{
+        position: 'fixed',
+        inset: 0,
+        background: 'rgba(0,0,0,0.75)',
+        zIndex: 1000,
+        display: 'flex',
+        alignItems: item.video ? 'center' : 'flex-end',
+        justifyContent: 'center',
+        padding: item.video ? 16 : 0,
+      }}
       onClick={onClose}
     >
-      <motion.div
-        initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
-        transition={{ type: 'spring', damping: 30, stiffness: 350 }}
+      <div
+        className="food-popup-wrapper"
         onClick={(e) => e.stopPropagation()}
         style={{
-          background: resolveBg(theme.formBgType, theme.formBgColor, theme.formGradientFrom, theme.formGradientTo, theme.formGradientDir, theme.backgroundColor),
-          width: '100%', maxWidth: 600,
-          borderRadius: `${theme.borderRadius} ${theme.borderRadius} 0 0`,
-          maxHeight: '90vh', overflowY: 'auto',
+          alignItems: 'stretch',
+          maxHeight: '92vh',
         }}
       >
+        {item.video && (
+          <FoodVideoPlayer
+            videoUrl={item.video}
+            itemName={item.name}
+            borderRadius={theme.borderRadius}
+          />
+        )}
+        <motion.div
+          initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
+          transition={{ type: 'spring', damping: 30, stiffness: 350 }}
+          style={{
+            background: resolveBg(theme.formBgType, theme.formBgColor, theme.formGradientFrom, theme.formGradientTo, theme.formGradientDir, theme.backgroundColor),
+            width: '100%', maxWidth: 600, flex: 1, minWidth: 0,
+            borderRadius: item.video ? theme.borderRadius : `${theme.borderRadius} ${theme.borderRadius} 0 0`,
+            maxHeight: '90vh', overflowY: 'auto',
+          }}
+        >
         {item.image && (
           <div style={{ width: '100%', height: 260, overflow: 'hidden' }}>
             <img src={item.image} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -228,6 +256,7 @@ function ItemModal({
           </div>
         </div>
       </motion.div>
+      </div>
     </motion.div>
   );
 }
@@ -243,6 +272,7 @@ function CartDrawer({
   whatsapp,
   currency,
   restaurantName,
+  table,
 }: {
   isOpen: boolean;
   onClose: () => void;
@@ -254,6 +284,7 @@ function CartDrawer({
   whatsapp: SiteData['whatsapp'];
   currency: string;
   restaurantName: string;
+  table?: string | null;
 }) {
   const [note, setNote] = useState('');
   const entries = Object.values(cart);
@@ -262,8 +293,11 @@ function CartDrawer({
 
   const buildWhatsAppUrl = () => {
     if (!whatsapp?.phoneNumber) return '#';
-    let text = `Salam! *${restaurantName}* üçün sifariş vermək istəyirəm:\n\n`;
-    text += `🍽️ *SİFARİŞİM:* (${totalCount} ədəd)\n`;
+    let text = `Salam! *${restaurantName}* üçün sifariş vermək istəyirəm:\n`;
+    if (table) {
+      text += `📍 *MASA:* ${table}\n`;
+    }
+    text += `\n🍽️ *SİFARİŞİM:* (${totalCount} ədəd)\n`;
     entries.forEach((e, idx) => {
       const p = e.item.discountPrice || e.item.price;
       const sub = p * e.quantity;
@@ -296,6 +330,7 @@ function CartDrawer({
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 28, stiffness: 300 }}
             onClick={(e) => e.stopPropagation()}
+            className="theme-cart-drawer"
             style={{
               background: resolveBg(theme.formBgType, theme.formBgColor, theme.formGradientFrom, theme.formGradientTo, theme.formGradientDir, theme.backgroundColor),
               width: '100%', maxWidth: 440, height: '100%',
@@ -345,6 +380,27 @@ function CartDrawer({
                 </button>
               </div>
             </div>
+
+            {/* Active Table indicator in Cart */}
+            {table && (
+              <div
+                style={{
+                  margin: '12px 20px 0',
+                  padding: '10px 14px',
+                  borderRadius: 12,
+                  backgroundColor: `${theme.primaryColor}15`,
+                  border: `1px solid ${theme.primaryColor}35`,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}
+              >
+                <span style={{ fontSize: 13, fontWeight: 700, color: theme.textColor, display: 'flex', alignItems: 'center', gap: 6 }}>
+                  📍 {table}
+                </span>
+                <span style={{ fontSize: 11, color: '#8888A0' }}>Skan edilmiş masa</span>
+              </div>
+            )}
 
             {/* Items list */}
             <div style={{ flex: 1, overflowY: 'auto', padding: 20, display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -576,9 +632,42 @@ function HeaderMedia({ theme }: { theme: ThemeConfig }) {
   return null;
 }
 
-export default function RestaurantSite({ data }: { data: SiteData }) {
-  const rawTheme = data.website.theme as Partial<ThemeConfig>;
-  const theme: ThemeConfig = { ...defaultThemes[rawTheme.templateId || 'elegant'], ...rawTheme };
+export default function RestaurantSite({ data, initialTable }: { data: SiteData; initialTable?: string }) {
+  const rawTheme = (data.website.theme || {}) as Partial<ThemeConfig>;
+  const baseTemplateKey = rawTheme.templateId && defaultThemes[rawTheme.templateId] ? rawTheme.templateId : 'elegant';
+  const theme: ThemeConfig = {
+    ...defaultThemes[baseTemplateKey],
+    ...rawTheme,
+    isProTemplate: Boolean(rawTheme.isProTemplate),
+  };
+
+  const [table, setTable] = useState<string | null>(initialTable || null);
+
+  useEffect(() => {
+    try {
+      const sp = new URLSearchParams(window.location.search);
+      const urlTable = (sp.get('table') || sp.get('masa'))?.trim();
+      if (urlTable) {
+        const formatted = urlTable.toLowerCase().startsWith('masa') ? urlTable : `Masa ${urlTable}`;
+        setTable(formatted);
+        sessionStorage.setItem('active_table_' + data.organization.slug, formatted);
+        return;
+      }
+      if (initialTable) {
+        setTable(initialTable);
+        sessionStorage.setItem('active_table_' + data.organization.slug, initialTable);
+        return;
+      }
+      const saved = sessionStorage.getItem('active_table_' + data.organization.slug);
+      if (saved) {
+        setTable(saved);
+      }
+    } catch {}
+  }, [data.organization.slug, initialTable]);
+
+  if (theme.isProTemplate) {
+    return <ProRestaurantSite data={data} theme={theme} table={table} />;
+  }
   const { organization, whatsapp, socialLinks, workingHours, menuCategories } = data;
   const [activeCategory, setActiveCategory] = useState(menuCategories[0]?.id || '');
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
@@ -666,6 +755,139 @@ export default function RestaurantSite({ data }: { data: SiteData }) {
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       <link href={fontsUrl} rel="stylesheet" />
 
+      {/* Responsive stylesheet for both screen viewports and dashboard preview container */}
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
+        .restaurant-site-container {
+          container-type: inline-size;
+          container-name: siteRoot;
+          width: 100%;
+        }
+        .theme-mobile-nav-btn {
+          display: none !important;
+        }
+        .theme-desktop-nav {
+          display: flex !important;
+        }
+        .theme-category-tabs {
+          display: flex;
+          gap: 10px;
+          flex-wrap: wrap;
+          margin-bottom: 40px;
+          justify-content: center;
+        }
+        .theme-header-spacer { display: none; }
+        @media (max-width: 768px) {
+          .theme-desktop-nav { display: none !important; }
+          .theme-mobile-nav-btn { display: flex !important; }
+          .theme-navbar-cart { display: none !important; }
+          .theme-header-spacer { display: block !important; }
+          .theme-header-inner {
+            display: grid !important;
+            grid-template-columns: 1fr auto 1fr !important;
+            padding: 0 16px !important;
+            height: 64px !important;
+          }
+          .theme-header-brand {
+            grid-column: 2 !important;
+            justify-self: center !important;
+            flex: none !important;
+          }
+          .theme-header-right {
+            grid-column: 3 !important;
+            justify-self: end !important;
+          }
+          .theme-category-tabs {
+            flex-wrap: nowrap !important;
+            overflow-x: auto !important;
+            justify-content: flex-start !important;
+            padding: 4px 6px 12px 6px !important;
+            margin-bottom: 24px !important;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+          }
+          .theme-category-tabs::-webkit-scrollbar { display: none; }
+          .theme-hero-section {
+            padding-top: 80px !important;
+            padding-bottom: 50px !important;
+            min-height: auto !important;
+          }
+          .theme-section-padding { padding: 48px 16px !important; }
+          .theme-cart-drawer { max-width: 100% !important; }
+        }
+        @container siteRoot (max-width: 768px) {
+          .theme-desktop-nav { display: none !important; }
+          .theme-mobile-nav-btn { display: flex !important; }
+          .theme-navbar-cart { display: none !important; }
+          .theme-header-spacer { display: block !important; }
+          .theme-header-inner {
+            display: grid !important;
+            grid-template-columns: 1fr auto 1fr !important;
+            padding: 0 16px !important;
+            height: 64px !important;
+          }
+          .theme-header-brand {
+            grid-column: 2 !important;
+            justify-self: center !important;
+            flex: none !important;
+          }
+          .theme-header-right {
+            grid-column: 3 !important;
+            justify-self: end !important;
+          }
+          .theme-category-tabs {
+            flex-wrap: nowrap !important;
+            overflow-x: auto !important;
+            justify-content: flex-start !important;
+            padding: 4px 6px 12px 6px !important;
+            margin-bottom: 24px !important;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+          }
+          .theme-category-tabs::-webkit-scrollbar { display: none; }
+          .theme-hero-section {
+            padding-top: 80px !important;
+            padding-bottom: 50px !important;
+            min-height: auto !important;
+          }
+          .theme-section-padding { padding: 48px 16px !important; }
+          .theme-cart-drawer { max-width: 100% !important; }
+        }
+        @media (max-width: 640px) {
+          .theme-floating-cart {
+            bottom: 16px !important;
+            left: 14px !important;
+            padding: 10px 14px !important;
+            font-size: 13px !important;
+            max-width: calc(100vw - 90px) !important;
+          }
+          .theme-floating-whatsapp {
+            bottom: 16px !important;
+            right: 14px !important;
+            width: 48px !important;
+            height: 48px !important;
+          }
+        }
+        @container siteRoot (max-width: 640px) {
+          .theme-floating-cart {
+            bottom: 16px !important;
+            left: 14px !important;
+            padding: 10px 14px !important;
+            font-size: 13px !important;
+            max-width: calc(100% - 90px) !important;
+          }
+          .theme-floating-whatsapp {
+            bottom: 16px !important;
+            right: 14px !important;
+            width: 48px !important;
+            height: 48px !important;
+          }
+        }
+        `,
+        }}
+      />
+
       {/* Splash Screen */}
       {data.website.splashEnabled && data.website.splashConfig && (
         <SplashScreen
@@ -675,6 +897,7 @@ export default function RestaurantSite({ data }: { data: SiteData }) {
       )}
 
       <div
+        className="restaurant-site-container"
         style={{
           background: theme.backgroundImageUrl
             ? `linear-gradient(rgba(0,0,0,${theme.backgroundOverlay ?? 0.4}), rgba(0,0,0,${theme.backgroundOverlay ?? 0.4})), url(${theme.backgroundImageUrl}) center/cover fixed no-repeat`
@@ -682,6 +905,8 @@ export default function RestaurantSite({ data }: { data: SiteData }) {
           color: theme.textColor,
           fontFamily: theme.bodyFont,
           minHeight: '100vh',
+          width: '100%',
+          overflowX: 'hidden',
         }}
       >
         {/* Fixed Header */}
@@ -693,29 +918,48 @@ export default function RestaurantSite({ data }: { data: SiteData }) {
             borderBottom: `1px solid ${theme.primaryColor}20`,
           }}
         >
-          <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', height: 70, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div
+            className="theme-header-inner"
+            style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', height: 70, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}
+          >
+            {/* Left spacer: hidden on desktop, col-1 on mobile grid for centering */}
+            <div className="theme-header-spacer" style={{ display: 'none' }} />
+
+            {/* Center: Brand */}
+            <div className="theme-header-brand" style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
               {organization.logo && (
                 <img
                   src={organization.logo}
                   alt={organization.name}
                   style={{
-                    width: theme.navLogoSize || 44,
-                    height: theme.navLogoSize || 44,
+                    width: theme.navLogoSize || 40,
+                    height: theme.navLogoSize || 40,
                     borderRadius: theme.logoHasFrame ? 10 : 0,
                     objectFit: 'contain',
                     background: 'transparent',
+                    flexShrink: 0,
                   }}
                 />
               )}
-              <span style={{ fontFamily: theme.headingFont, fontWeight: 800, fontSize: 20, color: theme.textColor }}>
+              <span
+                style={{
+                  fontFamily: theme.brandFont || theme.headingFont,
+                  fontWeight: 800,
+                  fontSize: 'clamp(16px, 3.5vw, 20px)',
+                  color: theme.textColor,
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  maxWidth: '45vw',
+                }}
+              >
                 {organization.name}
               </span>
             </div>
 
-            {/* Desktop Nav + Cart */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <nav style={{ display: 'flex', gap: 8 }}>
+            {/* Right: Desktop Nav + Cart (always) + Burger (mobile only) */}
+            <div className="theme-header-right" style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1, justifyContent: 'flex-end' }}>
+              <nav className="theme-desktop-nav" style={{ display: 'flex', gap: 8 }}>
                 {sections.map((s) => (
                   <button
                     key={s.id}
@@ -733,8 +977,10 @@ export default function RestaurantSite({ data }: { data: SiteData }) {
                 ))}
               </nav>
 
+              {/* Cart — hidden on mobile, shown in burger drawer */}
               <button
                 type="button"
+                className="theme-navbar-cart"
                 onClick={() => setIsCartOpen(true)}
                 style={{
                   border: `1px solid ${cartCount > 0 ? theme.primaryColor : `${theme.primaryColor}30`}`,
@@ -745,34 +991,129 @@ export default function RestaurantSite({ data }: { data: SiteData }) {
                   fontFamily: theme.bodyFont, fontWeight: 700, fontSize: 14,
                   boxShadow: cartCount > 0 ? `0 2px 12px ${theme.primaryColor}40` : 'none',
                   transition: 'all 0.2s',
+                  marginLeft: 14,
                 }}
               >
                 <ShoppingCart size={18} />
                 <span>Səbət</span>
                 {cartCount > 0 && (
-                  <span style={{
-                    background: 'rgba(255,255,255,0.3)',
-                    padding: '1px 7px', borderRadius: 100, fontSize: 12,
-                  }}>
+                  <span style={{ background: 'rgba(255,255,255,0.3)', padding: '1px 7px', borderRadius: 100, fontSize: 12 }}>
                     {cartCount}
                   </span>
                 )}
               </button>
-            </div>
 
-            {/* Mobile Menu Button */}
-            <button
-              onClick={() => setMobileMenuOpen(p => !p)}
-              style={{ border: 'none', background: 'transparent', cursor: 'pointer', display: 'none', color: theme.textColor }}
-            >
-              <Menu size={24} />
-            </button>
+              {/* Burger — mobile only */}
+              <button
+                type="button"
+                className="theme-mobile-nav-btn"
+                onClick={() => setMobileMenuOpen(p => !p)}
+                aria-label="Menyu"
+                style={{
+                  border: `1px solid ${theme.primaryColor}30`,
+                  background: mobileMenuOpen ? `${theme.primaryColor}20` : 'transparent',
+                  borderRadius: 10, width: 40, height: 40,
+                  display: 'none', alignItems: 'center', justifyContent: 'center',
+                  cursor: 'pointer', color: theme.textColor, transition: 'all 0.2s',
+                }}
+              >
+                {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+              </button>
+            </div>
           </div>
         </header>
+
+        {/* Mobile Navigation Drawer */}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+              style={{
+                position: 'fixed',
+                top: 64,
+                left: 0,
+                right: 0,
+                zIndex: 99,
+                background: navbarBg,
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                borderBottom: `1px solid ${theme.primaryColor}30`,
+                boxShadow: '0 12px 30px rgba(0,0,0,0.4)',
+                padding: '16px 20px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 8,
+              }}
+            >
+              {sections.map((s) => (
+                <button
+                  key={s.id}
+                  onClick={() => scrollTo(s.id)}
+                  style={{
+                    border: 'none',
+                    background: 'rgba(255,255,255,0.05)',
+                    color: theme.textColor,
+                    fontFamily: theme.bodyFont,
+                    fontSize: 15,
+                    fontWeight: 600,
+                    textAlign: 'left',
+                    padding: '12px 16px',
+                    borderRadius: theme.borderRadius,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                  }}
+                >
+                  <span>{s.label}</span>
+                  <span style={{ fontSize: 16, opacity: 0.6 }}>→</span>
+                </button>
+              ))}
+              {/* Cart button inside mobile drawer */}
+              <button
+                type="button"
+                onClick={() => { setIsCartOpen(true); setMobileMenuOpen(false); }}
+                style={{
+                  border: `1px solid ${cartCount > 0 ? theme.primaryColor : `${theme.primaryColor}40`}`,
+                  background: cartCount > 0 ? theme.primaryColor : 'rgba(255,255,255,0.05)',
+                  color: cartCount > 0 ? '#fff' : theme.textColor,
+                  fontFamily: theme.bodyFont,
+                  fontSize: 15,
+                  fontWeight: 600,
+                  padding: '12px 16px',
+                  borderRadius: theme.borderRadius,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  boxShadow: cartCount > 0 ? `0 2px 12px ${theme.primaryColor}40` : 'none',
+                  marginTop: 8,
+                }}
+              >
+                <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <ShoppingCart size={18} />
+                  Səbət
+                </span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  {cartCount > 0 && (
+                    <span style={{ background: 'rgba(255,255,255,0.3)', padding: '1px 8px', borderRadius: 100, fontSize: 13, fontWeight: 700 }}>
+                      {cartCount}
+                    </span>
+                  )}
+                  <span style={{ fontSize: 16, opacity: 0.6 }}>→</span>
+                </span>
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Hero Section */}
         <section
           id="home"
+          className="theme-hero-section"
           style={{
             minHeight: theme.heroHeight || '85vh',
             height: 'auto',
@@ -801,8 +1142,9 @@ export default function RestaurantSite({ data }: { data: SiteData }) {
           <div style={{
             position: 'relative',
             zIndex: 3,
-            padding: '0 24px',
+            padding: '0 20px',
             maxWidth: 800,
+            width: '100%',
             margin: '0 auto',
             display: 'flex',
             flexDirection: 'column',
@@ -818,7 +1160,7 @@ export default function RestaurantSite({ data }: { data: SiteData }) {
                 alt={organization.name}
                 style={{
                   maxHeight: theme.heroLogoSize || 120,
-                  maxWidth: theme.heroLogoSize ? theme.heroLogoSize * 2 : 240,
+                  maxWidth: 'min(100%, 240px)',
                   width: 'auto',
                   height: 'auto',
                   borderRadius: theme.logoHasFrame ? 20 : 0,
@@ -836,7 +1178,7 @@ export default function RestaurantSite({ data }: { data: SiteData }) {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              style={{ fontFamily: theme.headingFont, fontSize: 'clamp(36px, 6vw, 72px)', fontWeight: 900, color: '#fff', marginTop: 0, marginBottom: 16, lineHeight: 1.1 }}
+              style={{ fontFamily: theme.brandFont || theme.headingFont, fontSize: 'clamp(28px, 6vw, 64px)', fontWeight: 900, color: '#fff', marginTop: 0, marginBottom: 16, lineHeight: 1.15, wordBreak: 'break-word' }}
             >
               {organization.name}
             </motion.h1>
@@ -845,7 +1187,7 @@ export default function RestaurantSite({ data }: { data: SiteData }) {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                style={{ fontSize: 18, color: 'rgba(255,255,255,0.85)', marginBottom: 36, lineHeight: 1.7, fontFamily: theme.bodyFont }}
+                style={{ fontSize: 'clamp(14px, 3.5vw, 18px)', color: 'rgba(255,255,255,0.88)', marginBottom: 32, lineHeight: 1.7, fontFamily: theme.bodyFont, maxWidth: 640 }}
               >
                 {organization.description}
               </motion.p>
@@ -854,7 +1196,7 @@ export default function RestaurantSite({ data }: { data: SiteData }) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 24 }}
+              style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 24 }}
             >
               <button
                 onClick={() => scrollTo('menu')}
@@ -883,23 +1225,23 @@ export default function RestaurantSite({ data }: { data: SiteData }) {
 
         {/* Featured Items */}
         {allFeatured.length > 0 && (
-          <section style={{ padding: '80px 24px', background: `${theme.secondaryColor}08` }}>
+          <section className="theme-section-padding" style={{ padding: '80px 24px', background: `${theme.secondaryColor}08` }}>
             <div style={{ maxWidth: 1200, margin: '0 auto' }}>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                style={{ textAlign: 'center', marginBottom: 48 }}
+                style={{ textAlign: 'center', marginBottom: 40 }}
               >
-                <p style={{ color: theme.primaryColor, fontSize: 14, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 12 }}>
+                <p style={{ color: theme.primaryColor, fontSize: 13, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 10 }}>
                   ⭐ Seçimlərimiz
                 </p>
-                <h2 style={{ fontFamily: theme.headingFont, fontSize: 'clamp(28px, 4vw, 44px)', fontWeight: 800, color: theme.textColor }}>
+                <h2 style={{ fontFamily: theme.headingFont, fontSize: 'clamp(26px, 4vw, 42px)', fontWeight: 800, color: theme.textColor, margin: 0 }}>
                   Ən Sevimli Yeməklər
                 </h2>
               </motion.div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 24 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 280px), 1fr))', gap: 'clamp(16px, 3vw, 24px)' }}>
                 {allFeatured.map((item, i) => (
                   <motion.div
                     key={item.id}
@@ -973,28 +1315,29 @@ export default function RestaurantSite({ data }: { data: SiteData }) {
         )}
 
         {/* Full Menu */}
-        <section id="menu" style={{ padding: '80px 24px' }}>
+        <section id="menu" className="theme-section-padding" style={{ padding: '80px 24px' }}>
           <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} style={{ textAlign: 'center', marginBottom: 48 }}>
-              <p style={{ color: theme.primaryColor, fontSize: 14, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 12 }}>
+            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} style={{ textAlign: 'center', marginBottom: 36 }}>
+              <p style={{ color: theme.primaryColor, fontSize: 13, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 10 }}>
                 🍽️ Tam Menyu
               </p>
-              <h2 style={{ fontFamily: theme.headingFont, fontSize: 'clamp(28px, 4vw, 44px)', fontWeight: 800, color: theme.textColor }}>
+              <h2 style={{ fontFamily: theme.headingFont, fontSize: 'clamp(26px, 4vw, 42px)', fontWeight: 800, color: theme.textColor, margin: 0 }}>
                 Yeməklərimiz
               </h2>
             </motion.div>
 
             {/* Category Tabs */}
-            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 40, justifyContent: 'center' }}>
+            <div className="theme-category-tabs">
               {menuCategories.map((cat) => (
                 <button
                   key={cat.id}
                   onClick={() => setActiveCategory(cat.id)}
                   style={{
-                    padding: '10px 22px', borderRadius: 100, border: `2px solid ${activeCategory === cat.id ? theme.primaryColor : `${theme.primaryColor}30`}`,
+                    padding: '10px 20px', borderRadius: 100, border: `2px solid ${activeCategory === cat.id ? theme.primaryColor : `${theme.primaryColor}30`}`,
                     background: activeCategory === cat.id ? theme.primaryColor : 'transparent',
                     color: activeCategory === cat.id ? '#fff' : theme.textColor,
                     fontFamily: theme.bodyFont, fontSize: 14, fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s',
+                    flexShrink: 0, whiteSpace: 'nowrap',
                   }}
                 >
                   {cat.name}
@@ -1010,7 +1353,7 @@ export default function RestaurantSite({ data }: { data: SiteData }) {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
-                style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 20 }}
+                style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 280px), 1fr))', gap: 'clamp(14px, 2.5vw, 20px)' }}
               >
                 {activeCategoryItems.map((item, i) => (
                   <motion.div
@@ -1020,7 +1363,7 @@ export default function RestaurantSite({ data }: { data: SiteData }) {
                     transition={{ delay: i * 0.05 }}
                     onClick={() => setSelectedItem(item)}
                     style={{
-                      display: 'flex', gap: 16, padding: 16, cursor: 'pointer',
+                      display: 'flex', gap: 14, padding: 14, cursor: 'pointer',
                       background: formBg,
                       borderRadius: theme.borderRadius,
                       border: `1px solid ${theme.primaryColor}15`,
@@ -1030,9 +1373,9 @@ export default function RestaurantSite({ data }: { data: SiteData }) {
                     whileHover={{ scale: 1.02, boxShadow: `0 6px 24px ${theme.primaryColor}18` }}
                   >
                     {item.image ? (
-                      <img src={item.image} alt={item.name} style={{ width: 88, height: 88, borderRadius: parseInt(theme.borderRadius) > 8 ? 12 : 8, objectFit: 'cover', flexShrink: 0 }} />
+                      <img src={item.image} alt={item.name} style={{ width: 80, height: 80, borderRadius: parseInt(theme.borderRadius) > 8 ? 12 : 8, objectFit: 'cover', flexShrink: 0 }} />
                     ) : (
-                      <div style={{ width: 88, height: 88, borderRadius: 12, background: `linear-gradient(135deg, ${theme.primaryColor}20, ${theme.accentColor}30)`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 32 }}>
+                      <div style={{ width: 80, height: 80, borderRadius: 12, background: `linear-gradient(135deg, ${theme.primaryColor}20, ${theme.accentColor}30)`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 28 }}>
                         🍽️
                       </div>
                     )}
@@ -1048,8 +1391,8 @@ export default function RestaurantSite({ data }: { data: SiteData }) {
                           {item.description}
                         </p>
                       )}
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
                           {item.discountPrice ? (
                             <>
                               <span style={{ fontWeight: 800, color: theme.primaryColor, fontSize: 15 }}>{formatPrice(item.discountPrice, organization.currency)}</span>
@@ -1086,16 +1429,16 @@ export default function RestaurantSite({ data }: { data: SiteData }) {
         </section>
 
         {/* About */}
-        <section id="about" style={{ padding: '80px 24px', background: `${theme.secondaryColor}08` }}>
+        <section id="about" className="theme-section-padding" style={{ padding: '80px 24px', background: `${theme.secondaryColor}08` }}>
           <div style={{ maxWidth: 800, margin: '0 auto', textAlign: 'center' }}>
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-              <p style={{ color: theme.primaryColor, fontSize: 14, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 12 }}>
+              <p style={{ color: theme.primaryColor, fontSize: 13, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 10 }}>
                 Biz kimik?
               </p>
-              <h2 style={{ fontFamily: theme.headingFont, fontSize: 'clamp(28px, 4vw, 44px)', fontWeight: 800, color: theme.textColor, marginBottom: 24 }}>
+              <h2 style={{ fontFamily: theme.headingFont, fontSize: 'clamp(26px, 4vw, 42px)', fontWeight: 800, color: theme.textColor, marginBottom: 20 }}>
                 Haqqımızda
               </h2>
-              <p style={{ fontSize: 17, color: `${theme.textColor}CC`, lineHeight: 1.8 }}>
+              <p style={{ fontSize: 'clamp(14px, 3.5vw, 17px)', color: `${theme.textColor}CC`, lineHeight: 1.8 }}>
                 {organization.description || `${organization.name} — keyfiyyətli yemək və mükəmməl xidmət ilə fərqlənən yerli restoranımız. Hər gün ən təzə məhsullardan hazırlanmış dadlı yeməklərimiz sizi gözləyir.`}
               </p>
             </motion.div>
@@ -1103,18 +1446,18 @@ export default function RestaurantSite({ data }: { data: SiteData }) {
         </section>
 
         {/* Contact */}
-        <section id="contact" style={{ padding: '80px 24px' }}>
+        <section id="contact" className="theme-section-padding" style={{ padding: '80px 24px' }}>
           <div style={{ maxWidth: 1000, margin: '0 auto' }}>
-            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} style={{ textAlign: 'center', marginBottom: 48 }}>
-              <p style={{ color: theme.primaryColor, fontSize: 14, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 12 }}>
+            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} style={{ textAlign: 'center', marginBottom: 40 }}>
+              <p style={{ color: theme.primaryColor, fontSize: 13, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 10 }}>
                 Bizimlə əlaqə
               </p>
-              <h2 style={{ fontFamily: theme.headingFont, fontSize: 'clamp(28px, 4vw, 44px)', fontWeight: 800, color: theme.textColor }}>
+              <h2 style={{ fontFamily: theme.headingFont, fontSize: 'clamp(26px, 4vw, 42px)', fontWeight: 800, color: theme.textColor, margin: 0 }}>
                 Əlaqə
               </h2>
             </motion.div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 24 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))', gap: 'clamp(16px, 3vw, 24px)' }}>
               {organization.phone && (
                 <motion.a
                   href={`tel:${organization.phone}`}
@@ -1122,19 +1465,19 @@ export default function RestaurantSite({ data }: { data: SiteData }) {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   style={{
-                    display: 'flex', alignItems: 'center', gap: 16, padding: 24,
+                    display: 'flex', alignItems: 'center', gap: 16, padding: 'clamp(16px, 3vw, 24px)',
                     background: formBg, borderRadius: theme.borderRadius,
                     border: `1px solid ${theme.primaryColor}20`, textDecoration: 'none', color: theme.textColor,
                     boxShadow: `0 2px 12px ${theme.secondaryColor}10`, transition: 'all 0.2s',
                   }}
                   whileHover={{ scale: 1.02 }}
                 >
-                  <div style={{ width: 48, height: 48, borderRadius: 12, background: `${theme.primaryColor}15`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <Phone size={22} color={theme.primaryColor} />
+                  <div style={{ width: 44, height: 44, borderRadius: 12, background: `${theme.primaryColor}15`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <Phone size={20} color={theme.primaryColor} />
                   </div>
-                  <div>
+                  <div style={{ minWidth: 0 }}>
                     <p style={{ fontSize: 12, color: `${theme.textColor}77`, marginBottom: 2 }}>Telefon</p>
-                    <p style={{ fontSize: 16, fontWeight: 700 }}>{organization.phone}</p>
+                    <p style={{ fontSize: 15, fontWeight: 700, margin: 0, wordBreak: 'break-all' }}>{organization.phone}</p>
                   </div>
                 </motion.a>
               )}
@@ -1147,19 +1490,19 @@ export default function RestaurantSite({ data }: { data: SiteData }) {
                   viewport={{ once: true }}
                   transition={{ delay: 0.1 }}
                   style={{
-                    display: 'flex', alignItems: 'center', gap: 16, padding: 24,
+                    display: 'flex', alignItems: 'center', gap: 16, padding: 'clamp(16px, 3vw, 24px)',
                     background: formBg, borderRadius: theme.borderRadius,
                     border: `1px solid ${theme.primaryColor}20`, textDecoration: 'none', color: theme.textColor,
                     boxShadow: `0 2px 12px ${theme.secondaryColor}10`,
                   }}
                   whileHover={{ scale: 1.02 }}
                 >
-                  <div style={{ width: 48, height: 48, borderRadius: 12, background: `${theme.primaryColor}15`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <Mail size={22} color={theme.primaryColor} />
+                  <div style={{ width: 44, height: 44, borderRadius: 12, background: `${theme.primaryColor}15`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <Mail size={20} color={theme.primaryColor} />
                   </div>
-                  <div>
+                  <div style={{ minWidth: 0 }}>
                     <p style={{ fontSize: 12, color: `${theme.textColor}77`, marginBottom: 2 }}>E-poçt</p>
-                    <p style={{ fontSize: 15, fontWeight: 600 }}>{organization.email}</p>
+                    <p style={{ fontSize: 15, fontWeight: 600, margin: 0, wordBreak: 'break-all' }}>{organization.email}</p>
                   </div>
                 </motion.a>
               )}
@@ -1171,21 +1514,21 @@ export default function RestaurantSite({ data }: { data: SiteData }) {
                   viewport={{ once: true }}
                   transition={{ delay: 0.15 }}
                   style={{
-                    display: 'flex', alignItems: 'center', gap: 16, padding: 24,
+                    display: 'flex', alignItems: 'center', gap: 16, padding: 'clamp(16px, 3vw, 24px)',
                     background: formBg, borderRadius: theme.borderRadius,
                     border: `1px solid ${theme.primaryColor}20`,
                     boxShadow: `0 2px 12px ${theme.secondaryColor}10`,
                   }}
                 >
-                  <div style={{ width: 48, height: 48, borderRadius: 12, background: `${theme.primaryColor}15`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <MapPin size={22} color={theme.primaryColor} />
+                  <div style={{ width: 44, height: 44, borderRadius: 12, background: `${theme.primaryColor}15`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <MapPin size={20} color={theme.primaryColor} />
                   </div>
                   <div style={{ minWidth: 0 }}>
                     <p style={{ fontSize: 12, color: `${theme.textColor}77`, marginBottom: 2 }}>Ünvan</p>
-                    <p style={{ fontSize: 15, fontWeight: 600 }}>{organization.address}</p>
-                    {organization.city && <p style={{ fontSize: 13, color: `${theme.textColor}66` }}>{organization.city}</p>}
+                    <p style={{ fontSize: 15, fontWeight: 600, margin: 0 }}>{organization.address}</p>
+                    {organization.city && <p style={{ fontSize: 13, color: `${theme.textColor}66`, margin: '2px 0 0' }}>{organization.city}</p>}
                     {organization.mapUrl && (
-                      <a href={organization.mapUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: 12, color: theme.primaryColor, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4, marginTop: 4 }}>
+                      <a href={organization.mapUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: 12, color: theme.primaryColor, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4, marginTop: 6 }}>
                         <ExternalLink size={12} /> Xəritədə göstər
                       </a>
                     )}
@@ -1200,19 +1543,19 @@ export default function RestaurantSite({ data }: { data: SiteData }) {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                style={{ marginTop: 32, background: formBg, borderRadius: theme.borderRadius, border: `1px solid ${theme.primaryColor}20`, padding: 28, boxShadow: `0 2px 12px ${theme.secondaryColor}10` }}
+                style={{ marginTop: 32, background: formBg, borderRadius: theme.borderRadius, border: `1px solid ${theme.primaryColor}20`, padding: 'clamp(18px, 3.5vw, 28px)', boxShadow: `0 2px 12px ${theme.secondaryColor}10` }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
-                  <div style={{ width: 40, height: 40, borderRadius: 10, background: `${theme.primaryColor}15`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <Clock size={20} color={theme.primaryColor} />
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+                  <div style={{ width: 36, height: 36, borderRadius: 10, background: `${theme.primaryColor}15`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <Clock size={18} color={theme.primaryColor} />
                   </div>
-                  <h3 style={{ fontFamily: theme.headingFont, fontSize: 18, fontWeight: 700, color: theme.textColor }}>İş saatları</h3>
+                  <h3 style={{ fontFamily: theme.headingFont, fontSize: 17, fontWeight: 700, color: theme.textColor, margin: 0 }}>İş saatları</h3>
                 </div>
-                <div style={{ display: 'grid', gap: 8 }}>
+                <div style={{ display: 'grid', gap: 6 }}>
                   {workingHours.map((wh) => (
-                    <div key={wh.dayOfWeek} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: `1px solid ${theme.primaryColor}10` }}>
-                      <span style={{ fontSize: 14, color: `${theme.textColor}CC` }}>{DAY_NAMES[wh.dayOfWeek]}</span>
-                      <span style={{ fontSize: 14, fontWeight: 600, color: wh.isClosed ? '#F87171' : theme.primaryColor }}>
+                    <div key={wh.dayOfWeek} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: `1px solid ${theme.primaryColor}10`, fontSize: 13 }}>
+                      <span style={{ color: `${theme.textColor}CC` }}>{DAY_NAMES[wh.dayOfWeek]}</span>
+                      <span style={{ fontWeight: 600, color: wh.isClosed ? '#F87171' : theme.primaryColor }}>
                         {wh.isClosed ? 'Bağlı' : `${wh.openTime} — ${wh.closeTime}`}
                       </span>
                     </div>
@@ -1224,15 +1567,15 @@ export default function RestaurantSite({ data }: { data: SiteData }) {
         </section>
 
         {/* Footer */}
-        <footer style={{ background: footerBg, padding: '48px 24px 32px' }}>
+        <footer style={{ background: footerBg, padding: '48px 20px 32px' }}>
           <div style={{ maxWidth: 1200, margin: '0 auto', textAlign: 'center' }}>
             {organization.logo && (
               <img
                 src={organization.logo}
                 alt={organization.name}
                 style={{
-                  width: 64,
-                  height: 64,
+                  width: 56,
+                  height: 56,
                   borderRadius: theme.logoHasFrame ? 14 : 0,
                   objectFit: 'contain',
                   display: 'block',
@@ -1241,13 +1584,13 @@ export default function RestaurantSite({ data }: { data: SiteData }) {
                 }}
               />
             )}
-            <h3 style={{ fontFamily: theme.headingFont, fontSize: 22, fontWeight: 800, color: '#fff', marginBottom: 8 }}>{organization.name}</h3>
+            <h3 style={{ fontFamily: theme.brandFont || theme.headingFont, fontSize: 'clamp(18px, 4vw, 22px)', fontWeight: 800, color: '#fff', marginBottom: 8 }}>{organization.name}</h3>
             {organization.description && (
-              <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: 14, marginBottom: 24, maxWidth: 400, margin: '0 auto 24px' }}>{organization.description}</p>
+              <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13, marginBottom: 20, maxWidth: 440, margin: '0 auto 20px' }}>{organization.description}</p>
             )}
 
             {socialLinks.length > 0 && (
-              <div style={{ display: 'flex', gap: 12, justifyContent: 'center', marginBottom: 28, flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', gap: 10, justifyContent: 'center', marginBottom: 24, flexWrap: 'wrap' }}>
                 {socialLinks.map((link) => (
                   <a
                     key={link.platform}
@@ -1255,9 +1598,9 @@ export default function RestaurantSite({ data }: { data: SiteData }) {
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{
-                      width: 44, height: 44, borderRadius: '50%', background: 'rgba(255,255,255,0.1)',
+                      width: 40, height: 40, borderRadius: '50%', background: 'rgba(255,255,255,0.1)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      textDecoration: 'none', fontSize: 20, transition: 'background 0.2s',
+                      textDecoration: 'none', fontSize: 18, transition: 'background 0.2s',
                     }}
                     onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = `${theme.primaryColor}80`; }}
                     onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.1)'; }}
@@ -1268,17 +1611,11 @@ export default function RestaurantSite({ data }: { data: SiteData }) {
               </div>
             )}
 
-            {whatsapp?.isEnabled && whatsapp.phoneNumber && (
-              <div style={{ marginBottom: 24 }}>
-                <WhatsAppButton theme={theme} whatsapp={whatsapp} />
-              </div>
-            )}
-
-            <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 13 }}>
-              © {new Date().getFullYear()} {organization.name}. Bütün hüquqlar qorunur.
+            <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12 }}>
+              {theme.footerCopyrightText || `© ${new Date().getFullYear()} ${organization.name}. Bütün hüquqlar qorunur.`}
             </p>
-            <p style={{ color: 'rgba(255,255,255,0.2)', fontSize: 11, marginTop: 8 }}>
-              Sayt <a href="/" style={{ color: 'rgba(255,255,255,0.3)', textDecoration: 'none' }}>MyRestoran</a> platforması ilə yaradılıb
+            <p style={{ color: 'rgba(255,255,255,0.2)', fontSize: 11, marginTop: 6 }}>
+              {theme.footerPlatformText || <>Sayt <a href="/" style={{ color: 'rgba(255,255,255,0.3)', textDecoration: 'none' }}>MyRestoran</a> platforması ilə yaradılıb</>}
             </p>
           </div>
         </footer>
@@ -1293,6 +1630,7 @@ export default function RestaurantSite({ data }: { data: SiteData }) {
               currency={organization.currency}
               onClose={() => setSelectedItem(null)}
               onAddToCart={addToCart}
+              table={table}
             />
           )}
         </AnimatePresence>
@@ -1309,11 +1647,13 @@ export default function RestaurantSite({ data }: { data: SiteData }) {
           whatsapp={whatsapp}
           currency={organization.currency}
           restaurantName={organization.name}
+          table={table}
         />
 
         {/* Floating Cart Button */}
         {cartCount > 0 && (
           <motion.button
+            className="theme-floating-cart"
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0, opacity: 0 }}
@@ -1323,46 +1663,26 @@ export default function RestaurantSite({ data }: { data: SiteData }) {
             style={{
               position: 'fixed', bottom: 24, left: 24, zIndex: 500,
               background: theme.primaryColor, color: '#fff',
-              borderRadius: 100, padding: '14px 22px',
+              borderRadius: 100, padding: '12px 20px',
               display: 'flex', alignItems: 'center', gap: 10,
               boxShadow: `0 8px 30px ${theme.primaryColor}66`,
               border: '2px solid rgba(255,255,255,0.2)',
               cursor: 'pointer', fontFamily: theme.bodyFont,
-              fontWeight: 700, fontSize: 15,
+              fontWeight: 700, fontSize: 14,
             }}
           >
-            <ShoppingCart size={20} />
+            <ShoppingCart size={18} />
             <span>Səbət ({cartCount})</span>
             <span style={{
-              background: 'rgba(0,0,0,0.25)', padding: '3px 9px',
-              borderRadius: 100, fontSize: 13,
+              background: 'rgba(0,0,0,0.25)', padding: '2px 8px',
+              borderRadius: 100, fontSize: 12,
             }}>
               {formatPrice(cartTotal, organization.currency)}
             </span>
           </motion.button>
         )}
 
-        {/* WhatsApp Float Button */}
-        {whatsapp?.isEnabled && whatsapp.phoneNumber && (
-          <a
-            href={formatWhatsAppUrl(whatsapp.countryCode, whatsapp.phoneNumber, 'Salam! Sifariş vermək istəyirəm.')}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              position: 'fixed', bottom: 24, right: 24, zIndex: 500,
-              width: 60, height: 60, borderRadius: '50%',
-              background: theme.whatsappColor || '#25D366', color: theme.whatsappIconColor || '#FFFFFF',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              textDecoration: 'none',
-              boxShadow: `0 4px 20px ${(theme.whatsappColor || '#25D366')}80`,
-              transition: 'all 0.2s',
-            }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.transform = 'scale(1.1)'; }}
-            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = 'scale(1)'; }}
-          >
-            <MessageCircle size={28} color={theme.whatsappIconColor || '#FFFFFF'} />
-          </a>
-        )}
+
       </div>
     </>
   );
