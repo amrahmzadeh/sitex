@@ -1,0 +1,218 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ==================== AUTH & USERS ====================
+
+model User {
+  id            String       @id @default(cuid())
+  email         String       @unique
+  name          String?
+  passwordHash  String
+  emailVerified DateTime?
+  image         String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  memberships   Membership[]
+}
+
+model Membership {
+  id             String       @id @default(cuid())
+  role           Role         @default(OWNER)
+  userId         String
+  organizationId String
+  createdAt      DateTime     @default(now())
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, organizationId])
+}
+
+enum Role {
+  OWNER
+  ADMIN
+  EDITOR
+}
+
+// ==================== ORGANIZATION (TENANT) ====================
+
+model Organization {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  logo        String?
+  description String?
+  phone       String?
+  email       String?
+  address     String?
+  city        String?
+  mapUrl      String?
+  currency    String   @default("AZN")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  memberships      Membership[]
+  website          Website?
+  menuCategories   MenuCategory[]
+  menuItems        MenuItem[]
+  mediaAssets      MediaAsset[]
+  whatsappSettings WhatsAppSettings?
+  socialLinks      SocialLink[]
+  workingHours     WorkingHours[]
+}
+
+// ==================== WEBSITE & THEME ====================
+
+model Website {
+  id             String   @id @default(cuid())
+  organizationId String   @unique
+  isPublished    Boolean  @default(false)
+  publishedAt    DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Draft theme config (JSON)
+  draftTheme     Json     @default("{}")
+  // Published theme config (JSON)  
+  publishedTheme Json     @default("{}")
+
+  // SEO
+  seoTitle       String?
+  seoDescription String?
+  ogImage        String?
+
+  // Pages config
+  pagesConfig    Json     @default("[]")
+  publishedPages Json     @default("[]")
+
+  // Splash screen
+  splashEnabled  Boolean  @default(false)
+  splashConfig   Json     @default("{}")
+
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+}
+
+// ==================== MENU ====================
+
+model MenuCategory {
+  id             String       @id @default(cuid())
+  organizationId String
+  name           String
+  slug           String
+  description    String?
+  image          String?
+  sortOrder      Int          @default(0)
+  isVisible      Boolean      @default(true)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  menuItems      MenuItem[]
+
+  @@unique([organizationId, slug])
+}
+
+model MenuItem {
+  id             String          @id @default(cuid())
+  organizationId String
+  categoryId     String
+  name           String
+  slug           String
+  description    String?
+  longDescription String?
+  price          Float
+  discountPrice  Float?
+  image          String?
+  ingredients    String?
+  allergens      String?
+  portionSize    String?
+  prepTime       String?
+  isFeatured     Boolean         @default(false)
+  isNew          Boolean         @default(false)
+  isPopular      Boolean         @default(false)
+  isVisible      Boolean         @default(true)
+  sortOrder      Int             @default(0)
+  seoTitle       String?
+  seoDescription String?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  organization   Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  category       MenuCategory    @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  images         MenuItemImage[]
+
+  @@unique([organizationId, slug])
+}
+
+model MenuItemImage {
+  id         String   @id @default(cuid())
+  menuItemId String
+  url        String
+  alt        String?
+  sortOrder  Int      @default(0)
+  createdAt  DateTime @default(now())
+
+  menuItem   MenuItem @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+}
+
+// ==================== MEDIA ====================
+
+model MediaAsset {
+  id             String       @id @default(cuid())
+  organizationId String
+  filename       String
+  url            String
+  mimeType       String
+  size           Int
+  width          Int?
+  height         Int?
+  alt            String?
+  createdAt      DateTime     @default(now())
+
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+}
+
+// ==================== SETTINGS ====================
+
+model WhatsAppSettings {
+  id              String       @id @default(cuid())
+  organizationId  String       @unique
+  countryCode     String       @default("+994")
+  phoneNumber     String
+  orderMessage    String       @default("Salam! Bu məhsulu sifariş etmək istəyirəm:")
+  buttonText      String       @default("WhatsApp ilə sifariş et")
+  contactNumber   String?
+  isEnabled       Boolean      @default(true)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+}
+
+model SocialLink {
+  id             String       @id @default(cuid())
+  organizationId String
+  platform       String       // instagram, facebook, tiktok, youtube, etc.
+  url            String
+  sortOrder      Int          @default(0)
+
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+}
+
+model WorkingHours {
+  id             String       @id @default(cuid())
+  organizationId String
+  dayOfWeek      Int          // 0=Sunday, 6=Saturday
+  openTime       String?      // "09:00"
+  closeTime      String?      // "22:00"
+  isClosed       Boolean      @default(false)
+
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, dayOfWeek])
+}
