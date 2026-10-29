@@ -5,13 +5,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Phone, Mail, MapPin, Clock, Instagram, Facebook, MessageCircle,
   ChevronDown, X, Star, Flame, Sparkles, Menu, ExternalLink,
-  ShoppingCart, Plus, Minus, Trash2, Check,
+  ShoppingCart, Plus, Minus, Trash2, Check, Share2,
 } from 'lucide-react';
 import { ThemeConfig, defaultThemes, getGoogleFontsUrl, resolveBg } from '@/lib/themes';
 import { formatPrice, formatWhatsAppUrl } from '@/lib/utils';
 import SplashScreen, { SplashConfig } from './SplashScreen';
 import ProRestaurantSite from './ProRestaurantSite';
 import FoodVideoPlayer from './FoodVideoPlayer';
+import { SocialIconsGroup } from './SocialIcons';
 import SocialMediaFeed from './SocialMediaFeed';
 
 export interface MenuItem {
@@ -1535,6 +1536,41 @@ export default function RestaurantSite({ data, initialTable }: { data: SiteData;
                       </a>
                     )}
                   </div>
+                </motion.div>
+              )}
+
+              {/* Social Media Card */}
+              {socialLinks.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.2 }}
+                  style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    flexWrap: 'wrap', gap: 14, padding: 'clamp(16px, 3vw, 24px)',
+                    background: formBg, borderRadius: theme.borderRadius,
+                    border: `1px solid ${theme.primaryColor}20`,
+                    boxShadow: `0 2px 12px ${theme.secondaryColor}10`,
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                    <div style={{ width: 44, height: 44, borderRadius: 12, background: `${theme.primaryColor}15`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <Share2 size={20} color={theme.primaryColor} />
+                    </div>
+                    <div style={{ minWidth: 0 }}>
+                      <p style={{ fontSize: 12, color: `${theme.textColor}77`, marginBottom: 2 }}>Sosial Şəbəkələr</p>
+                      <p style={{ fontSize: 15, fontWeight: 600, margin: 0 }}>Bizi izləyin</p>
+                    </div>
+                  </div>
+                  <SocialIconsGroup
+                    links={socialLinks}
+                    styleType={theme.socialIconStyle}
+                    iconColor={theme.socialIconColor}
+                    iconBgColor={theme.socialIconBgColor}
+                    size={theme.socialIconSize ? Math.min(theme.socialIconSize, 38) : 34}
+                    align="center"
+                  />
                 </motion.div>
               )}
             </div>

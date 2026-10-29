@@ -5,12 +5,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Phone, MapPin, Clock, MessageCircle, X,
   ShoppingCart, Plus, Minus, Check, ArrowRight,
-  ExternalLink, Sparkles, Utensils, Award, ChefHat, Bike, Menu
+  ExternalLink, Sparkles, Utensils, Award, ChefHat, Bike, Menu, Share2
 } from 'lucide-react';
 import { ThemeConfig, resolveBg } from '@/lib/themes';
 import { formatPrice, formatWhatsAppUrl } from '@/lib/utils';
 import SplashScreen, { SplashConfig } from './SplashScreen';
 import FoodVideoPlayer from './FoodVideoPlayer';
+import { SocialIconsGroup } from './SocialIcons';
 import SocialMediaFeed from './SocialMediaFeed';
 
 export interface MenuItem {
@@ -1773,6 +1774,66 @@ export default function ProRestaurantSite({
                       <MessageCircle size={18} />
                       <span>WhatsApp ilə sifariş et</span>
                     </a>
+                  </div>
+                )}
+
+                {/* Social Media Card */}
+                {socialLinks && socialLinks.length > 0 && (
+                  <div
+                    style={{
+                      backgroundColor: cardBackground,
+                      border: '1px solid rgba(255, 255, 255, 0.08)',
+                      borderRadius: 18,
+                      padding: 22,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      flexWrap: 'wrap',
+                      gap: 14,
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                      <div
+                        style={{
+                          width: 48,
+                          height: 48,
+                          borderRadius: 14,
+                          backgroundColor: '#282a2c',
+                          border: '1px solid rgba(255, 255, 255, 0.08)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          color: saffronGold,
+                          flexShrink: 0,
+                        }}
+                      >
+                        <Share2 size={22} />
+                      </div>
+                      <div>
+                        <span
+                          style={{
+                            fontSize: 11,
+                            fontWeight: 700,
+                            textTransform: 'uppercase',
+                            color: '#9BA3AF',
+                            letterSpacing: '0.08em',
+                          }}
+                        >
+                          Sosial Şəbəkələr
+                        </span>
+                        <p style={{ margin: '2px 0 0', fontSize: 16, fontWeight: 600, color: '#F7F8F9' }}>
+                          Bizi izləyin
+                        </p>
+                      </div>
+                    </div>
+                    <SocialIconsGroup
+                      links={socialLinks}
+                      styleType={theme.socialIconStyle}
+                      iconColor={theme.socialIconColor}
+                      iconBgColor={theme.socialIconBgColor}
+                      size={theme.socialIconSize ? Math.min(theme.socialIconSize, 40) : 38}
+                      align="flex-start"
+                    />
                   </div>
                 )}
               </div>
