@@ -62,32 +62,11 @@ export default function SplashScreen({ config, siteSlug }: SplashScreenProps) {
     alwaysShow = false,
   } = parsedConfig;
 
-  // Immediately visible on first paint with 0ms delay so site loads silently in the background
-  const [visible, setVisible] = useState<boolean>(() => {
-    if (typeof window !== 'undefined' && !alwaysShow) {
-      try {
-        if (sessionStorage.getItem(`splash_seen_${siteSlug}`)) {
-          return false;
-        }
-      } catch { /* ignore */ }
-    }
-    return true;
-  });
-
+  const [mounted, setMounted] = useState(false);
+  const [visible, setVisible] = useState(false);
   const [timeLeft, setTimeLeft] = useState<number | null>(duration > 0 ? duration : null);
   const [videoLoaded, setVideoLoaded] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
-
-  // Clean up server-side instant shield as soon as client component mounts
-  useEffect(() => {
-    if (typeof document !== 'undefined') {
-      const shield = document.getElementById('instant-splash-shield');
-      if (shield) {
-        shield.style.opacity = '0';
-        setTimeout(() => shield.remove(), 400);
-      }
-    }
-  }, []);
 
   const handleDismiss = () => {
     setVisible(false);
@@ -102,6 +81,27 @@ export default function SplashScreen({ config, siteSlug }: SplashScreenProps) {
       } catch { /* ignore */ }
     }
   };
+
+  useEffect(() => {
+    setMounted(true);
+    if (typeof window !== 'undefined' && !alwaysShow) {
+      try {
+        if (sessionStorage.getItem(`splash_seen_${siteSlug}`)) {
+          return;
+        }
+      } catch { /* ignore */ }
+    }
+    setVisible(true);
+  }, [siteSlug, alwaysShow]);
+
+  // Always reset body overflow on unmount
+  useEffect(() => {
+    return () => {
+      if (typeof document !== 'undefined') {
+        document.body.style.overflow = '';
+      }
+    };
+  }, []);
 
   // Immediate Video Play
   useEffect(() => {
@@ -177,6 +177,8 @@ export default function SplashScreen({ config, siteSlug }: SplashScreenProps) {
 
   const embedUrl = getEmbedUrl(videoUrl, videoMuted, videoLoop);
 
+  if (!mounted) return null;
+
   return (
     <AnimatePresence>
       {visible && (
@@ -185,6 +187,7 @@ export default function SplashScreen({ config, siteSlug }: SplashScreenProps) {
           initial={false}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0, transition: { duration: 0.4, ease: 'easeInOut' } }}
+          onClick={handleDismiss}
           style={{
             position: 'fixed',
             inset: 0,

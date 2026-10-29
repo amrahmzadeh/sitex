@@ -142,25 +142,5 @@ export default async function SitePage({
   const data = await getSiteData(slug);
   if (!data) notFound();
 
-  const splashEnabled = Boolean(data.website?.splashEnabled && data.website?.splashConfig);
-  const splashConfig = data.website?.splashConfig as { backgroundColor?: string } | undefined;
-  const splashBg = splashConfig?.backgroundColor || '#0A0A0F';
-
-  return (
-    <>
-      {splashEnabled && (
-        <div
-          id="instant-splash-shield"
-          style={{
-            position: 'fixed',
-            inset: 0,
-            zIndex: 999998,
-            backgroundColor: splashBg,
-            transition: 'opacity 0.3s ease',
-          }}
-        />
-      )}
-      <RestaurantSite data={data} initialTable={initialTable} />
-    </>
-  );
+  return <RestaurantSite data={data} initialTable={initialTable} />;
 }
