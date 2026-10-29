@@ -75,8 +75,8 @@ export default function RegisterPage() {
         }}
       >
         <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center', marginBottom: 32, textDecoration: 'none', color: '#fff', fontSize: 22, fontWeight: 800 }}>
-          <ChefHat size={28} color="#7C5CFC" />
-          MyRestoran
+          <Sparkles size={28} color="#7C5CFC" />
+          SiteX
         </Link>
 
         <h1 style={{ fontSize: 24, fontWeight: 700, textAlign: 'center', marginBottom: 8, color: '#E8E8F0' }}>

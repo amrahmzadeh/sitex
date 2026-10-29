@@ -9,9 +9,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'MyRestoran — Restoranınız üçün professional veb sayt',
+  title: 'SiteX — Professional Veb Sayt Yaradıcısı',
   description:
-    'Restoranlar, kafelər və qida müəssisələri üçün professional veb sayt yaradın. Kod bilmədən, bir neçə dəqiqədə.',
+    'İstənilən biznes, brend və müəssisə üçün sürətli və professional veb sayt yaradın. Kod bilmədən, bir neçə dəqiqədə.',
 };
 
 export default function RootLayout({

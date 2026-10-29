@@ -77,8 +77,8 @@ export default function LoginPage() {
             fontWeight: 800,
           }}
         >
-          <ChefHat size={28} color="#7C5CFC" />
-          MyRestoran
+          <Sparkles size={28} color="#7C5CFC" />
+          SiteX
         </Link>
 
         <h1

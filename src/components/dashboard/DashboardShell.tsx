@@ -80,8 +80,8 @@ export default function DashboardShell({ children }: { children: React.ReactNode
       {/* Logo */}
       <div style={{ padding: '24px 20px 20px', borderBottom: '1px solid #2A2A3A' }}>
         <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none', color: '#fff', fontWeight: 800, fontSize: 18 }}>
-          <ChefHat size={24} color="#7C5CFC" />
-          MyRestoran
+          <Sparkles size={24} color="#7C5CFC" />
+          SiteX
         </Link>
       </div>
 

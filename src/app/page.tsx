@@ -8,7 +8,7 @@ import {
   Palette,
   Smartphone,
   MessageCircle,
-  ChefHat,
+  Layout,
   ArrowRight,
   Sparkles,
   Zap,
@@ -19,32 +19,32 @@ const features = [
   {
     icon: Palette,
     title: 'Professional temalar',
-    desc: 'Hazır temalarda istədiyinizi seçin, rəngləri və şriftləri dəyişdirin.',
+    desc: 'Hazır temalardan istədiyinizi seçin, rəngləri və şriftləri saniyələr içində fərdiləşdirin.',
   },
   {
-    icon: ChefHat,
-    title: 'Menyu idarəetməsi',
-    desc: 'Kateqoriyalar, şəkillər, qiymətlər — hər şeyi rahatlıqla idarə edin.',
+    icon: Layout,
+    title: 'Kataloq və xidmətlər',
+    desc: 'Kateqoriyalar, məhsullar, qiymətlər və xidmətlər — hər şeyi asanlıqla idarə edin.',
   },
   {
     icon: MessageCircle,
-    title: 'WhatsApp sifariş',
-    desc: 'Müştərilər birbaşa WhatsApp ilə sifariş verə bilər.',
+    title: 'WhatsApp sifariş və əlaqə',
+    desc: 'Müştəriləriniz birbaşa WhatsApp ilə sürətli sifariş verə və əlaqə saxlaya bilər.',
   },
   {
     icon: Smartphone,
     title: 'Responsive dizayn',
-    desc: 'Mobil, tablet və masaüstündə mükəmməl görünüm.',
+    desc: 'Bütün mobil telefon, planşet və masaüstü ekranlarda qüsursuz görünüş.',
   },
   {
     icon: Globe,
     title: 'Öz domeniniz',
-    desc: 'Müəssisənizin adı ilə unikal veb ünvan.',
+    desc: 'Müəssisənizin və brendinizin adı ilə fərdi veb ünvan.',
   },
   {
     icon: Shield,
     title: 'Təhlükəsiz platforma',
-    desc: 'Verilənləriniz qorunur, kiracılar izolə olunur.',
+    desc: 'Verilənləriniz ən yüksək təhlükəsizlik standartları ilə qorunur.',
   },
 ];
 
@@ -82,8 +82,8 @@ export default function HomePage() {
             gap: 8,
           }}
         >
-          <ChefHat size={28} color="#7C5CFC" />
-          MyRestoran
+          <Sparkles size={28} color="#7C5CFC" />
+          SiteX
         </Link>
         <div style={{ display: 'flex', gap: 12 }}>
           {session ? (
@@ -145,7 +145,7 @@ export default function HomePage() {
             }}
           >
             <Sparkles size={14} />
-            Restoran veb saytınızı dəqiqələrdə yaradın
+            Professional veb saytınızı dəqiqələrdə qurun
           </div>
 
           <h1
@@ -159,9 +159,9 @@ export default function HomePage() {
               WebkitTextFillColor: 'transparent',
             }}
           >
-            Restoranınız üçün
+            Müəssisəniz üçün
             <br />
-            professional veb sayt
+            müasir veb sayt
           </h1>
 
           <p
@@ -173,9 +173,9 @@ export default function HomePage() {
               margin: '0 auto 40px',
             }}
           >
-            Kod yazmadan, hazır temalarla restoranınızın menyusunu, əlaqə
-            məlumatlarını və sifarişləri idarə edin. WhatsApp ilə sifariş qəbul
-            edin.
+            Kod yazmadan, hazır müasir temalarla xidmətlərinizi, kataloqunuzu, əlaqə
+            məlumatlarınızı və sifarişləri idarə edin. WhatsApp inteqrasiyası ilə
+            müştərilərinizə yaxın olun.
           </p>
 
           <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -222,7 +222,7 @@ export default function HomePage() {
             marginBottom: 60,
           }}
         >
-          Niyə MyRestoran?
+          Niyə SiteX?
         </motion.h2>
 
         <div
@@ -283,7 +283,7 @@ export default function HomePage() {
           fontSize: 14,
         }}
       >
-        © {new Date().getFullYear()} MyRestoran. Bütün hüquqlar qorunur.
+        © {new Date().getFullYear()} SiteX. Bütün hüquqlar qorunur.
       </footer>
     </div>
   );

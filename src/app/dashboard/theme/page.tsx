@@ -1952,7 +1952,7 @@ export default function ThemePage() {
               <label className="dash-label">Platforma / Yaradıcı Qeydi</label>
               <input
                 className="dash-input"
-                placeholder="Sayt MyRestoran platforması ilə yaradılıb"
+                placeholder="Sayt SiteX platforması ilə yaradılıb"
                 value={theme.footerPlatformText ?? ''}
                 onChange={(e) => setTheme(p => ({ ...p, footerPlatformText: e.target.value }))}
               />

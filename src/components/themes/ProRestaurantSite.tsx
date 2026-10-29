@@ -2074,7 +2074,7 @@ export default function ProRestaurantSite({
                 {theme.footerCopyrightText || `© ${new Date().getFullYear()} ${organization.name}. Bütün hüquqlar qorunur.`}
               </p>
               <p style={{ margin: '4px 0 0', opacity: 0.6 }}>
-                {theme.footerPlatformText || 'Sayt MyRestoran platforması ilə yaradılıb'}
+                {theme.footerPlatformText || 'Sayt SiteX platforması ilə yaradılıb'}
               </p>
             </div>
           </div>

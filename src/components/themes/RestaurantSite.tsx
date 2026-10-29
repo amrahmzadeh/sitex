@@ -1633,7 +1633,7 @@ export default function RestaurantSite({ data, initialTable }: { data: SiteData;
               {theme.footerCopyrightText || `© ${new Date().getFullYear()} ${organization.name}. Bütün hüquqlar qorunur.`}
             </p>
             <p style={{ color: 'rgba(255,255,255,0.2)', fontSize: 11, marginTop: 6 }}>
-              {theme.footerPlatformText || <>Sayt <a href="/" style={{ color: 'rgba(255,255,255,0.3)', textDecoration: 'none' }}>MyRestoran</a> platforması ilə yaradılıb</>}
+              {theme.footerPlatformText || <>Sayt <a href="/" style={{ color: 'rgba(255,255,255,0.3)', textDecoration: 'none' }}>SiteX</a> platforması ilə yaradılıb</>}
             </p>
           </div>
         </footer>
