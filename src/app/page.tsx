@@ -39,7 +39,7 @@ const features = [
   {
     icon: Globe,
     title: 'Öz domeniniz',
-    desc: 'İşletmənizin adı ilə unikal veb ünvan.',
+    desc: 'Müəssisənizin adı ilə unikal veb ünvan.',
   },
   {
     icon: Shield,

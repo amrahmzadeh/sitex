@@ -23,7 +23,7 @@ export default function NewOrganizationPage() {
   const set = (k: string, v: string) => setForm((p) => ({ ...p, [k]: v }));
 
   const handleSubmit = async () => {
-    if (!form.name.trim()) { setError('İşletmə adı tələb olunur'); return; }
+    if (!form.name.trim()) { setError('Müəssisə adı tələb olunur'); return; }
     setError('');
     setLoading(true);
 
@@ -35,7 +35,7 @@ export default function NewOrganizationPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error || 'İşletmə yaradılarkən xəta baş verdi');
+        setError(data.error || 'Müəssisə yaradılarkən xəta baş verdi');
         return;
       }
       if (data.organization?.id) {
@@ -53,9 +53,9 @@ export default function NewOrganizationPage() {
     <div style={{ maxWidth: 600, margin: '0 auto' }}>
       <div style={{ marginBottom: 32 }}>
         <h1 style={{ fontSize: 26, fontWeight: 700, color: '#E8E8F0', marginBottom: 6 }}>
-          Yeni işletmə yarat
+          Yeni müəssisə yarat
         </h1>
-        <p style={{ color: '#8888A0' }}>İşletmənizin əsas məlumatlarını daxil edin</p>
+        <p style={{ color: '#8888A0' }}>Müəssisənizin əsas məlumatlarını daxil edin</p>
       </div>
 
       {/* Steps */}
@@ -93,14 +93,14 @@ export default function NewOrganizationPage() {
               </div>
               <div>
                 <h2 style={{ fontSize: 17, fontWeight: 600, color: '#E8E8F0' }}>Əsas məlumatlar</h2>
-                <p style={{ fontSize: 13, color: '#8888A0' }}>İşletmə adı və təsviri</p>
+                <p style={{ fontSize: 13, color: '#8888A0' }}>Müəssisə adı və təsviri</p>
               </div>
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               <div>
-                <label className="dash-label">İşletmə adı *</label>
-                <input className="dash-input" value={form.name} onChange={(e) => set('name', e.target.value)} placeholder="Məs: Lezzət Restoranı" />
+                <label className="dash-label">Müəssisə adı *</label>
+                <input className="dash-input" value={form.name} onChange={(e) => set('name', e.target.value)} placeholder="Məs: Ləzzət Restoranı" />
               </div>
               <div>
                 <label className="dash-label">Qısa təsvir</label>
@@ -108,7 +108,7 @@ export default function NewOrganizationPage() {
                   className="dash-input"
                   value={form.description}
                   onChange={(e) => set('description', e.target.value)}
-                  placeholder="İşletməniz haqqında qısa məlumat..."
+                  placeholder="Müəssisəniz haqqında qısa məlumat..."
                   rows={3}
                   style={{ resize: 'vertical' }}
                 />
@@ -120,7 +120,7 @@ export default function NewOrganizationPage() {
             </div>
 
             <button
-              onClick={() => { if (!form.name.trim()) { setError('İşletmə adı tələb olunur'); return; } setError(''); setStep(2); }}
+              onClick={() => { if (!form.name.trim()) { setError('Müəssisə adı tələb olunur'); return; } setError(''); setStep(2); }}
               className="dash-btn-primary"
               style={{ width: '100%', marginTop: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
             >
@@ -171,7 +171,7 @@ export default function NewOrganizationPage() {
                 style={{ flex: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, opacity: loading ? 0.7 : 1 }}
               >
                 {loading && <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} />}
-                İşletməni yarat
+                Müəssisəni yarat
               </button>
             </div>
           </>

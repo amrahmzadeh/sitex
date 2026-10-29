@@ -11,7 +11,7 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: 'MyRestoran — Restoranınız üçün professional veb sayt',
   description:
-    'Restoranlar, kafelər və yemək işletmələri üçün professional veb sayt yaradın. Kod bilmədən, bir neçə dəqiqədə.',
+    'Restoranlar, kafelər və qida müəssisələri üçün professional veb sayt yaradın. Kod bilmədən, bir neçə dəqiqədə.',
 };
 
 export default function RootLayout({

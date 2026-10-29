@@ -88,7 +88,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
       {/* Org Selector */}
       {currentOrg && (
         <div style={{ padding: '16px 20px', borderBottom: '1px solid #2A2A3A' }}>
-          <p style={{ fontSize: 11, color: '#8888A0', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em' }}>İşletmə</p>
+          <p style={{ fontSize: 11, color: '#8888A0', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Müəssisə</p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
             {orgs.map((org) => (
               <button
@@ -123,7 +123,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
             href="/dashboard/new-organization"
             style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 8, padding: '6px 10px', borderRadius: 8, fontSize: 12, color: '#8888A0', textDecoration: 'none' }}
           >
-            + Yeni işletmə
+            + Yeni müəssisə
           </Link>
         </div>
       )}
@@ -273,10 +273,10 @@ export default function DashboardShell({ children }: { children: React.ReactNode
           {orgs.length === 0 && pathname !== '/dashboard/new-organization' ? (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: 16, textAlign: 'center' }}>
               <Building2 size={48} color="#2A2A3A" />
-              <h2 style={{ fontSize: 22, fontWeight: 700, color: '#E8E8F0' }}>Hələ işletməniz yoxdur</h2>
-              <p style={{ color: '#8888A0', maxWidth: 400 }}>İlk işletmənizi yaradın və veb saytınızı qurmağa başlayın</p>
+              <h2 style={{ fontSize: 22, fontWeight: 700, color: '#E8E8F0' }}>Hələ müəssisəniz yoxdur</h2>
+              <p style={{ color: '#8888A0', maxWidth: 400 }}>İlk müəssisənizi yaradın və veb saytınızı qurmağa başlayın</p>
               <Link href="/dashboard/new-organization" className="dash-btn-primary" style={{ textDecoration: 'none', marginTop: 8 }}>
-                İlk işletməni yarat
+                İlk müəssisəni yarat
               </Link>
             </div>
           ) : (
