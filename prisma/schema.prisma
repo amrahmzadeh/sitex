@@ -65,6 +65,7 @@ model Organization {
   socialLinks      SocialLink[]
   workingHours     WorkingHours[]
   qrSettings       QRSettings?
+  socialFeedPosts  SocialFeedPost[]
 }
 
 // ==================== QR SETTINGS ====================
@@ -231,4 +232,29 @@ model WorkingHours {
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   @@unique([organizationId, dayOfWeek])
+}
+
+// ==================== SOCIAL FEED POSTS ====================
+
+model SocialFeedPost {
+  id              String       @id @default(cuid())
+  organizationId  String
+  platform        String       // instagram, tiktok, youtube, facebook
+  postUrl         String       // Original post URL
+  // Fetched via oEmbed / stored locally
+  thumbnailUrl    String?      // Post image/thumbnail
+  caption         String?      @db.Text
+  authorName      String?
+  authorHandle    String?
+  authorAvatar    String?
+  likes           Int          @default(0)
+  comments        Int          @default(0)
+  isVideo         Boolean      @default(false)
+  sortOrder       Int          @default(0)
+  isVisible       Boolean      @default(true)
+  fetchedAt       DateTime?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 }

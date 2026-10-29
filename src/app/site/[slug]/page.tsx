@@ -20,6 +20,21 @@ interface SiteData {
     countryCode: string; phoneNumber: string; orderMessage: string; buttonText: string; isEnabled: boolean;
   };
   socialLinks: Array<{ platform: string; url: string }>;
+  socialFeedPosts?: Array<{
+    id: string;
+    platform: string;
+    postUrl: string;
+    thumbnailUrl?: string | null;
+    caption?: string | null;
+    authorName?: string | null;
+    authorHandle?: string | null;
+    authorAvatar?: string | null;
+    likes: number;
+    comments: number;
+    isVideo: boolean;
+    sortOrder: number;
+    isVisible: boolean;
+  }>;
   workingHours: Array<{ dayOfWeek: number; openTime?: string; closeTime?: string; isClosed: boolean }>;
   menuCategories: Array<{
     id: string; name: string; slug: string; isVisible: boolean;
@@ -39,6 +54,10 @@ async function getSiteData(slug: string): Promise<SiteData | null> {
         website: true,
         whatsappSettings: true,
         socialLinks: { orderBy: { sortOrder: 'asc' } },
+        socialFeedPosts: {
+          where: { isVisible: true },
+          orderBy: { sortOrder: 'asc' },
+        },
         workingHours: { orderBy: { dayOfWeek: 'asc' } },
         menuCategories: {
           where: { isVisible: true },
@@ -80,6 +99,7 @@ async function getSiteData(slug: string): Promise<SiteData | null> {
       },
       whatsapp: org.whatsappSettings || undefined,
       socialLinks: org.socialLinks || [],
+      socialFeedPosts: org.socialFeedPosts || [],
       workingHours: org.workingHours || [],
       menuCategories: org.menuCategories || [],
     } as unknown as SiteData;

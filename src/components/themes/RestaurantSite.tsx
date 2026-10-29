@@ -40,6 +40,7 @@ export interface SiteData {
   };
   whatsapp?: { countryCode: string; phoneNumber: string; orderMessage: string; buttonText: string; isEnabled: boolean; };
   socialLinks: Array<{ platform: string; url: string }>;
+  socialFeedPosts?: Array<any>;
   workingHours: Array<{ dayOfWeek: number; openTime?: string; closeTime?: string; isClosed: boolean }>;
   menuCategories: MenuCategory[];
 }
@@ -1593,6 +1594,7 @@ export default function RestaurantSite({ data, initialTable }: { data: SiteData;
         {/* Social Media Feed Module */}
         <SocialMediaFeed
           socialLinks={socialLinks}
+          posts={data.socialFeedPosts}
           theme={theme}
           organization={organization}
           menuItems={menuCategories.flatMap((c) => c.menuItems)}

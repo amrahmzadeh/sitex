@@ -31,10 +31,27 @@ export interface SocialFeedPost {
   likes: number;
   comments: number;
   tags: string[];
+  shortcode?: string | null;
+}
+
+export interface RawDbPost {
+  id: string;
+  platform: string;
+  postUrl: string;
+  thumbnailUrl?: string | null;
+  caption?: string | null;
+  authorName?: string | null;
+  authorHandle?: string | null;
+  authorAvatar?: string | null;
+  likes?: number;
+  comments?: number;
+  isVideo?: boolean;
+  createdAt?: string | Date;
 }
 
 interface SocialMediaFeedProps {
   socialLinks: Array<{ platform: string; url: string }>;
+  posts?: RawDbPost[];
   theme: Partial<ThemeConfig>;
   organization: {
     name: string;
@@ -89,8 +106,15 @@ function extractHandle(url: string, platform: string, orgName: string): string {
   return `@${fallback || platform}`;
 }
 
+function extractInstagramShortcode(url: string): string | null {
+  if (!url) return null;
+  const match = url.match(/(?:instagram\.com\/(?:p|reel|tv)\/)([a-zA-Z0-9_-]+)/);
+  return match ? match[1] : null;
+}
+
 export default function SocialMediaFeed({
   socialLinks,
+  posts: dbPosts = [],
   theme,
   organization,
   menuItems = [],
@@ -103,7 +127,7 @@ export default function SocialMediaFeed({
 
   // Configuration check
   const isEnabled = theme.socialFeedEnabled !== false;
-  if (!isEnabled || !socialLinks || socialLinks.length === 0) {
+  if (!isEnabled || (!socialLinks?.length && !dbPosts?.length)) {
     return null;
   }
 
@@ -151,16 +175,49 @@ export default function SocialMediaFeed({
     }
   };
 
-  // Generate dynamic posts from configured social links
+  // Generate dynamic posts or use real DB posts
   const posts = useMemo<SocialFeedPost[]>(() => {
     const validMenuItems = menuItems.filter((m) => Boolean(m.image));
-    const items: SocialFeedPost[] = [];
 
-    // Distinct platforms
+    // If real posts were added by admin, use them!
+    if (dbPosts && dbPosts.length > 0) {
+      return dbPosts.map((p, idx) => {
+        const platform = p.platform.toLowerCase();
+        const shortcode = platform === 'instagram' ? extractInstagramShortcode(p.postUrl) : null;
+        const fallbackImg =
+          validMenuItems[idx % Math.max(1, validMenuItems.length)]?.image ||
+          FALLBACK_POST_IMAGES[idx % FALLBACK_POST_IMAGES.length];
+        const imageUrl = p.thumbnailUrl || fallbackImg;
+        const handle = p.authorHandle || extractHandle(p.postUrl, platform, organization.name);
+
+        return {
+          id: p.id,
+          platform,
+          authorName: p.authorName || organization.name,
+          authorHandle: handle,
+          avatarUrl: p.authorAvatar || organization.logo,
+          postUrl: p.postUrl,
+          imageUrl,
+          isVideo:
+            p.isVideo ??
+            (platform === 'tiktok' ||
+              platform === 'youtube' ||
+              (p.postUrl ? p.postUrl.includes('/reel/') : false)),
+          caption: p.caption || '',
+          timeAgo: 'Son paylaşım',
+          likes: p.likes || 120 + ((idx * 47) % 350),
+          comments: p.comments || 8 + ((idx * 9) % 28),
+          tags: ['#lezzet', `#${platform}`, organization.name.toLowerCase().replace(/\s+/g, '')],
+          shortcode,
+        };
+      });
+    }
+
+    // Fallback: generate dynamic posts from configured social links
+    const items: SocialFeedPost[] = [];
     const supportedPlatforms = socialLinks.filter((l) =>
       ['instagram', 'tiktok', 'youtube', 'facebook', 'twitter'].includes(l.platform.toLowerCase())
     );
-
     const targetLinks = supportedPlatforms.length > 0 ? supportedPlatforms : socialLinks;
 
     targetLinks.forEach((link, idx) => {
@@ -169,7 +226,6 @@ export default function SocialMediaFeed({
       const handle = extractHandle(link.url, p, organization.name);
       const caps = CAPTIONS_BY_PLATFORM[p] || CAPTIONS_BY_PLATFORM.instagram;
 
-      // 2-3 dynamic posts per platform
       const count = targetLinks.length === 1 ? 6 : targetLinks.length === 2 ? 3 : 2;
 
       for (let i = 0; i < count; i++) {
@@ -193,15 +249,15 @@ export default function SocialMediaFeed({
           isVideo,
           caption,
           timeAgo,
-          likes: 85 + (idx * 137 + i * 94) % 940,
-          comments: 6 + (idx * 17 + i * 11) % 48,
+          likes: 85 + ((idx * 137 + i * 94) % 940),
+          comments: 6 + ((idx * 17 + i * 11) % 48),
           tags: ['#streetfood', '#lezzet', '#restaurant', `#${p}`],
         });
       }
     });
 
     return items;
-  }, [socialLinks, menuItems, organization.name, organization.logo, primaryColor]);
+  }, [dbPosts, socialLinks, menuItems, organization.name, organization.logo, primaryColor]);
 
   // Filtered posts
   const filteredPosts = useMemo(() => {
@@ -667,34 +723,50 @@ export default function SocialMediaFeed({
                   justifyContent: 'center',
                 }}
               >
-                <img
-                  src={selectedPost.imageUrl}
-                  alt={selectedPost.caption}
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                    display: 'block',
-                  }}
-                />
-                {selectedPost.isVideo && (
-                  <div
+                {selectedPost.shortcode ? (
+                  <iframe
+                    src={`https://www.instagram.com/p/${selectedPost.shortcode}/embed/`}
                     style={{
-                      position: 'absolute',
-                      width: 54,
-                      height: 54,
-                      borderRadius: '50%',
-                      background: 'rgba(0,0,0,0.65)',
-                      backdropFilter: 'blur(6px)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      color: '#FFF',
-                      border: '1.5px solid rgba(255,255,255,0.4)',
+                      width: '100%',
+                      height: '100%',
+                      minHeight: 460,
+                      border: 'none',
                     }}
-                  >
-                    <Play size={22} fill="#FFF" style={{ marginLeft: 3 }} />
-                  </div>
+                    scrolling="no"
+                    allowFullScreen
+                  />
+                ) : (
+                  <>
+                    <img
+                      src={selectedPost.imageUrl}
+                      alt={selectedPost.caption}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        display: 'block',
+                      }}
+                    />
+                    {selectedPost.isVideo && (
+                      <div
+                        style={{
+                          position: 'absolute',
+                          width: 54,
+                          height: 54,
+                          borderRadius: '50%',
+                          background: 'rgba(0,0,0,0.65)',
+                          backdropFilter: 'blur(6px)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          color: '#FFF',
+                          border: '1.5px solid rgba(255,255,255,0.4)',
+                        }}
+                      >
+                        <Play size={22} fill="#FFF" style={{ marginLeft: 3 }} />
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
 
