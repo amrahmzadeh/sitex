@@ -5,7 +5,7 @@ import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { ChefHat, Mail, Lock, User, Loader2, Sparkles } from 'lucide-react';
+import { ChefHat, Mail, Lock, User, Loader2 } from 'lucide-react';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -74,9 +74,8 @@ export default function RegisterPage() {
           padding: 40,
         }}
       >
-        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center', marginBottom: 32, textDecoration: 'none', color: '#fff', fontSize: 22, fontWeight: 800 }}>
-          <Sparkles size={28} color="#00D37D" />
-          SiteX
+        <Link href="/" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 32, textDecoration: 'none' }}>
+          <img src="/logo.png" alt="SiteX" style={{ height: 36, width: 'auto', objectFit: 'contain' }} />
         </Link>
 
         <h1 style={{ fontSize: 24, fontWeight: 700, textAlign: 'center', marginBottom: 8, color: '#E8E8F0' }}>

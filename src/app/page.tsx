@@ -71,21 +71,7 @@ export default function HomePage() {
           borderBottom: '1px solid #383334',
         }}
       >
-        <Link
-          href="/"
-          style={{
-            fontSize: 24,
-            fontWeight: 800,
-            color: '#fff',
-            textDecoration: 'none',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-          }}
-        >
-          <Sparkles size={28} color="#00D37D" />
-          SiteX
-        </Link>
+        <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}><img src="/logo.png" alt="SiteX" style={{ height: 38, width: 'auto', objectFit: 'contain' }} /></Link>
         <div style={{ display: 'flex', gap: 12 }}>
           {session ? (
             <Link

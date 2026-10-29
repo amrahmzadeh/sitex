@@ -79,9 +79,8 @@ export default function DashboardShell({ children }: { children: React.ReactNode
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       {/* Logo */}
       <div style={{ padding: '24px 20px 20px', borderBottom: '1px solid #383334' }}>
-        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none', color: '#fff', fontWeight: 800, fontSize: 18 }}>
-          <Sparkles size={24} color="#00D37D" />
-          SiteX
+        <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+          <img src="/logo.png" alt="SiteX" style={{ height: 32, width: 'auto', objectFit: 'contain' }} />
         </Link>
       </div>
 
