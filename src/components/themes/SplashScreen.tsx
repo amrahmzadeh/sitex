@@ -61,8 +61,7 @@ export default function SplashScreen({ config, siteSlug }: SplashScreenProps) {
     alwaysShow = false,
   } = parsedConfig;
 
-  const [mounted, setMounted] = useState(false);
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(true);
   const [timeLeft, setTimeLeft] = useState<number | null>(duration > 0 ? duration : null);
   const [videoLoaded, setVideoLoaded] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -71,8 +70,10 @@ export default function SplashScreen({ config, siteSlug }: SplashScreenProps) {
     setVisible(false);
     if (typeof document !== 'undefined') {
       document.body.style.overflow = '';
-      const shield = document.getElementById('instant-splash-shield');
-      if (shield) shield.remove();
+      const overlay = document.getElementById('splash-screen-overlay');
+      if (overlay) {
+        overlay.style.pointerEvents = 'none';
+      }
     }
     if (typeof window !== 'undefined') {
       try {
@@ -82,15 +83,17 @@ export default function SplashScreen({ config, siteSlug }: SplashScreenProps) {
   };
 
   useEffect(() => {
-    setMounted(true);
     if (typeof window !== 'undefined' && !alwaysShow) {
       try {
         if (sessionStorage.getItem(`splash_seen_${siteSlug}`)) {
+          setVisible(false);
+          if (typeof document !== 'undefined') {
+            document.body.style.overflow = '';
+          }
           return;
         }
       } catch { /* ignore */ }
     }
-    setVisible(true);
   }, [siteSlug, alwaysShow]);
 
   // Always reset body overflow on unmount
@@ -144,10 +147,10 @@ export default function SplashScreen({ config, siteSlug }: SplashScreenProps) {
       }, 1000);
 
       autoCloseTimer = setTimeout(closeSplash, duration * 1000);
-    } else {
-      // duration === 0 or auto: close as soon as page is loaded (grace period 2s), max 4.5s
+    } else if (type !== 'video') {
+      // duration === 0 and non-video: close as soon as page is loaded
       const onSiteReady = () => {
-        autoCloseTimer = setTimeout(closeSplash, 2000);
+        autoCloseTimer = setTimeout(closeSplash, 1500);
       };
 
       if (typeof document !== 'undefined' && (document.readyState === 'complete' || document.readyState === 'interactive')) {
@@ -156,8 +159,10 @@ export default function SplashScreen({ config, siteSlug }: SplashScreenProps) {
         window.addEventListener('load', onSiteReady, { once: true });
       }
 
-      // Hard safety fallback: splash must NEVER stay open longer than 4.5s if duration=0
-      hardFallbackTimer = setTimeout(closeSplash, 4500);
+      hardFallbackTimer = setTimeout(closeSplash, 4000);
+    } else {
+      // Video mode with duration=0: let video play and trigger onEnded, fallback at 6s
+      hardFallbackTimer = setTimeout(closeSplash, 6000);
     }
 
     // Absolute fallback: no splash screen should ever lock a site for more than 10s
@@ -172,21 +177,21 @@ export default function SplashScreen({ config, siteSlug }: SplashScreenProps) {
       if (hardFallbackTimer) clearTimeout(hardFallbackTimer);
       clearTimeout(maxSafety);
     };
-  }, [visible, duration, siteSlug]);
+  }, [visible, duration, siteSlug, type]);
 
   const embedUrl = getEmbedUrl(videoUrl, videoMuted, videoLoop);
-
-  if (!mounted) return null;
 
   return (
     <AnimatePresence>
       {visible && (
         <motion.div
+          id="splash-screen-overlay"
           key="splash-screen-overlay"
           initial={false}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0, transition: { duration: 0.4, ease: 'easeInOut' } }}
           onClick={handleDismiss}
+          suppressHydrationWarning
           style={{
             position: 'fixed',
             inset: 0,
@@ -199,6 +204,29 @@ export default function SplashScreen({ config, siteSlug }: SplashScreenProps) {
             overflow: 'hidden',
           }}
         >
+          {/* Synchronous inline script: hides immediately if seen in session, sets failsafe */}
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `(function(){
+                try {
+                  if (!${alwaysShow ? 'true' : 'false'} && sessionStorage.getItem('splash_seen_${siteSlug}')) {
+                    var el = document.getElementById('splash-screen-overlay');
+                    if (el) el.style.display = 'none';
+                  } else {
+                    document.body.style.overflow = 'hidden';
+                  }
+                } catch(e) {}
+                setTimeout(function(){
+                  var el = document.getElementById('splash-screen-overlay');
+                  if (el && el.style.display !== 'none') {
+                    el.style.transition = 'opacity 0.4s ease';
+                    el.style.opacity = '0';
+                    setTimeout(function(){ if (el) el.remove(); document.body.style.overflow = ''; }, 400);
+                  }
+                }, ${(duration && duration > 0 ? duration + 1.5 : 6) * 1000});
+              })()`,
+            }}
+          />
 
           {/* Content: Video Mode */}
           {type === 'video' && videoUrl && (
