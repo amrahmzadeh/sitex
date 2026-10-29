@@ -112,6 +112,23 @@ function extractInstagramShortcode(url: string): string | null {
   return match ? match[1] : null;
 }
 
+function formatRelativeTime(dateInput?: string | Date): string {
+  if (!dateInput) return 'Son günlərdə';
+  const date = typeof dateInput === 'string' ? new Date(dateInput) : dateInput;
+  if (isNaN(date.getTime())) return 'Son günlərdə';
+  const diffSec = Math.floor((Date.now() - date.getTime()) / 1000);
+  if (diffSec < 60) return 'Bayaq';
+  const diffMin = Math.floor(diffSec / 60);
+  if (diffMin < 60) return `${diffMin} dəq əvvəl`;
+  const diffHours = Math.floor(diffMin / 60);
+  if (diffHours < 24) return `${diffHours} saat əvvəl`;
+  const diffDays = Math.floor(diffHours / 24);
+  if (diffDays === 1) return 'Dünən';
+  if (diffDays < 7) return `${diffDays} gün əvvəl`;
+  if (diffDays < 30) return `${Math.floor(diffDays / 7)} həftə əvvəl`;
+  return date.toLocaleDateString('az-AZ', { day: 'numeric', month: 'short' });
+}
+
 export default function SocialMediaFeed({
   socialLinks,
   posts: dbPosts = [],
@@ -204,7 +221,7 @@ export default function SocialMediaFeed({
               platform === 'youtube' ||
               (p.postUrl ? p.postUrl.includes('/reel/') : false)),
           caption: p.caption || '',
-          timeAgo: 'Son paylaşım',
+          timeAgo: formatRelativeTime(p.createdAt),
           likes: p.likes || 120 + ((idx * 47) % 350),
           comments: p.comments || 8 + ((idx * 9) % 28),
           tags: ['#lezzet', `#${platform}`, organization.name.toLowerCase().replace(/\s+/g, '')],

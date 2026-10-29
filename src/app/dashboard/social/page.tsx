@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Trash2, Save, Check, Loader2, ExternalLink, Eye, EyeOff, Sparkles, Image as ImageIcon } from 'lucide-react';
+import { Plus, Trash2, Save, Check, Loader2, ExternalLink, Eye, EyeOff, Sparkles, Image as ImageIcon, RefreshCw } from 'lucide-react';
 import { PLATFORM_INFO } from '@/components/themes/SocialIcons';
 
 function useCurrentOrg() {
@@ -69,12 +69,25 @@ export default function SocialPage() {
   const [authorHandle, setAuthorHandle] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
 
+  // Auto-sync Instagram state
+  const [igProfileUrl, setIgProfileUrl] = useState('');
+  const [syncingIg, setSyncingIg] = useState(false);
+  const [syncSuccessMsg, setSyncSuccessMsg] = useState('');
+  const [syncErrorMsg, setSyncErrorMsg] = useState('');
+
   // Load links
   useEffect(() => {
     if (!orgId) return;
     fetch(`/api/organizations/${orgId}/social`)
       .then(r => r.json())
-      .then(d => setLinks(d.links || []))
+      .then(d => {
+        const socialList = d.links || [];
+        setLinks(socialList);
+        const ig = socialList.find((l: SocialLink) => l.platform === 'instagram');
+        if (ig && ig.url) {
+          setIgProfileUrl(ig.url);
+        }
+      })
       .finally(() => setLoadingLinks(false));
   }, [orgId]);
 
@@ -92,6 +105,35 @@ export default function SocialPage() {
   useEffect(() => {
     loadPosts();
   }, [orgId]);
+
+  // Auto-sync Instagram posts
+  const handleAutoSyncInstagram = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!orgId || !igProfileUrl.trim()) return;
+    setSyncingIg(true);
+    setSyncSuccessMsg('');
+    setSyncErrorMsg('');
+
+    try {
+      const res = await fetch(`/api/organizations/${orgId}/social-feed/sync`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ profileUrl: igProfileUrl.trim() }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setSyncErrorMsg(data.error || 'Sinxronizasiya xətası baş verdi');
+        return;
+      }
+      setSyncSuccessMsg(data.message || 'Instagram paylaşımları uğurla əldə edildi!');
+      loadPosts();
+      setTimeout(() => setSyncSuccessMsg(''), 5000);
+    } catch {
+      setSyncErrorMsg('Serverlə əlaqə qurularkən xəta baş verdi');
+    } finally {
+      setSyncingIg(false);
+    }
+  };
 
   // Save links
   const saveLinks = async () => {
@@ -446,16 +488,143 @@ export default function SocialPage() {
       {/* TAB 2: LIVE FEED POSTS */}
       {activeTab === 'feed' && (
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }}>
+          {/* Instagram Auto-Sync Card */}
+          <div
+            className="dash-card"
+            style={{
+              padding: 24,
+              marginBottom: 24,
+              background: 'linear-gradient(135deg, rgba(225, 48, 108, 0.08), rgba(131, 58, 180, 0.06), #161622)',
+              border: '1px solid rgba(225, 48, 108, 0.25)',
+              borderRadius: 16,
+              boxShadow: '0 8px 32px rgba(225, 48, 108, 0.08)',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12, marginBottom: 14 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div
+                  style={{
+                    width: 36,
+                    height: 36,
+                    borderRadius: 10,
+                    background: 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#FFF',
+                    boxShadow: '0 4px 14px rgba(225,48,108,0.3)',
+                  }}
+                >
+                  <Sparkles size={18} />
+                </div>
+                <div>
+                  <h2 style={{ fontSize: 16, fontWeight: 700, color: '#FFFFFF', margin: 0 }}>
+                    Instagram Səhifəsi ilə Avtomatik Sinxronizasiya
+                  </h2>
+                  <p style={{ fontSize: 12, color: '#A0A0BA', margin: 0, marginTop: 2 }}>
+                    Yalnız Instagram səhifənizin linkini daxil edin — sistem paylaşımları, şəkilləri, videoları və tarixləri avtomatik çəkib ana səhifədə canlı nümayiş etdirəcək.
+                  </p>
+                </div>
+              </div>
+
+              <div style={{ fontSize: 12, color: '#E1306C', fontWeight: 600, background: 'rgba(225,48,108,0.12)', padding: '5px 12px', borderRadius: 999 }}>
+                ⚡ Avtomatik Canlı Yenilənmə
+              </div>
+            </div>
+
+            <form onSubmit={handleAutoSyncInstagram} style={{ marginTop: 16 }}>
+              <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                <div style={{ flex: '1 1 320px' }}>
+                  <input
+                    className="dash-input"
+                    required
+                    placeholder="Məs: https://www.instagram.com/asxanasalyan/ və ya asxanasalyan"
+                    value={igProfileUrl}
+                    onChange={(e) => setIgProfileUrl(e.target.value)}
+                    style={{
+                      margin: 0,
+                      width: '100%',
+                      fontSize: 13,
+                      background: '#12121A',
+                      borderColor: 'rgba(225,48,108,0.3)',
+                    }}
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={syncingIg || !igProfileUrl.trim()}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    padding: '10px 20px',
+                    borderRadius: 10,
+                    border: 'none',
+                    background: 'linear-gradient(45deg, #f09433 0%, #dc2743 50%, #bc1888 100%)',
+                    color: '#FFF',
+                    fontSize: 13,
+                    fontWeight: 700,
+                    cursor: syncingIg ? 'wait' : 'pointer',
+                    boxShadow: '0 4px 14px rgba(225,48,108,0.3)',
+                    transition: 'opacity 0.2s',
+                    opacity: syncingIg || !igProfileUrl.trim() ? 0.7 : 1,
+                  }}
+                >
+                  {syncingIg ? (
+                    <>
+                      <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} />
+                      <span>Postlar Çəkilir...</span>
+                    </>
+                  ) : (
+                    <>
+                      <RefreshCw size={16} />
+                      <span>Avtomatik Əldə Et və Yenilə</span>
+                    </>
+                  )}
+                </button>
+              </div>
+
+              {/* Status messages */}
+              {syncSuccessMsg && (
+                <div style={{ marginTop: 12, fontSize: 13, color: '#34D399', display: 'flex', alignItems: 'center', gap: 6, fontWeight: 600 }}>
+                  <Check size={16} />
+                  <span>{syncSuccessMsg}</span>
+                </div>
+              )}
+              {syncErrorMsg && (
+                <div style={{ marginTop: 12, fontSize: 13, color: '#F87171', display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span>⚠️ {syncErrorMsg}</span>
+                </div>
+              )}
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginTop: 14, fontSize: 12, color: '#8888A0', flexWrap: 'wrap' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                  <Check size={14} color="#34D399" /> Şəkillər və Reels videoları
+                </span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                  <Check size={14} color="#34D399" /> Paylaşım tarixləri (dəq, saat, gün əvvəl)
+                </span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                  <Check size={14} color="#34D399" /> Birbaşa Instagram postuna keçid
+                </span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                  <Check size={14} color="#34D399" /> Müntəzəm intervallarla arxa planda avto-yenilənmə
+                </span>
+              </div>
+            </form>
+          </div>
+
           {/* Add Post Form */}
           <div className="dash-card" style={{ padding: 22, marginBottom: 24, background: '#161622', border: '1px solid rgba(255,255,255,0.08)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
               <Plus size={18} color="#7C5CFC" />
               <h2 style={{ fontSize: 16, fontWeight: 700, color: '#E8E8F0', margin: 0 }}>
-                Yeni Post Əlavə Et
+                Fərdi / Əlavə Post Əlavə Et
               </h2>
             </div>
             <p style={{ fontSize: 13, color: '#8888A0', marginBottom: 16, lineHeight: 1.5 }}>
-              Instagram, TikTok, YouTube və ya Facebook paylaşımlarınızın linkini daxil edin. Real post ana səhifədə nümayiş olunacaq.
+              İstəsəniz konkret bir Instagram postu, TikTok videosu və ya YouTube linkini də fərdi olaraq əlavə edə bilərsiniz.
             </p>
 
             <form onSubmit={handleAddPost}>
