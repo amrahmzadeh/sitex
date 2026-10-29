@@ -90,6 +90,19 @@ export interface ThemeConfig {
   socialIconColor?: string;
   socialIconBgColor?: string;
   socialIconSize?: number;
+
+  // Social Media Feed Module
+  socialFeedEnabled?: boolean;
+  socialFeedTitle?: string;
+  socialFeedSubtitle?: string;
+  socialFeedLayout?: 'grid' | 'carousel';
+  socialFeedColumns?: 2 | 3 | 4;
+  socialFeedCardStyle?: 'modern' | 'glass' | 'bordered';
+  socialFeedBgColor?: string;
+  socialFeedCardBg?: string;
+  socialFeedTextColor?: string;
+  socialFeedAccentColor?: string;
+  socialFeedShowEngagement?: boolean;
 }
 
 export const defaultThemes: Record<string, ThemeConfig> = {

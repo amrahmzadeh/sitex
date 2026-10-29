@@ -13,6 +13,7 @@ import SplashScreen, { SplashConfig } from './SplashScreen';
 import ProRestaurantSite from './ProRestaurantSite';
 import FoodVideoPlayer from './FoodVideoPlayer';
 import { SocialIconsGroup } from './SocialIcons';
+import SocialMediaFeed from './SocialMediaFeed';
 
 export interface MenuItem {
   id: string; name: string; slug: string; description?: string; price: number; discountPrice?: number;
@@ -1588,6 +1589,14 @@ export default function RestaurantSite({ data, initialTable }: { data: SiteData;
             )}
           </div>
         </section>
+
+        {/* Social Media Feed Module */}
+        <SocialMediaFeed
+          socialLinks={socialLinks}
+          theme={theme}
+          organization={organization}
+          menuItems={menuCategories.flatMap((c) => c.menuItems)}
+        />
 
         {/* Footer */}
         <footer style={{ background: footerBg, padding: '48px 20px 32px' }}>

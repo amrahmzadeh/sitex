@@ -98,6 +98,47 @@ export default function SocialPage() {
         </p>
       </div>
 
+      {/* Social Media Feed Notice */}
+      <div
+        style={{
+          marginBottom: 24,
+          padding: '14px 16px',
+          borderRadius: 12,
+          background: 'linear-gradient(135deg, rgba(124, 92, 252, 0.12), rgba(30, 25, 45, 0.5))',
+          border: '1px solid rgba(124, 92, 252, 0.3)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 14,
+        }}
+      >
+        <div>
+          <div style={{ fontSize: 13, fontWeight: 700, color: '#A78BFA', display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
+            <span>✨</span>
+            <span>Canlı Sosial Media Feed Modulu Aktivdir</span>
+          </div>
+          <div style={{ fontSize: 12, color: '#C4C4D4', lineHeight: 1.4 }}>
+            Daxil etdiyiniz sosial media səhifələrinin son paylaşımları ana səhifədə <strong>Əlaqə</strong> bölməsindən sonra canlı qrid/karuseldə nümayiş olunur.
+          </div>
+        </div>
+        <a
+          href="/dashboard/theme"
+          style={{
+            padding: '7px 12px',
+            borderRadius: 8,
+            background: '#7C5CFC',
+            color: '#FFF',
+            fontSize: 12,
+            fontWeight: 700,
+            textDecoration: 'none',
+            whiteSpace: 'nowrap',
+            flexShrink: 0,
+          }}
+        >
+          Dizaynı Dəyiş →
+        </a>
+      </div>
+
       {/* Active Links */}
       {links.length > 0 && (
         <div style={{ marginBottom: 24, display: 'flex', flexDirection: 'column', gap: 10 }}>

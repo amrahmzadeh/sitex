@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useMemo, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Loader2, Save, Globe, Eye, Check, Palette, MessageCircle, Layers, Monitor, Smartphone, Sparkles, Clock, Utensils, BookOpen, FileText } from 'lucide-react';
+import { Loader2, Save, Globe, Eye, Check, Palette, MessageCircle, Layers, Monitor, Smartphone, Sparkles, Clock, Utensils, BookOpen, FileText, Share2 } from 'lucide-react';
 import { defaultThemes, ThemeConfig, resolveBg, BRAND_FONTS } from '@/lib/themes';
 import RestaurantSite, { SiteData } from '@/components/themes/RestaurantSite';
 
@@ -952,6 +952,339 @@ export default function ThemePage() {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Social Media Feed Modulu (Postlar Bölməsi) */}
+        <div
+          className="dash-card"
+          style={{
+            padding: 20,
+            border: theme.socialFeedEnabled !== false ? '1.5px solid #7C5CFC' : '1px solid #2A2A3A',
+            background: theme.socialFeedEnabled !== false
+              ? 'linear-gradient(135deg, rgba(124, 92, 252, 0.08), rgba(24, 27, 30, 0.95))'
+              : undefined,
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+            <h3 style={{ fontSize: 14, fontWeight: 700, color: '#E8E8F0', display: 'flex', alignItems: 'center', gap: 8, margin: 0 }}>
+              <Share2 size={16} color="#7C5CFC" />
+              <span>📱 Sosial Media Feed Modulu</span>
+            </h3>
+            <button
+              type="button"
+              onClick={() => setTheme(p => ({ ...p, socialFeedEnabled: p.socialFeedEnabled === false ? true : false }))}
+              style={{
+                padding: '4px 12px',
+                borderRadius: 9999,
+                border: 'none',
+                cursor: 'pointer',
+                fontSize: 11,
+                fontWeight: 700,
+                background: theme.socialFeedEnabled !== false ? '#7C5CFC' : '#2A2A3A',
+                color: theme.socialFeedEnabled !== false ? '#FFF' : '#8888A0',
+                transition: 'all 0.15s ease',
+              }}
+            >
+              {theme.socialFeedEnabled !== false ? 'Aktivdir ✓' : 'Deaktivdir'}
+            </button>
+          </div>
+
+          <p style={{ fontSize: 12, color: '#9BA3AF', margin: '0 0 16px 0', lineHeight: 1.5 }}>
+            Əlaqə bölməsindən sonra daxil edilən sosial media səhifələrindən canlı postları və videoları saytda nümayiş etdirir.
+          </p>
+
+          {theme.socialFeedEnabled !== false && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              {/* Title & Subtitle */}
+              <div>
+                <label className="dash-label">Bölmə Başlığı</label>
+                <input
+                  className="dash-input"
+                  placeholder="Sosial Şəbəkələrdə Biz"
+                  value={theme.socialFeedTitle ?? ''}
+                  onChange={(e) => setTheme(p => ({ ...p, socialFeedTitle: e.target.value }))}
+                />
+              </div>
+
+              <div>
+                <label className="dash-label">Alt İzah Mətni</label>
+                <input
+                  className="dash-input"
+                  placeholder="Canlı atmosferimiz, yeni təamlarımız və xüsusi anlar"
+                  value={theme.socialFeedSubtitle ?? ''}
+                  onChange={(e) => setTheme(p => ({ ...p, socialFeedSubtitle: e.target.value }))}
+                />
+              </div>
+
+              {/* Layout Mode */}
+              <div>
+                <label className="dash-label">Düzülüş Formatı (Layout)</label>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  {[
+                    { value: 'grid', label: '▦ Qrid Şəbəkə' },
+                    { value: 'carousel', label: '↔ Karusel Slayder' },
+                  ].map(opt => (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      onClick={() => setTheme(p => ({ ...p, socialFeedLayout: opt.value as 'grid' | 'carousel' }))}
+                      style={{
+                        flex: 1, padding: '8px 6px', borderRadius: 8,
+                        border: `1px solid ${(theme.socialFeedLayout || 'grid') === opt.value ? '#7C5CFC' : '#2A2A3A'}`,
+                        background: (theme.socialFeedLayout || 'grid') === opt.value ? 'rgba(124,92,252,0.2)' : 'transparent',
+                        color: (theme.socialFeedLayout || 'grid') === opt.value ? '#A78BFA' : '#8888A0',
+                        cursor: 'pointer', fontSize: 12, fontWeight: 600, transition: 'all 0.15s',
+                      }}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Column Count (if grid) */}
+              {(theme.socialFeedLayout || 'grid') === 'grid' && (
+                <div>
+                  <label className="dash-label">Sütun Sayı</label>
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    {[
+                      { value: 2, label: '2 Sütun' },
+                      { value: 3, label: '3 Sütun' },
+                      { value: 4, label: '4 Sütun' },
+                    ].map(opt => (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        onClick={() => setTheme(p => ({ ...p, socialFeedColumns: opt.value as 2 | 3 | 4 }))}
+                        style={{
+                          flex: 1, padding: '7px 4px', borderRadius: 8,
+                          border: `1px solid ${(theme.socialFeedColumns || 3) === opt.value ? '#7C5CFC' : '#2A2A3A'}`,
+                          background: (theme.socialFeedColumns || 3) === opt.value ? 'rgba(124,92,252,0.2)' : 'transparent',
+                          color: (theme.socialFeedColumns || 3) === opt.value ? '#A78BFA' : '#8888A0',
+                          cursor: 'pointer', fontSize: 12, fontWeight: 600, transition: 'all 0.15s',
+                        }}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Card Style */}
+              <div>
+                <label className="dash-label">Kart Dizayn Stili</label>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  {[
+                    { value: 'glass', label: '✨ Şüşə (Glass)' },
+                    { value: 'modern', label: '◼ Modern Tünd' },
+                    { value: 'bordered', label: '▢ Sərhədli' },
+                  ].map(opt => (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      onClick={() => setTheme(p => ({ ...p, socialFeedCardStyle: opt.value as 'glass' | 'modern' | 'bordered' }))}
+                      style={{
+                        flex: 1, padding: '7px 4px', borderRadius: 8,
+                        border: `1px solid ${(theme.socialFeedCardStyle || 'glass') === opt.value ? '#7C5CFC' : '#2A2A3A'}`,
+                        background: (theme.socialFeedCardStyle || 'glass') === opt.value ? 'rgba(124,92,252,0.2)' : 'transparent',
+                        color: (theme.socialFeedCardStyle || 'glass') === opt.value ? '#A78BFA' : '#8888A0',
+                        cursor: 'pointer', fontSize: 11, fontWeight: 600, transition: 'all 0.15s',
+                      }}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Color Customizations */}
+              <div style={{ borderTop: '1px solid #2A2A3A', paddingTop: 12, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <span style={{ fontSize: 12, fontWeight: 600, color: '#E8E8F0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                  Rəng Fərdiləşdirməsi
+                </span>
+
+                {/* Section Background Color */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div>
+                    <label style={{ fontSize: 12, color: '#E8E8F0', display: 'block' }}>Bölmə Arxa Planı</label>
+                    <span style={{ fontSize: 10, color: '#8888A0' }}>Feed bölməsinin fon rəngi</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span style={{ fontSize: 11, color: '#8888A0', fontFamily: 'monospace' }}>
+                      {theme.socialFeedBgColor || 'Şəffaf'}
+                    </span>
+                    <input
+                      type="color"
+                      value={theme.socialFeedBgColor && theme.socialFeedBgColor !== 'transparent' ? theme.socialFeedBgColor : '#121416'}
+                      onChange={(e) => setTheme(p => ({ ...p, socialFeedBgColor: e.target.value }))}
+                      style={{ width: 30, height: 30, border: 'none', borderRadius: 6, cursor: 'pointer', background: 'transparent' }}
+                    />
+                  </div>
+                </div>
+
+                {/* Card Background Color */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div>
+                    <label style={{ fontSize: 12, color: '#E8E8F0', display: 'block' }}>Kart Arxa Planı</label>
+                    <span style={{ fontSize: 10, color: '#8888A0' }}>Post kartlarının fon rəngi</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span style={{ fontSize: 11, color: '#8888A0', fontFamily: 'monospace' }}>
+                      {theme.socialFeedCardBg || 'Avtomatik'}
+                    </span>
+                    <input
+                      type="color"
+                      value={theme.socialFeedCardBg || '#1A1C1E'}
+                      onChange={(e) => setTheme(p => ({ ...p, socialFeedCardBg: e.target.value }))}
+                      style={{ width: 30, height: 30, border: 'none', borderRadius: 6, cursor: 'pointer', background: 'transparent' }}
+                    />
+                  </div>
+                </div>
+
+                {/* Text Color */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div>
+                    <label style={{ fontSize: 12, color: '#E8E8F0', display: 'block' }}>Mətn Rəngi</label>
+                    <span style={{ fontSize: 10, color: '#8888A0' }}>Başlıq və açıqlama mətni</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span style={{ fontSize: 11, color: '#8888A0', fontFamily: 'monospace' }}>
+                      {theme.socialFeedTextColor || '#FFFFFF'}
+                    </span>
+                    <input
+                      type="color"
+                      value={theme.socialFeedTextColor || '#FFFFFF'}
+                      onChange={(e) => setTheme(p => ({ ...p, socialFeedTextColor: e.target.value }))}
+                      style={{ width: 30, height: 30, border: 'none', borderRadius: 6, cursor: 'pointer', background: 'transparent' }}
+                    />
+                  </div>
+                </div>
+
+                {/* Accent Color */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div>
+                    <label style={{ fontSize: 12, color: '#E8E8F0', display: 'block' }}>Vurğu və Nişan Rəngi</label>
+                    <span style={{ fontSize: 10, color: '#8888A0' }}>Həştəqlər, çərçivə və işıltılar</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span style={{ fontSize: 11, color: '#8888A0', fontFamily: 'monospace' }}>
+                      {theme.socialFeedAccentColor || theme.primaryColor || '#D4A574'}
+                    </span>
+                    <input
+                      type="color"
+                      value={theme.socialFeedAccentColor || theme.primaryColor || '#D4A574'}
+                      onChange={(e) => setTheme(p => ({ ...p, socialFeedAccentColor: e.target.value }))}
+                      style={{ width: 30, height: 30, border: 'none', borderRadius: 6, cursor: 'pointer', background: 'transparent' }}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Engagement Switch */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid #2A2A3A', paddingTop: 12 }}>
+                <div>
+                  <label style={{ fontSize: 12, color: '#E8E8F0', display: 'block', fontWeight: 600 }}>Bəyənmə və Şərh Sayğacları</label>
+                  <span style={{ fontSize: 10, color: '#8888A0' }}>Postların altında interaktiv ürək və sayğacları göstər</span>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={theme.socialFeedShowEngagement !== false}
+                  onChange={(e) => setTheme(p => ({ ...p, socialFeedShowEngagement: e.target.checked }))}
+                  style={{ width: 18, height: 18, accentColor: '#7C5CFC', cursor: 'pointer' }}
+                />
+              </div>
+
+              {/* Quick Design Presets */}
+              <div style={{ borderTop: '1px solid #2A2A3A', paddingTop: 12 }}>
+                <span style={{ fontSize: 11, color: '#8888A0', display: 'block', marginBottom: 8 }}>Sürətli Dizayn Preseti:</span>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
+                  {[
+                    {
+                      label: '✨ Şüşə & Lüks',
+                      style: 'glass' as const,
+                      bg: 'transparent',
+                      cardBg: '',
+                      text: '#FFFFFF',
+                      accent: theme.primaryColor || '#D4A574',
+                    },
+                    {
+                      label: '👑 Qızılı Gourmet',
+                      style: 'bordered' as const,
+                      bg: '#121416',
+                      cardBg: '#181b1e',
+                      text: '#F7F8F9',
+                      accent: '#E5A93C',
+                    },
+                    {
+                      label: '◼ Tünd Minimal',
+                      style: 'modern' as const,
+                      bg: '#0F1113',
+                      cardBg: '#16181A',
+                      text: '#E2E2E5',
+                      accent: '#A78BFA',
+                    },
+                    {
+                      label: '▫ İşıqlı Clean',
+                      style: 'bordered' as const,
+                      bg: '#F8F9FA',
+                      cardBg: '#FFFFFF',
+                      text: '#1A1A1A',
+                      accent: '#E4405F',
+                    },
+                  ].map(preset => (
+                    <button
+                      key={preset.label}
+                      type="button"
+                      onClick={() => setTheme(p => ({
+                        ...p,
+                        socialFeedCardStyle: preset.style,
+                        socialFeedBgColor: preset.bg,
+                        socialFeedCardBg: preset.cardBg,
+                        socialFeedTextColor: preset.text,
+                        socialFeedAccentColor: preset.accent,
+                      }))}
+                      style={{
+                        padding: '6px 8px',
+                        borderRadius: 8,
+                        background: 'rgba(255,255,255,0.04)',
+                        border: '1px solid #2A2A3A',
+                        color: '#E8E8F0',
+                        fontSize: 11,
+                        cursor: 'pointer',
+                        textAlign: 'left',
+                        transition: 'all 0.15s ease',
+                      }}
+                    >
+                      {preset.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Link to Social page */}
+              <div style={{
+                marginTop: 6,
+                padding: '10px 12px',
+                borderRadius: 8,
+                background: 'rgba(124, 92, 252, 0.08)',
+                border: '1px solid rgba(124, 92, 252, 0.2)',
+                fontSize: 11,
+                color: '#C4C4D4',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}>
+                <span>Sosial media səhifələrinizi idarə edin:</span>
+                <a
+                  href="/dashboard/social"
+                  style={{ color: '#A78BFA', fontWeight: 700, textDecoration: 'none' }}
+                >
+                  Hesabları Aç →
+                </a>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Typography & Brand Font */}

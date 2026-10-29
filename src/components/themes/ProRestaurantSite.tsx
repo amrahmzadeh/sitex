@@ -12,6 +12,7 @@ import { formatPrice, formatWhatsAppUrl } from '@/lib/utils';
 import SplashScreen, { SplashConfig } from './SplashScreen';
 import FoodVideoPlayer from './FoodVideoPlayer';
 import { SocialIconsGroup } from './SocialIcons';
+import SocialMediaFeed from './SocialMediaFeed';
 
 export interface MenuItem {
   id: string;
@@ -1946,6 +1947,14 @@ export default function ProRestaurantSite({
             )}
           </div>
         </section>
+
+        {/* Social Media Feed Module */}
+        <SocialMediaFeed
+          socialLinks={socialLinks}
+          theme={theme}
+          organization={organization}
+          menuItems={menuCategories.flatMap((c) => c.menuItems)}
+        />
 
         {/* ===================== FOOTER ===================== */}
         <footer
