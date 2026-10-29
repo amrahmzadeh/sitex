@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Globe, ExternalLink, Check, Loader2, Eye } from 'lucide-react';
+import { Globe, ExternalLink, Check, Loader2, Eye, Trash2, X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 function useCurrentOrg() {
   const [data, setData] = useState<{ orgId: string | null; slug: string; isPublished: boolean }>({ orgId: null, slug: '', isPublished: false });
@@ -25,6 +26,12 @@ export default function WebsitePage() {
   const { orgId, slug, isPublished } = useCurrentOrg();
   const [publishing, setPublishing] = useState(false);
   const [published, setPublished] = useState(false);
+  const router = useRouter();
+
+  // Delete site state
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [deleteError, setDeleteError] = useState('');
 
   const publish = async () => {
     if (!orgId) return;
@@ -34,6 +41,28 @@ export default function WebsitePage() {
       setPublished(true);
       setTimeout(() => setPublished(false), 4000);
     } finally { setPublishing(false); }
+  };
+
+  const handleDeleteSite = async () => {
+    if (!orgId) return;
+    setDeleteLoading(true);
+    setDeleteError('');
+    try {
+      const res = await fetch(`/api/organizations/${orgId}`, { method: 'DELETE' });
+      if (!res.ok) {
+        const d = await res.json();
+        setDeleteError(d.error || 'Xəta baş verdi');
+        return;
+      }
+      // Remove from local storage and redirect
+      localStorage.removeItem('currentOrgId');
+      router.push('/dashboard');
+      router.refresh();
+    } catch {
+      setDeleteError('Silmə zamanı xəta baş verdi');
+    } finally {
+      setDeleteLoading(false);
+    }
   };
 
   return (
@@ -110,7 +139,64 @@ export default function WebsitePage() {
             </motion.a>
           ))}
         </div>
+
+        {/* Danger Zone */}
+        {orgId && (
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="dash-card" style={{ padding: 24, borderColor: 'rgba(248,113,113,0.2)' }}>
+            <h3 style={{ fontSize: 15, fontWeight: 600, color: '#F87171', marginBottom: 8 }}>Təhlükəli Zona</h3>
+            <p style={{ fontSize: 13, color: '#8888A0', marginBottom: 16 }}>
+              Saytı silmək bütün menyu məlumatlarını, şəkilləri, parametrləri və saytın URL-ni həmişəlik silir. Bu əməliyyat geri qaytarıla bilməz.
+            </p>
+            <button
+              onClick={() => setShowDeleteConfirm(true)}
+              className="dash-btn-danger"
+              style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13 }}
+            >
+              <Trash2 size={14} /> Bu saytı sil
+            </button>
+          </motion.div>
+        )}
       </div>
+
+      {/* Delete Confirm Modal */}
+      {showDeleteConfirm && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+          <div style={{ background: '#1A1A24', border: '1px solid rgba(248,113,113,0.3)', borderRadius: 20, padding: 32, width: '100%', maxWidth: 440 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+              <h2 style={{ fontSize: 18, fontWeight: 700, color: '#E8E8F0' }}>Saytı Sil</h2>
+              <button onClick={() => { setShowDeleteConfirm(false); setDeleteError(''); }} style={{ background: 'transparent', border: 'none', color: '#8888A0', cursor: 'pointer' }}>
+                <X size={20} />
+              </button>
+            </div>
+            <p style={{ color: '#8888A0', fontSize: 14, marginBottom: 8 }}>
+              Bu saytı və ona bağlı bütün məlumatları (menyu, kateqoriyalar, şəkillər, parametrlər) həmişəlik silmək istədiyinizə əminsiniz?
+            </p>
+            <p style={{ color: '#F87171', fontSize: 13, marginBottom: 20 }}>
+              ⚠️ Bu əməliyyat geri qaytarıla bilməz.
+            </p>
+            {deleteError && (
+              <div style={{ background: 'rgba(248,113,113,0.1)', border: '1px solid rgba(248,113,113,0.3)', borderRadius: 8, padding: '10px 14px', color: '#F87171', fontSize: 13, marginBottom: 16 }}>
+                {deleteError}
+              </div>
+            )}
+            <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
+              <button onClick={() => { setShowDeleteConfirm(false); setDeleteError(''); }} className="dash-btn-secondary">
+                Ləğv et
+              </button>
+              <button
+                onClick={handleDeleteSite}
+                disabled={deleteLoading}
+                className="dash-btn-danger"
+                style={{ opacity: deleteLoading ? 0.7 : 1, background: 'rgba(248,113,113,0.15)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 6 }}
+              >
+                <Trash2 size={14} />
+                {deleteLoading ? 'Silinir...' : 'Bəli, sil'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+

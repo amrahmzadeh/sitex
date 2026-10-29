@@ -32,6 +32,27 @@ export const authOptions: NextAuthOptions = {
           throw new Error('Hesab tapılmadı');
         }
 
+        // Super Admin always can login regardless of platform login_enabled setting
+        if (user.role !== 'SUPER_ADMIN') {
+          // Check if login is enabled
+          const loginSetting = await prisma.platformSettings.findUnique({
+            where: { key: 'login_enabled' },
+          });
+          if (loginSetting && loginSetting.value === 'false') {
+            throw new Error('Sistem girişi müvəqqəti dayandırılıb. Zəhmət olmasa sonra yenidən cəhd edin.');
+          }
+
+          // Check ban status
+          if (user.status === 'BANNED') {
+            throw new Error('Hesabınız bloklanmışdır. Ətraflı məlumat üçün adminə müraciət edin.');
+          }
+
+          // Check subscription expiry
+          if (user.subscriptionExpiry && new Date(user.subscriptionExpiry) < new Date()) {
+            throw new Error('İstifadə müddətiniz bitmişdir. Yenilənmə üçün adminə müraciət edin.');
+          }
+        }
+
         const isValid = await compare(credentials.password, user.passwordHash);
 
         if (!isValid) {
@@ -43,6 +64,10 @@ export const authOptions: NextAuthOptions = {
           email: user.email,
           name: user.name,
           image: user.image,
+          role: user.role,
+          status: user.status,
+          subscriptionExpiry: user.subscriptionExpiry?.toISOString() ?? null,
+          maxSites: user.maxSites ?? null,
         };
       },
     }),
@@ -51,12 +76,20 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
+        token.role = user.role;
+        token.status = user.status;
+        token.subscriptionExpiry = user.subscriptionExpiry;
+        token.maxSites = user.maxSites;
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
         (session.user as { id: string }).id = token.id as string;
+        (session.user as { role?: string }).role = token.role as string;
+        (session.user as { status?: string }).status = token.status as string;
+        (session.user as { subscriptionExpiry?: string | null }).subscriptionExpiry = token.subscriptionExpiry as string | null;
+        (session.user as { maxSites?: number | null }).maxSites = token.maxSites as number | null;
       }
       return session;
     },

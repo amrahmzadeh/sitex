@@ -2,15 +2,15 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname, useParams } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { signOut, useSession } from 'next-auth/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  ChefHat, LayoutDashboard, Globe, Palette, BookOpen,
+  ChefHat, LayoutDashboard, Globe, Palette,
   UtensilsCrossed, Image, MessageCircle, Settings,
-  LogOut, ChevronRight, Menu, X, Building2,
+  LogOut, ChevronRight, Menu, Building2,
   BarChart3, CreditCard, ExternalLink, Sparkles, QrCode,
-  Share2,
+  Share2, Shield,
 } from 'lucide-react';
 
 const navItems = [
@@ -42,6 +42,8 @@ export default function DashboardShell({ children }: { children: React.ReactNode
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [orgs, setOrgs] = useState<Organization[]>([]);
   const [currentOrg, setCurrentOrg] = useState<Organization | null>(null);
+
+  const isSuperAdmin = (session?.user as { role?: string })?.role === 'SUPER_ADMIN';
 
   useEffect(() => {
     fetch('/api/organizations')
@@ -151,6 +153,26 @@ export default function DashboardShell({ children }: { children: React.ReactNode
             </Link>
           );
         })}
+
+        {/* Super Admin link */}
+        {isSuperAdmin && (
+          <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid #2A2A3A' }}>
+            <Link
+              href="/admin"
+              onClick={() => setSidebarOpen(false)}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 10, padding: '9px 12px',
+                borderRadius: 10, textDecoration: 'none',
+                background: pathname.startsWith('/admin') ? 'rgba(248,113,113,0.15)' : 'transparent',
+                color: pathname.startsWith('/admin') ? '#F87171' : '#8888A0',
+                fontSize: 14, transition: 'all 0.15s',
+              }}
+            >
+              <Shield size={18} />
+              Super Admin Paneli
+            </Link>
+          </div>
+        )}
       </nav>
 
       {/* User */}

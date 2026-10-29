@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { organizationSchema } from '@/lib/validations';
+import { logAudit } from '@/lib/admin';
 
 async function verifyAccess(orgId: string) {
   const session = await getServerSession(authOptions);
@@ -91,3 +92,48 @@ export async function PATCH(
     return NextResponse.json({ error: error?.message || 'Xəta baş verdi' }, { status: 500 });
   }
 }
+
+export async function DELETE(
+  _req: Request,
+  { params }: { params: Promise<{ orgId: string }> }
+) {
+  try {
+    const { orgId } = await params;
+    const session = await getServerSession(authOptions);
+    if (!session?.user) {
+      return NextResponse.json({ error: 'İcazəsiz giriş' }, { status: 401 });
+    }
+
+    const userId = (session.user as { id: string }).id;
+
+    // Verify user is OWNER of this organization
+    const membership = await prisma.membership.findUnique({
+      where: { userId_organizationId: { userId, organizationId: orgId } },
+    });
+
+    if (!membership || membership.role !== 'OWNER') {
+      return NextResponse.json({ error: 'Bu əməliyyat üçün icazəniz yoxdur' }, { status: 403 });
+    }
+
+    const org = await prisma.organization.findUnique({
+      where: { id: orgId },
+      select: { name: true },
+    });
+
+    if (!org) {
+      return NextResponse.json({ error: 'Sayt tapılmadı' }, { status: 404 });
+    }
+
+    // Delete organization - all related data cascades via Prisma schema
+    await prisma.organization.delete({ where: { id: orgId } });
+
+    // Log audit
+    await logAudit(userId, 'DELETE_SITE', 'SITE', orgId, { siteName: org.name });
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Delete organization error:', error);
+    return NextResponse.json({ error: 'Silmə zamanı xəta baş verdi' }, { status: 500 });
+  }
+}
+

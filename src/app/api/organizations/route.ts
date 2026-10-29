@@ -5,6 +5,7 @@ import { prisma } from '@/lib/db';
 import { organizationSchema } from '@/lib/validations';
 import { generateSlug } from '@/lib/utils';
 import { defaultThemes } from '@/lib/themes';
+import { checkUserAccess, checkSiteLimit } from '@/lib/admin';
 
 export async function GET() {
   try {
@@ -46,6 +47,19 @@ export async function POST(req: Request) {
     }
 
     const userId = (session.user as { id: string }).id;
+
+    // Check user account access
+    const access = await checkUserAccess(userId);
+    if (!access.ok) {
+      return NextResponse.json({ error: access.error }, { status: 403 });
+    }
+
+    // Check site creation limit
+    const limitCheck = await checkSiteLimit(userId);
+    if (!limitCheck.ok) {
+      return NextResponse.json({ error: limitCheck.error }, { status: 403 });
+    }
+
     const body = await req.json();
     const result = organizationSchema.safeParse(body);
 
@@ -121,3 +135,4 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
+
