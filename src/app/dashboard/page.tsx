@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import {
   UtensilsCrossed, Globe, Eye, Plus, ArrowRight,
-  TrendingUp, Clock, CheckCircle2, AlertCircle,
+  TrendingUp, Clock, CheckCircle2, AlertCircle, Share2,
 } from 'lucide-react';
 
 interface OrgData {
@@ -148,6 +148,7 @@ export default function DashboardPage() {
           {[
             { href: '/dashboard/menu', icon: Plus, label: 'Yemək əlavə et', color: '#7C5CFC' },
             { href: '/dashboard/theme', icon: Globe, label: 'Tema dəyiş', color: '#22D3EE' },
+            { href: '/dashboard/social', icon: Share2, label: 'Sosial Media', color: '#E1306C' },
             { href: '/dashboard/whatsapp', icon: ArrowRight, label: 'WhatsApp qur', color: '#34D399' },
             { href: '/dashboard/new-organization', icon: Plus, label: 'İşletmə yarat', color: '#FBBF24' },
           ].map(({ href, icon: Icon, label, color }) => (

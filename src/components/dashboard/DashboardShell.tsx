@@ -10,12 +10,14 @@ import {
   UtensilsCrossed, Image, MessageCircle, Settings,
   LogOut, ChevronRight, Menu, X, Building2,
   BarChart3, CreditCard, ExternalLink, Sparkles, QrCode,
+  Share2,
 } from 'lucide-react';
 
 const navItems = [
   { href: '/dashboard', icon: LayoutDashboard, label: 'Ana Səhifə' },
   { href: '/dashboard/website', icon: Globe, label: 'Veb Saytım' },
   { href: '/dashboard/theme', icon: Palette, label: 'Tema Redaktoru' },
+  { href: '/dashboard/social', icon: Share2, label: 'Sosial Media' },
   { href: '/dashboard/splash', icon: Sparkles, label: 'Splash Screen' },
   { href: '/dashboard/menu', icon: UtensilsCrossed, label: 'Menyu' },
   { href: '/dashboard/media', icon: Image, label: 'Media Kitabxanası' },

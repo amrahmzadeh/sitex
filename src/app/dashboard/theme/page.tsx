@@ -828,7 +828,128 @@ export default function ThemePage() {
           </div>
         </div>
 
+        {/* Social Icon Style */}
+        <div className="dash-card" style={{ padding: 20 }}>
+          <h3 style={{ fontSize: 14, fontWeight: 600, color: '#E8E8F0', marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8 }}>
+            🔗 Sosial Media İkon Stili
+          </h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            {/* Shape */}
+            <div>
+              <label className="dash-label">İkon Forması</label>
+              <div style={{ display: 'flex', gap: 8 }}>
+                {[
+                  { value: 'circle', label: '⬤ Dairə' },
+                  { value: 'rounded', label: '▣ Yuvarlaq' },
+                  { value: 'square', label: '■ Kare' },
+                ].map(opt => (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => setTheme(p => ({ ...p, socialIconStyle: opt.value as 'circle' | 'rounded' | 'square' }))}
+                    style={{
+                      flex: 1, padding: '8px 4px', borderRadius: 8, border: `1px solid ${(theme.socialIconStyle || 'circle') === opt.value ? '#7C5CFC' : '#2A2A3A'}`,
+                      background: (theme.socialIconStyle || 'circle') === opt.value ? 'rgba(124,92,252,0.15)' : 'transparent',
+                      color: (theme.socialIconStyle || 'circle') === opt.value ? '#A78BFA' : '#8888A0',
+                      cursor: 'pointer', fontSize: 12, fontWeight: 600, transition: 'all 0.15s',
+                    }}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Icon Color */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+              <div>
+                <label style={{ fontSize: 13, color: '#E8E8F0', fontWeight: 500, display: 'block' }}>İkon Rəngi</label>
+                <span style={{ fontSize: 11, color: '#8888A0' }}>Sosial media ikonlarının özünün rəngi</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 12, color: '#8888A0', fontFamily: 'monospace' }}>
+                  {theme.socialIconColor || '#FFFFFF'}
+                </span>
+                <input
+                  type="color"
+                  value={theme.socialIconColor || '#FFFFFF'}
+                  onChange={(e) => setTheme(p => ({ ...p, socialIconColor: e.target.value }))}
+                  style={{ width: 32, height: 32, border: 'none', borderRadius: 6, cursor: 'pointer', background: 'transparent' }}
+                />
+              </div>
+            </div>
+
+            {/* BG Color */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+              <div>
+                <label style={{ fontSize: 13, color: '#E8E8F0', fontWeight: 500, display: 'block' }}>Arxa Plan Rəngi</label>
+                <span style={{ fontSize: 11, color: '#8888A0' }}>İkon düymələrinin arxa fonu</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 12, color: '#8888A0', fontFamily: 'monospace' }}>
+                  {theme.socialIconBgColor || theme.primaryColor + '20'}
+                </span>
+                <input
+                  type="color"
+                  value={theme.socialIconBgColor || theme.primaryColor}
+                  onChange={(e) => setTheme(p => ({ ...p, socialIconBgColor: e.target.value + '33' }))}
+                  style={{ width: 32, height: 32, border: 'none', borderRadius: 6, cursor: 'pointer', background: 'transparent' }}
+                />
+              </div>
+            </div>
+
+            {/* Icon Size */}
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                <label className="dash-label" style={{ marginBottom: 0 }}>İkon Ölçüsü</label>
+                <span style={{ fontSize: 12, color: '#7C5CFC', fontWeight: 700, fontFamily: 'monospace' }}>
+                  {theme.socialIconSize ?? 44}px
+                </span>
+              </div>
+              <input
+                type="range"
+                min={32}
+                max={64}
+                step={2}
+                value={theme.socialIconSize ?? 44}
+                onChange={(e) => setTheme(p => ({ ...p, socialIconSize: parseInt(e.target.value) }))}
+                style={{ width: '100%', accentColor: '#7C5CFC' }}
+              />
+            </div>
+
+            {/* Quick Presets */}
+            <div>
+              <span style={{ fontSize: 11, color: '#8888A0', display: 'block', marginBottom: 8 }}>Sürətli seçimlər:</span>
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                {[
+                  { label: 'Şəffaf', bg: 'rgba(255,255,255,0.1)', icon: '#FFFFFF' },
+                  { label: 'Əsas Rəng', bg: theme.primaryColor + '30', icon: theme.primaryColor },
+                  { label: 'Qara / Minimal', bg: '#111827', icon: '#FFFFFF' },
+                  { label: 'Ağ / Clean', bg: '#FFFFFF', icon: '#1A1A2E' },
+                ].map((preset) => (
+                  <button
+                    key={preset.label}
+                    type="button"
+                    onClick={() => setTheme(p => ({ ...p, socialIconBgColor: preset.bg, socialIconColor: preset.icon }))}
+                    style={{
+                      display: 'inline-flex', alignItems: 'center', gap: 6,
+                      padding: '4px 8px', borderRadius: 6,
+                      background: 'rgba(255,255,255,0.05)',
+                      border: '1px solid #2A2A3A',
+                      color: '#E8E8F0', fontSize: 11, cursor: 'pointer',
+                    }}
+                  >
+                    <span style={{ width: 10, height: 10, borderRadius: '50%', background: preset.bg, border: '1px solid #555' }} />
+                    {preset.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Typography & Brand Font */}
+
         <div className="dash-card" style={{ padding: 20 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
             <h3 style={{ fontSize: 14, fontWeight: 700, color: '#E8E8F0', display: 'flex', alignItems: 'center', gap: 8, margin: 0 }}>

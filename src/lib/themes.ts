@@ -84,6 +84,12 @@ export interface ThemeConfig {
 
   footerCopyrightText?: string;
   footerPlatformText?: string;
+
+  // Social Icons
+  socialIconStyle?: 'circle' | 'rounded' | 'square';
+  socialIconColor?: string;
+  socialIconBgColor?: string;
+  socialIconSize?: number;
 }
 
 export const defaultThemes: Record<string, ThemeConfig> = {
