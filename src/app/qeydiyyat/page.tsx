@@ -57,7 +57,7 @@ export default function RegisterPage() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'linear-gradient(135deg, #0F0F14 0%, #1A1030 50%, #0F0F14 100%)',
+        background: '#303030',
         padding: 20,
       }}
     >
@@ -68,14 +68,14 @@ export default function RegisterPage() {
         style={{
           width: '100%',
           maxWidth: 420,
-          background: '#1A1A24',
+          background: '#303030',
           borderRadius: 20,
-          border: '1px solid #2A2A3A',
+          border: '1px solid #424242',
           padding: 40,
         }}
       >
         <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center', marginBottom: 32, textDecoration: 'none', color: '#fff', fontSize: 22, fontWeight: 800 }}>
-          <Sparkles size={28} color="#7C5CFC" />
+          <Sparkles size={28} color="#00D37D" />
           SiteX
         </Link>
 
@@ -127,9 +127,9 @@ export default function RegisterPage() {
           </button>
         </form>
 
-        <p style={{ textAlign: 'center', marginTop: 24, fontSize: 14, color: '#8888A0' }}>
+        <p style={{ textAlign: 'center', marginTop: 24, fontSize: 14, color: '#B0B0B8' }}>
           Artıq hesabınız var?{' '}
-          <Link href="/giris" style={{ color: '#7C5CFC', textDecoration: 'none' }}>
+          <Link href="/giris" style={{ color: '#00D37D', textDecoration: 'none' }}>
             Daxil olun
           </Link>
         </p>

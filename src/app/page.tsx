@@ -55,8 +55,8 @@ export default function HomePage() {
     <div
       style={{
         minHeight: '100vh',
-        background: 'linear-gradient(135deg, #0F0F14 0%, #1A1030 50%, #0F0F14 100%)',
-        color: '#E8E8F0',
+        background: '#303030',
+        color: '#F5F5F7',
       }}
     >
       {/* Nav */}
@@ -68,6 +68,7 @@ export default function HomePage() {
           padding: '20px 40px',
           maxWidth: 1280,
           margin: '0 auto',
+          borderBottom: '1px solid #424242',
         }}
       >
         <Link
@@ -82,7 +83,7 @@ export default function HomePage() {
             gap: 8,
           }}
         >
-          <Sparkles size={28} color="#7C5CFC" />
+          <Sparkles size={28} color="#00D37D" />
           SiteX
         </Link>
         <div style={{ display: 'flex', gap: 12 }}>
@@ -134,13 +135,13 @@ export default function HomePage() {
               display: 'inline-flex',
               alignItems: 'center',
               gap: 6,
-              background: 'rgba(124, 92, 252, 0.15)',
-              border: '1px solid rgba(124, 92, 252, 0.3)',
+              background: 'rgba(0, 211, 125, 0.12)',
+              border: '1px solid rgba(0, 211, 125, 0.3)',
               borderRadius: 100,
               padding: '6px 16px',
               fontSize: 13,
               fontWeight: 500,
-              color: '#9B7FFF',
+              color: '#00D37D',
               marginBottom: 24,
             }}
           >
@@ -154,7 +155,7 @@ export default function HomePage() {
               fontWeight: 800,
               lineHeight: 1.1,
               marginBottom: 24,
-              background: 'linear-gradient(135deg, #fff 0%, #9B7FFF 50%, #22D3EE 100%)',
+              background: 'linear-gradient(135deg, #fff 0%, #00D37D 100%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
             }}
@@ -168,7 +169,7 @@ export default function HomePage() {
             style={{
               fontSize: 18,
               lineHeight: 1.7,
-              color: '#8888A0',
+              color: '#B0B0B8',
               maxWidth: 600,
               margin: '0 auto 40px',
             }}
@@ -247,14 +248,14 @@ export default function HomePage() {
                   width: 48,
                   height: 48,
                   borderRadius: 12,
-                  background: 'rgba(124, 92, 252, 0.15)',
+                  background: 'rgba(0, 211, 125, 0.15)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   marginBottom: 16,
                 }}
               >
-                <f.icon size={24} color="#7C5CFC" />
+                <f.icon size={24} color="#00D37D" />
               </div>
               <h3
                 style={{
@@ -276,10 +277,10 @@ export default function HomePage() {
       {/* Footer */}
       <footer
         style={{
-          borderTop: '1px solid #2A2A3A',
+          borderTop: '1px solid #424242',
           padding: '32px 40px',
           textAlign: 'center',
-          color: '#8888A0',
+          color: '#B0B0B8',
           fontSize: 14,
         }}
       >

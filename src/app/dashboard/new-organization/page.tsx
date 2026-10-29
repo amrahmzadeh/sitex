@@ -65,7 +65,7 @@ export default function NewOrganizationPage() {
             key={s}
             style={{
               flex: 1, height: 4, borderRadius: 2,
-              background: step >= s ? '#7C5CFC' : '#2A2A3A',
+              background: step >= s ? '#00D37D' : '#424242',
               transition: 'background 0.3s',
             }}
           />
@@ -89,7 +89,7 @@ export default function NewOrganizationPage() {
           <>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
               <div style={{ width: 40, height: 40, borderRadius: 10, background: 'rgba(124,92,252,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Building2 size={20} color="#7C5CFC" />
+                <Building2 size={20} color="#00D37D" />
               </div>
               <div>
                 <h2 style={{ fontSize: 17, fontWeight: 600, color: '#E8E8F0' }}>Əsas məlumatlar</h2>

@@ -72,7 +72,7 @@ export default function DashboardPage() {
                   <div style={{ width: 48, height: 48, borderRadius: 12, background: 'rgba(124,92,252,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     {org.logo
                       ? <img src={org.logo} alt={org.name} style={{ width: 48, height: 48, borderRadius: 12, objectFit: 'cover' }} />
-                      : <span style={{ fontSize: 20, fontWeight: 800, color: '#7C5CFC' }}>{org.name[0]}</span>}
+                      : <span style={{ fontSize: 20, fontWeight: 800, color: '#00D37D' }}>{org.name[0]}</span>}
                   </div>
                   <div>
                     <h2 style={{ fontSize: 18, fontWeight: 700, color: '#E8E8F0' }}>{org.name}</h2>
@@ -88,7 +88,7 @@ export default function DashboardPage() {
                 {/* Stats */}
                 <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
                   <div>
-                    <p style={{ fontSize: 24, fontWeight: 700, color: '#7C5CFC' }}>{org.menuItemCount}</p>
+                    <p style={{ fontSize: 24, fontWeight: 700, color: '#00D37D' }}>{org.menuItemCount}</p>
                     <p style={{ fontSize: 12, color: '#8888A0' }}>Yemək</p>
                   </div>
                   <div>
@@ -146,7 +146,7 @@ export default function DashboardPage() {
         </h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 12 }}>
           {[
-            { href: '/dashboard/menu', icon: Plus, label: 'Yemək əlavə et', color: '#7C5CFC' },
+            { href: '/dashboard/menu', icon: Plus, label: 'Yemək əlavə et', color: '#00D37D' },
             { href: '/dashboard/theme', icon: Globe, label: 'Tema dəyiş', color: '#22D3EE' },
             { href: '/dashboard/social', icon: Share2, label: 'Sosial Media', color: '#E1306C' },
             { href: '/dashboard/whatsapp', icon: ArrowRight, label: 'WhatsApp qur', color: '#34D399' },
@@ -155,9 +155,9 @@ export default function DashboardPage() {
             <Link
               key={href}
               href={href}
-              style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 16px', borderRadius: 12, border: '1px solid #2A2A3A', background: '#1A1A24', textDecoration: 'none', color: '#E8E8F0', fontSize: 13, fontWeight: 500, transition: 'all 0.15s' }}
+              style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 16px', borderRadius: 12, border: '1px solid #424242', background: '#303030', textDecoration: 'none', color: '#E8E8F0', fontSize: 13, fontWeight: 500, transition: 'all 0.15s' }}
               onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = color; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = '#2A2A3A'; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = '#424242'; }}
             >
               <div style={{ width: 32, height: 32, borderRadius: 8, background: `${color}20`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Icon size={16} color={color} />

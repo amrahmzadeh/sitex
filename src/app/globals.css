@@ -3,18 +3,18 @@
 /* ==================== DESIGN TOKENS ==================== */
 :root {
   /* Dashboard colors */
-  --dash-bg: #0F0F14;
-  --dash-surface: #1A1A24;
-  --dash-surface-hover: #22222E;
-  --dash-border: #2A2A3A;
-  --dash-text: #E8E8F0;
-  --dash-text-muted: #8888A0;
-  --dash-primary: #7C5CFC;
-  --dash-primary-hover: #9B7FFF;
-  --dash-success: #34D399;
+  --dash-bg: #303030;
+  --dash-surface: #303030;
+  --dash-surface-hover: #3a3a3a;
+  --dash-border: #424242;
+  --dash-text: #F5F5F7;
+  --dash-text-muted: #B0B0B8;
+  --dash-primary: #00D37D;
+  --dash-primary-hover: #00E689;
+  --dash-success: #00D37D;
   --dash-warning: #FBBF24;
   --dash-danger: #F87171;
-  --dash-accent: #22D3EE;
+  --dash-accent: #00D37D;
 
   /* Transitions */
   --transition-fast: 150ms ease;
@@ -37,6 +37,8 @@ body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: var(--dash-bg);
+  color: var(--dash-text);
 }
 
 /* ==================== SCROLLBAR ==================== */
@@ -119,12 +121,12 @@ body {
 
 .dash-card:hover {
   border-color: var(--dash-primary);
-  box-shadow: 0 0 0 1px rgba(124, 92, 252, 0.15);
+  box-shadow: 0 0 0 1px rgba(0, 211, 125, 0.2);
 }
 
 .dash-btn-primary {
   background: var(--dash-primary);
-  color: white;
+  color: #121212;
   border: none;
   border-radius: 10px;
   padding: 10px 20px;
@@ -137,7 +139,7 @@ body {
 .dash-btn-primary:hover {
   background: var(--dash-primary-hover);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(124, 92, 252, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 211, 125, 0.3);
 }
 
 .dash-btn-primary:active {
@@ -192,7 +194,7 @@ body {
 
 .dash-input:focus {
   border-color: var(--dash-primary);
-  box-shadow: 0 0 0 3px rgba(124, 92, 252, 0.15);
+  box-shadow: 0 0 0 3px rgba(0, 211, 125, 0.2);
 }
 
 .dash-input::placeholder {

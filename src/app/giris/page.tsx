@@ -46,7 +46,7 @@ export default function LoginPage() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'linear-gradient(135deg, #0F0F14 0%, #1A1030 50%, #0F0F14 100%)',
+        background: '#303030',
         padding: 20,
       }}
     >
@@ -57,9 +57,9 @@ export default function LoginPage() {
         style={{
           width: '100%',
           maxWidth: 420,
-          background: '#1A1A24',
+          background: '#303030',
           borderRadius: 20,
-          border: '1px solid #2A2A3A',
+          border: '1px solid #424242',
           padding: 40,
         }}
       >
@@ -77,7 +77,7 @@ export default function LoginPage() {
             fontWeight: 800,
           }}
         >
-          <Sparkles size={28} color="#7C5CFC" />
+          <Sparkles size={28} color="#00D37D" />
           SiteX
         </Link>
 
@@ -191,7 +191,7 @@ export default function LoginPage() {
           Hesabınız yoxdur?{' '}
           <Link
             href="/qeydiyyat"
-            style={{ color: '#7C5CFC', textDecoration: 'none' }}
+            style={{ color: '#00D37D', textDecoration: 'none' }}
           >
             Qeydiyyatdan keçin
           </Link>

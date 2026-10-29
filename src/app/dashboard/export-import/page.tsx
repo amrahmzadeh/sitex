@@ -148,7 +148,7 @@ export default function ExportImportPage() {
       {/* Header */}
       <div style={{ marginBottom: 24 }}>
         <h1 style={{ fontSize: 26, fontWeight: 700, color: '#E8E8F0', display: 'flex', alignItems: 'center', gap: 12 }}>
-          <ArrowRightLeft size={28} color="#7C5CFC" /> Export & Import
+          <ArrowRightLeft size={28} color="#00D37D" /> Export & Import
         </h1>
         <p style={{ color: '#8888A0', fontSize: 14, marginTop: 4 }}>
           Saytınızın tam konfiqurasiyasını yedəkləyin və ya başqa saytdan köçürün
@@ -179,7 +179,7 @@ export default function ExportImportPage() {
       )}
 
       {/* Tabs */}
-      <div style={{ display: 'flex', gap: 8, marginBottom: 20, background: '#1A1A24', padding: 4, borderRadius: 12, border: '1px solid #2A2A3A' }}>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 20, background: '#303030', padding: 4, borderRadius: 12, border: '1px solid #424242' }}>
         <button
           onClick={() => setActiveTab('export')}
           style={{
@@ -195,7 +195,7 @@ export default function ExportImportPage() {
             justifyContent: 'center',
             gap: 8,
             transition: 'all 0.2s',
-            background: activeTab === 'export' ? '#7C5CFC' : 'transparent',
+            background: activeTab === 'export' ? '#00D37D' : 'transparent',
             color: activeTab === 'export' ? '#FFF' : '#8888A0',
           }}
         >
@@ -216,7 +216,7 @@ export default function ExportImportPage() {
             justifyContent: 'center',
             gap: 8,
             transition: 'all 0.2s',
-            background: activeTab === 'import' ? '#7C5CFC' : 'transparent',
+            background: activeTab === 'import' ? '#00D37D' : 'transparent',
             color: activeTab === 'import' ? '#FFF' : '#8888A0',
           }}
         >
@@ -230,7 +230,7 @@ export default function ExportImportPage() {
           <div className="dash-card" style={{ padding: 24 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
               <div style={{ width: 44, height: 44, borderRadius: 12, background: 'rgba(124, 92, 252, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Download size={22} color="#7C5CFC" />
+                <Download size={22} color="#00D37D" />
               </div>
               <div>
                 <h2 style={{ fontSize: 16, fontWeight: 600, color: '#E8E8F0' }}>Tam Sayt Exportu</h2>
@@ -240,7 +240,7 @@ export default function ExportImportPage() {
               </div>
             </div>
 
-            <div style={{ background: '#12121A', borderRadius: 12, border: '1px solid #22222E', padding: 16, marginBottom: 20 }}>
+            <div style={{ background: '#282828', borderRadius: 12, border: '1px solid #3a3a3a', padding: 16, marginBottom: 20 }}>
               <p style={{ fontSize: 12, fontWeight: 600, color: '#8888A0', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 12 }}>
                 Yedəkləmə faylına daxil olan bölmələr:
               </p>
@@ -317,22 +317,22 @@ export default function ExportImportPage() {
                     alignItems: 'center',
                     justifyContent: 'center',
                     padding: 32,
-                    border: '2px dashed #2A2A3A',
+                    border: '2px dashed #424242',
                     borderRadius: 14,
                     cursor: 'pointer',
-                    background: '#12121A',
+                    background: '#282828',
                     transition: 'all 0.2s',
                   }}
                   onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLElement).style.borderColor = '#7C5CFC';
+                    (e.currentTarget as HTMLElement).style.borderColor = '#00D37D';
                     (e.currentTarget as HTMLElement).style.background = 'rgba(124, 92, 252, 0.05)';
                   }}
                   onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLElement).style.borderColor = '#2A2A3A';
-                    (e.currentTarget as HTMLElement).style.background = '#12121A';
+                    (e.currentTarget as HTMLElement).style.borderColor = '#424242';
+                    (e.currentTarget as HTMLElement).style.background = '#282828';
                   }}
                 >
-                  <FileJson size={36} color="#7C5CFC" style={{ marginBottom: 10 }} />
+                  <FileJson size={36} color="#00D37D" style={{ marginBottom: 10 }} />
                   <span style={{ fontSize: 14, fontWeight: 600, color: '#E8E8F0' }}>Export faylını seçin (.json)</span>
                   <span style={{ fontSize: 12, color: '#8888A0', marginTop: 4 }}>və ya faylı buraya sürükləyin</span>
                   <input
@@ -344,7 +344,7 @@ export default function ExportImportPage() {
                   />
                 </label>
               ) : (
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 18px', background: '#12121A', border: '1px solid #2A2A3A', borderRadius: 12 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 18px', background: '#282828', border: '1px solid #424242', borderRadius: 12 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                     <FileCheck size={24} color="#34D399" />
                     <div>
@@ -377,9 +377,9 @@ export default function ExportImportPage() {
 
             {/* Select options */}
             {importData && (
-              <div style={{ background: '#12121A', borderRadius: 12, border: '1px solid #22222E', padding: 18, marginBottom: 20 }}>
+              <div style={{ background: '#282828', borderRadius: 12, border: '1px solid #3a3a3a', padding: 18, marginBottom: 20 }}>
                 <p style={{ fontSize: 13, fontWeight: 600, color: '#E8E8F0', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <Layers size={16} color="#7C5CFC" /> Köçürüləcək məlumatları seçin:
+                  <Layers size={16} color="#00D37D" /> Köçürüləcək məlumatları seçin:
                 </p>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
                   {[
@@ -393,7 +393,7 @@ export default function ExportImportPage() {
                     <label key={key} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 13, color: '#E8E8F0' }}>
                       <input
                         type="checkbox"
-                        style={{ accentColor: '#7C5CFC', width: 16, height: 16 }}
+                        style={{ accentColor: '#00D37D', width: 16, height: 16 }}
                         checked={importOptions[key as keyof ImportOptions] as boolean}
                         onChange={(e) =>
                           setImportOptions((prev) => ({ ...prev, [key]: e.target.checked }))
@@ -405,7 +405,7 @@ export default function ExportImportPage() {
                 </div>
 
                 {/* Advanced menu clean option */}
-                <div style={{ marginTop: 16, paddingTop: 14, borderTop: '1px solid #22222E' }}>
+                <div style={{ marginTop: 16, paddingTop: 14, borderTop: '1px solid #3a3a3a' }}>
                   <button
                     type="button"
                     onClick={() => setShowAdvanced(!showAdvanced)}

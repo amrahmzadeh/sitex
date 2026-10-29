@@ -78,17 +78,17 @@ export default function DashboardShell({ children }: { children: React.ReactNode
   const SidebarContent = () => (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       {/* Logo */}
-      <div style={{ padding: '24px 20px 20px', borderBottom: '1px solid #2A2A3A' }}>
+      <div style={{ padding: '24px 20px 20px', borderBottom: '1px solid #424242' }}>
         <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none', color: '#fff', fontWeight: 800, fontSize: 18 }}>
-          <Sparkles size={24} color="#7C5CFC" />
+          <Sparkles size={24} color="#00D37D" />
           SiteX
         </Link>
       </div>
 
       {/* Org Selector */}
       {currentOrg && (
-        <div style={{ padding: '16px 20px', borderBottom: '1px solid #2A2A3A' }}>
-          <p style={{ fontSize: 11, color: '#8888A0', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Müəssisə</p>
+        <div style={{ padding: '16px 20px', borderBottom: '1px solid #424242' }}>
+          <p style={{ fontSize: 11, color: '#B0B0B8', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Müəssisə</p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
             {orgs.map((org) => (
               <button
@@ -97,23 +97,23 @@ export default function DashboardShell({ children }: { children: React.ReactNode
                 style={{
                   display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px',
                   borderRadius: 10, border: 'none', cursor: 'pointer', textAlign: 'left', width: '100%',
-                  background: currentOrg.id === org.id ? 'rgba(124,92,252,0.15)' : 'transparent',
-                  color: currentOrg.id === org.id ? '#9B7FFF' : '#E8E8F0',
+                  background: currentOrg.id === org.id ? 'rgba(0,211,125,0.15)' : 'transparent',
+                  color: currentOrg.id === org.id ? '#00D37D' : '#F5F5F7',
                   transition: 'all 0.15s',
                 }}
               >
                 <div style={{
-                  width: 32, height: 32, borderRadius: 8, background: 'rgba(124,92,252,0.2)',
+                  width: 32, height: 32, borderRadius: 8, background: 'rgba(0,211,125,0.2)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                 }}>
                   {org.logo
                     ? <img src={org.logo} alt="" style={{ width: 32, height: 32, borderRadius: 8, objectFit: 'cover' }} />
-                    : <Building2 size={16} color="#7C5CFC" />}
+                    : <Building2 size={16} color="#00D37D" />}
                 </div>
                 <div style={{ minWidth: 0 }}>
                   <p style={{ fontSize: 13, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{org.name}</p>
                   {org.website?.isPublished && (
-                    <p style={{ fontSize: 11, color: '#34D399' }}>● Yayınlanıb</p>
+                    <p style={{ fontSize: 11, color: '#00D37D' }}>● Yayınlanıb</p>
                   )}
                 </div>
               </button>
@@ -121,7 +121,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
           </div>
           <Link
             href="/dashboard/new-organization"
-            style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 8, padding: '6px 10px', borderRadius: 8, fontSize: 12, color: '#8888A0', textDecoration: 'none' }}
+            style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 8, padding: '6px 10px', borderRadius: 8, fontSize: 12, color: '#B0B0B8', textDecoration: 'none' }}
           >
             + Yeni müəssisə
           </Link>
@@ -140,13 +140,13 @@ export default function DashboardShell({ children }: { children: React.ReactNode
               style={{
                 display: 'flex', alignItems: 'center', gap: 10, padding: '9px 12px',
                 borderRadius: 10, marginBottom: 2, textDecoration: 'none',
-                background: active ? 'rgba(124,92,252,0.15)' : 'transparent',
-                color: active ? '#9B7FFF' : '#8888A0',
+                background: active ? 'rgba(0,211,125,0.15)' : 'transparent',
+                color: active ? '#00D37D' : '#B0B0B8',
                 fontWeight: active ? 600 : 400, fontSize: 14,
                 transition: 'all 0.15s',
               }}
-              onMouseEnter={(e) => { if (!active) (e.currentTarget as HTMLElement).style.background = '#22222E'; (e.currentTarget as HTMLElement).style.color = '#E8E8F0'; }}
-              onMouseLeave={(e) => { if (!active) (e.currentTarget as HTMLElement).style.background = 'transparent'; (e.currentTarget as HTMLElement).style.color = '#8888A0'; }}
+              onMouseEnter={(e) => { if (!active) (e.currentTarget as HTMLElement).style.background = '#3a3a3a'; (e.currentTarget as HTMLElement).style.color = '#F5F5F7'; }}
+              onMouseLeave={(e) => { if (!active) (e.currentTarget as HTMLElement).style.background = 'transparent'; (e.currentTarget as HTMLElement).style.color = '#B0B0B8'; }}
             >
               <Icon size={18} />
               {label}
@@ -157,7 +157,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
 
         {/* Super Admin link */}
         {isSuperAdmin && (
-          <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid #2A2A3A' }}>
+          <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid #424242' }}>
             <Link
               href="/admin"
               onClick={() => setSidebarOpen(false)}
@@ -165,7 +165,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
                 display: 'flex', alignItems: 'center', gap: 10, padding: '9px 12px',
                 borderRadius: 10, textDecoration: 'none',
                 background: pathname.startsWith('/admin') ? 'rgba(248,113,113,0.15)' : 'transparent',
-                color: pathname.startsWith('/admin') ? '#F87171' : '#8888A0',
+                color: pathname.startsWith('/admin') ? '#F87171' : '#B0B0B8',
                 fontSize: 14, transition: 'all 0.15s',
               }}
             >
@@ -177,25 +177,25 @@ export default function DashboardShell({ children }: { children: React.ReactNode
       </nav>
 
       {/* User */}
-      <div style={{ padding: '16px 20px', borderTop: '1px solid #2A2A3A' }}>
+      <div style={{ padding: '16px 20px', borderTop: '1px solid #424242' }}>
         {currentOrg?.website?.isPublished && (
           <a
             href={`/site/${currentOrg.slug}`}
             target="_blank"
             rel="noopener noreferrer"
-            style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 12px', borderRadius: 10, marginBottom: 8, fontSize: 13, color: '#34D399', textDecoration: 'none', background: 'rgba(52,211,153,0.1)' }}
+            style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 12px', borderRadius: 10, marginBottom: 8, fontSize: 13, color: '#00D37D', textDecoration: 'none', background: 'rgba(0,211,125,0.1)' }}
           >
             <ExternalLink size={14} />
             Saytı görüntülə
           </a>
         )}
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-          <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'linear-gradient(135deg, #7C5CFC, #22D3EE)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 700, color: '#fff' }}>
+          <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'linear-gradient(135deg, #00D37D, #008f53)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 700, color: '#121212' }}>
             {session?.user?.name?.[0]?.toUpperCase() || 'U'}
           </div>
           <div style={{ minWidth: 0 }}>
-            <p style={{ fontSize: 13, fontWeight: 600, color: '#E8E8F0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{session?.user?.name}</p>
-            <p style={{ fontSize: 11, color: '#8888A0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{session?.user?.email}</p>
+            <p style={{ fontSize: 13, fontWeight: 600, color: '#F5F5F7', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{session?.user?.name}</p>
+            <p style={{ fontSize: 11, color: '#B0B0B8', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{session?.user?.email}</p>
           </div>
         </div>
         <button
@@ -245,7 +245,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
       {/* Main */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         {/* Topbar */}
-        <header style={{ height: 60, borderBottom: '1px solid #2A2A3A', display: 'flex', alignItems: 'center', padding: '0 24px', gap: 16, flexShrink: 0 }}>
+        <header style={{ height: 60, borderBottom: '1px solid #424242', display: 'flex', alignItems: 'center', padding: '0 24px', gap: 16, flexShrink: 0 }}>
           <button
             onClick={() => setSidebarOpen((p) => !p)}
             style={{ border: 'none', background: 'transparent', color: '#8888A0', cursor: 'pointer', padding: 4, display: 'none' }}
@@ -272,7 +272,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
           {/* Pass current org context via a context/prop */}
           {orgs.length === 0 && pathname !== '/dashboard/new-organization' ? (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: 16, textAlign: 'center' }}>
-              <Building2 size={48} color="#2A2A3A" />
+              <Building2 size={48} color="#424242" />
               <h2 style={{ fontSize: 22, fontWeight: 700, color: '#E8E8F0' }}>Hələ müəssisəniz yoxdur</h2>
               <p style={{ color: '#8888A0', maxWidth: 400 }}>İlk müəssisənizi yaradın və veb saytınızı qurmağa başlayın</p>
               <Link href="/dashboard/new-organization" className="dash-btn-primary" style={{ textDecoration: 'none', marginTop: 8 }}>

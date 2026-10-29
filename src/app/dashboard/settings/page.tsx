@@ -199,7 +199,7 @@ export default function SettingsPage() {
     <div style={{ maxWidth: 700 }}>
       <div style={{ marginBottom: 28 }}>
         <h1 style={{ fontSize: 26, fontWeight: 700, color: '#E8E8F0', display: 'flex', alignItems: 'center', gap: 12 }}>
-          <Settings size={28} color="#7C5CFC" /> Parametrlər
+          <Settings size={28} color="#00D37D" /> Parametrlər
         </h1>
         <p style={{ color: '#8888A0', fontSize: 14, marginTop: 4 }}>Profil və müəssisə parametrlərinizi idarə edin</p>
       </div>
@@ -208,7 +208,7 @@ export default function SettingsPage() {
         {/* ================= USER ACCOUNT SETTINGS ================= */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="dash-card" style={{ padding: 24, border: '1px solid rgba(124, 92, 252, 0.3)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-            <User size={20} color="#7C5CFC" />
+            <User size={20} color="#00D37D" />
             <h2 style={{ fontSize: 16, fontWeight: 600, color: '#E8E8F0' }}>İstifadəçi Hesabım</h2>
           </div>
 
@@ -262,7 +262,7 @@ export default function SettingsPage() {
           </form>
 
           {/* Password Change Form */}
-          <div style={{ borderTop: '1px solid #2A2A3A', marginTop: 20, paddingTop: 20 }}>
+          <div style={{ borderTop: '1px solid #424242', marginTop: 20, paddingTop: 20 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
               <Lock size={16} color="#8888A0" />
               <h3 style={{ fontSize: 14, fontWeight: 600, color: '#E8E8F0' }}>Şifrəni Dəyişdir</h3>
@@ -340,11 +340,11 @@ export default function SettingsPage() {
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="dash-card" style={{ padding: 24 }}>
               <h2 style={{ fontSize: 16, fontWeight: 600, color: '#E8E8F0', marginBottom: 16 }}>Müəssisə Logosu</h2>
               <div style={{ display: 'flex', alignItems: 'center', gap: 20, marginBottom: 16 }}>
-                <div style={{ width: 80, height: 80, borderRadius: 16, background: '#2A2A3A', overflow: 'hidden', flexShrink: 0, border: '1px solid #3A3A4A', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ width: 80, height: 80, borderRadius: 16, background: '#424242', overflow: 'hidden', flexShrink: 0, border: '1px solid #3A3A4A', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   {form.logo ? (
                     <img src={form.logo} alt="logo" style={{ width: 80, height: 80, objectFit: 'cover' }} onError={(e) => { (e.target as HTMLImageElement).style.opacity = '0.3'; }} />
                   ) : (
-                    <div style={{ fontSize: 28, fontWeight: 800, color: '#7C5CFC' }}>{form.name?.[0] || '?'}</div>
+                    <div style={{ fontSize: 28, fontWeight: 800, color: '#00D37D' }}>{form.name?.[0] || '?'}</div>
                   )}
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>

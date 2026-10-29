@@ -69,7 +69,7 @@ export default function WebsitePage() {
     <div style={{ maxWidth: 800 }}>
       <div style={{ marginBottom: 28 }}>
         <h1 style={{ fontSize: 26, fontWeight: 700, color: '#E8E8F0', display: 'flex', alignItems: 'center', gap: 12 }}>
-          <Globe size={28} color="#7C5CFC" /> Veb Saytım
+          <Globe size={28} color="#00D37D" /> Veb Saytım
         </h1>
         <p style={{ color: '#8888A0', fontSize: 14, marginTop: 4 }}>Saytınızın yayın vəziyyəti</p>
       </div>
@@ -87,7 +87,7 @@ export default function WebsitePage() {
               </p>
               {slug && (
                 <p style={{ fontSize: 13, color: '#8888A0', marginTop: 4 }}>
-                  Ünvan: <code style={{ color: '#7C5CFC' }}>/site/{slug}</code>
+                  Ünvan: <code style={{ color: '#00D37D' }}>/site/{slug}</code>
                 </p>
               )}
             </div>
@@ -119,7 +119,7 @@ export default function WebsitePage() {
         {/* Info Cards */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
           {[
-            { title: 'Tema redaktoru', desc: 'Rənglər, fontlar, dizayn', href: '/dashboard/theme', color: '#7C5CFC' },
+            { title: 'Tema redaktoru', desc: 'Rənglər, fontlar, dizayn', href: '/dashboard/theme', color: '#00D37D' },
             { title: 'Splash Screen', desc: 'Video və animasiya ekranı', href: '/dashboard/splash', color: '#EC4899' },
             { title: 'Menyu idarəetməsi', desc: 'Kateqoriyalar və yeməklər', href: '/dashboard/menu', color: '#22D3EE' },
             { title: 'Sifariş ayarları', desc: 'WhatsApp parametrləri', href: '/dashboard/whatsapp', color: '#34D399' },
@@ -132,7 +132,7 @@ export default function WebsitePage() {
               className="dash-card"
               style={{ padding: 20, textDecoration: 'none', display: 'block' }}
               onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = color; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = '#2A2A3A'; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = '#424242'; }}
             >
               <p style={{ fontSize: 15, fontWeight: 600, color: '#E8E8F0', marginBottom: 4 }}>{title}</p>
               <p style={{ fontSize: 13, color: '#8888A0' }}>{desc}</p>
@@ -161,7 +161,7 @@ export default function WebsitePage() {
       {/* Delete Confirm Modal */}
       {showDeleteConfirm && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
-          <div style={{ background: '#1A1A24', border: '1px solid rgba(248,113,113,0.3)', borderRadius: 20, padding: 32, width: '100%', maxWidth: 440 }}>
+          <div style={{ background: '#303030', border: '1px solid rgba(248,113,113,0.3)', borderRadius: 20, padding: 32, width: '100%', maxWidth: 440 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
               <h2 style={{ fontSize: 18, fontWeight: 700, color: '#E8E8F0' }}>Saytı Sil</h2>
               <button onClick={() => { setShowDeleteConfirm(false); setDeleteError(''); }} style={{ background: 'transparent', border: 'none', color: '#8888A0', cursor: 'pointer' }}>
