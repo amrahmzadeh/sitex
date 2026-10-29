@@ -12,7 +12,6 @@ import { formatPrice, formatWhatsAppUrl } from '@/lib/utils';
 import SplashScreen, { SplashConfig } from './SplashScreen';
 import ProRestaurantSite from './ProRestaurantSite';
 import FoodVideoPlayer from './FoodVideoPlayer';
-import { SocialIconsGroup } from './SocialIcons';
 import SocialMediaFeed from './SocialMediaFeed';
 
 export interface MenuItem {
@@ -1566,28 +1565,6 @@ export default function RestaurantSite({ data, initialTable }: { data: SiteData;
                 </div>
               </motion.div>
             )}
-
-            {/* Social Media Links */}
-            {socialLinks.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                style={{ marginTop: 32, textAlign: 'center' }}
-              >
-                <p style={{ fontSize: 13, fontWeight: 600, color: `${theme.textColor}88`, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 16 }}>
-                  Bizi izləyin
-                </p>
-                <SocialIconsGroup
-                  links={socialLinks}
-                  styleType={theme.socialIconStyle}
-                  iconColor={theme.socialIconColor}
-                  iconBgColor={theme.socialIconBgColor}
-                  size={theme.socialIconSize ?? 44}
-                  align="center"
-                />
-              </motion.div>
-            )}
           </div>
         </section>
 
@@ -1614,19 +1591,6 @@ export default function RestaurantSite({ data, initialTable }: { data: SiteData;
             <h3 style={{ fontFamily: theme.brandFont || theme.headingFont, fontSize: 'clamp(18px, 4vw, 22px)', fontWeight: 800, color: '#fff', marginBottom: 8 }}>{organization.name}</h3>
             {organization.description && (
               <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13, marginBottom: 20, maxWidth: 440, margin: '0 auto 20px' }}>{organization.description}</p>
-            )}
-
-            {socialLinks.length > 0 && (
-              <div style={{ marginBottom: 24 }}>
-                <SocialIconsGroup
-                  links={socialLinks}
-                  styleType={theme.socialIconStyle}
-                  iconColor={theme.socialIconColor}
-                  iconBgColor={theme.socialIconBgColor}
-                  size={theme.socialIconSize ? Math.min(theme.socialIconSize, 40) : 38}
-                  align="center"
-                />
-              </div>
             )}
 
             <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12 }}>
