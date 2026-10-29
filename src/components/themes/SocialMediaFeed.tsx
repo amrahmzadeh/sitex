@@ -740,51 +740,66 @@ export default function SocialMediaFeed({
                   justifyContent: 'center',
                 }}
               >
-                {selectedPost.shortcode ? (
-                  <iframe
-                    src={`https://www.instagram.com/p/${selectedPost.shortcode}/embed/`}
+                <div
+                  style={{
+                    position: 'relative',
+                    width: '100%',
+                    height: '100%',
+                    minHeight: 420,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: '#050505',
+                  }}
+                >
+                  <img
+                    src={selectedPost.imageUrl}
+                    alt={selectedPost.caption}
                     style={{
                       width: '100%',
                       height: '100%',
-                      minHeight: 460,
-                      border: 'none',
+                      maxHeight: 520,
+                      objectFit: 'contain',
+                      display: 'block',
                     }}
-                    scrolling="no"
-                    allowFullScreen
                   />
-                ) : (
-                  <>
-                    <img
-                      src={selectedPost.imageUrl}
-                      alt={selectedPost.caption}
+                  {selectedPost.isVideo && (
+                    <a
+                      href={selectedPost.postUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       style={{
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'cover',
-                        display: 'block',
+                        position: 'absolute',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 10,
+                        padding: '12px 22px',
+                        borderRadius: 100,
+                        background: 'rgba(0,0,0,0.75)',
+                        backdropFilter: 'blur(10px)',
+                        WebkitBackdropFilter: 'blur(10px)',
+                        color: '#FFF',
+                        fontSize: 14,
+                        fontWeight: 600,
+                        border: '1.5px solid rgba(255,255,255,0.4)',
+                        textDecoration: 'none',
+                        boxShadow: '0 8px 30px rgba(0,0,0,0.6)',
+                        transition: 'all 0.2s',
                       }}
-                    />
-                    {selectedPost.isVideo && (
-                      <div
-                        style={{
-                          position: 'absolute',
-                          width: 54,
-                          height: 54,
-                          borderRadius: '50%',
-                          background: 'rgba(0,0,0,0.65)',
-                          backdropFilter: 'blur(6px)',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          color: '#FFF',
-                          border: '1.5px solid rgba(255,255,255,0.4)',
-                        }}
-                      >
-                        <Play size={22} fill="#FFF" style={{ marginLeft: 3 }} />
-                      </div>
-                    )}
-                  </>
-                )}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = 'scale(1.05)';
+                        e.currentTarget.style.background = 'rgba(0,0,0,0.9)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = 'scale(1)';
+                        e.currentTarget.style.background = 'rgba(0,0,0,0.75)';
+                      }}
+                    >
+                      <Play size={18} fill="#FFF" />
+                      <span>İzlə (Instagram)</span>
+                    </a>
+                  )}
+                </div>
               </div>
 
               {/* Info side */}
