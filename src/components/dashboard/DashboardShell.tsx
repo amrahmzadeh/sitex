@@ -10,7 +10,7 @@ import {
   UtensilsCrossed, Image, MessageCircle, Settings,
   LogOut, ChevronRight, Menu, Building2,
   BarChart3, CreditCard, ExternalLink, Sparkles, QrCode,
-  Share2, Shield,
+  Share2, Shield, Download,
 } from 'lucide-react';
 
 const navItems = [
@@ -25,6 +25,7 @@ const navItems = [
   { href: '/dashboard/qr', icon: QrCode, label: 'QR Yaradıcı' },
   { href: '/dashboard/analytics', icon: BarChart3, label: 'Analitika' },
   { href: '/dashboard/billing', icon: CreditCard, label: 'Abunəlik' },
+  { href: '/dashboard/export-import', icon: Download, label: 'Export / Import' },
   { href: '/dashboard/settings', icon: Settings, label: 'Parametrlər' },
 ];
 
