@@ -329,6 +329,13 @@ export default function ProRestaurantSite({
             margin-left: auto !important;
             margin-right: auto !important;
           }
+          .pro-about-feature-card {
+            text-align: center !important;
+          }
+          .pro-about-feature-header {
+            justify-content: center !important;
+            text-align: center !important;
+          }
           .pro-section-padding { padding: 48px 0 !important; }
           .pro-cart-drawer { max-width: 100% !important; }
         }
@@ -395,6 +402,13 @@ export default function ProRestaurantSite({
             text-align: center !important;
             margin-left: auto !important;
             margin-right: auto !important;
+          }
+          .pro-about-feature-card {
+            text-align: center !important;
+          }
+          .pro-about-feature-header {
+            justify-content: center !important;
+            text-align: center !important;
           }
           .pro-section-padding { padding: 48px 0 !important; }
           .pro-cart-drawer { max-width: 100% !important; }
@@ -1401,6 +1415,7 @@ export default function ProRestaurantSite({
                     }}
                   >
                     <div
+                      className="pro-about-feature-card"
                       style={{
                         padding: 16,
                         borderRadius: 14,
@@ -1409,6 +1424,7 @@ export default function ProRestaurantSite({
                       }}
                     >
                       <div
+                        className="pro-about-feature-header"
                         style={{
                           display: 'flex',
                           alignItems: 'center',
@@ -1427,6 +1443,7 @@ export default function ProRestaurantSite({
                     </div>
 
                     <div
+                      className="pro-about-feature-card"
                       style={{
                         padding: 16,
                         borderRadius: 14,
@@ -1435,6 +1452,7 @@ export default function ProRestaurantSite({
                       }}
                     >
                       <div
+                        className="pro-about-feature-header"
                         style={{
                           display: 'flex',
                           alignItems: 'center',
