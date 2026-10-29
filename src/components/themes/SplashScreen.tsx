@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X } from 'lucide-react';
 
 export interface SplashConfig {
   type?: 'video' | 'code';
@@ -200,43 +199,6 @@ export default function SplashScreen({ config, siteSlug }: SplashScreenProps) {
             overflow: 'hidden',
           }}
         >
-          {/* Skip Button - Always available so visitor is never trapped */}
-          <button
-            onClick={handleDismiss}
-            style={{
-              position: 'absolute',
-              top: 20,
-              right: 20,
-              zIndex: 1000000,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              padding: '10px 18px',
-              borderRadius: 100,
-              background: 'rgba(0, 0, 0, 0.6)',
-              backdropFilter: 'blur(10px)',
-              WebkitBackdropFilter: 'blur(10px)',
-              border: '1px solid rgba(255, 255, 255, 0.3)',
-              color: '#fff',
-              fontSize: 14,
-              fontWeight: 600,
-              cursor: 'pointer',
-              boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
-              transition: 'all 0.2s',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'rgba(0, 0, 0, 0.85)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'rgba(0, 0, 0, 0.6)';
-            }}
-          >
-            <span>{skipButtonText || 'Keç'}</span>
-            {timeLeft !== null && timeLeft > 0 && (
-              <span style={{ opacity: 0.7, fontSize: 12 }}>({timeLeft}s)</span>
-            )}
-            <X size={16} />
-          </button>
 
           {/* Content: Video Mode */}
           {type === 'video' && videoUrl && (
