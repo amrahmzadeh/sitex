@@ -11,6 +11,7 @@ import { ThemeConfig, resolveBg } from '@/lib/themes';
 import { formatPrice, formatWhatsAppUrl } from '@/lib/utils';
 import SplashScreen, { SplashConfig } from './SplashScreen';
 import FoodVideoPlayer from './FoodVideoPlayer';
+import { SocialIconsGroup } from './SocialIcons';
 
 export interface MenuItem {
   id: string;
@@ -1907,6 +1908,42 @@ export default function ProRestaurantSite({
                 </div>
               </div>
             </div>
+
+            {/* Social Media Links */}
+            {socialLinks && socialLinks.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                style={{
+                  marginTop: 40,
+                  textAlign: 'center',
+                  paddingTop: 32,
+                  borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+                }}
+              >
+                <p
+                  style={{
+                    fontSize: 13,
+                    fontWeight: 700,
+                    color: '#9BA3AF',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.12em',
+                    marginBottom: 16,
+                  }}
+                >
+                  Bizi Sosial Şəbəkələrdə İzləyin
+                </p>
+                <SocialIconsGroup
+                  links={socialLinks}
+                  styleType={theme.socialIconStyle}
+                  iconColor={theme.socialIconColor}
+                  iconBgColor={theme.socialIconBgColor}
+                  size={theme.socialIconSize ?? 46}
+                  align="center"
+                />
+              </motion.div>
+            )}
           </div>
         </section>
 
@@ -1977,6 +2014,19 @@ export default function ProRestaurantSite({
                 </a>
               )}
             </div>
+
+            {socialLinks && socialLinks.length > 0 && (
+              <div style={{ marginTop: 4 }}>
+                <SocialIconsGroup
+                  links={socialLinks}
+                  styleType={theme.socialIconStyle}
+                  iconColor={theme.socialIconColor}
+                  iconBgColor={theme.socialIconBgColor}
+                  size={theme.socialIconSize ? Math.min(theme.socialIconSize, 40) : 38}
+                  align="center"
+                />
+              </div>
+            )}
 
             <div
               style={{

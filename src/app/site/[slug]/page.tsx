@@ -2,6 +2,10 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import RestaurantSite from '@/components/themes/RestaurantSite';
 import { SplashConfig } from '@/components/themes/SplashScreen';
+import { prisma } from '@/lib/db';
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 interface SiteData {
   organization: {
@@ -29,11 +33,58 @@ interface SiteData {
 
 async function getSiteData(slug: string): Promise<SiteData | null> {
   try {
-    const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
-    const res = await fetch(`${baseUrl}/api/site/${slug}`, { next: { revalidate: 60 } });
-    if (!res.ok) return null;
-    return res.json();
-  } catch {
+    const org = await prisma.organization.findUnique({
+      where: { slug },
+      include: {
+        website: true,
+        whatsappSettings: true,
+        socialLinks: { orderBy: { sortOrder: 'asc' } },
+        workingHours: { orderBy: { dayOfWeek: 'asc' } },
+        menuCategories: {
+          where: { isVisible: true },
+          orderBy: { sortOrder: 'asc' },
+          include: {
+            menuItems: {
+              where: { isVisible: true },
+              orderBy: { sortOrder: 'asc' },
+              include: { images: { orderBy: { sortOrder: 'asc' } } },
+            },
+          },
+        },
+      },
+    });
+
+    if (!org || !org.website?.isPublished) return null;
+
+    return {
+      organization: {
+        name: org.name,
+        slug: org.slug,
+        logo: org.logo || undefined,
+        description: org.description || undefined,
+        phone: org.phone || undefined,
+        email: org.email || undefined,
+        address: org.address || undefined,
+        city: org.city || undefined,
+        mapUrl: org.mapUrl || undefined,
+        currency: org.currency,
+      },
+      website: {
+        theme: (org.website.publishedTheme as Record<string, unknown>) || {},
+        pages: org.website.publishedPages,
+        seoTitle: org.website.seoTitle || undefined,
+        seoDescription: org.website.seoDescription || undefined,
+        ogImage: org.website.ogImage || undefined,
+        splashEnabled: org.website.splashEnabled,
+        splashConfig: (org.website.splashConfig as SplashConfig) || undefined,
+      },
+      whatsapp: org.whatsappSettings || undefined,
+      socialLinks: org.socialLinks || [],
+      workingHours: org.workingHours || [],
+      menuCategories: org.menuCategories || [],
+    } as unknown as SiteData;
+  } catch (e) {
+    console.error('getSiteData error:', e);
     return null;
   }
 }

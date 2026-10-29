@@ -12,6 +12,7 @@ import { formatPrice, formatWhatsAppUrl } from '@/lib/utils';
 import SplashScreen, { SplashConfig } from './SplashScreen';
 import ProRestaurantSite from './ProRestaurantSite';
 import FoodVideoPlayer from './FoodVideoPlayer';
+import { SocialIconsGroup } from './SocialIcons';
 
 export interface MenuItem {
   id: string; name: string; slug: string; description?: string; price: number; discountPrice?: number;
@@ -1575,55 +1576,14 @@ export default function RestaurantSite({ data, initialTable }: { data: SiteData;
                 <p style={{ fontSize: 13, fontWeight: 600, color: `${theme.textColor}88`, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 16 }}>
                   Bizi izləyin
                 </p>
-                <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-                  {socialLinks.map((link) => {
-                    const iconStyle = theme.socialIconStyle || 'circle';
-                    const iconSize = theme.socialIconSize ?? 44;
-                    const borderRadius = iconStyle === 'circle' ? '50%' : iconStyle === 'rounded' ? '12px' : '6px';
-                    const platformIcons: Record<string, string> = {
-                      instagram: '📷', facebook: '📘', tiktok: '🎵', youtube: '▶️',
-                      twitter: '🐦', whatsapp: '💬', telegram: '✈️', linkedin: '💼',
-                      pinterest: '📌', snapchat: '👻',
-                    };
-                    const platformColors: Record<string, string> = {
-                      instagram: '#E1306C', facebook: '#1877F2', tiktok: '#010101',
-                      youtube: '#FF0000', twitter: '#1DA1F2', whatsapp: '#25D366',
-                      telegram: '#0088cc', linkedin: '#0A66C2', pinterest: '#E60023', snapchat: '#FFFC00',
-                    };
-                    const platformLabel: Record<string, string> = {
-                      instagram: 'Instagram', facebook: 'Facebook', tiktok: 'TikTok',
-                      youtube: 'YouTube', twitter: 'Twitter', whatsapp: 'WhatsApp',
-                      telegram: 'Telegram', linkedin: 'LinkedIn', pinterest: 'Pinterest', snapchat: 'Snapchat',
-                    };
-                    const pColor = platformColors[link.platform] || theme.primaryColor;
-                    const resolvedBg = theme.socialIconBgColor || `${pColor}20`;
-                    const resolvedIconColor = theme.socialIconColor || '#FFFFFF';
-                    return (
-                      <motion.a
-                        key={link.platform}
-                        href={link.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        whileHover={{ scale: 1.12, y: -3 }}
-                        whileTap={{ scale: 0.95 }}
-                        title={platformLabel[link.platform] || link.platform}
-                        style={{
-                          width: iconSize, height: iconSize, borderRadius,
-                          background: resolvedBg,
-                          color: resolvedIconColor,
-                          display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          textDecoration: 'none', fontSize: Math.round(iconSize * 0.45),
-                          transition: 'all 0.2s',
-                          border: `1px solid ${pColor}30`,
-                          boxShadow: `0 2px 8px ${pColor}20`,
-                          flexShrink: 0,
-                        }}
-                      >
-                        {platformIcons[link.platform] || '🔗'}
-                      </motion.a>
-                    );
-                  })}
-                </div>
+                <SocialIconsGroup
+                  links={socialLinks}
+                  styleType={theme.socialIconStyle}
+                  iconColor={theme.socialIconColor}
+                  iconBgColor={theme.socialIconBgColor}
+                  size={theme.socialIconSize ?? 44}
+                  align="center"
+                />
               </motion.div>
             )}
           </div>
@@ -1653,24 +1613,15 @@ export default function RestaurantSite({ data, initialTable }: { data: SiteData;
             )}
 
             {socialLinks.length > 0 && (
-              <div style={{ display: 'flex', gap: 10, justifyContent: 'center', marginBottom: 24, flexWrap: 'wrap' }}>
-                {socialLinks.map((link) => (
-                  <a
-                    key={link.platform}
-                    href={link.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{
-                      width: 40, height: 40, borderRadius: '50%', background: 'rgba(255,255,255,0.1)',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      textDecoration: 'none', fontSize: 18, transition: 'background 0.2s',
-                    }}
-                    onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = `${theme.primaryColor}80`; }}
-                    onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.1)'; }}
-                  >
-                    {socialIcons[link.platform] || '🔗'}
-                  </a>
-                ))}
+              <div style={{ marginBottom: 24 }}>
+                <SocialIconsGroup
+                  links={socialLinks}
+                  styleType={theme.socialIconStyle}
+                  iconColor={theme.socialIconColor}
+                  iconBgColor={theme.socialIconBgColor}
+                  size={theme.socialIconSize ? Math.min(theme.socialIconSize, 40) : 38}
+                  align="center"
+                />
               </div>
             )}
 

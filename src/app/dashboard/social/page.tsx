@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Trash2, Save, Check, Loader2, GripVertical, Instagram, Facebook, Youtube, Twitter, Music2, Link2 } from 'lucide-react';
+import { Plus, Trash2, Save, Check, Loader2 } from 'lucide-react';
+import { PLATFORM_INFO } from '@/components/themes/SocialIcons';
 
 function useCurrentOrg() {
   const [orgId, setOrgId] = useState<string | null>(null);
@@ -19,18 +20,13 @@ function useCurrentOrg() {
   return orgId;
 }
 
-const PLATFORMS = [
-  { value: 'instagram', label: 'Instagram', color: '#E1306C', icon: '📷' },
-  { value: 'facebook', label: 'Facebook', color: '#1877F2', icon: '📘' },
-  { value: 'tiktok', label: 'TikTok', color: '#000000', icon: '🎵' },
-  { value: 'youtube', label: 'YouTube', color: '#FF0000', icon: '▶️' },
-  { value: 'twitter', label: 'Twitter / X', color: '#1DA1F2', icon: '🐦' },
-  { value: 'whatsapp', label: 'WhatsApp', color: '#25D366', icon: '💬' },
-  { value: 'telegram', label: 'Telegram', color: '#0088cc', icon: '✈️' },
-  { value: 'linkedin', label: 'LinkedIn', color: '#0A66C2', icon: '💼' },
-  { value: 'pinterest', label: 'Pinterest', color: '#E60023', icon: '📌' },
-  { value: 'snapchat', label: 'Snapchat', color: '#FFFC00', icon: '👻' },
-];
+const PLATFORMS_LIST = Object.entries(PLATFORM_INFO).map(([value, info]) => ({
+  value,
+  label: info.name,
+  color: info.brandColor,
+  bg: info.defaultBg,
+  svg: info.svg,
+}));
 
 interface SocialLink {
   platform: string;
@@ -98,7 +94,7 @@ export default function SocialPage() {
           Sosial Media Linklər
         </h1>
         <p style={{ color: '#8888A0', fontSize: 14 }}>
-          Əlaqə bölməsində görünəcək sosial media hesablarınızı əlavə edin.
+          Əlaqə bölməsində və saytın aşağı hissəsində orijinal ikonlarla görünəcək sosial media hesablarınızı əlavə edin.
         </p>
       </div>
 
@@ -109,7 +105,7 @@ export default function SocialPage() {
             Əlavə edilmiş ({links.length})
           </h2>
           {links.map((link, i) => {
-            const p = PLATFORMS.find(x => x.value === link.platform);
+            const p = PLATFORMS_LIST.find(x => x.value === link.platform.toLowerCase().trim());
             return (
               <motion.div
                 key={link.platform}
@@ -117,37 +113,58 @@ export default function SocialPage() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: i * 0.05 }}
                 style={{
-                  display: 'flex', alignItems: 'center', gap: 10,
+                  display: 'flex', alignItems: 'center', gap: 12,
                   padding: '12px 14px',
                   background: '#1A1A24',
-                  border: `1px solid ${p?.color || '#7C5CFC'}30`,
+                  border: `1px solid ${p?.color || '#7C5CFC'}35`,
                   borderRadius: 12,
                 }}
               >
-                <span style={{ fontSize: 20, flexShrink: 0 }}>{p?.icon || '🔗'}</span>
+                <div
+                  style={{
+                    width: 38,
+                    height: 38,
+                    borderRadius: 10,
+                    background: p?.bg || '#7C5CFC',
+                    color: link.platform === 'snapchat' ? '#000' : '#fff',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                    padding: 9,
+                    boxSizing: 'border-box',
+                    boxShadow: `0 2px 8px ${p?.color || '#7C5CFC'}30`,
+                  }}
+                >
+                  {p?.svg}
+                </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 12, fontWeight: 600, color: p?.color || '#7C5CFC', marginBottom: 4 }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: '#E8E8F0', marginBottom: 4 }}>
                     {p?.label || link.platform}
                   </div>
                   <input
                     className="dash-input"
-                    placeholder={`https://...`}
+                    placeholder={`https://${link.platform}.com/...`}
                     value={link.url}
                     onChange={(e) => updateUrl(link.platform, e.target.value)}
-                    style={{ margin: 0, fontSize: 13, padding: '6px 10px' }}
+                    style={{ margin: 0, fontSize: 13, padding: '7px 10px', width: '100%' }}
                   />
                 </div>
                 <button
                   type="button"
                   onClick={() => removeLink(link.platform)}
+                  title="Sil"
                   style={{
                     border: 'none', background: 'rgba(248,113,113,0.12)',
-                    color: '#F87171', borderRadius: 8, width: 32, height: 32,
+                    color: '#F87171', borderRadius: 8, width: 34, height: 34,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     cursor: 'pointer', flexShrink: 0,
+                    transition: 'background 0.15s',
                   }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'rgba(248,113,113,0.25)'; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'rgba(248,113,113,0.12)'; }}
                 >
-                  <Trash2 size={14} />
+                  <Trash2 size={15} />
                 </button>
               </motion.div>
             );
@@ -160,9 +177,9 @@ export default function SocialPage() {
         <h2 style={{ fontSize: 14, fontWeight: 600, color: '#E8E8F0', marginBottom: 14 }}>
           Platform Seçin
         </h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: 8 }}>
-          {PLATFORMS.map(p => {
-            const isAdded = links.some(l => l.platform === p.value);
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(110px, 1fr))', gap: 10 }}>
+          {PLATFORMS_LIST.map(p => {
+            const isAdded = links.some(l => l.platform.toLowerCase() === p.value);
             return (
               <button
                 key={p.value}
@@ -170,33 +187,48 @@ export default function SocialPage() {
                 onClick={() => addLink(p.value)}
                 disabled={isAdded}
                 style={{
-                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
-                  padding: '12px 8px', borderRadius: 10,
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
+                  padding: '12px 8px', borderRadius: 12,
                   border: `1px solid ${isAdded ? p.color + '60' : '#2A2A3A'}`,
-                  background: isAdded ? p.color + '15' : 'transparent',
-                  color: isAdded ? p.color : '#8888A0',
+                  background: isAdded ? p.color + '15' : '#14141E',
+                  color: isAdded ? p.color : '#C4C4D4',
                   cursor: isAdded ? 'default' : 'pointer',
                   transition: 'all 0.15s',
-                  opacity: isAdded ? 0.7 : 1,
+                  opacity: isAdded ? 0.6 : 1,
                 }}
                 onMouseEnter={(e) => {
                   if (!isAdded) {
-                    (e.currentTarget as HTMLElement).style.borderColor = p.color + '60';
-                    (e.currentTarget as HTMLElement).style.background = p.color + '10';
-                    (e.currentTarget as HTMLElement).style.color = p.color;
+                    (e.currentTarget as HTMLElement).style.borderColor = p.color + '80';
+                    (e.currentTarget as HTMLElement).style.background = p.color + '18';
+                    (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)';
                   }
                 }}
                 onMouseLeave={(e) => {
                   if (!isAdded) {
                     (e.currentTarget as HTMLElement).style.borderColor = '#2A2A3A';
-                    (e.currentTarget as HTMLElement).style.background = 'transparent';
-                    (e.currentTarget as HTMLElement).style.color = '#8888A0';
+                    (e.currentTarget as HTMLElement).style.background = '#14141E';
+                    (e.currentTarget as HTMLElement).style.transform = 'translateY(0)';
                   }
                 }}
               >
-                <span style={{ fontSize: 22 }}>{p.icon}</span>
+                <div
+                  style={{
+                    width: 32,
+                    height: 32,
+                    borderRadius: 8,
+                    background: p.bg,
+                    color: p.value === 'snapchat' ? '#000' : '#fff',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: 7,
+                    boxSizing: 'border-box',
+                  }}
+                >
+                  {p.svg}
+                </div>
                 <span style={{ fontSize: 11, fontWeight: 600 }}>{p.label}</span>
-                {isAdded && <span style={{ fontSize: 10, opacity: 0.8 }}>✓ Əlavə edilib</span>}
+                {isAdded && <span style={{ fontSize: 10, color: '#34D399', fontWeight: 700 }}>✓ Əlavə edilib</span>}
               </button>
             );
           })}

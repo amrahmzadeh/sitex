@@ -471,7 +471,13 @@ export default function ThemePage() {
         buttonText: 'WhatsApp Sifariş',
         isEnabled: true,
       },
-      socialLinks: orgData?.socialLinks || [],
+      socialLinks: orgData?.socialLinks?.length
+        ? orgData.socialLinks
+        : [
+            { platform: 'instagram', url: 'https://instagram.com' },
+            { platform: 'facebook', url: 'https://facebook.com' },
+            { platform: 'whatsapp', url: 'https://wa.me' },
+          ],
       workingHours: orgData?.workingHours && orgData.workingHours.length > 0 ? orgData.workingHours : [
         { dayOfWeek: 1, openTime: '09:00', closeTime: '22:00', isClosed: false },
         { dayOfWeek: 2, openTime: '09:00', closeTime: '22:00', isClosed: false },
