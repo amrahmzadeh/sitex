@@ -179,7 +179,7 @@ export default function ExportImportPage() {
       )}
 
       {/* Tabs */}
-      <div style={{ display: 'flex', gap: 8, marginBottom: 20, background: '#303030', padding: 4, borderRadius: 12, border: '1px solid #424242' }}>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 20, background: '#231F20', padding: 4, borderRadius: 12, border: '1px solid #383334' }}>
         <button
           onClick={() => setActiveTab('export')}
           style={{
@@ -240,7 +240,7 @@ export default function ExportImportPage() {
               </div>
             </div>
 
-            <div style={{ background: '#282828', borderRadius: 12, border: '1px solid #3a3a3a', padding: 16, marginBottom: 20 }}>
+            <div style={{ background: '#1c191a', borderRadius: 12, border: '1px solid #2E292A', padding: 16, marginBottom: 20 }}>
               <p style={{ fontSize: 12, fontWeight: 600, color: '#8888A0', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 12 }}>
                 Yedəkləmə faylına daxil olan bölmələr:
               </p>
@@ -317,10 +317,10 @@ export default function ExportImportPage() {
                     alignItems: 'center',
                     justifyContent: 'center',
                     padding: 32,
-                    border: '2px dashed #424242',
+                    border: '2px dashed #383334',
                     borderRadius: 14,
                     cursor: 'pointer',
-                    background: '#282828',
+                    background: '#1c191a',
                     transition: 'all 0.2s',
                   }}
                   onMouseEnter={(e) => {
@@ -328,8 +328,8 @@ export default function ExportImportPage() {
                     (e.currentTarget as HTMLElement).style.background = 'rgba(124, 92, 252, 0.05)';
                   }}
                   onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLElement).style.borderColor = '#424242';
-                    (e.currentTarget as HTMLElement).style.background = '#282828';
+                    (e.currentTarget as HTMLElement).style.borderColor = '#383334';
+                    (e.currentTarget as HTMLElement).style.background = '#1c191a';
                   }}
                 >
                   <FileJson size={36} color="#00D37D" style={{ marginBottom: 10 }} />
@@ -344,7 +344,7 @@ export default function ExportImportPage() {
                   />
                 </label>
               ) : (
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 18px', background: '#282828', border: '1px solid #424242', borderRadius: 12 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 18px', background: '#1c191a', border: '1px solid #383334', borderRadius: 12 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                     <FileCheck size={24} color="#34D399" />
                     <div>
@@ -377,7 +377,7 @@ export default function ExportImportPage() {
 
             {/* Select options */}
             {importData && (
-              <div style={{ background: '#282828', borderRadius: 12, border: '1px solid #3a3a3a', padding: 18, marginBottom: 20 }}>
+              <div style={{ background: '#1c191a', borderRadius: 12, border: '1px solid #2E292A', padding: 18, marginBottom: 20 }}>
                 <p style={{ fontSize: 13, fontWeight: 600, color: '#E8E8F0', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
                   <Layers size={16} color="#00D37D" /> Köçürüləcək məlumatları seçin:
                 </p>
@@ -405,7 +405,7 @@ export default function ExportImportPage() {
                 </div>
 
                 {/* Advanced menu clean option */}
-                <div style={{ marginTop: 16, paddingTop: 14, borderTop: '1px solid #3a3a3a' }}>
+                <div style={{ marginTop: 16, paddingTop: 14, borderTop: '1px solid #2E292A' }}>
                   <button
                     type="button"
                     onClick={() => setShowAdvanced(!showAdvanced)}

@@ -132,7 +132,7 @@ export default function WebsitePage() {
               className="dash-card"
               style={{ padding: 20, textDecoration: 'none', display: 'block' }}
               onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = color; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = '#424242'; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = '#383334'; }}
             >
               <p style={{ fontSize: 15, fontWeight: 600, color: '#E8E8F0', marginBottom: 4 }}>{title}</p>
               <p style={{ fontSize: 13, color: '#8888A0' }}>{desc}</p>
@@ -161,7 +161,7 @@ export default function WebsitePage() {
       {/* Delete Confirm Modal */}
       {showDeleteConfirm && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
-          <div style={{ background: '#303030', border: '1px solid rgba(248,113,113,0.3)', borderRadius: 20, padding: 32, width: '100%', maxWidth: 440 }}>
+          <div style={{ background: '#231F20', border: '1px solid rgba(248,113,113,0.3)', borderRadius: 20, padding: 32, width: '100%', maxWidth: 440 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
               <h2 style={{ fontSize: 18, fontWeight: 700, color: '#E8E8F0' }}>Saytı Sil</h2>
               <button onClick={() => { setShowDeleteConfirm(false); setDeleteError(''); }} style={{ background: 'transparent', border: 'none', color: '#8888A0', cursor: 'pointer' }}>

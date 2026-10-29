@@ -65,7 +65,7 @@ export default function NewOrganizationPage() {
             key={s}
             style={{
               flex: 1, height: 4, borderRadius: 2,
-              background: step >= s ? '#00D37D' : '#424242',
+              background: step >= s ? '#00D37D' : '#383334',
               transition: 'background 0.3s',
             }}
           />

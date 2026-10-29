@@ -55,7 +55,7 @@ export default function HomePage() {
     <div
       style={{
         minHeight: '100vh',
-        background: '#303030',
+        background: '#231F20',
         color: '#F5F5F7',
       }}
     >
@@ -68,7 +68,7 @@ export default function HomePage() {
           padding: '20px 40px',
           maxWidth: 1280,
           margin: '0 auto',
-          borderBottom: '1px solid #424242',
+          borderBottom: '1px solid #383334',
         }}
       >
         <Link
@@ -277,7 +277,7 @@ export default function HomePage() {
       {/* Footer */}
       <footer
         style={{
-          borderTop: '1px solid #424242',
+          borderTop: '1px solid #383334',
           padding: '32px 40px',
           textAlign: 'center',
           color: '#B0B0B8',
