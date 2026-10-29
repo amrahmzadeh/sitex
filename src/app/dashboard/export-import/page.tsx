@@ -179,7 +179,7 @@ export default function ExportImportPage() {
       )}
 
       {/* Tabs */}
-      <div style={{ display: 'flex', gap: 8, marginBottom: 20, background: '#231F20', padding: 4, borderRadius: 12, border: '1px solid #383334' }}>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 20, background: '#171717', padding: 4, borderRadius: 12, border: '1px solid #383334' }}>
         <button
           onClick={() => setActiveTab('export')}
           style={{

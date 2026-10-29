@@ -55,7 +55,7 @@ export default function HomePage() {
     <div
       style={{
         minHeight: '100vh',
-        background: '#231F20',
+        background: '#171717',
         color: '#F5F5F7',
       }}
     >

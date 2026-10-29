@@ -155,7 +155,7 @@ export default function DashboardPage() {
             <Link
               key={href}
               href={href}
-              style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 16px', borderRadius: 12, border: '1px solid #383334', background: '#231F20', textDecoration: 'none', color: '#E8E8F0', fontSize: 13, fontWeight: 500, transition: 'all 0.15s' }}
+              style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 16px', borderRadius: 12, border: '1px solid #383334', background: '#171717', textDecoration: 'none', color: '#E8E8F0', fontSize: 13, fontWeight: 500, transition: 'all 0.15s' }}
               onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = color; }}
               onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = '#383334'; }}
             >

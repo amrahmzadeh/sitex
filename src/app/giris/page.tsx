@@ -46,7 +46,7 @@ export default function LoginPage() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: '#231F20',
+        background: '#171717',
         padding: 20,
       }}
     >
@@ -57,7 +57,7 @@ export default function LoginPage() {
         style={{
           width: '100%',
           maxWidth: 420,
-          background: '#231F20',
+          background: '#171717',
           borderRadius: 20,
           border: '1px solid #383334',
           padding: 40,

@@ -161,7 +161,7 @@ export default function WebsitePage() {
       {/* Delete Confirm Modal */}
       {showDeleteConfirm && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
-          <div style={{ background: '#231F20', border: '1px solid rgba(248,113,113,0.3)', borderRadius: 20, padding: 32, width: '100%', maxWidth: 440 }}>
+          <div style={{ background: '#171717', border: '1px solid rgba(248,113,113,0.3)', borderRadius: 20, padding: 32, width: '100%', maxWidth: 440 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
               <h2 style={{ fontSize: 18, fontWeight: 700, color: '#E8E8F0' }}>Saytı Sil</h2>
               <button onClick={() => { setShowDeleteConfirm(false); setDeleteError(''); }} style={{ background: 'transparent', border: 'none', color: '#8888A0', cursor: 'pointer' }}>

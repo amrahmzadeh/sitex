@@ -3,8 +3,8 @@
 /* ==================== DESIGN TOKENS ==================== */
 :root {
   /* Dashboard colors */
-  --dash-bg: #231F20;
-  --dash-surface: #231F20;
+  --dash-bg: #171717;
+  --dash-surface: #171717;
   --dash-surface-hover: #2E292A;
   --dash-border: #383334;
   --dash-text: #F5F5F7;
