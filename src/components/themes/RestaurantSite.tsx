@@ -1591,14 +1591,7 @@ export default function RestaurantSite({ data, initialTable }: { data: SiteData;
           </div>
         </section>
 
-        {/* Social Media Feed Module */}
-        <SocialMediaFeed
-          socialLinks={socialLinks}
-          posts={data.socialFeedPosts}
-          theme={theme}
-          organization={organization}
-          menuItems={menuCategories.flatMap((c) => c.menuItems)}
-        />
+
 
         {/* Footer */}
         <footer style={{ background: footerBg, padding: '48px 20px 32px' }}>

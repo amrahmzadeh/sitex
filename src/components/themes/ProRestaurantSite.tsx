@@ -1949,14 +1949,7 @@ export default function ProRestaurantSite({
           </div>
         </section>
 
-        {/* Social Media Feed Module */}
-        <SocialMediaFeed
-          socialLinks={socialLinks}
-          posts={data.socialFeedPosts}
-          theme={theme}
-          organization={organization}
-          menuItems={menuCategories.flatMap((c) => c.menuItems)}
-        />
+
 
         {/* ===================== FOOTER ===================== */}
         <footer
