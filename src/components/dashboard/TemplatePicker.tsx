@@ -38,15 +38,42 @@ export default function TemplatePicker({
   useEffect(() => {
     const controller = new AbortController();
 
-    fetch(
-      `/api/templates?category=${encodeURIComponent(categoryId)}&subcategory=${encodeURIComponent(subcategoryId)}`,
-      { signal: controller.signal }
-    )
-      .then(async (res) => {
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Şablon siyahısı yüklənmədi');
-        setTemplates(data.templates || []);
-        if (data.meta?.warning) setWarning(data.meta.warning);
+    Promise.all([
+      fetch(
+        `/api/templates?category=${encodeURIComponent(categoryId)}&subcategory=${encodeURIComponent(subcategoryId)}`,
+        { signal: controller.signal }
+      ).then(async (res) => {
+        if (!res.ok) return { templates: [] };
+        return res.json();
+      }),
+      fetch('/api/themes', { signal: controller.signal }).then(async (res) => {
+        if (!res.ok) return { themes: [] };
+        return res.json();
+      }),
+    ])
+      .then(([tplData, themeData]) => {
+        const githubTemplates: TemplateOption[] = tplData.templates || [];
+        const customThemes: TemplateOption[] = (themeData.themes || []).map((t: any) => ({
+          id: t.id,
+          name: t.name,
+          description: t.description,
+          version: t.version,
+          preview: { gradient: t.previewGradient || ['#00D37D', '#121416'] },
+          requiresGitHub: false,
+          installable: true,
+        }));
+
+        // Merge, avoiding duplicate IDs
+        const existingIds = new Set(githubTemplates.map((t) => t.id));
+        const combined = [...githubTemplates];
+        for (const ct of customThemes) {
+          if (!existingIds.has(ct.id)) {
+            combined.push(ct);
+          }
+        }
+
+        setTemplates(combined);
+        if (tplData.meta?.warning) setWarning(tplData.meta.warning);
       })
       .catch((err: unknown) => {
         if (err instanceof Error && err.name === 'AbortError') return;

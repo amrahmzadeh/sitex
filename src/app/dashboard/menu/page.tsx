@@ -1,11 +1,13 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Plus, Pencil, Trash2, X, Loader2, UtensilsCrossed,
-  Tag, DollarSign, Eye, EyeOff, Star, Flame, Sparkles, Upload, ChevronDown, Film,
+  Tag, DollarSign, Eye, EyeOff, Star, Flame, Sparkles, Upload, ChevronDown, Film, AlertCircle,
 } from 'lucide-react';
+import { isFoodCategory } from '@/modules/navigation';
 
 interface Category { id: string; name: string; description?: string; isVisible: boolean; sortOrder: number; _count?: { menuItems: number }; }
 interface MenuItem {
@@ -31,10 +33,12 @@ function useCurrentOrg() {
 }
 
 export default function MenuPage() {
+  const router = useRouter();
   const orgId = useCurrentOrg();
   const [categories, setCategories] = useState<Category[]>([]);
   const [items, setItems] = useState<MenuItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isAllowed, setIsAllowed] = useState(true);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [showCatModal, setShowCatModal] = useState(false);
   const [showItemModal, setShowItemModal] = useState(false);
@@ -57,12 +61,28 @@ export default function MenuPage() {
       fetch(`/api/organizations/${orgId}/menu/items`).then(r => r.json()),
       fetch(`/api/organizations/${orgId}`).then(r => r.json()),
     ]).then(([cats, its, org]) => {
+      const orgData = org.organization;
+      if (orgData) {
+        if (!isFoodCategory(orgData.siteCategory, orgData.siteSubcategory)) {
+          setIsAllowed(false);
+          router.replace('/dashboard');
+          return;
+        }
+        if (orgData.currency) setCurrency(orgData.currency);
+      }
       setCategories(cats.categories || []);
       setItems(its.items || []);
-      if (org.organization?.currency) setCurrency(org.organization.currency);
       if (cats.categories?.[0]) setActiveCategory(cats.categories[0].id);
     }).finally(() => setLoading(false));
-  }, [orgId]);
+  }, [orgId, router]);
+
+  if (!isAllowed) {
+    return (
+      <div style={{ padding: 40, textAlign: 'center', color: '#F87171' }}>
+        <p>Bu bölmə yalnız restoran və kafe saytları üçün əlçatandır. Yönləndirilirsiniz...</p>
+      </div>
+    );
+  }
 
   const openCatModal = (cat?: Category) => {
     setEditCategory(cat || null);

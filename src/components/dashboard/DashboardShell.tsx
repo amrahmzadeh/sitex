@@ -12,28 +12,15 @@ import {
   BarChart3, CreditCard, ExternalLink, Sparkles, QrCode,
   Share2, Shield, Download,
 } from 'lucide-react';
-
-const navItems = [
-  { href: '/dashboard', icon: LayoutDashboard, label: 'Ana Səhifə' },
-  { href: '/dashboard/website', icon: Globe, label: 'Veb Saytım' },
-  { href: '/dashboard/theme', icon: Palette, label: 'Tema Redaktoru' },
-  { href: '/dashboard/social', icon: Share2, label: 'Sosial Media' },
-  { href: '/dashboard/splash', icon: Sparkles, label: 'Splash Screen' },
-  { href: '/dashboard/menu', icon: UtensilsCrossed, label: 'Menyu' },
-  { href: '/dashboard/media', icon: Image, label: 'Media Kitabxanası' },
-  { href: '/dashboard/whatsapp', icon: MessageCircle, label: 'Sifariş Ayarları' },
-  { href: '/dashboard/qr', icon: QrCode, label: 'QR Yaradıcı' },
-  { href: '/dashboard/analytics', icon: BarChart3, label: 'Analitika' },
-  { href: '/dashboard/billing', icon: CreditCard, label: 'Abunəlik' },
-  { href: '/dashboard/export-import', icon: Download, label: 'Export / Import' },
-  { href: '/dashboard/settings', icon: Settings, label: 'Parametrlər' },
-];
+import { dashboardNavItems, isNavItemVisible } from '@/modules/navigation';
 
 interface Organization {
   id: string;
   name: string;
   slug: string;
   logo?: string;
+  siteCategory?: string | null;
+  siteSubcategory?: string | null;
   website?: { isPublished: boolean };
 }
 
@@ -129,7 +116,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
 
       {/* Nav */}
       <nav style={{ flex: 1, padding: '12px 12px', overflowY: 'auto' }}>
-        {navItems.map(({ href, icon: Icon, label }) => {
+        {dashboardNavItems.filter((item) => isNavItemVisible(item, currentOrg ? { category: currentOrg.siteCategory, subcategory: currentOrg.siteSubcategory } : null)).map(({ href, icon: Icon, label }) => {
           const active = isActive(href);
           return (
             <Link
