@@ -84,10 +84,15 @@ src/
 ├── components/
 │   ├── dashboard/           # Admin UI bileşenləri
 │   └── themes/              # Restoran sayt bileşeni
+├── config/
+│   ├── site-categories.ts   # 25 sayt kateqoriyası və alt kateqoriyalar
+│   └── templates/manifest.json # GitHub şablon manifesti
 ├── lib/
 │   ├── db.ts                # Prisma client
 │   ├── auth.ts              # NextAuth konfiqurasiyası
 │   ├── themes.ts            # Tema sistemi
+│   ├── site-pages.ts        # Sayt növünə uyğun standart səhifələr
+│   ├── templates/           # GitHub şablon mənbəyi və tətbiqi
 │   ├── validations.ts       # Zod şemaları
 │   └── utils.ts             # Yardımçı funksiyalar
 prisma/
@@ -97,14 +102,44 @@ prisma/
 
 ---
 
+## 🧩 Sayt növləri və GitHub şablonları
+
+Yeni sayt yaradılarkən (`/dashboard/new-organization`) əvvəlcə **25 əsas kateqoriya**
+və onların alt kateqoriyaları göstərilir, seçim təsdiqlənir və yalnız sonra mövcud
+yaratma prosesi davam edir. Seçilmiş növ `Organization.siteCategory` /
+`Organization.siteSubcategory` sahələrində saxlanılır; köhnə saytlar üçün bu sahələr
+nullable-dir.
+
+Şablonlar layihədə saxlanılmır — ayrıca GitHub repository-dən yalnız ehtiyac yarandıqda
+endirilir. Manifest: [`src/config/templates/manifest.json`](src/config/templates/manifest.json).
+Ətraflı təlimat: [`docs/templates-github.md`](docs/templates-github.md).
+
+```bash
+# Şablon repository-si (server tərəfində; private repo üçün token tələb olunur)
+GITHUB_TEMPLATE_REPO="onlivecorp/website-templates"
+# Tag və ya commit SHA ilə sabit versiya
+GITHUB_TEMPLATE_REF="v1.0.0"
+# Yalnız məxfi repository üçün
+GITHUB_TEMPLATE_TOKEN=""
+```
+
+GitHub əlçatmaz olsa belə sayt yaradılması dayanmır: şablonun daxili teması tətbiq
+olunur və istifadəçiyə xəbərdarlıq göstərilir. Şablon faylları Hostinger diskində
+saxlanılmır — müvəqqəti qovluq iş bitdikdən sonra silinir.
+
+---
+
 ## 🛠️ Komandalar
 
 ```bash
 npm run dev          # Geliştirme serveri
 npm run build        # Production build
+npm test             # Kateqoriya, manifest və şablon təhlükəsizliyi testləri
 npm run db:push      # DB şeması tətbiq et
 npm run db:seed      # Demo məlumatlar yüklə
 npm run db:studio    # Prisma Studio (DB görüntüləyici)
+bash scripts/deploy-hostinger.sh            # site.onlive.az-a deploy (SSH)
+bash scripts/deploy-hostinger.sh --check    # SSH/Node yoxlaması
 ```
 
 ---

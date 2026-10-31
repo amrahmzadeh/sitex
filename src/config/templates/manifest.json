@@ -1,0 +1,175 @@
+{
+  "schemaVersion": 1,
+  "defaults": {
+    "repository": "",
+    "ref": "v1.0.0",
+    "manifestPath": "manifest.json"
+  },
+  "templates": [
+    {
+      "id": "restaurant-modern",
+      "name": "Modern Restoran",
+      "description": "Qaranlıq fon, qızılı vurğular və menyu fokuslu restoran şablonu.",
+      "category": "restoran-ve-qida-sayti",
+      "subcategory": "restoran",
+      "version": "1.0.0",
+      "themePreset": "warmGourmetPro",
+      "preview": { "gradient": ["#ffc665", "#121416"] },
+      "source": { "path": "templates/restaurant-modern", "ref": "v1.0.0" }
+    },
+    {
+      "id": "cafe-cozy",
+      "name": "Cozy Kafe",
+      "description": "İsti tonlar və sadə menyu təqdimatı ilə kafe şablonu.",
+      "category": "restoran-ve-qida-sayti",
+      "subcategory": "kafe-ve-qehvexana",
+      "version": "1.0.0",
+      "themePreset": "elegant",
+      "preview": { "gradient": ["#D4A574", "#FFF8F0"] },
+      "source": { "path": "templates/cafe-cozy", "ref": "v1.0.0" }
+    },
+    {
+      "id": "blog-editorial",
+      "name": "Editorial Bloq",
+      "description": "Mətnə fokuslanan, oxunaqlı jurnalist və şəxsi bloq şablonu.",
+      "category": "sexsi-blog",
+      "subcategory": "jurnalist-blogu",
+      "version": "1.0.0",
+      "themePreset": "classic",
+      "preview": { "gradient": ["#8B0000", "#FFFEF7"] },
+      "source": { "path": "templates/blog-editorial", "ref": "v1.0.0" }
+    },
+    {
+      "id": "corporate-clean",
+      "name": "Corporate Clean",
+      "description": "Korporativ xidmətlər və komanda təqdimatı üçün səliqəli şablon.",
+      "category": "korporativ-sayt",
+      "subcategory": "sirket-sayti",
+      "version": "1.0.0",
+      "themePreset": "modern",
+      "preview": { "gradient": ["#FF6B35", "#1B1B2F"] },
+      "source": { "path": "templates/corporate-clean", "ref": "v1.0.0" }
+    },
+    {
+      "id": "clinic-trust",
+      "name": "Clinic Trust",
+      "description": "Tibb mərkəzləri üçün etibarlı, aydın və randevu fokuslu şablon.",
+      "category": "sehiyye-ve-saglamliq-sayti",
+      "subcategory": "tibb-merkezi",
+      "version": "1.0.0",
+      "themePreset": "modern",
+      "preview": { "gradient": ["#22D3EE", "#1B1B2F"] },
+      "source": { "path": "templates/clinic-trust", "ref": "v1.0.0" }
+    },
+    {
+      "id": "portfolio-minimal",
+      "name": "Minimal Portfolio",
+      "description": "İş nümunələrini ön plana çıxaran minimal portfolio şablonu.",
+      "category": "portfolio-sayti",
+      "subcategory": "yaradici-portfolio",
+      "version": "1.0.0",
+      "themePreset": "elegant",
+      "preview": { "gradient": ["#E8C9A0", "#2C1810"] },
+      "source": { "path": "templates/portfolio-minimal", "ref": "v1.0.0" }
+    },
+    {
+      "id": "storefront-bold",
+      "name": "Bold Storefront",
+      "description": "Məhsul kartları və kateqoriyalar üçün güclü vizual mağaza şablonu.",
+      "category": "onlayn-magaza",
+      "subcategory": "geyim-ve-aksesuarlar",
+      "version": "1.0.0",
+      "themePreset": "modern",
+      "preview": { "gradient": ["#FF6B35", "#FAFAFA"] },
+      "source": { "path": "templates/storefront-bold", "ref": "v1.0.0" }
+    },
+    {
+      "id": "education-platform",
+      "name": "Education Platform",
+      "description": "Kurs kataloqu və qeydiyyat bölmələri olan təhsil şablonu.",
+      "category": "tehsil-sayti",
+      "subcategory": "onlayn-kurslar",
+      "version": "1.0.0",
+      "themePreset": "classic",
+      "preview": { "gradient": ["#FFD700", "#1A1A2E"] },
+      "source": { "path": "templates/education-platform", "ref": "v1.0.0" }
+    },
+    {
+      "id": "travel-journal",
+      "name": "Travel Journal",
+      "description": "Səyahət hekayələri və foto qalereyaları üçün şablon.",
+      "category": "seyahat-ve-turizm-sayti",
+      "subcategory": "seyahat-blogu",
+      "version": "1.0.0",
+      "themePreset": "elegant",
+      "preview": { "gradient": ["#D4A574", "#2C1810"] },
+      "source": { "path": "templates/travel-journal", "ref": "v1.0.0" }
+    },
+    {
+      "id": "hotel-boutique",
+      "name": "Boutique Hotel",
+      "description": "Otel və qonaq evləri üçün otaq və rezervasiya təqdimatı.",
+      "category": "muessise-sayti",
+      "subcategory": "otel-ve-turizm",
+      "version": "1.0.0",
+      "themePreset": "elegant",
+      "preview": { "gradient": ["#E8C9A0", "#2C1810"] },
+      "source": { "path": "templates/hotel-boutique", "ref": "v1.0.0" }
+    },
+    {
+      "id": "fitness-energy",
+      "name": "Fitness Energy",
+      "description": "Fitness mərkəzləri üçün enerjili, hərəkətli şablon.",
+      "category": "idman-ve-fitness-sayti",
+      "subcategory": "fitness-merkezi",
+      "version": "1.0.0",
+      "themePreset": "modern",
+      "preview": { "gradient": ["#FF6B35", "#1B1B2F"] },
+      "source": { "path": "templates/fitness-energy", "ref": "v1.0.0" }
+    },
+    {
+      "id": "saas-landing",
+      "name": "SaaS Landing",
+      "description": "Məhsul xüsusiyyətləri və qiymət planları üçün landing şablonu.",
+      "category": "reqemsal-mehsul-ve-saas",
+      "subcategory": "saas-platformasi",
+      "version": "1.0.0",
+      "themePreset": "modern",
+      "preview": { "gradient": ["#00D37D", "#121212"] },
+      "source": { "path": "templates/saas-landing", "ref": "v1.0.0" }
+    },
+    {
+      "id": "realestate-listings",
+      "name": "Real Estate Listings",
+      "description": "Əmlak elanları və filtr bölmələri olan şablon.",
+      "category": "dasinmaz-emlak-sayti",
+      "subcategory": "ev-ve-menzil-elanlari",
+      "version": "1.0.0",
+      "themePreset": "classic",
+      "preview": { "gradient": ["#8B0000", "#FFFEF7"] },
+      "source": { "path": "templates/realestate-listings", "ref": "v1.0.0" }
+    },
+    {
+      "id": "legal-professional",
+      "name": "Legal Professional",
+      "description": "Hüquq büroları üçün ciddi və peşəkar təqdimat şablonu.",
+      "category": "huquq-ve-dovlet-xidmetleri-sayti",
+      "subcategory": "huquq-burosu",
+      "version": "1.0.0",
+      "themePreset": "classic",
+      "preview": { "gradient": ["#8B0000", "#1A1A2E"] },
+      "source": { "path": "templates/legal-professional", "ref": "v1.0.0" }
+    },
+    {
+      "id": "landing-generic",
+      "name": "Universal Landing",
+      "description": "İstənilən məqsəd üçün universal tək səhifəli şablon.",
+      "category": "diger-sayt-novleri",
+      "subcategory": "landing-page",
+      "version": "1.0.0",
+      "themePreset": "modern",
+      "preview": { "gradient": ["#FF6B35", "#FAFAFA"] },
+      "source": { "path": "templates/landing-generic", "ref": "v1.0.0" }
+    }
+  ]
+}

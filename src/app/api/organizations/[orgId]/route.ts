@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { organizationSchema } from '@/lib/validations';
 import { logAudit } from '@/lib/admin';
+import { scheduleSiteSync } from '@/lib/site-sync/schedule';
 
 async function verifyAccess(orgId: string) {
   const session = await getServerSession(authOptions);
@@ -123,6 +124,9 @@ export async function DELETE(
     if (!org) {
       return NextResponse.json({ error: 'Sayt tapılmadı' }, { status: 404 });
     }
+
+    // GitHub-da fayllar silinmir — sayt soft-delete kimi işarələnir (admin bərpa edə bilər).
+    scheduleSiteSync(orgId, 'delete', userId);
 
     // Delete organization - all related data cascades via Prisma schema
     await prisma.organization.delete({ where: { id: orgId } });

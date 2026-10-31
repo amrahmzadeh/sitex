@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { requireSuperAdmin, unauthorizedResponse, logAudit } from '@/lib/admin';
 import { prisma } from '@/lib/db';
+import { scheduleSiteSync } from '@/lib/site-sync/schedule';
 
 // DELETE /api/admin/sites/[siteId] — admin force-delete a site
 export async function DELETE(
@@ -18,6 +19,9 @@ export async function DELETE(
   });
 
   if (!org) return NextResponse.json({ error: 'Sayt tapılmadı' }, { status: 404 });
+
+  // GitHub-da fayllar qorunur; sayt soft-delete kimi işarələnir.
+  scheduleSiteSync(siteId, 'delete', admin.id);
 
   // Delete - cascades all related data
   await prisma.organization.delete({ where: { id: siteId } });

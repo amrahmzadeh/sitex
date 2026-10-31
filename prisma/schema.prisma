@@ -71,6 +71,16 @@ model Organization {
   city        String?
   mapUrl      String?
   currency    String   @default("AZN")
+
+  // Sayt növü (kateqoriya / alt kateqoriya ID-ləri) və tətbiq olunmuş şablon
+  // Köhnə saytlar üçün nullable-dir — geriyə uyğunluq qorunur.
+  siteCategory      String?
+  siteSubcategory   String?
+  templateId        String?
+  templateVersion   String?
+  templateSource    String?   // "github" | "builtin"
+  templateAppliedAt DateTime?
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -272,6 +282,38 @@ model AuditLog {
   targetId    String
   meta        String?  @db.Text
   createdAt   DateTime @default(now())
+}
+
+// ==================== SITE → GITHUB SYNC ====================
+
+enum SiteSyncStatus {
+  PENDING
+  RUNNING
+  DONE
+  FAILED
+}
+
+// Hər saytın GitHub-a sinxronizasiyası üçün növbə qeydi.
+// siteId bilərəkdən relation deyil: sayt silindikdə də job qalır və
+// GitHub-da soft-delete commit-i yaza bilir.
+model SiteSyncJob {
+  id          String         @id @default(cuid())
+  siteId      String
+  status      SiteSyncStatus @default(PENDING)
+  trigger     String         @default("publish") // create | publish | manual | backfill | delete
+  attempts    Int            @default(0)
+  lastError   String?        @db.Text
+  commitSha   String?
+  contentHash String?
+  noChanges   Boolean        @default(false)
+  requestedBy String?
+  startedAt   DateTime?
+  finishedAt  DateTime?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@index([siteId, createdAt])
+  @@index([status, createdAt])
 }
 
 // ==================== SOCIAL FEED POSTS ====================

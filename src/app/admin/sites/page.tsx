@@ -3,6 +3,17 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Search, RefreshCw, Trash2, Eye, ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react';
 
+interface SiteSyncInfo {
+  status: 'PENDING' | 'RUNNING' | 'DONE' | 'FAILED';
+  trigger: string;
+  commitSha: string | null;
+  commitUrl: string | null;
+  lastError: string | null;
+  noChanges: boolean;
+  finishedAt: string | null;
+  createdAt: string;
+}
+
 interface Site {
   id: string;
   name: string;
@@ -12,11 +23,24 @@ interface Site {
   website: { isPublished: boolean; publishedAt: string | null } | null;
   memberships: Array<{ user: { id: string; name: string | null; email: string } }>;
   _count: { menuItems: number; menuCategories: number };
+  sync: SiteSyncInfo | null;
 }
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString('az-AZ');
 }
+
+function formatDateTime(iso: string | null): string {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleString('az-AZ');
+}
+
+const SYNC_LABELS: Record<SiteSyncInfo['status'], { label: string; color: string; bg: string }> = {
+  DONE: { label: 'Sinxron', color: '#34D399', bg: 'rgba(52,211,153,0.1)' },
+  FAILED: { label: 'Xəta', color: '#F87171', bg: 'rgba(248,113,113,0.1)' },
+  RUNNING: { label: 'İşləyir', color: '#60A5FA', bg: 'rgba(96,165,250,0.1)' },
+  PENDING: { label: 'Növbədə', color: '#FBBF24', bg: 'rgba(251,191,36,0.1)' },
+};
 
 export default function AdminSitesPage() {
   const [sites, setSites] = useState<Site[]>([]);
@@ -27,6 +51,10 @@ export default function AdminSitesPage() {
   const [deleteTarget, setDeleteTarget] = useState<Site | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [toast, setToast] = useState('');
+  const [syncEnabled, setSyncEnabled] = useState(false);
+  const [syncRepo, setSyncRepo] = useState<string | null>(null);
+  const [syncTarget, setSyncTarget] = useState<Site | null>(null);
+  const [syncLoading, setSyncLoading] = useState(false);
 
   const LIMIT = 20;
 
@@ -43,6 +71,8 @@ export default function AdminSitesPage() {
       const data = await res.json();
       setSites(data.sites || []);
       setTotal(data.total || 0);
+      setSyncEnabled(Boolean(data.syncEnabled));
+      setSyncRepo(data.repository || null);
     } finally {
       setLoading(false);
     }
@@ -62,6 +92,28 @@ export default function AdminSitesPage() {
     } else {
       const d = await res.json();
       showToast(d.error || 'Xəta baş verdi');
+    }
+  };
+
+  const handleSync = async (site: Site) => {
+    setSyncLoading(true);
+    try {
+      const res = await fetch(`/api/admin/sites/${site.id}/sync`, { method: 'POST' });
+      const data = await res.json();
+      if (res.ok) {
+        showToast(
+          data.outcome?.status === 'deduped'
+            ? 'Bu sayt üçün sync artıq növbədədir'
+            : 'GitHub sinxronizasiyası növbəyə atıldı'
+        );
+        setSyncTarget(null);
+        fetchSites();
+        setTimeout(fetchSites, 3000);
+      } else {
+        showToast(data.error || 'Sinxronizasiya başladıla bilmədi');
+      }
+    } finally {
+      setSyncLoading(false);
     }
   };
 
@@ -105,7 +157,7 @@ export default function AdminSitesPage() {
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
             <thead>
               <tr style={{ borderBottom: '1px solid #2A2A3A' }}>
-                {['Sayt Adı', 'Slug', 'Sahibi', 'Status', 'Yaradılma', 'Menyu', 'Əməliyyatlar'].map(h => (
+                {['Sayt Adı', 'Slug', 'Sahibi', 'Status', 'Yaradılma', 'Menyu', 'GitHub', 'Əməliyyatlar'].map(h => (
                   <th key={h} style={{ padding: '12px 16px', textAlign: 'left', color: '#8888A0', fontWeight: 600, whiteSpace: 'nowrap' }}>{h}</th>
                 ))}
               </tr>
@@ -114,7 +166,7 @@ export default function AdminSitesPage() {
               {loading ? (
                 [...Array(5)].map((_, i) => (
                   <tr key={i}>
-                    {[...Array(7)].map((_, j) => (
+                    {[...Array(8)].map((_, j) => (
                       <td key={j} style={{ padding: '12px 16px' }}>
                         <div className="skeleton" style={{ height: 16, borderRadius: 4, width: '80%' }} />
                       </td>
@@ -123,7 +175,7 @@ export default function AdminSitesPage() {
                 ))
               ) : sites.length === 0 ? (
                 <tr>
-                  <td colSpan={7} style={{ padding: 40, textAlign: 'center', color: '#8888A0' }}>
+                  <td colSpan={8} style={{ padding: 40, textAlign: 'center', color: '#8888A0' }}>
                     Sayt tapılmadı
                   </td>
                 </tr>
@@ -156,6 +208,37 @@ export default function AdminSitesPage() {
                     </td>
                     <td style={{ padding: '12px 16px', color: '#8888A0' }}>
                       {site._count.menuItems} yemək / {site._count.menuCategories} kat.
+                    </td>
+                    <td style={{ padding: '12px 16px' }}>
+                      {!syncEnabled ? (
+                        <span style={{ color: '#8888A0', fontSize: 12 }}>Söndürülüb</span>
+                      ) : site.sync ? (
+                        <button
+                          onClick={() => setSyncTarget(site)}
+                          title="GitHub sinxronizasiya detalları"
+                          style={{
+                            background: SYNC_LABELS[site.sync.status].bg,
+                            color: SYNC_LABELS[site.sync.status].color,
+                            border: 'none',
+                            padding: '3px 10px',
+                            borderRadius: 100,
+                            fontSize: 12,
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                            whiteSpace: 'nowrap',
+                          }}
+                        >
+                          {SYNC_LABELS[site.sync.status].label}
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => setSyncTarget(site)}
+                          title="GitHub sinxronizasiya detalları"
+                          style={{ background: 'transparent', border: '1px solid #2A2A3A', color: '#8888A0', borderRadius: 100, padding: '3px 10px', fontSize: 12, cursor: 'pointer', whiteSpace: 'nowrap' }}
+                        >
+                          Yoxdur
+                        </button>
+                      )}
                     </td>
                     <td style={{ padding: '12px 16px' }}>
                       <div style={{ display: 'flex', gap: 6 }}>
@@ -219,6 +302,83 @@ export default function AdminSitesPage() {
                 style={{ opacity: deleteLoading ? 0.7 : 1, background: 'rgba(248,113,113,0.15)', fontWeight: 600 }}
               >
                 {deleteLoading ? 'Silinir...' : 'Bəli, sil'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* GitHub Sync Modal */}
+      {syncTarget && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+          <div style={{ background: '#1A1A24', border: '1px solid #2A2A3A', borderRadius: 20, padding: 28, width: '100%', maxWidth: 520 }}>
+            <h2 style={{ fontSize: 18, fontWeight: 700, color: '#E8E8F0', marginBottom: 4 }}>GitHub sinxronizasiyası</h2>
+            <p style={{ color: '#8888A0', fontSize: 13, marginBottom: 20 }}>
+              {syncTarget.name} · <span style={{ color: '#7C5CFC' }}>/{syncTarget.slug}</span>
+            </p>
+
+            <div style={{ display: 'grid', gap: 12, fontSize: 13 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>
+                <span style={{ color: '#8888A0' }}>Status</span>
+                <span style={{ color: syncTarget.sync ? SYNC_LABELS[syncTarget.sync.status].color : '#8888A0', fontWeight: 600 }}>
+                  {syncTarget.sync ? SYNC_LABELS[syncTarget.sync.status].label : 'Hələ sinxronlaşdırılmayıb'}
+                  {syncTarget.sync?.noChanges ? ' (dəyişiklik yoxdur)' : ''}
+                </span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>
+                <span style={{ color: '#8888A0' }}>Son cəhd</span>
+                <span style={{ color: '#E8E8F0' }}>{formatDateTime(syncTarget.sync?.createdAt ?? null)}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>
+                <span style={{ color: '#8888A0' }}>Son uğurlu</span>
+                <span style={{ color: '#E8E8F0' }}>{formatDateTime(syncTarget.sync?.finishedAt ?? null)}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'center' }}>
+                <span style={{ color: '#8888A0' }}>Commit</span>
+                {syncTarget.sync?.commitUrl ? (
+                  <a
+                    href={syncTarget.sync.commitUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: '#7C5CFC', display: 'flex', alignItems: 'center', gap: 4, textDecoration: 'none' }}
+                  >
+                    {syncTarget.sync.commitSha?.slice(0, 7)} <ExternalLink size={12} />
+                  </a>
+                ) : (
+                  <span style={{ color: '#8888A0' }}>—</span>
+                )}
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>
+                <span style={{ color: '#8888A0' }}>Repository</span>
+                <span style={{ color: '#E8E8F0', fontFamily: 'monospace', fontSize: 12 }}>{syncRepo || '—'}</span>
+              </div>
+            </div>
+
+            {syncTarget.sync?.lastError && (
+              <p style={{ marginTop: 16, background: 'rgba(248,113,113,0.1)', border: '1px solid rgba(248,113,113,0.3)', borderRadius: 10, padding: 12, color: '#F87171', fontSize: 12, lineHeight: 1.5 }}>
+                {syncTarget.sync.lastError}
+              </p>
+            )}
+
+            {!syncEnabled && (
+              <p style={{ marginTop: 16, color: '#FBBF24', fontSize: 12 }}>
+                Sinxronizasiya söndürülüb (SITE_GITHUB_SYNC_ENABLED).
+              </p>
+            )}
+
+            <p style={{ marginTop: 16, color: '#8888A0', fontSize: 12, lineHeight: 1.6 }}>
+              Sayt silinəndə GitHub-dakı fayllar silinmir — <code>site.json</code>-a <code>deletedAt</code> yazılır.
+            </p>
+
+            <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 24 }}>
+              <button onClick={() => setSyncTarget(null)} className="dash-btn-secondary">Bağla</button>
+              <button
+                onClick={() => handleSync(syncTarget)}
+                disabled={syncLoading || !syncEnabled}
+                className="dash-btn-primary"
+                style={{ opacity: syncLoading || !syncEnabled ? 0.6 : 1 }}
+              >
+                {syncLoading ? 'Göndərilir...' : 'İndi sinxronlaşdır'}
               </button>
             </div>
           </div>

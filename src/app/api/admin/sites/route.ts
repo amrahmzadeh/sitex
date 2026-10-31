@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { requireSuperAdmin, unauthorizedResponse, logAudit } from '@/lib/admin';
 import { prisma } from '@/lib/db';
+import { isSiteSyncEnabled } from '@/lib/site-sync/config';
 
 // GET /api/admin/sites — list all sites
 export async function GET(req: Request) {
@@ -46,6 +47,62 @@ export async function GET(req: Request) {
     }),
   ]);
 
-  return NextResponse.json({ sites, total, page, limit });
+  // Hər sayt üçün son GitHub sync job-u (yeganə əlavə sorğu).
+  const siteIds = sites.map((site) => site.id);
+  const jobs = siteIds.length
+    ? await prisma.siteSyncJob.findMany({
+        where: { siteId: { in: siteIds } },
+        orderBy: { createdAt: 'desc' },
+        take: 100,
+        select: {
+          siteId: true,
+          status: true,
+          trigger: true,
+          commitSha: true,
+          lastError: true,
+          noChanges: true,
+          finishedAt: true,
+          createdAt: true,
+        },
+      })
+    : [];
+
+  const latestBySite = new Map<string, (typeof jobs)[number]>();
+  for (const job of jobs) {
+    if (!latestBySite.has(job.siteId)) latestBySite.set(job.siteId, job);
+  }
+
+  const repository = process.env.GITHUB_SITES_REPO?.trim() || null;
+
+  const enriched = sites.map((site) => {
+    const job = latestBySite.get(site.id);
+    return {
+      ...site,
+      sync: job
+        ? {
+            status: job.status,
+            trigger: job.trigger,
+            commitSha: job.commitSha,
+            commitUrl:
+              repository && job.commitSha
+                ? `https://github.com/${repository}/commit/${job.commitSha}`
+                : null,
+            lastError: job.lastError,
+            noChanges: job.noChanges,
+            finishedAt: job.finishedAt,
+            createdAt: job.createdAt,
+          }
+        : null,
+    };
+  });
+
+  return NextResponse.json({
+    sites: enriched,
+    total,
+    page,
+    limit,
+    syncEnabled: isSiteSyncEnabled(),
+    repository,
+  });
 }
 

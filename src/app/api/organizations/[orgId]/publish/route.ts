@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/db';
+import { scheduleSiteSync } from '@/lib/site-sync/schedule';
 
 async function verifyAccess(orgId: string) {
   const session = await getServerSession(authOptions);
@@ -41,6 +42,9 @@ export async function POST(
         publishedAt: new Date(),
       },
     });
+
+    // Publish cavabı GitHub-ı gözləmir: sync fon rejimində növbəyə atılır.
+    scheduleSiteSync(orgId, 'publish', membership.userId);
 
     return NextResponse.json({ website: updated });
   } catch (error) {

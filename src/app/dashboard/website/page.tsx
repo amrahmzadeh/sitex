@@ -2,16 +2,44 @@
 
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Globe, ExternalLink, Check, Loader2, Eye, Trash2, X } from 'lucide-react';
+import { Globe, Check, Loader2, Eye, Trash2, X, Palette, RefreshCw } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { getSiteTypeLabel } from '@/config/site-categories';
 
 function useCurrentOrg() {
-  const [data, setData] = useState<{ orgId: string | null; slug: string; isPublished: boolean }>({ orgId: null, slug: '', isPublished: false });
+  const [data, setData] = useState<{
+    orgId: string | null;
+    slug: string;
+    isPublished: boolean;
+    siteCategory: string | null;
+    siteSubcategory: string | null;
+    templateId: string | null;
+    templateVersion: string | null;
+    templateSource: string | null;
+  }>({
+    orgId: null,
+    slug: '',
+    isPublished: false,
+    siteCategory: null,
+    siteSubcategory: null,
+    templateId: null,
+    templateVersion: null,
+    templateSource: null,
+  });
   useEffect(() => {
     const saved = localStorage.getItem('currentOrgId');
     const fetchOrg = (id: string) => {
       fetch(`/api/organizations/${id}`).then(r => r.json()).then(d => {
-        setData({ orgId: id, slug: d.organization?.slug || '', isPublished: d.organization?.website?.isPublished || false });
+        setData({
+          orgId: id,
+          slug: d.organization?.slug || '',
+          isPublished: d.organization?.website?.isPublished || false,
+          siteCategory: d.organization?.siteCategory || null,
+          siteSubcategory: d.organization?.siteSubcategory || null,
+          templateId: d.organization?.templateId || null,
+          templateVersion: d.organization?.templateVersion || null,
+          templateSource: d.organization?.templateSource || null,
+        });
       });
     };
     if (saved) { fetchOrg(saved); return; }
@@ -23,10 +51,47 @@ function useCurrentOrg() {
 }
 
 export default function WebsitePage() {
-  const { orgId, slug, isPublished } = useCurrentOrg();
+  const {
+    orgId, slug, isPublished, siteCategory, siteSubcategory,
+    templateId, templateVersion, templateSource,
+  } = useCurrentOrg();
   const [publishing, setPublishing] = useState(false);
   const [published, setPublished] = useState(false);
   const router = useRouter();
+
+  // Şablon yeniləmə state-i
+  const [applying, setApplying] = useState(false);
+  const [applyMessage, setApplyMessage] = useState('');
+  const [applyError, setApplyError] = useState('');
+
+  const siteTypeLabel = getSiteTypeLabel(siteCategory, siteSubcategory);
+
+  const reapplyTemplate = async () => {
+    if (!orgId || !templateId) return;
+    setApplying(true);
+    setApplyError('');
+    setApplyMessage('');
+    try {
+      const res = await fetch('/api/templates/apply', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ organizationId: orgId, templateId }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setApplyError(data.error || 'Şablon tətbiq edilə bilmədi');
+        return;
+      }
+      setApplyMessage(
+        data.template?.warning ||
+          'Şablon qaralamaya tətbiq olundu. Dəyişikliyin canlı saytda görünməsi üçün “Yayınla” düyməsini basın.'
+      );
+    } catch {
+      setApplyError('Şəbəkə xətası baş verdi');
+    } finally {
+      setApplying(false);
+    }
+  };
 
   // Delete site state
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -114,6 +179,52 @@ export default function WebsitePage() {
               </button>
             </div>
           </div>
+        </motion.div>
+
+        {/* Sayt növü və şablon */}
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="dash-card" style={{ padding: 24 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+            <Palette size={20} color="#00D37D" />
+            <h2 style={{ fontSize: 16, fontWeight: 600, color: '#E8E8F0', margin: 0 }}>Sayt növü və şablon</h2>
+          </div>
+
+          <p style={{ fontSize: 13, color: '#E8E8F0', margin: '0 0 4px' }}>
+            {siteTypeLabel || 'Bu sayt kateqoriya təyin edilmədən yaradılıb (köhnə sayt).'}
+          </p>
+
+          {templateId ? (
+            <p style={{ fontSize: 12, color: '#8888A0', margin: '0 0 14px' }}>
+              Şablon: <code style={{ color: '#00D37D' }}>{templateId}</code>
+              {' · '}v{templateVersion || '1.0.0'}
+              {' · '}{templateSource === 'github' ? 'GitHub mənbəyi' : 'Daxili tema'}
+            </p>
+          ) : (
+            <p style={{ fontSize: 12, color: '#8888A0', margin: '0 0 14px' }}>
+              Şablon təyin edilməyib. Yeni sayt yaradarkən növ seçsəniz, uyğun şablon avtomatik tətbiq olunur.
+            </p>
+          )}
+
+          {templateId && (
+            <button
+              type="button"
+              onClick={reapplyTemplate}
+              disabled={applying}
+              className="dash-btn-secondary"
+              style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13 }}
+            >
+              {applying
+                ? <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} />
+                : <RefreshCw size={14} />}
+              {applying ? 'Tətbiq olunur...' : 'Şablonu yenidən tətbiq et'}
+            </button>
+          )}
+
+          {applyMessage && (
+            <p style={{ fontSize: 12, color: '#34D399', margin: '12px 0 0' }}>{applyMessage}</p>
+          )}
+          {applyError && (
+            <p style={{ fontSize: 12, color: '#F87171', margin: '12px 0 0' }}>{applyError}</p>
+          )}
         </motion.div>
 
         {/* Info Cards */}

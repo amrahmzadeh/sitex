@@ -22,6 +22,14 @@ export const organizationSchema = z.object({
   mapUrl: z.string().nullable().optional(),
 });
 
+// Sayt yaratma sorğusu: sayt növü və şablon seçimi əlavə olunur.
+// Sahələr nullable-dir ki, köhnə klientlər və mövcud saytlar sıradan çıxmasın.
+export const createOrganizationSchema = organizationSchema.extend({
+  siteCategory: z.string().max(80).nullable().optional(),
+  siteSubcategory: z.string().max(80).nullable().optional(),
+  templateId: z.string().max(80).nullable().optional(),
+});
+
 export const menuCategorySchema = z.object({
   name: z.string().min(1, 'Kateqoriya adı tələb olunur'),
   description: z.string().optional(),
@@ -78,6 +86,7 @@ export const themeSchema = z.object({
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
 export type OrganizationInput = z.infer<typeof organizationSchema>;
+export type CreateOrganizationInput = z.infer<typeof createOrganizationSchema>;
 export type MenuCategoryInput = z.infer<typeof menuCategorySchema>;
 export type MenuItemInput = z.infer<typeof menuItemSchema>;
 export type WhatsAppInput = z.infer<typeof whatsappSchema>;

@@ -2,10 +2,17 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/db';
-import { organizationSchema } from '@/lib/validations';
+import { createOrganizationSchema } from '@/lib/validations';
 import { generateSlug } from '@/lib/utils';
 import { defaultThemes } from '@/lib/themes';
 import { checkUserAccess, checkSiteLimit } from '@/lib/admin';
+import { isValidSiteType } from '@/config/site-categories';
+import { getDefaultPagesForSite } from '@/lib/site-pages';
+import { getTemplateDefinition } from '@/lib/templates/github';
+import { resolveTemplateTheme } from '@/lib/templates/installer';
+import { scheduleSiteSync } from '@/lib/site-sync/schedule';
+
+export const runtime = 'nodejs';
 
 export async function GET() {
   try {
@@ -61,7 +68,7 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const result = organizationSchema.safeParse(body);
+    const result = createOrganizationSchema.safeParse(body);
 
     if (!result.success) {
       return NextResponse.json(
@@ -70,7 +77,67 @@ export async function POST(req: Request) {
       );
     }
 
-    const { name, description, phone, email, address, city, mapUrl } = result.data;
+    const {
+      name, description, phone, email, address, city, mapUrl,
+      siteCategory, siteSubcategory, templateId,
+    } = result.data;
+
+    // Sayt növü verilirsə, kateqoriya və alt kateqoriya birlikdə və uyğun olmalıdır.
+    if (Boolean(siteCategory) !== Boolean(siteSubcategory)) {
+      return NextResponse.json(
+        { error: 'Sayt növü üçün həm kateqoriya, həm də alt kateqoriya seçilməlidir' },
+        { status: 400 }
+      );
+    }
+    if (siteCategory && !isValidSiteType(siteCategory, siteSubcategory)) {
+      return NextResponse.json(
+        { error: 'Seçilmiş kateqoriya və alt kateqoriya bir-birinə uyğun deyil' },
+        { status: 400 }
+      );
+    }
+
+    const selectedTemplate = templateId ? await getTemplateDefinition(templateId) : undefined;
+    if (templateId && !selectedTemplate) {
+      return NextResponse.json({ error: 'Seçilmiş şablon tapılmadı' }, { status: 400 });
+    }
+    if (
+      selectedTemplate &&
+      siteCategory &&
+      (selectedTemplate.category !== siteCategory || selectedTemplate.subcategory !== siteSubcategory)
+    ) {
+      return NextResponse.json(
+        { error: 'Seçilmiş şablon bu sayt növünə aid deyil' },
+        { status: 400 }
+      );
+    }
+
+    // Şablon teması: GitHub əlçatmaz olsa da sayt yaradılması dayanmır.
+    let selectedTheme = defaultThemes.elegant;
+    let templateMeta: { id: string; name: string; version: string; source: string } | null = null;
+    let templateWarning: string | undefined;
+
+    if (selectedTemplate) {
+      try {
+        const resolved = await resolveTemplateTheme(selectedTemplate.id);
+        selectedTheme = resolved.theme;
+        templateMeta = {
+          id: resolved.templateId,
+          name: resolved.name,
+          version: resolved.version,
+          source: resolved.source,
+        };
+        templateWarning = resolved.warning;
+      } catch (error) {
+        templateWarning =
+          error instanceof Error
+            ? `${error.message} Standart tema tətbiq olundu.`
+            : 'Şablon tətbiq olunmadı, standart tema istifadə edildi.';
+      }
+    }
+
+    const effectiveCategory = siteCategory || selectedTemplate?.category || null;
+    const effectiveSubcategory = siteSubcategory || selectedTemplate?.subcategory || null;
+
     let slug = generateSlug(name);
 
     // Ensure unique slug
@@ -79,13 +146,7 @@ export async function POST(req: Request) {
       slug = `${slug}-${Date.now().toString(36)}`;
     }
 
-    const defaultTheme = defaultThemes.elegant;
-    const defaultPages = [
-      { id: 'home', name: 'Ana Səhifə', enabled: true, order: 0 },
-      { id: 'about', name: 'Haqqımızda', enabled: true, order: 1 },
-      { id: 'menu', name: 'Menyu', enabled: true, order: 2 },
-      { id: 'contact', name: 'Əlaqə', enabled: true, order: 3 },
-    ];
+    const defaultPages = getDefaultPagesForSite(effectiveCategory, effectiveSubcategory);
 
     const organization = await prisma.organization.create({
       data: {
@@ -97,6 +158,12 @@ export async function POST(req: Request) {
         address: address?.trim() || null,
         city: city?.trim() || null,
         mapUrl: mapUrl?.trim() || null,
+        siteCategory: effectiveCategory,
+        siteSubcategory: effectiveSubcategory,
+        templateId: templateMeta?.id || null,
+        templateVersion: templateMeta?.version || null,
+        templateSource: templateMeta?.source || null,
+        templateAppliedAt: templateMeta ? new Date() : null,
         memberships: {
           create: {
             userId,
@@ -105,10 +172,10 @@ export async function POST(req: Request) {
         },
         website: {
           create: {
-            draftTheme: defaultTheme as object,
-            publishedTheme: defaultTheme as object,
-            pagesConfig: defaultPages,
-            publishedPages: defaultPages,
+            draftTheme: selectedTheme as object,
+            publishedTheme: selectedTheme as object,
+            pagesConfig: defaultPages as object,
+            publishedPages: defaultPages as object,
           },
         },
         workingHours: {
@@ -128,7 +195,18 @@ export async function POST(req: Request) {
       },
     });
 
-    return NextResponse.json({ organization }, { status: 201 });
+    // İlk GitHub snapshot-u publish-dən asılı olmayaraq (fon rejimində) yazılır.
+    // Sync uğursuz olsa da sayt yaradılması uğurlu sayılır.
+    scheduleSiteSync(organization.id, 'create', userId);
+
+    return NextResponse.json(
+      {
+        organization,
+        template: templateMeta ? { ...templateMeta, warning: templateWarning } : null,
+        templateWarning,
+      },
+      { status: 201 }
+    );
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Xəta baş verdi';
     console.error('Create organization error:', error);
