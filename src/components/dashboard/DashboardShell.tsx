@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { signOut, useSession } from 'next-auth/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  ChefHat, LayoutDashboard, Globe, Palette,
+  ChefHat, LayoutDashboard, Globe, Palette, Layout,
   UtensilsCrossed, Image, MessageCircle, Settings,
   LogOut, ChevronRight, Menu, Building2,
   BarChart3, CreditCard, ExternalLink, Sparkles, QrCode,
@@ -17,6 +17,7 @@ const navItems = [
   { href: '/dashboard', icon: LayoutDashboard, label: 'Ana Səhifə' },
   { href: '/dashboard/website', icon: Globe, label: 'Veb Saytım' },
   { href: '/dashboard/theme', icon: Palette, label: 'Tema Redaktoru' },
+  { href: '/dashboard/template-builder', icon: Layout, label: 'Şablon İnşaatçı' },
   { href: '/dashboard/social', icon: Share2, label: 'Sosial Media' },
   { href: '/dashboard/splash', icon: Sparkles, label: 'Splash Screen' },
   { href: '/dashboard/menu', icon: UtensilsCrossed, label: 'Menyu' },
