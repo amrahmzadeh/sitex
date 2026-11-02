@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { BuilderNode, DeviceMode, GlobalDesignTokens } from '../types';
 import { TemplateRenderer } from '../renderer';
 import '../registry/builtinComponents';
@@ -36,7 +36,21 @@ export function Canvas({
   onInsertAtIndex,
   zoom = 1,
 }: CanvasProps) {
-  const getDeviceWidth = () => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [containerWidth, setContainerWidth] = useState<number>(1200);
+
+  useEffect(() => {
+    const updateWidth = () => {
+      if (containerRef.current) {
+        setContainerWidth(containerRef.current.clientWidth);
+      }
+    };
+    updateWidth();
+    window.addEventListener('resize', updateWidth);
+    return () => window.removeEventListener('resize', updateWidth);
+  }, []);
+
+  const getTargetWidth = () => {
     switch (device) {
       case 'mobile':
         return 390;
@@ -48,8 +62,22 @@ export function Canvas({
     }
   };
 
+  const targetWidth = getTargetWidth();
+
+  // Calculate auto-fit factor if container is smaller than target device
+  const paddingSpace = containerWidth < 640 ? 16 : 48;
+  const availableSpace = Math.max(300, containerWidth - paddingSpace);
+  const autoFitScale =
+    typeof targetWidth === 'number' && availableSpace < targetWidth
+      ? availableSpace / targetWidth
+      : 1;
+
+  const effectiveScale = zoom * autoFitScale;
+
   return (
     <div
+      ref={containerRef}
+      className="sitex-canvas-scroll-container"
       style={{
         flex: 1,
         backgroundImage:
@@ -61,10 +89,11 @@ export function Canvas({
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        padding: device === 'desktop' ? '0' : '40px 24px',
+        padding: device === 'desktop' ? '0' : containerWidth < 640 ? '20px 8px' : '36px 24px',
         position: 'relative',
         boxSizing: 'border-box',
         height: '100%',
+        width: '100%',
       }}
       onClick={() => onSelectNode('')}
       onDragOver={(e) => {
@@ -81,7 +110,7 @@ export function Canvas({
     >
       <div
         style={{
-          width: getDeviceWidth(),
+          width: targetWidth,
           maxWidth: '100%',
           minHeight: device === 'desktop' ? '100%' : '84vh',
           background: tokens?.colors?.background || '#0F1115',
@@ -90,12 +119,17 @@ export function Canvas({
             device === 'desktop'
               ? 'none'
               : '0 24px 70px rgba(0,0,0,0.85), 0 0 0 1px rgba(255,255,255,0.08)',
-          borderRadius: device === 'desktop' ? 0 : 24,
+          borderRadius: device === 'desktop' ? 0 : containerWidth < 640 ? 14 : 24,
           overflow: 'hidden',
-          transition: 'width 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
-          border: device === 'desktop' ? 'none' : '10px solid #1C202B',
+          transition: 'width 0.25s cubic-bezier(0.4, 0, 0.2, 1), transform 0.2s ease',
+          border:
+            device === 'desktop'
+              ? 'none'
+              : containerWidth < 640
+              ? '4px solid #1C202B'
+              : '10px solid #1C202B',
           boxSizing: 'border-box',
-          transform: zoom !== 1 ? `scale(${zoom})` : 'none',
+          transform: effectiveScale !== 1 ? `scale(${effectiveScale})` : 'none',
           transformOrigin: 'top center',
         }}
         onClick={(e) => e.stopPropagation()}

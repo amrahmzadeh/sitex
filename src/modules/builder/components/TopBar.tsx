@@ -108,11 +108,11 @@ export function TopBar({
           max-height: 56px;
           background: #090A0D;
           border-bottom: 1px solid #20242E;
-          display: grid;
-          grid-template-columns: minmax(260px, auto) 1fr auto;
+          display: flex;
           align-items: center;
+          justify-content: space-between;
           padding: 0 16px;
-          gap: 16px;
+          gap: 12px;
           user-select: none;
           box-sizing: border-box;
           z-index: 50;
@@ -225,17 +225,39 @@ export function TopBar({
           }
         }
         @media (max-width: 960px) {
+          .sitex-topbar {
+            height: 52px;
+            min-height: 52px;
+            padding: 0 10px;
+            gap: 8px;
+          }
           .sitex-tabs-desktop {
-            display: none;
+            display: none !important;
           }
           .sitex-tabs-overflow {
             display: block !important;
           }
           .sitex-btn-text {
-            display: none;
+            display: none !important;
           }
           .sitex-action-btn {
             padding: 0 8px;
+          }
+        }
+        @media (max-width: 640px) {
+          .sitex-topbar-title-input {
+            max-width: 90px !important;
+            font-size: 12px !important;
+            padding: 2px 4px !important;
+          }
+          .sitex-status-badge {
+            display: none !important;
+          }
+          .sitex-save-text {
+            display: none !important;
+          }
+          .sitex-primary-btn {
+            padding: 0 10px !important;
           }
         }
       `}</style>
@@ -269,6 +291,7 @@ export function TopBar({
           {/* Tema Adı */}
           <input
             type="text"
+            className="sitex-topbar-title-input"
             value={templateName}
             onChange={(e) => onUpdateName(e.target.value)}
             title="Tema adını dəyişdir"
@@ -282,7 +305,7 @@ export function TopBar({
               borderRadius: 6,
               outline: 'none',
               maxWidth: 180,
-              minWidth: 100,
+              minWidth: 80,
               whiteSpace: 'nowrap',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
@@ -301,6 +324,7 @@ export function TopBar({
           {/* Status Rozeti */}
           {saving ? (
             <span
+              className="sitex-status-badge"
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -321,6 +345,7 @@ export function TopBar({
             </span>
           ) : hasUnsavedChanges ? (
             <span
+              className="sitex-status-badge"
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -341,6 +366,7 @@ export function TopBar({
             </span>
           ) : (
             <span
+              className="sitex-status-badge"
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',

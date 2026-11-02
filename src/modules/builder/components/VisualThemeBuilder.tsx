@@ -333,7 +333,25 @@ export function VisualThemeBuilder({
   // Sidebar width & collapse states
   const [sidebarWidth, setSidebarWidth] = useState<number>(360);
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [windowWidth, setWindowWidth] = useState<number>(1280);
   const isDraggingRef = useRef(false);
+
+  // Responsive resize tracking & initial collapse
+  useEffect(() => {
+    const handleResize = () => {
+      const w = window.innerWidth;
+      setWindowWidth(w);
+      if (w < 1100) {
+        setIsCollapsed(true);
+      }
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const isCompact = windowWidth < 1100;
+  const isMobile = windowWidth < 768;
 
   // Restore sidebar width from localStorage
   useEffect(() => {
@@ -445,6 +463,9 @@ export function VisualThemeBuilder({
   const handleInsertComponent = (type: string) => {
     onAddNode(type, insertTargetIndex);
     setInsertTargetIndex(undefined);
+    if (isCompact) {
+      setIsCollapsed(true);
+    }
   };
 
   const handleLoadStarterTemplate = (starter: (typeof STARTER_TEMPLATES)[0]) => {
@@ -589,6 +610,41 @@ export function VisualThemeBuilder({
           color: #08090C;
           box-shadow: 0 2px 10px rgba(0, 211, 125, 0.3);
         }
+        @media (max-width: 1100px) {
+          .sitex-drawer-panel {
+            position: fixed !important;
+            top: 52px !important;
+            left: 54px !important;
+            bottom: 0 !important;
+            width: min(340px, calc(100vw - 54px)) !important;
+            z-index: 100 !important;
+            box-shadow: 14px 0 40px rgba(0,0,0,0.85) !important;
+          }
+          .sitex-properties-panel-wrap {
+            position: fixed !important;
+            top: 52px !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            width: min(340px, 92vw) !important;
+            z-index: 100 !important;
+            box-shadow: -14px 0 40px rgba(0,0,0,0.85) !important;
+          }
+        }
+        @media (max-width: 640px) {
+          .sitex-drawer-panel {
+            left: 0 !important;
+            width: 100vw !important;
+          }
+          .sitex-properties-panel-wrap {
+            width: 100vw !important;
+          }
+          .sitex-canvas-subtoolbar-label {
+            display: none !important;
+          }
+          .sitex-device-btn-text {
+            display: none !important;
+          }
+        }
       `}</style>
 
       <div
@@ -710,20 +766,63 @@ export function VisualThemeBuilder({
           <aside
             role="region"
             aria-label="Studio İdarəetmə Paneli"
+            className="sitex-drawer-panel"
             style={{
-              width: sidebarWidth,
-              minWidth: 300,
+              width: isCompact ? 320 : sidebarWidth,
+              minWidth: isCompact ? 280 : 300,
               maxWidth: 440,
               background: '#0D0F14',
               borderRight: '1px solid #1C202A',
               display: 'flex',
               flexDirection: 'column',
-              zIndex: 20,
+              zIndex: 100,
               position: 'relative',
               boxSizing: 'border-box',
               flexShrink: 0,
             }}
           >
+            {/* Header Close button for compact view */}
+            {isCompact && (
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '8px 12px',
+                  background: '#07080B',
+                  borderBottom: '1px solid #1C202A',
+                }}
+              >
+                <span style={{ fontSize: 11, fontWeight: 700, color: '#00D37D', textTransform: 'uppercase' }}>
+                  {activeDockTab === 'add'
+                    ? 'Bölmə Kataloqu'
+                    : activeDockTab === 'layers'
+                    ? 'Qatlar Ağacı'
+                    : activeDockTab === 'design'
+                    ? 'Dizayn Tokenləri'
+                    : activeDockTab === 'templates'
+                    ? 'Şablonlar'
+                    : 'Tərtibat'}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setIsCollapsed(true)}
+                  style={{
+                    background: '#151922',
+                    border: '1px solid #20242E',
+                    color: '#8A8F9E',
+                    borderRadius: 6,
+                    padding: '3px 8px',
+                    cursor: 'pointer',
+                    fontSize: 12,
+                    fontWeight: 700,
+                  }}
+                  title="Paneli bağla"
+                >
+                  ✕ Bağla
+                </button>
+              </div>
+            )}
             {/* TAB: ADD COMPONENTS */}
             {activeDockTab === 'add' && (
               <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
@@ -1358,8 +1457,7 @@ export function VisualThemeBuilder({
           >
             {/* Left: Section Count & Insertion Indicator */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: '#8A8F9E' }}>
-              <span style={{ fontWeight: 600, color: '#E2E5EE' }}>Studio Kətanı</span>
-              <span style={{ color: '#2B313E' }}>•</span>
+              <span className="sitex-canvas-subtoolbar-label" style={{ fontWeight: 600, color: '#E2E5EE' }}>Studio Kətanı •</span>
               <span style={{ color: '#00D37D', fontWeight: 600 }}>{nodes.length} Bölmə</span>
             </div>
 
@@ -1381,7 +1479,7 @@ export function VisualThemeBuilder({
                   display: 'flex',
                   alignItems: 'center',
                   gap: 6,
-                  padding: '4px 10px',
+                  padding: '4px 8px',
                   borderRadius: 6,
                   border: 'none',
                   background: device === 'desktop' ? '#1E2330' : 'transparent',
@@ -1391,9 +1489,10 @@ export function VisualThemeBuilder({
                   cursor: 'pointer',
                   transition: 'all 0.15s ease',
                 }}
+                title="Masaüstü rejimi (100%)"
               >
                 <Monitor size={13} />
-                <span>Masaüstü</span>
+                <span className="sitex-device-btn-text">Masaüstü</span>
               </button>
               <button
                 type="button"
@@ -1402,7 +1501,7 @@ export function VisualThemeBuilder({
                   display: 'flex',
                   alignItems: 'center',
                   gap: 6,
-                  padding: '4px 10px',
+                  padding: '4px 8px',
                   borderRadius: 6,
                   border: 'none',
                   background: device === 'tablet' ? '#1E2330' : 'transparent',
@@ -1412,9 +1511,10 @@ export function VisualThemeBuilder({
                   cursor: 'pointer',
                   transition: 'all 0.15s ease',
                 }}
+                title="Planşet rejimi (768px)"
               >
                 <Tablet size={13} />
-                <span>Planşet (768px)</span>
+                <span className="sitex-device-btn-text">Planşet</span>
               </button>
               <button
                 type="button"
@@ -1423,7 +1523,7 @@ export function VisualThemeBuilder({
                   display: 'flex',
                   alignItems: 'center',
                   gap: 6,
-                  padding: '4px 10px',
+                  padding: '4px 8px',
                   borderRadius: 6,
                   border: 'none',
                   background: device === 'mobile' ? '#1E2330' : 'transparent',
@@ -1433,14 +1533,15 @@ export function VisualThemeBuilder({
                   cursor: 'pointer',
                   transition: 'all 0.15s ease',
                 }}
+                title="Mobil rejimi (390px)"
               >
                 <Smartphone size={13} />
-                <span>Mobil (390px)</span>
+                <span className="sitex-device-btn-text">Mobil</span>
               </button>
             </div>
 
             {/* Right: Zoom & Quick Add */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <div
                 style={{
                   display: 'flex',
@@ -1459,7 +1560,7 @@ export function VisualThemeBuilder({
                 >
                   <ZoomOut size={12} />
                 </button>
-                <span style={{ fontSize: 10, color: '#A0A7B8', minWidth: 34, textAlign: 'center' }}>
+                <span style={{ fontSize: 10, color: '#A0A7B8', minWidth: 30, textAlign: 'center' }}>
                   {Math.round(zoomLevel * 100)}%
                 </span>
                 <button
@@ -1482,7 +1583,7 @@ export function VisualThemeBuilder({
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: 5,
-                  padding: '5px 12px',
+                  padding: '5px 10px',
                   borderRadius: 6,
                   background: '#00D37D',
                   color: '#08090C',
@@ -1494,7 +1595,7 @@ export function VisualThemeBuilder({
                 }}
               >
                 <Plus size={13} strokeWidth={3} />
-                <span>Bölmə Əlavə Et</span>
+                <span className="sitex-device-btn-text">Bölmə Əlavə Et</span>
               </button>
             </div>
           </div>
@@ -1527,16 +1628,54 @@ export function VisualThemeBuilder({
           />
         </div>
 
+        {/* Backdrop for Drawer on compact screens */}
+        {isCompact && !isCollapsed && (
+          <div
+            onClick={() => setIsCollapsed(true)}
+            style={{
+              position: 'fixed',
+              inset: 0,
+              top: isMobile ? 52 : 56,
+              background: 'rgba(0,0,0,0.65)',
+              backdropFilter: 'blur(3px)',
+              zIndex: 90,
+            }}
+          />
+        )}
+
+        {/* Backdrop for Properties Panel on compact screens */}
+        {isCompact && selectedNode && (
+          <div
+            onClick={() => onSelectNode(null)}
+            style={{
+              position: 'fixed',
+              inset: 0,
+              top: isMobile ? 52 : 56,
+              background: 'rgba(0,0,0,0.65)',
+              backdropFilter: 'blur(3px)',
+              zIndex: 90,
+            }}
+          />
+        )}
+
         {/* 4. RIGHT PROPERTIES PANEL */}
-        <PropertiesPanel
-          selectedNode={selectedNode}
-          onUpdateProps={onUpdateNodeProps}
-          onDeleteNode={onDeleteNode}
-          onDuplicateNode={onDuplicateNode}
-          onMoveNode={onMoveNode}
-          onClose={() => onSelectNode(null)}
-          totalNodesCount={nodes.length}
-        />
+        <div
+          className="sitex-properties-panel-wrap"
+          style={{
+            display: isCompact && !selectedNode ? 'none' : 'flex',
+            height: '100%',
+          }}
+        >
+          <PropertiesPanel
+            selectedNode={selectedNode}
+            onUpdateProps={onUpdateNodeProps}
+            onDeleteNode={onDeleteNode}
+            onDuplicateNode={onDuplicateNode}
+            onMoveNode={onMoveNode}
+            onClose={() => onSelectNode(null)}
+            totalNodesCount={nodes.length}
+          />
+        </div>
       </div>
     </>
   );

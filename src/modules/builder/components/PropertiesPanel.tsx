@@ -179,8 +179,10 @@ export function PropertiesPanel({
 
   return (
     <div
+      className="sitex-properties-panel"
       style={{
         width: 330,
+        maxWidth: '100%',
         borderLeft: '1px solid #1E232F',
         background: '#0D0F14',
         display: 'flex',
