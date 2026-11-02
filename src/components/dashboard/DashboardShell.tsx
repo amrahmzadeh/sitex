@@ -197,6 +197,16 @@ export default function DashboardShell({ children }: { children: React.ReactNode
     </div>
   );
 
+  const isBuilder = pathname === '/dashboard/builder' || pathname?.startsWith('/dashboard/builder');
+
+  if (isBuilder) {
+    return (
+      <div style={{ width: '100vw', height: '100dvh', overflow: 'hidden', background: '#090A0D' }}>
+        {children}
+      </div>
+    );
+  }
+
   return (
     <div style={{ display: 'flex', height: '100vh', overflow: 'hidden', background: '#0F0F14' }}>
       {/* Desktop Sidebar */}

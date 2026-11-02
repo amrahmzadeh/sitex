@@ -1,8 +1,36 @@
 'use client';
 
 import React from 'react';
-import { ComponentDefinition } from '../types';
+import { ComponentDefinition, BuilderNode, GlobalDesignTokens, DeviceMode } from '../types';
 import { registerComponent } from './componentRegistry';
+
+interface RenderProps {
+  node: BuilderNode;
+  tokens?: GlobalDesignTokens;
+  device?: DeviceMode;
+  isSelected?: boolean;
+}
+
+const FALLBACK_TOKENS = {
+  colors: {
+    primary: '#00D37D',
+    secondary: '#1A1A2E',
+    accent: '#D4A574',
+    background: '#0F1115',
+    surface: '#181B20',
+    text: '#F5F5F7',
+    mutedText: '#8888A0',
+  },
+  typography: {
+    headingFont: 'Outfit',
+    bodyFont: 'Inter',
+    baseSize: '16px',
+    lineHeight: '1.6',
+  },
+  layout: {
+    borderRadius: '10px',
+  },
+};
 
 // 1. Header / Navbar
 export const NavbarComponent: ComponentDefinition = {
@@ -11,7 +39,7 @@ export const NavbarComponent: ComponentDefinition = {
   icon: 'Compass',
   category: 'layout',
   defaultProps: {
-    brandName: 'Restoran & Kafe',
+    brandName: 'Restoranınız',
     links: 'Menyu, Haqqımızda, Əlaqə',
     bgColor: '#111315',
     textColor: '#F5F5F7',
@@ -24,21 +52,58 @@ export const NavbarComponent: ComponentDefinition = {
     bgColor: { type: 'color', label: 'Arxa Fon Rəngi', category: 'style' },
     textColor: { type: 'color', label: 'Mətn Rəngi', category: 'style' },
   },
-  render: ({ node }) => (
-    <nav style={{ padding: '16px 24px', background: node.props.bgColor, color: node.props.textColor, display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-      <div style={{ fontWeight: 700, fontSize: 18 }}>{node.props.brandName}</div>
-      <div style={{ display: 'flex', gap: 16, fontSize: 14 }}>
-        {(node.props.links || '').split(',').map((l: string, i: number) => (
-          <span key={i} style={{ opacity: 0.85 }}>{l.trim()}</span>
-        ))}
-      </div>
-      {node.props.ctaText && (
-        <button style={{ padding: '8px 16px', borderRadius: 8, background: '#00D37D', color: '#000', fontWeight: 600, border: 'none' }}>
-          {node.props.ctaText}
-        </button>
-      )}
-    </nav>
-  ),
+  render: ({ node, tokens }: RenderProps) => {
+    const t = tokens || (FALLBACK_TOKENS as any);
+    const bg = node.props.bgColor || t.colors?.surface || '#111315';
+    const fg = node.props.textColor || t.colors?.text || '#F5F5F7';
+    const primary = t.colors?.primary || '#00D37D';
+    const radius = t.layout?.borderRadius || '8px';
+
+    return (
+      <nav
+        style={{
+          padding: '16px 24px',
+          background: bg,
+          color: fg,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          borderBottom: '1px solid rgba(255,255,255,0.08)',
+          boxSizing: 'border-box',
+          width: '100%',
+        }}
+      >
+        <div style={{ fontWeight: 800, fontSize: 18, letterSpacing: '-0.02em', display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span style={{ width: 8, height: 8, borderRadius: '50%', background: primary }} />
+          <span>{node.props.brandName || 'Brend Adı'}</span>
+        </div>
+        <div style={{ display: 'flex', gap: 20, fontSize: 13, fontWeight: 500 }}>
+          {(node.props.links || 'Menyu, Haqqımızda, Əlaqə').split(',').map((l: string, i: number) => (
+            <span key={i} style={{ opacity: 0.85, cursor: 'pointer', transition: 'opacity 0.15s' }}>
+              {l.trim()}
+            </span>
+          ))}
+        </div>
+        {node.props.ctaText && (
+          <button
+            type="button"
+            style={{
+              padding: '8px 16px',
+              borderRadius: radius,
+              background: primary,
+              color: '#08090C',
+              fontWeight: 700,
+              border: 'none',
+              fontSize: 12,
+              cursor: 'pointer',
+            }}
+          >
+            {node.props.ctaText}
+          </button>
+        )}
+      </nav>
+    );
+  },
 };
 
 // 2. Hero
@@ -69,26 +134,89 @@ export const HeroComponent: ComponentDefinition = {
       category: 'layout',
     },
   },
-  render: ({ node }) => (
-    <section
-      style={{
-        padding: '80px 24px',
-        textAlign: node.props.align || 'center',
-        background: `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url(${node.props.bgImage}) center/cover no-repeat`,
-        color: '#FFFFFF',
-      }}
-    >
-      <h1 style={{ fontSize: 36, fontWeight: 800, marginBottom: 12 }}>{node.props.title}</h1>
-      <p style={{ fontSize: 16, maxWidth: 600, margin: node.props.align === 'center' ? '0 auto 24px' : '0 0 24px', opacity: 0.9 }}>
-        {node.props.subtitle}
-      </p>
-      {node.props.buttonText && (
-        <button style={{ padding: '12px 28px', borderRadius: 10, background: '#D4A574', color: '#1A1A1A', fontWeight: 700, border: 'none' }}>
-          {node.props.buttonText}
-        </button>
-      )}
-    </section>
-  ),
+  render: ({ node, tokens }: RenderProps) => {
+    const t = tokens || (FALLBACK_TOKENS as any);
+    const primary = t.colors?.primary || '#00D37D';
+    const accent = t.colors?.accent || '#D4A574';
+    const radius = t.layout?.borderRadius || '10px';
+    const headingFont = t.typography?.headingFont ? `'${t.typography.headingFont}', sans-serif` : 'inherit';
+
+    return (
+      <section
+        style={{
+          padding: '80px 24px',
+          textAlign: (node.props.align as any) || 'center',
+          background: `linear-gradient(rgba(10,11,15,0.75), rgba(10,11,15,0.85)), url(${node.props.bgImage}) center/cover no-repeat`,
+          color: '#FFFFFF',
+          position: 'relative',
+          width: '100%',
+          boxSizing: 'border-box',
+        }}
+      >
+        <div style={{ maxWidth: 760, margin: node.props.align === 'center' ? '0 auto' : '0' }}>
+          <div
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              background: 'rgba(255,255,255,0.1)',
+              backdropFilter: 'blur(8px)',
+              padding: '4px 12px',
+              borderRadius: 20,
+              fontSize: 12,
+              fontWeight: 600,
+              color: accent,
+              marginBottom: 16,
+            }}
+          >
+            ★ Premium Restoran Təcrübəsi
+          </div>
+          <h1
+            style={{
+              fontFamily: headingFont,
+              fontSize: 38,
+              fontWeight: 800,
+              letterSpacing: '-0.02em',
+              marginBottom: 16,
+              lineHeight: 1.2,
+            }}
+          >
+            {node.props.title}
+          </h1>
+          <p
+            style={{
+              fontSize: 16,
+              opacity: 0.9,
+              marginBottom: 28,
+              lineHeight: 1.6,
+              maxWidth: 600,
+              margin: node.props.align === 'center' ? '0 auto 28px' : '0 0 28px',
+            }}
+          >
+            {node.props.subtitle}
+          </p>
+          {node.props.buttonText && (
+            <button
+              type="button"
+              style={{
+                padding: '12px 28px',
+                borderRadius: radius,
+                background: primary,
+                color: '#08090C',
+                fontWeight: 700,
+                fontSize: 14,
+                border: 'none',
+                cursor: 'pointer',
+                boxShadow: '0 4px 14px rgba(0, 211, 125, 0.3)',
+              }}
+            >
+              {node.props.buttonText}
+            </button>
+          )}
+        </div>
+      </section>
+    );
+  },
 };
 
 // 3. Text
@@ -118,11 +246,22 @@ export const TextComponent: ComponentDefinition = {
       category: 'layout',
     },
   },
-  render: ({ node }) => (
-    <div style={{ padding: '16px', fontSize: Number(node.props.fontSize) || 16, color: node.props.color, textAlign: node.props.textAlign }}>
-      {node.props.content}
-    </div>
-  ),
+  render: ({ node, tokens }: RenderProps) => {
+    const t = tokens || (FALLBACK_TOKENS as any);
+    return (
+      <div
+        style={{
+          padding: '24px',
+          fontSize: Number(node.props.fontSize) || 16,
+          color: node.props.color || t.colors?.text || '#E2E2E5',
+          textAlign: (node.props.textAlign as any) || 'left',
+          lineHeight: 1.7,
+        }}
+      >
+        {node.props.content}
+      </div>
+    );
+  },
 };
 
 // 4. Image
@@ -141,15 +280,26 @@ export const ImageComponent: ComponentDefinition = {
     alt: { type: 'string', label: 'Alt Mətn', category: 'content' },
     borderRadius: { type: 'number', label: 'Künc Yuvarlaqlığı (px)', category: 'style' },
   },
-  render: ({ node }) => (
-    <div style={{ padding: '16px', display: 'flex', justifyContent: 'center' }}>
-      <img
-        src={node.props.url}
-        alt={node.props.alt}
-        style={{ maxWidth: '100%', height: 'auto', borderRadius: Number(node.props.borderRadius) || 12, objectFit: 'cover' }}
-      />
-    </div>
-  ),
+  render: ({ node, tokens }: RenderProps) => {
+    const t = tokens || (FALLBACK_TOKENS as any);
+    const radius = Number(node.props.borderRadius) || t.layout?.borderRadius || 12;
+
+    return (
+      <div style={{ padding: '24px', display: 'flex', justifyContent: 'center' }}>
+        <img
+          src={node.props.url}
+          alt={node.props.alt || 'Görsəl'}
+          style={{
+            maxWidth: '100%',
+            height: 'auto',
+            borderRadius: radius,
+            objectFit: 'cover',
+            boxShadow: '0 8px 30px rgba(0,0,0,0.5)',
+          }}
+        />
+      </div>
+    );
+  },
 };
 
 // 5. Button
@@ -162,30 +312,40 @@ export const ButtonComponent: ComponentDefinition = {
     text: 'Ətraflı Bax',
     variant: 'solid',
     bgColor: '#00D37D',
-    textColor: '#000000',
+    textColor: '#08090C',
   },
   propSchema: {
     text: { type: 'string', label: 'Düymə Mətni', category: 'content' },
     bgColor: { type: 'color', label: 'Düymə Rəngi', category: 'style' },
     textColor: { type: 'color', label: 'Yazı Rəngi', category: 'style' },
   },
-  render: ({ node }) => (
-    <div style={{ padding: '16px' }}>
-      <button
-        style={{
-          padding: '10px 24px',
-          borderRadius: 8,
-          background: node.props.bgColor,
-          color: node.props.textColor,
-          fontWeight: 600,
-          border: 'none',
-          cursor: 'pointer',
-        }}
-      >
-        {node.props.text}
-      </button>
-    </div>
-  ),
+  render: ({ node, tokens }: RenderProps) => {
+    const t = tokens || (FALLBACK_TOKENS as any);
+    const bg = node.props.bgColor || t.colors?.primary || '#00D37D';
+    const fg = node.props.textColor || '#08090C';
+    const radius = t.layout?.borderRadius || '8px';
+
+    return (
+      <div style={{ padding: '16px 24px' }}>
+        <button
+          type="button"
+          style={{
+            padding: '10px 24px',
+            borderRadius: radius,
+            background: bg,
+            color: fg,
+            fontWeight: 700,
+            fontSize: 14,
+            border: 'none',
+            cursor: 'pointer',
+            boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
+          }}
+        >
+          {node.props.text}
+        </button>
+      </div>
+    );
+  },
 };
 
 // 6. Menu List
@@ -196,28 +356,69 @@ export const MenuListComponent: ComponentDefinition = {
   category: 'content',
   defaultProps: {
     title: 'Seçilmiş Təamlar',
-    items: 'Steyk Ribeye - 32 AZN, Caesar Salatı - 14 AZN, Tiramisu - 9 AZN',
+    items: 'Steyk Ribeye - 32 AZN, Caesar Salatı - 14 AZN, Tiramisu - 9 AZN, Şah Plov - 25 AZN',
   },
   propSchema: {
     title: { type: 'string', label: 'Bölmə Başlığı', category: 'content' },
     items: { type: 'textarea', label: 'Təamlar (Ad - Qiymət, vergüllə)', category: 'content' },
   },
-  render: ({ node }) => (
-    <div style={{ padding: '24px 16px', background: '#181B1E', borderRadius: 12, margin: '16px 0' }}>
-      <h3 style={{ fontSize: 20, fontWeight: 700, color: '#D4A574', marginBottom: 16 }}>{node.props.title}</h3>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-        {(node.props.items || '').split(',').map((it: string, i: number) => {
-          const parts = it.split('-');
-          return (
-            <div key={i} style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px dashed #383334', paddingBottom: 6 }}>
-              <span style={{ color: '#F5F5F7', fontWeight: 500 }}>{parts[0]?.trim()}</span>
-              <span style={{ color: '#00D37D', fontWeight: 600 }}>{parts[1]?.trim()}</span>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  ),
+  render: ({ node, tokens }: RenderProps) => {
+    const t = tokens || (FALLBACK_TOKENS as any);
+    const surface = t.colors?.surface || '#181B20';
+    const primary = t.colors?.primary || '#00D37D';
+    const accent = t.colors?.accent || '#D4A574';
+    const radius = t.layout?.borderRadius || '12px';
+    const headingFont = t.typography?.headingFont ? `'${t.typography.headingFont}', sans-serif` : 'inherit';
+
+    return (
+      <section style={{ padding: '32px 24px', width: '100%', boxSizing: 'border-box' }}>
+        <div
+          style={{
+            background: surface,
+            borderRadius: radius,
+            padding: '28px 24px',
+            border: '1px solid rgba(255,255,255,0.06)',
+            boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+            <h3 style={{ fontFamily: headingFont, fontSize: 22, fontWeight: 700, color: accent, margin: 0 }}>
+              {node.props.title || 'Seçilmiş Təamlar'}
+            </h3>
+            <span style={{ fontSize: 11, color: '#888D9E', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              Qastronomik Seçimlər
+            </span>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
+            {(node.props.items || '').split(',').map((it: string, i: number) => {
+              const parts = it.split('-');
+              return (
+                <div
+                  key={i}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '12px 14px',
+                    borderRadius: 8,
+                    background: 'rgba(0,0,0,0.25)',
+                    border: '1px solid rgba(255,255,255,0.04)',
+                  }}
+                >
+                  <div style={{ color: '#F5F5F7', fontWeight: 600, fontSize: 14 }}>
+                    {parts[0]?.trim()}
+                  </div>
+                  <div style={{ color: primary, fontWeight: 700, fontSize: 13, background: 'rgba(0, 211, 125, 0.1)', padding: '2px 8px', borderRadius: 6 }}>
+                    {parts[1]?.trim() || '—'}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+    );
+  },
 };
 
 // 7. Features / Özəlliklər
@@ -230,9 +431,9 @@ export const FeaturesComponent: ComponentDefinition = {
     f1Title: 'Təzə İnqrediyentlər',
     f1Desc: 'Yalnız gündəlik yoxlanılmış fermer məhsulları.',
     f2Title: 'Usta Aşpazlar',
-    f2Desc: 'Beynəlxalq təcrübəyə malik komanda.',
-    f3Title: 'Sürətli Çatdırılma',
-    f3Desc: 'İsti yeməklər 30 dəqiqə ərzində ünvanınızda.',
+    f2Desc: 'Beynəlxalq təcrübəyə malik peşəkar komanda.',
+    f3Title: 'Sürətli Xidmət',
+    f3Desc: 'Qüsursuz masa xidməti və rahat mühit.',
   },
   propSchema: {
     f1Title: { type: 'string', label: '1-ci Başlıq', category: 'content' },
@@ -242,20 +443,39 @@ export const FeaturesComponent: ComponentDefinition = {
     f3Title: { type: 'string', label: '3-ci Başlıq', category: 'content' },
     f3Desc: { type: 'string', label: '3-ci İzah', category: 'content' },
   },
-  render: ({ node }) => (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16, padding: '24px 16px' }}>
-      {[
-        { t: node.props.f1Title, d: node.props.f1Desc },
-        { t: node.props.f2Title, d: node.props.f2Desc },
-        { t: node.props.f3Title, d: node.props.f3Desc },
-      ].map((f, i) => (
-        <div key={i} style={{ background: '#1E2022', padding: 20, borderRadius: 10, border: '1px solid #383334' }}>
-          <h4 style={{ fontSize: 16, fontWeight: 700, color: '#F5F5F7', marginBottom: 6 }}>{f.t}</h4>
-          <p style={{ fontSize: 13, color: '#B0B0B8', margin: 0 }}>{f.d}</p>
+  render: ({ node, tokens }: RenderProps) => {
+    const t = tokens || (FALLBACK_TOKENS as any);
+    const surface = t.colors?.surface || '#181B20';
+    const primary = t.colors?.primary || '#00D37D';
+    const radius = t.layout?.borderRadius || '12px';
+
+    return (
+      <section style={{ padding: '32px 24px', width: '100%', boxSizing: 'border-box' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
+          {[
+            { t: node.props.f1Title, d: node.props.f1Desc, icon: '🌿' },
+            { t: node.props.f2Title, d: node.props.f2Desc, icon: '👨‍🍳' },
+            { t: node.props.f3Title, d: node.props.f3Desc, icon: '⚡' },
+          ].map((f, i) => (
+            <div
+              key={i}
+              style={{
+                background: surface,
+                padding: 24,
+                borderRadius: radius,
+                border: '1px solid rgba(255,255,255,0.06)',
+                transition: 'border-color 0.15s ease',
+              }}
+            >
+              <div style={{ fontSize: 24, marginBottom: 12 }}>{f.icon}</div>
+              <h4 style={{ fontSize: 16, fontWeight: 700, color: '#F5F5F7', marginBottom: 6 }}>{f.t}</h4>
+              <p style={{ fontSize: 13, color: '#8888A0', margin: 0, lineHeight: 1.5 }}>{f.d}</p>
+            </div>
+          ))}
         </div>
-      ))}
-    </div>
-  ),
+      </section>
+    );
+  },
 };
 
 // 8. Testimonials / Rəylər
@@ -274,13 +494,31 @@ export const TestimonialsComponent: ComponentDefinition = {
     role: { type: 'string', label: 'Status / Peşə', category: 'content' },
     review: { type: 'textarea', label: 'Rəy Mətni', category: 'content' },
   },
-  render: ({ node }) => (
-    <div style={{ padding: '24px', background: 'rgba(212,165,116,0.08)', borderRadius: 12, border: '1px solid rgba(212,165,116,0.2)', margin: '16px' }}>
-      <p style={{ fontStyle: 'italic', fontSize: 15, color: '#E2E2E5', marginBottom: 12 }}>“{node.props.review}”</p>
-      <div style={{ fontWeight: 700, color: '#D4A574', fontSize: 14 }}>{node.props.author}</div>
-      <div style={{ fontSize: 12, color: '#B0B0B8' }}>{node.props.role}</div>
-    </div>
-  ),
+  render: ({ node, tokens }: RenderProps) => {
+    const t = tokens || (FALLBACK_TOKENS as any);
+    const accent = t.colors?.accent || '#D4A574';
+    const radius = t.layout?.borderRadius || '12px';
+
+    return (
+      <div style={{ padding: '24px', width: '100%', boxSizing: 'border-box' }}>
+        <div
+          style={{
+            padding: '28px',
+            background: 'rgba(212,165,116,0.06)',
+            borderRadius: radius,
+            border: '1px solid rgba(212,165,116,0.2)',
+          }}
+        >
+          <div style={{ color: accent, fontSize: 18, marginBottom: 8 }}>★★★★★</div>
+          <p style={{ fontStyle: 'italic', fontSize: 15, color: '#E2E2E5', marginBottom: 16, lineHeight: 1.6 }}>
+            “{node.props.review}”
+          </p>
+          <div style={{ fontWeight: 700, color: accent, fontSize: 14 }}>{node.props.author}</div>
+          <div style={{ fontSize: 12, color: '#8888A0' }}>{node.props.role}</div>
+        </div>
+      </div>
+    );
+  },
 };
 
 // 9. Contact Form
@@ -297,17 +535,83 @@ export const ContactFormComponent: ComponentDefinition = {
     title: { type: 'string', label: 'Başlıq', category: 'content' },
     submitText: { type: 'string', label: 'Göndər Düyməsi', category: 'content' },
   },
-  render: ({ node }) => (
-    <div style={{ padding: '24px', background: '#181B1E', borderRadius: 12, margin: '16px' }}>
-      <h3 style={{ fontSize: 18, fontWeight: 700, color: '#F5F5F7', marginBottom: 16 }}>{node.props.title}</h3>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-        <input style={{ padding: 10, background: '#121416', border: '1px solid #383334', borderRadius: 8, color: '#FFF' }} placeholder="Adınız" disabled />
-        <input style={{ padding: 10, background: '#121416', border: '1px solid #383334', borderRadius: 8, color: '#FFF' }} placeholder="Telefon nömrəniz" disabled />
-        <textarea style={{ padding: 10, background: '#121416', border: '1px solid #383334', borderRadius: 8, color: '#FFF', minHeight: 70 }} placeholder="Mesajınız" disabled />
-        <button style={{ padding: 10, background: '#00D37D', color: '#000', fontWeight: 600, borderRadius: 8, border: 'none' }}>{node.props.submitText}</button>
-      </div>
-    </div>
-  ),
+  render: ({ node, tokens }: RenderProps) => {
+    const t = tokens || (FALLBACK_TOKENS as any);
+    const surface = t.colors?.surface || '#181B20';
+    const primary = t.colors?.primary || '#00D37D';
+    const radius = t.layout?.borderRadius || '12px';
+
+    return (
+      <section style={{ padding: '24px', width: '100%', boxSizing: 'border-box' }}>
+        <div
+          style={{
+            padding: '28px',
+            background: surface,
+            borderRadius: radius,
+            border: '1px solid rgba(255,255,255,0.08)',
+            maxWidth: 540,
+            margin: '0 auto',
+          }}
+        >
+          <h3 style={{ fontSize: 18, fontWeight: 700, color: '#F5F5F7', marginBottom: 16 }}>{node.props.title}</h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <input
+              style={{
+                padding: '10px 14px',
+                background: 'rgba(0,0,0,0.3)',
+                border: '1px solid rgba(255,255,255,0.1)',
+                borderRadius: 8,
+                color: '#FFF',
+                fontSize: 13,
+              }}
+              placeholder="Adınız və Soyadınız"
+              disabled
+            />
+            <input
+              style={{
+                padding: '10px 14px',
+                background: 'rgba(0,0,0,0.3)',
+                border: '1px solid rgba(255,255,255,0.1)',
+                borderRadius: 8,
+                color: '#FFF',
+                fontSize: 13,
+              }}
+              placeholder="Əlaqə nömrəniz"
+              disabled
+            />
+            <textarea
+              style={{
+                padding: '10px 14px',
+                background: 'rgba(0,0,0,0.3)',
+                border: '1px solid rgba(255,255,255,0.1)',
+                borderRadius: 8,
+                color: '#FFF',
+                fontSize: 13,
+                minHeight: 80,
+              }}
+              placeholder="Mesajınız və ya sifariş qeydiniz"
+              disabled
+            />
+            <button
+              type="button"
+              style={{
+                padding: '12px',
+                background: primary,
+                color: '#08090C',
+                fontWeight: 700,
+                borderRadius: 8,
+                border: 'none',
+                cursor: 'pointer',
+                fontSize: 13,
+              }}
+            >
+              {node.props.submitText}
+            </button>
+          </div>
+        </div>
+      </section>
+    );
+  },
 };
 
 // 10. Map / Xəritə
@@ -322,13 +626,45 @@ export const MapComponent: ComponentDefinition = {
   propSchema: {
     address: { type: 'string', label: 'Ünvan', category: 'content' },
   },
-  render: ({ node }) => (
-    <div style={{ padding: '24px', background: '#121416', borderRadius: 12, border: '1px solid #383334', textAlign: 'center', margin: '16px' }}>
-      <div style={{ fontSize: 24, marginBottom: 8 }}>📍</div>
-      <div style={{ fontWeight: 600, color: '#F5F5F7', fontSize: 15 }}>{node.props.address}</div>
-      <p style={{ fontSize: 12, color: '#8888A0', marginTop: 4 }}>İnteraktiv Google Maps yerləşdirməsi</p>
-    </div>
-  ),
+  render: ({ node, tokens }: RenderProps) => {
+    const t = tokens || (FALLBACK_TOKENS as any);
+    const surface = t.colors?.surface || '#181B20';
+    const primary = t.colors?.primary || '#00D37D';
+    const radius = t.layout?.borderRadius || '12px';
+
+    return (
+      <div style={{ padding: '24px', width: '100%', boxSizing: 'border-box' }}>
+        <div
+          style={{
+            padding: '36px 24px',
+            background: surface,
+            borderRadius: radius,
+            border: '1px solid rgba(255,255,255,0.08)',
+            textAlign: 'center',
+          }}
+        >
+          <div
+            style={{
+              width: 44,
+              height: 44,
+              borderRadius: '50%',
+              background: 'rgba(0, 211, 125, 0.1)',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: 20,
+              marginBottom: 12,
+              color: primary,
+            }}
+          >
+            📍
+          </div>
+          <div style={{ fontWeight: 700, color: '#F5F5F7', fontSize: 16 }}>{node.props.address}</div>
+          <p style={{ fontSize: 12, color: '#8888A0', marginTop: 6 }}>İnteraktiv Xəritə və Yol Bələdçisi</p>
+        </div>
+      </div>
+    );
+  },
 };
 
 // 11. Footer
@@ -338,8 +674,8 @@ export const FooterComponent: ComponentDefinition = {
   icon: 'PanelBottom',
   category: 'layout',
   defaultProps: {
-    copyright: '© 2026 Bütün hüquqlar qorunur.',
-    poweredBy: 'SiteX tərəfindən hazırlanmışdır.',
+    copyright: '© 2026 Restoranınız. Bütün hüquqlar qorunur.',
+    poweredBy: 'SiteX tərəfindən təmin edilir.',
     bgColor: '#0C0E10',
     textColor: '#8888A0',
   },
@@ -349,12 +685,28 @@ export const FooterComponent: ComponentDefinition = {
     bgColor: { type: 'color', label: 'Arxa Fon Rəngi', category: 'style' },
     textColor: { type: 'color', label: 'Mətn Rəngi', category: 'style' },
   },
-  render: ({ node }) => (
-    <footer style={{ padding: '24px 16px', background: node.props.bgColor, color: node.props.textColor, textAlign: 'center', borderTop: '1px solid #222' }}>
-      <p style={{ margin: 0, fontSize: 13, fontWeight: 500 }}>{node.props.copyright}</p>
-      <p style={{ margin: '4px 0 0', fontSize: 11, opacity: 0.7 }}>{node.props.poweredBy}</p>
-    </footer>
-  ),
+  render: ({ node, tokens }: RenderProps) => {
+    const t = tokens || (FALLBACK_TOKENS as any);
+    const bg = node.props.bgColor || '#0C0E10';
+    const fg = node.props.textColor || '#8888A0';
+
+    return (
+      <footer
+        style={{
+          padding: '28px 24px',
+          background: bg,
+          color: fg,
+          textAlign: 'center',
+          borderTop: '1px solid rgba(255,255,255,0.06)',
+          width: '100%',
+          boxSizing: 'border-box',
+        }}
+      >
+        <p style={{ margin: 0, fontSize: 13, fontWeight: 500 }}>{node.props.copyright}</p>
+        <p style={{ margin: '6px 0 0', fontSize: 11, opacity: 0.65 }}>{node.props.poweredBy}</p>
+      </footer>
+    );
+  },
 };
 
 // 12. Spacer / Divider
@@ -371,9 +723,9 @@ export const DividerComponent: ComponentDefinition = {
     height: { type: 'number', label: 'Hündürlük (px)', category: 'layout' },
     showLine: { type: 'boolean', label: 'Xətt Göstər', category: 'style' },
   },
-  render: ({ node }) => (
-    <div style={{ height: Number(node.props.height) || 32, display: 'flex', alignItems: 'center' }}>
-      {node.props.showLine && <div style={{ width: '100%', height: 1, background: '#383334' }} />}
+  render: ({ node }: RenderProps) => (
+    <div style={{ height: Number(node.props.height) || 32, display: 'flex', alignItems: 'center', width: '100%' }}>
+      {node.props.showLine && <div style={{ width: '100%', height: 1, background: 'rgba(255,255,255,0.08)' }} />}
     </div>
   ),
 };
@@ -393,7 +745,14 @@ export const ContainerComponent: ComponentDefinition = {
     bgColor: { type: 'color', label: 'Arxa Fon Rəngi', category: 'style' },
   },
   render: ({ node, children }: any) => (
-    <div style={{ padding: Number(node.props.padding) || 20, background: node.props.bgColor, border: '1px dashed rgba(255,255,255,0.15)', borderRadius: 8 }}>
+    <div
+      style={{
+        padding: Number(node.props.padding) || 20,
+        background: node.props.bgColor || 'transparent',
+        border: '1px dashed rgba(255,255,255,0.12)',
+        borderRadius: 8,
+      }}
+    >
       {children}
     </div>
   ),
@@ -413,21 +772,26 @@ export const GalleryComponent: ComponentDefinition = {
     title: { type: 'string', label: 'Qalereya Başlığı', category: 'content' },
     columns: { type: 'number', label: 'Sütun Sayı', category: 'layout' },
   },
-  render: ({ node }) => (
-    <div style={{ padding: '20px 16px' }}>
-      <h3 style={{ fontSize: 18, fontWeight: 700, color: '#F5F5F7', marginBottom: 12 }}>{node.props.title}</h3>
-      <div style={{ display: 'grid', gridTemplateColumns: `repeat(${node.props.columns || 3}, 1fr)`, gap: 10 }}>
-        {['1517248135467-4c7edcad34c4', '1555396273-367ea4eb4db5', '1552566626-52f8b828add9'].map((id, i) => (
-          <img
-            key={i}
-            src={`https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=400&q=80`}
-            alt="gallery"
-            style={{ width: '100%', height: 110, objectFit: 'cover', borderRadius: 8 }}
-          />
-        ))}
+  render: ({ node, tokens }: RenderProps) => {
+    const t = tokens || (FALLBACK_TOKENS as any);
+    const radius = t.layout?.borderRadius || '8px';
+
+    return (
+      <div style={{ padding: '24px', width: '100%', boxSizing: 'border-box' }}>
+        <h3 style={{ fontSize: 18, fontWeight: 700, color: '#F5F5F7', marginBottom: 14 }}>{node.props.title}</h3>
+        <div style={{ display: 'grid', gridTemplateColumns: `repeat(${node.props.columns || 3}, 1fr)`, gap: 12 }}>
+          {['1517248135467-4c7edcad34c4', '1555396273-367ea4eb4db5', '1552566626-52f8b828add9'].map((id, i) => (
+            <img
+              key={i}
+              src={`https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=400&q=80`}
+              alt="Qalereya şəkli"
+              style={{ width: '100%', height: 130, objectFit: 'cover', borderRadius: radius }}
+            />
+          ))}
+        </div>
       </div>
-    </div>
-  ),
+    );
+  },
 };
 
 export function registerAllBuiltinComponents() {
@@ -449,4 +813,3 @@ export function registerAllBuiltinComponents() {
 
 // Auto-register on import
 registerAllBuiltinComponents();
-

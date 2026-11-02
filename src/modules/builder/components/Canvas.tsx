@@ -1,10 +1,9 @@
 'use client';
 
 import React from 'react';
-import { BuilderNode, DeviceMode } from '../types';
+import { BuilderNode, DeviceMode, GlobalDesignTokens } from '../types';
 import { TemplateRenderer } from '../renderer';
 import '../registry/builtinComponents';
-import { Plus, Layout } from 'lucide-react';
 
 interface CanvasProps {
   nodes: BuilderNode[];
@@ -13,6 +12,9 @@ interface CanvasProps {
   device: DeviceMode;
   onDropComponent: (type: string) => void;
   onOpenAddModal?: () => void;
+  tokens?: GlobalDesignTokens;
+  onDeleteNode?: (id: string) => void;
+  onChangeNodeType?: (id: string) => void;
 }
 
 export function Canvas({
@@ -22,6 +24,9 @@ export function Canvas({
   device,
   onDropComponent,
   onOpenAddModal,
+  tokens,
+  onDeleteNode,
+  onChangeNodeType,
 }: CanvasProps) {
   const getDeviceWidth = () => {
     switch (device) {
@@ -40,15 +45,18 @@ export function Canvas({
       style={{
         flex: 1,
         backgroundImage:
-          'radial-gradient(circle, rgba(255, 255, 255, 0.06) 1px, transparent 1px)',
-        backgroundSize: '24px 24px',
-        backgroundColor: '#08090C',
+          'radial-gradient(circle, rgba(255, 255, 255, 0.08) 1px, transparent 1px)',
+        backgroundSize: '20px 20px',
+        backgroundColor: '#090A0D',
         overflowY: 'auto',
+        overflowX: 'hidden',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         padding: device === 'desktop' ? '0' : '32px 16px',
         position: 'relative',
+        boxSizing: 'border-box',
+        height: '100%',
       }}
       onClick={() => onSelectNode('')}
       onDragOver={(e) => {
@@ -66,85 +74,32 @@ export function Canvas({
       <div
         style={{
           width: getDeviceWidth(),
-          minHeight: device === 'desktop' ? '100%' : '85vh',
-          background: '#0F1115',
+          minHeight: device === 'desktop' ? '100%' : '80vh',
+          background: tokens?.colors?.background || '#0F1115',
+          color: tokens?.colors?.text || '#F5F5F7',
           boxShadow:
             device === 'desktop'
               ? 'none'
-              : '0 25px 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.08)',
+              : '0 24px 64px rgba(0,0,0,0.85), 0 0 0 1px rgba(255,255,255,0.08)',
           borderRadius: device === 'desktop' ? 0 : 20,
           overflow: 'hidden',
-          transition: 'width 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
-          border: device === 'desktop' ? 'none' : '6px solid #1E222A',
+          transition: 'width 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+          border: device === 'desktop' ? 'none' : '8px solid #1C202A',
+          boxSizing: 'border-box',
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        {nodes.length === 0 ? (
-          <div
-            style={{
-              padding: '80px 24px',
-              textAlign: 'center',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 12,
-            }}
-          >
-            <div
-              style={{
-                width: 48,
-                height: 48,
-                borderRadius: 12,
-                background: 'rgba(0,211,125,0.1)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#00D37D',
-              }}
-            >
-              <Layout size={24} />
-            </div>
-            <h3 style={{ fontSize: 16, fontWeight: 700, color: '#F4F4F6', margin: 0 }}>
-              Kətan boşdur
-            </h3>
-            <p style={{ fontSize: 13, color: '#8888A0', maxWidth: 360, margin: 0 }}>
-              Saytınızı qurmağa başlamaq üçün ilk bölməni əlavə edin və ya komponentləri bura
-              sürükləyin.
-            </p>
-            {onOpenAddModal && (
-              <button
-                type="button"
-                onClick={onOpenAddModal}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 6,
-                  marginTop: 8,
-                  padding: '8px 16px',
-                  borderRadius: 8,
-                  background: '#00D37D',
-                  color: '#000',
-                  fontWeight: 700,
-                  fontSize: 12,
-                  border: 'none',
-                  cursor: 'pointer',
-                }}
-              >
-                <Plus size={14} />
-                Bölmə Əlavə Et
-              </button>
-            )}
-          </div>
-        ) : (
-          <TemplateRenderer
-            nodes={nodes}
-            selectedNodeId={selectedNodeId}
-            onSelectNode={onSelectNode}
-            device={device}
-            interactive={true}
-          />
-        )}
+        <TemplateRenderer
+          nodes={nodes}
+          selectedNodeId={selectedNodeId}
+          onSelectNode={onSelectNode}
+          device={device}
+          interactive={true}
+          tokens={tokens}
+          onDeleteNode={onDeleteNode}
+          onChangeNodeType={onChangeNodeType}
+          onOpenAddModal={onOpenAddModal}
+        />
       </div>
     </div>
   );

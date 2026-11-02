@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
 import { useBuilderStore } from '../store/builderStore';
 import { TopBar } from './TopBar';
 import { VisualThemeBuilder } from './VisualThemeBuilder';
@@ -48,25 +49,30 @@ export function BuilderEditor() {
     loadThemeDefinition,
   } = useBuilderStore();
 
+  const { data: session } = useSession();
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [saveMessage, setSaveMessage] = useState('');
   const [showImportExport, setShowImportExport] = useState(false);
   const [orgId, setOrgId] = useState<string | null>(null);
+  const [orgData, setOrgData] = useState<{ name: string; isPublished: boolean } | null>(null);
 
-  // Retrieve current organization ID
+  // Retrieve current organization ID and details
   useEffect(() => {
     const savedOrg = localStorage.getItem('currentOrgId');
-    if (savedOrg) {
-      setOrgId(savedOrg);
-      return;
-    }
     fetch('/api/organizations')
       .then((r) => r.json())
       .then((d) => {
-        if (d.organizations?.[0]?.id) {
-          setOrgId(d.organizations[0].id);
-          localStorage.setItem('currentOrgId', d.organizations[0].id);
+        if (d.organizations?.length) {
+          const found = savedOrg
+            ? d.organizations.find((o: any) => o.id === savedOrg) || d.organizations[0]
+            : d.organizations[0];
+          setOrgId(found.id);
+          setOrgData({
+            name: found.name,
+            isPublished: !!found.website?.isPublished,
+          });
+          localStorage.setItem('currentOrgId', found.id);
         }
       })
       .catch((e) => console.error(e));
@@ -141,9 +147,23 @@ export function BuilderEditor() {
     setDoc(importedDoc);
   };
 
+  const selectedNode = nodes.find((n) => n.id === selectedNodeId);
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', width: '100%', background: '#0D0E11', overflow: 'hidden' }}>
-      {/* TopBar */}
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateRows: '56px 1fr 28px',
+        height: '100dvh',
+        maxHeight: '100dvh',
+        width: '100vw',
+        background: '#090A0D',
+        overflow: 'hidden',
+        color: '#F4F5F8',
+        boxSizing: 'border-box',
+      }}
+    >
+      {/* 1. TopBar (56px) */}
       <TopBar
         templateName={doc.name}
         onUpdateName={(name) => setDoc((d) => ({ ...d, name, slug: name.toLowerCase().replace(/\s+/g, '-') }))}
@@ -159,76 +179,137 @@ export function BuilderEditor() {
         saving={saving}
         saved={saved}
         hasUnsavedChanges={hasUnsavedChanges}
+        orgName={orgData?.name}
+        isPublished={orgData?.isPublished}
+        userName={session?.user?.name || 'Admin'}
       />
 
-      {/* Main Workspace Mode View */}
-      {activeMode === 'visual' && (
-        <VisualThemeBuilder
-          tokens={designTokens}
-          onUpdateTokens={updateDesignTokens}
-          nodes={nodes}
-          onUpdateNodes={(newNodes) => setDoc((d) => ({ ...d, nodes: newNodes }))}
-          selectedNodeId={selectedNodeId}
-          onSelectNode={setSelectedNodeId}
-          device={device}
-          onSetDevice={setDevice}
-          onAddNode={addNode}
-          onDuplicateNode={duplicateNode}
-          onDeleteNode={deleteNode}
-          onMoveNode={moveNode}
-          onUpdateNodeProps={updateNodeProps}
-        />
-      )}
+      {/* 2. Main Workspace (1fr) */}
+      <main
+        style={{
+          position: 'relative',
+          overflow: 'hidden',
+          height: '100%',
+          minHeight: 0,
+          background: '#090A0D',
+        }}
+      >
+        {activeMode === 'visual' && (
+          <VisualThemeBuilder
+            tokens={designTokens}
+            onUpdateTokens={updateDesignTokens}
+            nodes={nodes}
+            onUpdateNodes={(newNodes) => setDoc((d) => ({ ...d, nodes: newNodes }))}
+            selectedNodeId={selectedNodeId}
+            onSelectNode={setSelectedNodeId}
+            device={device}
+            onSetDevice={setDevice}
+            onAddNode={addNode}
+            onDuplicateNode={duplicateNode}
+            onDeleteNode={deleteNode}
+            onMoveNode={moveNode}
+            onUpdateNodeProps={updateNodeProps}
+          />
+        )}
 
-      {activeMode === 'code' && (
-        <STLEditor
-          code={stlCode}
-          onChangeCode={setStlCode}
-          onApplyTheme={(css) => {
-            // Live applied
-          }}
-          onSave={handleSave}
-          onSwitchMode={setActiveMode}
-        />
-      )}
+        {activeMode === 'code' && (
+          <STLEditor
+            code={stlCode}
+            onChangeCode={setStlCode}
+            onApplyTheme={() => {}}
+            onSave={handleSave}
+            onSwitchMode={setActiveMode}
+          />
+        )}
 
-      {activeMode === 'preview' && (
-        <LivePreviewEngine
-          tokens={designTokens}
-          compiledCss={compiledCss}
-          hasUnsavedChanges={hasUnsavedChanges}
-        />
-      )}
+        {activeMode === 'preview' && (
+          <LivePreviewEngine
+            tokens={designTokens}
+            compiledCss={compiledCss}
+            hasUnsavedChanges={hasUnsavedChanges}
+          />
+        )}
 
-      {activeMode === 'themes' && (
-        <ThemeManager
-          currentThemeId={doc.id}
-          onSelectTheme={loadThemeDefinition}
-          onOpenVisualBuilder={() => setActiveMode('visual')}
-          onOpenCodeEditor={() => setActiveMode('code')}
-          onExportTheme={() => setShowImportExport(true)}
-          onImportTheme={() => setShowImportExport(true)}
-          orgId={orgId}
-        />
-      )}
+        {activeMode === 'themes' && (
+          <ThemeManager
+            currentThemeId={doc.id}
+            onSelectTheme={loadThemeDefinition}
+            onOpenVisualBuilder={() => setActiveMode('visual')}
+            onOpenCodeEditor={() => setActiveMode('code')}
+            onExportTheme={() => setShowImportExport(true)}
+            onImportTheme={() => setShowImportExport(true)}
+            orgId={orgId}
+          />
+        )}
 
-      {activeMode === 'assets' && (
-        <AssetsManager
-          orgId={orgId}
-          onSelectAsset={(url) => {
-            alert(`Aktiv URL seçildi: ${url}`);
-          }}
-        />
-      )}
+        {activeMode === 'assets' && (
+          <AssetsManager
+            orgId={orgId}
+            onSelectAsset={(url) => {
+              alert(`Aktiv URL seçildi: ${url}`);
+            }}
+          />
+        )}
 
-      {activeMode === 'history' && (
-        <VersionHistory
-          versions={versions}
-          onRestoreVersion={restoreSnapshot}
-          onCreateSnapshot={createSnapshot}
-          onPruneSnapshots={pruneSnapshots}
-        />
-      )}
+        {activeMode === 'history' && (
+          <VersionHistory
+            versions={versions}
+            onRestoreVersion={restoreSnapshot}
+            onCreateSnapshot={createSnapshot}
+            onPruneSnapshots={pruneSnapshots}
+          />
+        )}
+      </main>
+
+      {/* 3. Bottom Status Bar (28px) */}
+      <footer
+        role="status"
+        aria-label="Redaktor status çubuğu"
+        style={{
+          height: 28,
+          minHeight: 28,
+          maxHeight: 28,
+          background: '#0B0C10',
+          borderTop: '1px solid #1C202A',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '0 16px',
+          fontSize: 11,
+          color: '#8A8F9E',
+          userSelect: 'none',
+          boxSizing: 'border-box',
+          zIndex: 40,
+        }}
+      >
+        {/* Sol: Xəta / Xəbərdarlıq Sayı */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, color: '#00D37D' }}>
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#00D37D' }} />
+            0 Xəta
+          </span>
+          <span style={{ color: '#2B313E' }}>•</span>
+          <span style={{ color: '#7E8494' }}>STL v2.0 Uyğun</span>
+        </div>
+
+        {/* Orta: Seçilmiş Bölüm və Sayı */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span style={{ color: '#E2E5EE', fontWeight: 600 }}>
+            {selectedNode ? `Seçilib: ${selectedNode.type}` : 'Bölmə seçilməyib'}
+          </span>
+          <span style={{ color: '#2B313E' }}>•</span>
+          <span style={{ color: '#7E8494' }}>Cəmi {nodes.length} bölmə</span>
+        </div>
+
+        {/* Sağ: Zoom və Cihaz Ölçüsü */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span style={{ textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600, color: '#00D37D' }}>
+            {device === 'desktop' ? 'Masaüstü (100%)' : device === 'tablet' ? 'Planşet (768px)' : 'Mobil (375px)'}
+          </span>
+          <span style={{ color: '#2B313E' }}>•</span>
+          <span style={{ color: '#7E8494' }}>SiteX Studio</span>
+        </div>
+      </footer>
 
       {/* Import / Export Modal */}
       <ImportExportModal

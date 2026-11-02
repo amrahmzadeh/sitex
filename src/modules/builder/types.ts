@@ -32,7 +32,12 @@ export interface ComponentDefinition {
   category: 'layout' | 'typography' | 'media' | 'content' | 'form';
   defaultProps: Record<string, any>;
   propSchema: Record<string, ComponentPropSchema>;
-  render: React.ComponentType<{ node: BuilderNode; isSelected?: boolean; device?: DeviceMode }>;
+  render: React.ComponentType<{
+    node: BuilderNode;
+    isSelected?: boolean;
+    device?: DeviceMode;
+    tokens?: GlobalDesignTokens;
+  }>;
 }
 
 export interface GlobalDesignTokens {

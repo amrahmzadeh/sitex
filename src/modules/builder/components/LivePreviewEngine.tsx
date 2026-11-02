@@ -279,179 +279,221 @@ export function LivePreviewEngine({
         display: 'flex',
         flexDirection: 'column',
         flex: 1,
-        height: 'calc(100vh - 56px)',
-        background: '#0D0E11',
+        height: '100%',
+        background: '#090A0D',
         overflow: 'hidden',
       }}
     >
-      {/* Top Controls Bar */}
+      {/* Vahid 48px Alətlər Çubuğu */}
       <div
+        role="toolbar"
+        aria-label="Önizləmə alətləri"
         style={{
           height: 48,
-          background: '#13151A',
-          borderBottom: '1px solid #22262E',
+          minHeight: 48,
+          maxHeight: 48,
+          background: '#0C0E12',
+          borderBottom: '1px solid #1E222B',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          padding: '0 20px',
+          padding: '0 16px',
+          userSelect: 'none',
+          boxSizing: 'border-box',
+          zIndex: 30,
         }}
       >
-        {/* Page Switcher */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          {[
-            { id: 'home', label: 'Ana Səhifə', icon: Sparkles },
-            { id: 'pricing', label: 'Qiymətlər', icon: DollarSign },
-            { id: 'blog', label: 'Bloq', icon: FileText },
-            { id: 'auth', label: 'Giriş', icon: LogIn },
-            { id: 'not_found', label: '404', icon: AlertOctagon },
-            { id: 'components', label: 'Komponentlər', icon: Layers },
-          ].map((item) => {
-            const Icon = item.icon;
-            const isActive = activePage === item.id;
-            return (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => setActivePage(item.id as any)}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 6,
-                  padding: '5px 10px',
-                  borderRadius: 6,
-                  border: isActive ? '1px solid #00D37D' : '1px solid transparent',
-                  background: isActive ? 'rgba(0,211,125,0.12)' : 'transparent',
-                  color: isActive ? '#00D37D' : '#8888A0',
-                  fontSize: 12,
-                  fontWeight: isActive ? 700 : 500,
-                  cursor: 'pointer',
-                  transition: 'all 0.15s',
-                }}
-              >
-                <Icon size={13} />
-                <span>{item.label}</span>
-              </button>
-            );
-          })}
+        {/* Sol: Səhifə Növü Seçimi */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span style={{ fontSize: 11, fontWeight: 600, color: '#7E8494', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            Səhifə:
+          </span>
+          <select
+            value={activePage}
+            onChange={(e) => setActivePage(e.target.value as any)}
+            aria-label="Səhifə növü"
+            style={{
+              padding: '5px 10px',
+              borderRadius: 6,
+              border: '1px solid #242936',
+              background: '#12141A',
+              color: '#F4F5F8',
+              fontSize: 12,
+              fontWeight: 600,
+              cursor: 'pointer',
+              outline: 'none',
+            }}
+          >
+            <option value="home">Ana Səhifə</option>
+            <option value="pricing">Qiymətlər</option>
+            <option value="blog">Bloq</option>
+            <option value="auth">Giriş Formu</option>
+            <option value="not_found">404 Xəta Səhifəsi</option>
+            <option value="components">Dizayn Komponentləri</option>
+          </select>
         </div>
 
-        {/* Device, Mode, Zoom Controls */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          {/* Light / Dark Mode Toggle */}
+        {/* Orta: Segmented Cihaz Seçici */}
+        <div
+          style={{
+            display: 'inline-flex',
+            background: '#12141A',
+            padding: 2,
+            borderRadius: 8,
+            border: '1px solid #20242E',
+            gap: 2,
+          }}
+        >
           <button
             type="button"
-            onClick={() => setPreviewThemeMode(previewThemeMode === 'dark' ? 'light' : 'dark')}
-            title="İşıqlı / Qaranlıq Rejim Simulyasiyası"
+            onClick={() => setDevice('desktop')}
             style={{
               display: 'flex',
               alignItems: 'center',
               gap: 6,
-              padding: '5px 10px',
+              padding: '4px 10px',
               borderRadius: 6,
-              border: '1px solid #282C35',
-              background: '#0B0C0E',
-              color: '#FFF',
+              border: 'none',
+              background: device === 'desktop' ? '#1A1E27' : 'transparent',
+              color: device === 'desktop' ? '#00D37D' : '#8A8F9E',
+              fontSize: 12,
+              fontWeight: device === 'desktop' ? 700 : 500,
+              cursor: 'pointer',
+              transition: 'all 0.15s ease',
+            }}
+            title="Desktop (100%)"
+          >
+            <Monitor size={14} />
+            <span>Desktop</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setDevice('tablet')}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              padding: '4px 10px',
+              borderRadius: 6,
+              border: 'none',
+              background: device === 'tablet' ? '#1A1E27' : 'transparent',
+              color: device === 'tablet' ? '#00D37D' : '#8A8F9E',
+              fontSize: 12,
+              fontWeight: device === 'tablet' ? 700 : 500,
+              cursor: 'pointer',
+              transition: 'all 0.15s ease',
+            }}
+            title="Planşet (768px)"
+          >
+            <Tablet size={14} />
+            <span>Planşet</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setDevice('mobile')}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              padding: '4px 10px',
+              borderRadius: 6,
+              border: 'none',
+              background: device === 'mobile' ? '#1A1E27' : 'transparent',
+              color: device === 'mobile' ? '#00D37D' : '#8A8F9E',
+              fontSize: 12,
+              fontWeight: device === 'mobile' ? 700 : 500,
+              cursor: 'pointer',
+              transition: 'all 0.15s ease',
+            }}
+            title="Mobil (375px)"
+          >
+            <Smartphone size={14} />
+            <span>Mobil</span>
+          </button>
+        </div>
+
+        {/* Sağ: Zoom, Sığdır, Light/Dark, Orientasiya */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          {/* Light / Dark Mode Toggle */}
+          <button
+            type="button"
+            onClick={() => setPreviewThemeMode(previewThemeMode === 'dark' ? 'light' : 'dark')}
+            title="İşıqlı / Qaranlıq Rejim Keçidi"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 5,
+              padding: '5px 9px',
+              borderRadius: 6,
+              border: '1px solid #242936',
+              background: '#12141A',
+              color: '#F4F5F8',
               cursor: 'pointer',
               fontSize: 12,
+              fontWeight: 600,
             }}
           >
             {previewThemeMode === 'dark' ? (
-              <Moon size={14} color="#00D37D" />
+              <Moon size={13} color="#00D37D" />
             ) : (
-              <Sun size={14} color="#FBBF24" />
+              <Sun size={13} color="#FBBF24" />
             )}
-            <span style={{ textTransform: 'capitalize' }}>{previewThemeMode}</span>
+            <span style={{ textTransform: 'capitalize' }}>{previewThemeMode === 'dark' ? 'Qaranlıq' : 'İşıqlı'}</span>
           </button>
 
-          {/* Zoom Controls */}
+          {/* Zoom İdarəetməsi */}
           <div
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: 4,
-              background: '#0B0C0E',
-              padding: '2px 6px',
+              gap: 3,
+              background: '#12141A',
+              padding: '2px 5px',
               borderRadius: 6,
-              border: '1px solid #22262E',
+              border: '1px solid #20242E',
             }}
           >
             <button
               type="button"
               onClick={() => setZoomLevel((z) => Math.max(50, z - 10))}
-              style={{ background: 'none', border: 'none', color: '#8888A0', cursor: 'pointer' }}
+              style={{ background: 'none', border: 'none', color: '#8A8F9E', cursor: 'pointer', padding: 2 }}
+              title="Uzaqlaşdır"
             >
-              <ZoomOut size={13} />
+              <ZoomOut size={12} />
             </button>
-            <span style={{ fontSize: 11, color: '#FFF', minWidth: 34, textAlign: 'center' }}>
+            <span style={{ fontSize: 11, color: '#E2E5EE', minWidth: 32, textAlign: 'center', fontWeight: 600 }}>
               {zoomLevel}%
             </span>
             <button
               type="button"
               onClick={() => setZoomLevel((z) => Math.min(150, z + 10))}
-              style={{ background: 'none', border: 'none', color: '#8888A0', cursor: 'pointer' }}
+              style={{ background: 'none', border: 'none', color: '#8A8F9E', cursor: 'pointer', padding: 2 }}
+              title="Yaxınlaşdır"
             >
-              <ZoomIn size={13} />
+              <ZoomIn size={12} />
             </button>
           </div>
 
-          {/* Device Switcher */}
-          <div
+          {/* Sığdır Düyməsi */}
+          <button
+            type="button"
+            onClick={() => setZoomLevel(100)}
+            title="Miqyası 100%-ə sığdır"
             style={{
-              display: 'flex',
-              background: '#0B0C0E',
-              padding: 2,
-              borderRadius: 8,
-              border: '1px solid #22262E',
+              padding: '5px 8px',
+              borderRadius: 6,
+              border: '1px solid #242936',
+              background: '#12141A',
+              color: '#8A8F9E',
+              fontSize: 11,
+              fontWeight: 600,
+              cursor: 'pointer',
             }}
           >
-            <button
-              type="button"
-              onClick={() => setDevice('desktop')}
-              style={{
-                padding: '4px 10px',
-                borderRadius: 6,
-                border: 'none',
-                background: device === 'desktop' ? '#1E222A' : 'transparent',
-                color: device === 'desktop' ? '#00D37D' : '#8888A0',
-                cursor: 'pointer',
-              }}
-              title="Desktop"
-            >
-              <Monitor size={15} />
-            </button>
-            <button
-              type="button"
-              onClick={() => setDevice('tablet')}
-              style={{
-                padding: '4px 10px',
-                borderRadius: 6,
-                border: 'none',
-                background: device === 'tablet' ? '#1E222A' : 'transparent',
-                color: device === 'tablet' ? '#00D37D' : '#8888A0',
-                cursor: 'pointer',
-              }}
-              title="Planşet"
-            >
-              <Tablet size={15} />
-            </button>
-            <button
-              type="button"
-              onClick={() => setDevice('mobile')}
-              style={{
-                padding: '4px 10px',
-                borderRadius: 6,
-                border: 'none',
-                background: device === 'mobile' ? '#1E222A' : 'transparent',
-                color: device === 'mobile' ? '#00D37D' : '#8888A0',
-                cursor: 'pointer',
-              }}
-              title="Mobil"
-            >
-              <Smartphone size={15} />
-            </button>
-          </div>
+            Sığdır
+          </button>
 
-          {/* Orientation Toggle for Mobile/Tablet */}
+          {/* Mobil/Planşet üçün Orientasiya */}
           {device !== 'desktop' && (
             <button
               type="button"
@@ -459,46 +501,36 @@ export function LivePreviewEngine({
                 setOrientation(orientation === 'portrait' ? 'landscape' : 'portrait')
               }
               style={{
-                padding: '4px 8px',
+                padding: '5px 8px',
                 borderRadius: 6,
-                border: '1px solid #282C35',
-                background: '#0B0C0E',
-                color: '#8888A0',
+                border: '1px solid #242936',
+                background: '#12141A',
+                color: '#8A8F9E',
                 fontSize: 11,
                 cursor: 'pointer',
               }}
+              title="Ekranı çevir"
             >
-              {orientation === 'portrait' ? 'Portrait' : 'Landscape'}
+              {orientation === 'portrait' ? 'Portret' : 'Albom'}
             </button>
-          )}
-
-          {hasUnsavedChanges && (
-            <span
-              style={{
-                fontSize: 11,
-                color: '#FBBF24',
-                background: 'rgba(251,191,36,0.1)',
-                padding: '4px 8px',
-                borderRadius: 6,
-                border: '1px solid rgba(251,191,36,0.2)',
-              }}
-            >
-              ● Dəyişikliklər var
-            </span>
           )}
         </div>
       </div>
 
-      {/* Sandboxed iFrame Viewport Canvas */}
+      {/* Önizləmə Sahəsi (Nöqtə Izgarası və Tək Scroll) */}
       <div
         style={{
           flex: 1,
           overflow: 'auto',
-          background: '#07080A',
+          backgroundImage:
+            'radial-gradient(circle, rgba(255, 255, 255, 0.08) 1px, transparent 1px)',
+          backgroundSize: '20px 20px',
+          backgroundColor: '#090A0D',
           display: 'flex',
           justifyContent: 'center',
           alignItems: device === 'desktop' ? 'stretch' : 'center',
-          padding: device === 'desktop' ? 0 : 24,
+          padding: device === 'desktop' ? 0 : 28,
+          boxSizing: 'border-box',
         }}
       >
         <div
@@ -506,15 +538,17 @@ export function LivePreviewEngine({
             width: dims.width,
             height: dims.height,
             maxWidth: '100%',
-            transition: 'width 0.3s ease, height 0.3s ease',
-            borderRadius: device === 'desktop' ? 0 : 16,
+            transition: 'width 0.25s cubic-bezier(0.4, 0, 0.2, 1), height 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+            borderRadius: device === 'desktop' ? 0 : 24,
             overflow: 'hidden',
             boxShadow:
               device === 'desktop'
                 ? 'none'
-                : '0 24px 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.1)',
+                : '0 24px 64px rgba(0,0,0,0.85), 0 0 0 1px rgba(255,255,255,0.08)',
+            border: device === 'desktop' ? 'none' : '8px solid #1C202A',
             transform: zoomLevel !== 100 ? `scale(${zoomLevel / 100})` : undefined,
             transformOrigin: 'top center',
+            boxSizing: 'border-box',
           }}
         >
           <iframe
@@ -526,8 +560,9 @@ export function LivePreviewEngine({
               height: '100%',
               border: 'none',
               background: previewThemeMode === 'dark' ? c.background : '#FFFFFF',
+              display: 'block',
             }}
-            title="Live Theme Preview"
+            title="Canlı Tema Önizləməsi"
           />
         </div>
       </div>

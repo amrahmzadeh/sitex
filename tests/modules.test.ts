@@ -147,6 +147,18 @@ test('Builder Component Registry: Bütün zəruri 14 komponent qeydiyyatdadır',
   }
 });
 
+test('Builder Component Registry: Böyük/kiçik hərf və ayraçdan asılı olmayan normalizasiya', () => {
+  // menu_list, menuList, menu-list, MENU_LIST eyni komponenti tapmalıdır
+  const standard = getComponent('menu_list');
+  assert.ok(standard, 'menu_list tapıldı');
+  assert.equal(getComponent('menuList')?.type, 'menu_list');
+  assert.equal(getComponent('menu-list')?.type, 'menu_list');
+  assert.equal(getComponent('MENU_LIST')?.type, 'menu_list');
+  assert.equal(getComponent('Navbar')?.type, 'navbar');
+  assert.equal(getComponent('contact-form')?.type, 'contact_form');
+  assert.equal(getComponent('contactForm')?.type, 'contact_form');
+});
+
 test('Builder Serializer: Template sənədini ThemeDefinition-a və JSON-a çevirmək', () => {
   const sampleDoc = {
     id: 'doc-123',
