@@ -45,6 +45,31 @@ export const isEnterpriseServiceCategory = (
     return !isFoodCategory(cat, sub);
   }
 
+  // "Şəxsi və Rəsmi Sayt" kateqoriyası
+  if (
+    cat === 'sexsi-ve-resmi-sayt' ||
+    cat.includes('sexsi-ve-resmi') ||
+    cat.includes('resmi-sayt') ||
+    sub === 'sexsi-vebsayt' ||
+    sub === 'resmi-sexs-sayti' ||
+    sub.includes('resmi-sexs') ||
+    sub.includes('sexsi-tanitim')
+  ) {
+    return true;
+  }
+
+  // "Şəxsi Bloq" kateqoriyası
+  if (
+    cat === 'sexsi-blog' ||
+    cat === 'sexsi-bloq' ||
+    cat.includes('sexsi-blog') ||
+    cat.includes('sexsi-bloq') ||
+    sub.includes('blog') ||
+    sub.includes('bloq')
+  ) {
+    return true;
+  }
+
   const explicitSubcategories = [
     'klinika-ve-tibb-merkezi',
     'gozellik-salonu',

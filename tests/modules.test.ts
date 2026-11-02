@@ -198,6 +198,16 @@ test('Navigation: Müəssisə Saytı > Restoran və Kafe olduqda yalnız Menyu g
     },
   };
   assert.equal(isNavItemVisible(menuItem, hotelWithDraftMenu), true, 'draftTheme.menuEnabled olduqda Menyu görünməlidir');
+
+  // 4. Şəxsi və Rəsmi Sayt:
+  const personalOfficialContext = { category: 'sexsi-ve-resmi-sayt', subcategory: 'sexsi-vebsayt' };
+  assert.equal(isNavItemVisible(servicesItem, personalOfficialContext), true, 'Şəxsi və Rəsmi Sayt üçün Xidmətlər görünməlidir');
+  assert.equal(isNavItemVisible(menuItem, personalOfficialContext), false, 'Menyu aktiv edilmədikdə Menyu görünməməlidir');
+
+  // 5. Şəxsi Bloq:
+  const personalBlogContext = { category: 'sexsi-blog', subcategory: 'doktor-blogu' };
+  assert.equal(isNavItemVisible(servicesItem, personalBlogContext), true, 'Şəxsi Bloq üçün Xidmətlər görünməlidir');
+  assert.equal(isNavItemVisible(menuItem, personalBlogContext), false, 'Menyu aktiv edilmədikdə Menyu görünməməlidir');
 });
 
 test('Builder Component Registry: Bütün zəruri 14 komponent qeydiyyatdadır', () => {
