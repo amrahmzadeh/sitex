@@ -3,15 +3,22 @@ import { Token, TokenType } from './types';
 const KEYWORDS = new Set([
   'theme',
   'extends',
+  'import',
   'meta',
   'colors',
   'typography',
   'layout',
+  'tokens',
+  'modes',
+  'responsive',
   'components',
   'section',
 ]);
 
-export function tokenizeSTL(input: string): { tokens: Token[]; errors: Array<{ message: string; line: number; column: number }> } {
+export function tokenizeSTL(input: string): {
+  tokens: Token[];
+  errors: Array<{ message: string; line: number; column: number }>;
+} {
   const tokens: Token[] = [];
   const errors: Array<{ message: string; line: number; column: number }> = [];
 
@@ -57,6 +64,8 @@ export function tokenizeSTL(input: string): { tokens: Token[]; errors: Array<{ m
         value: commentVal.trim(),
         line: startLine,
         column: startCol,
+        endLine: line,
+        endColumn: col,
         start: startPos,
         end: pos,
       });
@@ -89,6 +98,8 @@ export function tokenizeSTL(input: string): { tokens: Token[]; errors: Array<{ m
         value: commentVal.trim(),
         line: startLine,
         column: startCol,
+        endLine: line,
+        endColumn: col,
         start: startPos,
         end: pos,
       });
@@ -98,25 +109,121 @@ export function tokenizeSTL(input: string): { tokens: Token[]; errors: Array<{ m
     // Punctuation
     if (ch === '{') {
       advance();
-      tokens.push({ type: 'LBRACE', value: '{', line: startLine, column: startCol, start: startPos, end: pos });
+      tokens.push({
+        type: 'LBRACE',
+        value: '{',
+        line: startLine,
+        column: startCol,
+        endLine: line,
+        endColumn: col,
+        start: startPos,
+        end: pos,
+      });
       continue;
     }
 
     if (ch === '}') {
       advance();
-      tokens.push({ type: 'RBRACE', value: '}', line: startLine, column: startCol, start: startPos, end: pos });
+      tokens.push({
+        type: 'RBRACE',
+        value: '}',
+        line: startLine,
+        column: startCol,
+        endLine: line,
+        endColumn: col,
+        start: startPos,
+        end: pos,
+      });
+      continue;
+    }
+
+    if (ch === '(') {
+      advance();
+      tokens.push({
+        type: 'LPAREN',
+        value: '(',
+        line: startLine,
+        column: startCol,
+        endLine: line,
+        endColumn: col,
+        start: startPos,
+        end: pos,
+      });
+      continue;
+    }
+
+    if (ch === ')') {
+      advance();
+      tokens.push({
+        type: 'RPAREN',
+        value: ')',
+        line: startLine,
+        column: startCol,
+        endLine: line,
+        endColumn: col,
+        start: startPos,
+        end: pos,
+      });
+      continue;
+    }
+
+    if (ch === ',') {
+      advance();
+      tokens.push({
+        type: 'COMMA',
+        value: ',',
+        line: startLine,
+        column: startCol,
+        endLine: line,
+        endColumn: col,
+        start: startPos,
+        end: pos,
+      });
       continue;
     }
 
     if (ch === ':') {
       advance();
-      tokens.push({ type: 'COLON', value: ':', line: startLine, column: startCol, start: startPos, end: pos });
+      tokens.push({
+        type: 'COLON',
+        value: ':',
+        line: startLine,
+        column: startCol,
+        endLine: line,
+        endColumn: col,
+        start: startPos,
+        end: pos,
+      });
       continue;
     }
 
     if (ch === '.') {
       advance();
-      tokens.push({ type: 'DOT', value: '.', line: startLine, column: startCol, start: startPos, end: pos });
+      tokens.push({
+        type: 'DOT',
+        value: '.',
+        line: startLine,
+        column: startCol,
+        endLine: line,
+        endColumn: col,
+        start: startPos,
+        end: pos,
+      });
+      continue;
+    }
+
+    if (ch === '%') {
+      advance();
+      tokens.push({
+        type: 'PERCENT',
+        value: '%',
+        line: startLine,
+        column: startCol,
+        endLine: line,
+        endColumn: col,
+        start: startPos,
+        end: pos,
+      });
       continue;
     }
 
@@ -155,6 +262,8 @@ export function tokenizeSTL(input: string): { tokens: Token[]; errors: Array<{ m
         value: strVal,
         line: startLine,
         column: startCol,
+        endLine: line,
+        endColumn: col,
         start: startPos,
         end: pos,
       });
@@ -172,6 +281,8 @@ export function tokenizeSTL(input: string): { tokens: Token[]; errors: Array<{ m
         value: colorVal,
         line: startLine,
         column: startCol,
+        endLine: line,
+        endColumn: col,
         start: startPos,
         end: pos,
       });
@@ -195,6 +306,8 @@ export function tokenizeSTL(input: string): { tokens: Token[]; errors: Array<{ m
         value: numVal + unit,
         line: startLine,
         column: startCol,
+        endLine: line,
+        endColumn: col,
         start: startPos,
         end: pos,
       });
@@ -215,6 +328,8 @@ export function tokenizeSTL(input: string): { tokens: Token[]; errors: Array<{ m
           value: lower,
           line: startLine,
           column: startCol,
+          endLine: line,
+          endColumn: col,
           start: startPos,
           end: pos,
         });
@@ -224,6 +339,8 @@ export function tokenizeSTL(input: string): { tokens: Token[]; errors: Array<{ m
           value: idVal,
           line: startLine,
           column: startCol,
+          endLine: line,
+          endColumn: col,
           start: startPos,
           end: pos,
         });
@@ -243,6 +360,8 @@ export function tokenizeSTL(input: string): { tokens: Token[]; errors: Array<{ m
       value: unknownChar,
       line: startLine,
       column: startCol,
+      endLine: line,
+      endColumn: col,
       start: startPos,
       end: pos,
     });
@@ -253,6 +372,8 @@ export function tokenizeSTL(input: string): { tokens: Token[]; errors: Array<{ m
     value: '',
     line,
     column: col,
+    endLine: line,
+    endColumn: col,
     start: pos,
     end: pos,
   });

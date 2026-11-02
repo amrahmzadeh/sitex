@@ -103,8 +103,9 @@ Platformanın özünəməxsus **SiteX Theme Language (STL)** dilli peşəkar mü
 
 ### 6. Versiya Tarixçəsi və Bərpa (`VersionHistory`)
 - Hər yadda saxlama zamanı avtomatik snapshot yaradılması.
-- İstifadəçi qeydi ilə fərdi versiya yaratma (məs: *"Başlıq rəngləri dəyişdirildi"*).
-- Hər versiyanın STL koduna və parametrlərinə baxış.
+- İstifadəçi qeydi və etiket ilə versiya yaratma (məs: `[Stabil]`, `[Buraxılış]`, `[Qaralama]`).
+- İki versiya arasında **müqayisəli line-by-line Diff** baxışı (əlavə olunan və silinən sətirlər).
+- Snapshot təmizlənməsi (Son 10 versiyanı saxla).
 - `Geri Yüklə`: İstənilən əvvəlki versiyaya dərhal qayıtma imkanı.
 
 ---
@@ -112,28 +113,46 @@ Platformanın özünəməxsus **SiteX Theme Language (STL)** dilli peşəkar mü
 ### 7. İdxal və İxrac Sistemi (`ImportExportModal`)
 - **İxrac (Export):**
   - `.stl` mənbə kodu faylı kimi endirmə.
-  - `.sitex-theme.json` tam şablon paketi kimi endirmə.
+  - `.sitex-theme.json` tam şablon paketi kimi endirmə (Schema v2).
+  - `tailwind.theme.config.js` Tailwind konfiqurasiya faylı kimi endirmə.
   - Panoya kopyalama.
 - **İdxal (Import):**
-  - STL kodu və ya JSON paketi fayldan yükləmə.
-  - Mətni yapışdırıb sintaksis və struktur təhlükəsizlik testindən keçirmə.
+  - STL kodu və ya JSON paketi fayldan yükləmə (Maksimum 2MB limit).
+  - SchemaVersion yoxlanışı və köhnə versiyalardan avtomatik miqrasiya.
+  - Öncədən baxış xülasəsi (Tema adı, versiya, rənglərin və blokların sayı).
   - Təsdiq edilərək redaktora tətbiq olunma.
 
 ---
 
-## 3. SiteX Theme Language (STL) Sintaksis Spesifikasiyası
+## 3. SiteX Theme Language (STL v2.0) Sintaksis Spesifikasiyası
 
 STL sadə, təmiz və JSON ilə CSS-in üstünlüklərini birləşdirən deklarativ dildir.
 
-### Nümunə STL Faylı:
+### Nümunə Qabaqcıl STL Faylı:
 
 ```stl
-theme "MyRestaurantTheme" {
+// Əsas tema şərhi
+import "colors.stl"
+
+theme "MyRestaurantTheme" extends "Elegant" {
   meta {
     name: "My Restaurant Theme"
-    version: "1.0.0"
+    version: "2.0.0"
     author: "SiteX User"
     description: "Premium lüks restoran teması"
+  }
+
+  tokens {
+    spacing {
+      sm: "8px"
+      md: "16px"
+      lg: "24px"
+    }
+    radius {
+      sm: "4px"
+      md: "8px"
+      lg: "16px"
+    }
   }
 
   colors {
@@ -143,6 +162,27 @@ theme "MyRestaurantTheme" {
     background: "#0F1115"
     surface: "#181B20"
     text: "#F5F5F7"
+    primaryLighter: lighten(colors.primary, 15%)
+    primaryFaded: alpha(colors.primary, 0.5)
+  }
+
+  modes {
+    dark {
+      colors {
+        background: "#0D0E11"
+        surface: "#181B20"
+        text: "#F5F5F7"
+      }
+    }
+  }
+
+  responsive {
+    mobile {
+      layout {
+        containerWidth: "100%"
+        spacing: "12px"
+      }
+    }
   }
 
   typography {
@@ -153,8 +193,8 @@ theme "MyRestaurantTheme" {
 
   layout {
     containerWidth: "1200px"
-    borderRadius: "12px"
-    spacing: "16px"
+    borderRadius: {tokens.radius.md}
+    spacing: tokens.spacing.md
   }
 
   components {
@@ -170,22 +210,19 @@ theme "MyRestaurantTheme" {
       radius: "12px"
       style: "elevated"
     }
-
-    header {
-      style: "glass"
-    }
-
-    footer {
-      style: "dark"
-    }
   }
 }
 ```
 
 ### STL Texniki Xüsusiyyətləri:
-1. **Dəyişənlər:** `colors.primary`, `typography.heading`, `layout.borderRadius` kimi daxili dəyişənlər birbaşa istinad edilə bilir.
-2. **Varislik (Inheritance):** `theme "ChildTheme" extends "BaseTheme" { ... }` vasitəsilə ana temanın xüsusiyyətləri miras alınır və üzərindən yazılır (override).
-3. **Təhlükəsizlik:** Parser heç bir halda `eval` və ya `Function` icra etmir. Yalnız AST əsaslı təhlükəsiz konvertasiya aparılır. `javascript:`, `<script>` və təhlükəli URL-lər bloklanır.
+1. **Dizayn Tokenləri (`tokens { }`):** Spacing, radius, shadow və font şkalaları təyin edilir və `{tokens.spacing.md}` şəklində istinad olunur.
+2. **Rejimlər (`modes { dark { } }`):** `prefers-color-scheme` və `[data-theme="dark"]` CSS dəyişənləri avtomatik generasiya olunur.
+3. **Responsivlik (`responsive { mobile { } }`):** Breakpoint-lərə görə media query override-ları təmin edilir.
+4. **Təhlükəsiz Rəng Funksiyaları:** `lighten()`, `darken()`, `alpha()`, `mix()` whitelist əsasında təhlükəsiz riyazi hesablamalarla işləyir.
+5. **Varislik və Çoxfayllı Import:** `extends` və `import` vasitəsilə dövri asılılıq aşkarlanması ilə modullu iş axını.
+6. **WCAG Kontrast Auditi:** Mətn/fon və düymə/fon cütləri üçün WCAG 2.2 AA / AAA yoxlaması aparılır.
+7. **Diaqnostika və Levenshtein Fuzzy Matching:** `STL1001`-`STL1008` kodları ilə "Bunu demək istəyirdiniz: ...?" təklifləri və Error Recovery.
+8. **Təhlükəsizlik:** `javascript:`, `<script>`, `expression()`, `url(data:...)` qəti bloklanır; `eval` və `Function` istifadə olunmur.
 
 ---
 
@@ -195,43 +232,36 @@ theme "MyRestaurantTheme" {
 src/modules/
 ├── stl/
 │   ├── types.ts          # AST, Token və Diaqnostika tipləri
-│   ├── tokenizer.ts      # Leksik analizator
-│   ├── parser.ts         # Rekursiv AST parser
-│   ├── validator.ts      # Təhlükəsizlik və sintaksis yoxlayıcı
-│   ├── compiler.ts       # AST -> CSS Variables & ThemeDefinition
-│   ├── serializer.ts     # ThemeDefinition / Config -> STL mətni
-│   ├── intellisense.ts   # Avtotamamlama lüğəti və snippetlər
+│   ├── tokenizer.ts      # Leksik analizator və koordinat izləmə
+│   ├── parser.ts         # Rekursiv AST parser və Error Recovery
+│   ├── validator.ts      # WCAG kontrast və təhlükəsizlik auditləri
+│   ├── compiler.ts       # AST -> CSS, Tailwind Config və ThemeDefinition
+│   ├── serializer.ts     # İdempotent və şərhləri qoruyan Formatter
+│   ├── intellisense.ts   # Kontekstual avtotamamlama lüğəti
+│   ├── colorUtils.ts     # Riyazi rəng funksiyaları və WCAG lüminans
+│   ├── diagnostics.ts    # Diaqnostika kodları və Levenshtein fuzzy matching
 │   └── index.ts          # STL mərkəzi eksport
-└── builder/
-    ├── types.ts          # Builder, cihaz və token tipləri
-    ├── serializer.ts     # JSON & STL serializer/deserializer
-    ├── store/
-    │   └── builderStore.ts # Birləşdirilmiş reaktiv state
-    ├── components/
-    │   ├── BuilderEditor.tsx       # Baş idarəetmə karkası
-    │   ├── TopBar.tsx              # Rejim naviqasiyası və əməliyyatlar
-    │   ├── VisualThemeBuilder.tsx  # No-Code vizual panel
-    │   ├── STLEditor.tsx           # STL kod mühiti və konsol
-    │   ├── LivePreviewEngine.tsx   # Canlı responsive nümayiş
-    │   ├── ThemeManager.tsx        # Temaların idarəsi və aktivləşdirmə
-    │   ├── AssetsManager.tsx       # Media və şəkil aktivləri
-    │   ├── VersionHistory.tsx      # Versiyalar və snapshot bərpası
-    │   └── ImportExportModal.tsx   # İdxal/İxrac pəncərəsi
-    └── index.ts
 ```
 
 ---
 
 ## 5. Testlər və Keyfiyyət Təminatı
 
-- Bütün STL komponentləri `tests/stl.test.ts` daxilində test olunur:
-  - Tokenizasiya testi
-  - AST Parsing testi
-  - Dəyişən əvəzetməsi və CSS generasiyası testi
-  - Serializer və Re-parsing testi
-  - ThemeDefinition çevrilmə testi
+- Bütün STL və Builder testləri `tests/stl.test.ts` və `tests/stl-extended.test.ts` vasitəsilə icra edilir:
+  - Tokenizasiya və AST Parsing
+  - Dizayn tokenləri və token istinadları
+  - Light/Dark rejimlər və media query generasiyası
+  - Responsiv breakpoint override-ları
+  - Rəng funksiyaları (`lighten`, `darken`, `alpha`, `mix`)
+  - Parser Error Recovery və Levenshtein fuzzy təklifləri
+  - WCAG Kontrast yoxlanışı
+  - XSS və təhlükəsizlik filtrləri
+  - Dövri asılılıq və çoxfayllı import
+  - İdempotent Formatter və şərhlərin qorunması
+  - Fuzz & Resilience testi (Parser qəzasızlığı)
 - Testlərin icrası:
   ```bash
   npm test
   ```
-  *(Cəmi 43 test, 100% keçir).*
+  *(54 test, 100% keçir).*
+

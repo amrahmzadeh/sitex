@@ -24,8 +24,68 @@ import {
 } from 'lucide-react';
 import { BuilderNode, DeviceMode, GlobalDesignTokens } from '../types';
 import { getComponent, listComponents } from '../registry/componentRegistry';
+import { DEFAULT_DESIGN_TOKENS } from '../serializer';
+import { checkWCAGContrast } from '../../stl/colorUtils';
 import { Canvas } from './Canvas';
 import { PropertiesPanel } from './PropertiesPanel';
+
+const PALETTE_PRESETS = [
+  {
+    name: 'Müasir Zümrüd',
+    colors: {
+      primary: '#00D37D',
+      secondary: '#1A1A2E',
+      accent: '#D4A574',
+      background: '#0F1115',
+      surface: '#181B20',
+      text: '#F5F5F7',
+      mutedText: '#8888A0',
+    },
+  },
+  {
+    name: 'Dəbdəbəli Qızılı',
+    colors: {
+      primary: '#D4AF37',
+      secondary: '#121212',
+      accent: '#C5A059',
+      background: '#0A0A0A',
+      surface: '#161616',
+      text: '#FFFFFF',
+      mutedText: '#999999',
+    },
+  },
+  {
+    name: 'Texnoloji Göy',
+    colors: {
+      primary: '#3B82F6',
+      secondary: '#0F172A',
+      accent: '#60A5FA',
+      background: '#030712',
+      surface: '#0B0F17',
+      text: '#F8FAFC',
+      mutedText: '#94A3B8',
+    },
+  },
+  {
+    name: 'İsti Kafe',
+    colors: {
+      primary: '#E07A5F',
+      secondary: '#3D405B',
+      accent: '#F2CC8F',
+      background: '#2B2D42',
+      surface: '#34374C',
+      text: '#F4F1DE',
+      mutedText: '#A8A29E',
+    },
+  },
+];
+
+const MODULAR_SCALES = [
+  { label: '1.125 (Major Second)', scale: 1.125 },
+  { label: '1.200 (Minor Third)', scale: 1.200 },
+  { label: '1.250 (Major Third)', scale: 1.250 },
+  { label: '1.333 (Perfect Fourth)', scale: 1.333 },
+];
 
 interface VisualThemeBuilderProps {
   tokens: GlobalDesignTokens;
@@ -73,8 +133,26 @@ export function VisualThemeBuilder({
 }: VisualThemeBuilderProps) {
   const [activePanelTab, setActivePanelTab] = useState<'global' | 'layout' | 'components' | 'sections'>('global');
   const [showAddSectionModal, setShowAddSectionModal] = useState(false);
+  const [fontSearchQuery, setFontSearchQuery] = useState('');
+  const [modularScale, setModularScale] = useState(1.2);
 
   const selectedNode = nodes.find((n) => n.id === selectedNodeId) || null;
+  const textContrast = checkWCAGContrast(tokens.colors.text, tokens.colors.background);
+
+  const filteredFonts = FONT_OPTIONS.filter((f) =>
+    f.toLowerCase().includes(fontSearchQuery.toLowerCase())
+  );
+
+  const handleApplyPreset = (presetColors: GlobalDesignTokens['colors']) => {
+    onUpdateTokens({
+      ...tokens,
+      colors: { ...presetColors },
+    });
+  };
+
+  const handleResetTokens = () => {
+    onUpdateTokens(DEFAULT_DESIGN_TOKENS);
+  };
 
   const updateColor = (key: keyof GlobalDesignTokens['colors'], value: string) => {
     onUpdateTokens({
@@ -256,6 +334,95 @@ export function VisualThemeBuilder({
           {/* TAB 1: GLOBAL DESIGN */}
           {activePanelTab === 'global' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+              {/* Reset to Default Button */}
+              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <button
+                  type="button"
+                  onClick={handleResetTokens}
+                  style={{
+                    padding: '4px 10px',
+                    borderRadius: 6,
+                    border: '1px solid #333842',
+                    background: 'transparent',
+                    color: '#8888A0',
+                    fontSize: 11,
+                    cursor: 'pointer',
+                  }}
+                >
+                  Mənbə Temaya Qayıt (Sıfırla)
+                </button>
+              </div>
+
+              {/* Palette Presets */}
+              <div>
+                <h4 style={{ fontSize: 13, fontWeight: 700, color: '#F0F0F3', marginBottom: 8, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                  Palitra Təklifləri
+                </h4>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 6 }}>
+                  {PALETTE_PRESETS.map((p) => (
+                    <button
+                      key={p.name}
+                      type="button"
+                      onClick={() => handleApplyPreset(p.colors)}
+                      style={{
+                        padding: '8px 10px',
+                        borderRadius: 6,
+                        border: '1px solid #282C35',
+                        background: '#16181E',
+                        color: '#C0C0D0',
+                        fontSize: 11,
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 8,
+                      }}
+                    >
+                      <span
+                        style={{
+                          width: 12,
+                          height: 12,
+                          borderRadius: '50%',
+                          background: p.colors.primary,
+                          display: 'inline-block',
+                        }}
+                      />
+                      <span>{p.name}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Contrast Score Indicator */}
+              {textContrast && (
+                <div
+                  style={{
+                    padding: '10px 14px',
+                    borderRadius: 8,
+                    background: textContrast.aaPass ? 'rgba(0,211,125,0.08)' : 'rgba(239,68,68,0.08)',
+                    border: textContrast.aaPass ? '1px solid rgba(0,211,125,0.2)' : '1px solid rgba(239,68,68,0.2)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                  }}
+                >
+                  <span style={{ fontSize: 12, color: textContrast.aaPass ? '#00D37D' : '#EF4444', fontWeight: 600 }}>
+                    WCAG Kontrast Nisbəti: {textContrast.ratio}:1
+                  </span>
+                  <span
+                    style={{
+                      fontSize: 10,
+                      fontWeight: 700,
+                      padding: '2px 6px',
+                      borderRadius: 4,
+                      background: textContrast.aaPass ? '#00D37D' : '#EF4444',
+                      color: '#000',
+                    }}
+                  >
+                    {textContrast.aaaPass ? 'AAA Əla' : textContrast.aaPass ? 'AA Qəbul' : 'Zəif'}
+                  </span>
+                </div>
+              )}
+
               <div>
                 <h4 style={{ fontSize: 13, fontWeight: 700, color: '#F0F0F3', marginBottom: 12, textTransform: 'uppercase', letterSpacing: 0.5 }}>
                   Rəng Palitrası
@@ -354,6 +521,24 @@ export function VisualThemeBuilder({
                       onChange={(e) => updateTypography('baseSize', `${e.target.value}px`)}
                       style={{ width: '100%', accentColor: '#00D37D' }}
                     />
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: 12, color: '#8888A0', marginBottom: 6 }}>
+                      Modullu Şrift Şkalası (Modular Scale)
+                    </label>
+                    <select
+                      className="dash-input"
+                      value={modularScale}
+                      onChange={(e) => setModularScale(parseFloat(e.target.value))}
+                      style={{ width: '100%' }}
+                    >
+                      {MODULAR_SCALES.map((s) => (
+                        <option key={s.scale} value={s.scale}>
+                          {s.label}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                 </div>
               </div>
@@ -888,3 +1073,4 @@ export function VisualThemeBuilder({
     </div>
   );
 }
+

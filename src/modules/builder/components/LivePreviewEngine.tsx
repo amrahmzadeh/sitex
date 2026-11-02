@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Monitor,
   Tablet,
@@ -15,6 +15,16 @@ import {
   Palette,
   Eye,
   Sliders,
+  Sun,
+  Moon,
+  ZoomIn,
+  ZoomOut,
+  Maximize2,
+  FileText,
+  DollarSign,
+  LogIn,
+  AlertOctagon,
+  MousePointerClick,
 } from 'lucide-react';
 import { GlobalDesignTokens, DeviceMode } from '../types';
 
@@ -22,29 +32,258 @@ interface LivePreviewEngineProps {
   tokens: GlobalDesignTokens;
   compiledCss?: string;
   hasUnsavedChanges?: boolean;
+  onInspectToken?: (tokenKey: string) => void;
 }
 
 export function LivePreviewEngine({
   tokens,
   compiledCss = '',
   hasUnsavedChanges = false,
+  onInspectToken,
 }: LivePreviewEngineProps) {
-  const [activePage, setActivePage] = useState<'home' | 'menu' | 'contact' | 'components'>('home');
+  const [activePage, setActivePage] = useState<
+    'home' | 'menu' | 'blog' | 'pricing' | 'auth' | 'not_found' | 'components'
+  >('home');
   const [device, setDevice] = useState<DeviceMode>('desktop');
-  const [customWidth, setCustomWidth] = useState<number>(1200);
+  const [orientation, setOrientation] = useState<'portrait' | 'landscape'>('portrait');
+  const [zoomLevel, setZoomLevel] = useState<number>(100);
+  const [previewThemeMode, setPreviewThemeMode] = useState<'light' | 'dark'>('dark');
+  const [inspectMode, setInspectMode] = useState(false);
 
-  const getContainerWidth = () => {
-    if (device === 'mobile') return 375;
-    if (device === 'tablet') return 768;
-    return '100%';
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+
+  const getContainerDimensions = () => {
+    if (device === 'mobile') {
+      return orientation === 'portrait' ? { width: 375, height: 667 } : { width: 667, height: 375 };
+    }
+    if (device === 'tablet') {
+      return orientation === 'portrait' ? { width: 768, height: 1024 } : { width: 1024, height: 768 };
+    }
+    return { width: '100%', height: '100%' };
   };
 
+  const dims = getContainerDimensions();
   const c = tokens.colors;
   const t = tokens.typography;
   const l = tokens.layout;
 
+  // Build the complete self-contained HTML for the sandboxed iframe
+  const buildIframeHtml = () => {
+    return `<!DOCTYPE html>
+<html lang="az" data-theme="${previewThemeMode}">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: ${previewThemeMode === 'dark' ? c.background : '#FFFFFF'};
+      color: ${previewThemeMode === 'dark' ? c.text : '#111315'};
+      font-family: '${t.bodyFont}', Inter, sans-serif;
+      font-size: ${t.baseSize};
+      line-height: ${t.lineHeight || '1.6'};
+      overflow-x: hidden;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+    h1, h2, h3, h4, h5 {
+      font-family: '${t.headingFont}', Outfit, sans-serif;
+      letter-spacing: -0.02em;
+    }
+    .inspect-hover:hover {
+      outline: 2px dashed #00D37D !important;
+      outline-offset: 2px;
+      cursor: crosshair !important;
+    }
+    ${compiledCss}
+  </style>
+</head>
+<body class="sitex-theme-preview" data-theme="${previewThemeMode}">
+  <div id="root">
+    <!-- Header -->
+    <header style="padding: 16px 32px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.08); background: ${previewThemeMode === 'dark' ? 'rgba(255,255,255,0.04)' : '#FFFFFF'}; backdrop-filter: blur(12px);">
+      <div style="display: flex; align-items: center; gap: 10px;" class="inspect-elem" data-token="colors.primary">
+        <div style="width: 34px; height: 34px; border-radius: 8px; background: ${c.primary}; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #000;">
+          SX
+        </div>
+        <span style="font-family: '${t.headingFont}'; font-size: 18px; font-weight: 700;">SiteX Premium</span>
+      </div>
+      <nav style="display: flex; gap: 20px; font-size: 14px;">
+        <span style="cursor: pointer; font-weight: 600;">Ana Səhifə</span>
+        <span style="cursor: pointer; opacity: 0.8;">Məhsullar</span>
+        <span style="cursor: pointer; opacity: 0.8;">Qiymətlər</span>
+        <span style="cursor: pointer; opacity: 0.8;">Bloq</span>
+      </nav>
+      <button class="sitex-btn inspect-elem" data-token="components.button" style="padding: 8px 18px; border-radius: ${l.borderRadius}; background: ${c.primary}; color: #000; border: none; font-weight: 700; cursor: pointer;">
+        Başla
+      </button>
+    </header>
+
+    <!-- Dynamic Page Content -->
+    ${
+      activePage === 'home'
+        ? `
+      <section style="padding: 80px 32px; text-align: center; max-width: 900px; margin: 0 auto;">
+        <span style="display: inline-block; padding: 6px 14px; border-radius: 9999px; background: rgba(0,211,125,0.12); color: ${c.primary}; font-size: 12px; font-weight: 700; margin-bottom: 16px;">
+          YENİ NƏSİL VEB DİZAYN
+        </span>
+        <h1 style="font-size: 44px; font-weight: 800; margin-bottom: 20px; line-height: 1.15;">
+          Müasir & Peşəkar Saytınızı Dərhal Yaradın
+        </h1>
+        <p style="font-size: 18px; opacity: 0.8; margin-bottom: 32px;">
+          SiteX Theme Builder ilə brendinizə uyğun premium rənglər, şriftlər və adaptiv bloklar qurun.
+        </p>
+        <div style="display: flex; gap: 12px; justify-content: center;">
+          <button class="sitex-btn" style="padding: 12px 28px; border-radius: ${l.borderRadius}; background: ${c.primary}; color: #000; border: none; font-weight: 700; cursor: pointer;">
+            Pulsuz Başla
+          </button>
+          <button style="padding: 12px 28px; border-radius: ${l.borderRadius}; background: transparent; color: ${c.text}; border: 1px solid rgba(255,255,255,0.2); font-weight: 600; cursor: pointer;">
+            Daha Ətraflı
+          </button>
+        </div>
+      </section>
+      `
+        : activePage === 'pricing'
+        ? `
+      <section style="padding: 60px 32px; text-align: center;">
+        <h2 style="font-size: 36px; font-weight: 800; margin-bottom: 12px;">Şəffaf və Əlçatan Qiymətlər</h2>
+        <p style="opacity: 0.8; margin-bottom: 40px;">Biznesinizə uyğun paketi seçin.</p>
+        <div style="display: flex; gap: 24px; justify-content: center; flex-wrap: wrap;">
+          <div class="sitex-card" style="width: 280px; padding: 32px 24px; border-radius: ${l.borderRadius}; background: ${c.surface}; text-align: left; border: 1px solid rgba(255,255,255,0.08);">
+            <h3 style="font-size: 20px; margin-bottom: 8px;">Başlanğıc</h3>
+            <div style="font-size: 32px; font-weight: 800; color: ${c.primary}; margin-bottom: 16px;">0 AZN<span style="font-size: 14px; opacity: 0.7;">/ay</span></div>
+            <ul style="list-style: none; display: flex; flex-direction: column; gap: 10px; font-size: 14px; opacity: 0.8; margin-bottom: 24px;">
+              <li>✓ 1 Sayt</li>
+              <li>✓ STL Dəstəyi</li>
+              <li>✓ Standart SSL</li>
+            </ul>
+            <button class="sitex-btn" style="width: 100%; padding: 10px; border-radius: 8px; background: rgba(255,255,255,0.1); color: #FFF; border: none; font-weight: 700; cursor: pointer;">Seç</button>
+          </div>
+          <div class="sitex-card" style="width: 280px; padding: 32px 24px; border-radius: ${l.borderRadius}; background: ${c.surface}; text-align: left; border: 2px solid ${c.primary};">
+            <h3 style="font-size: 20px; margin-bottom: 8px;">Pro Ekspert</h3>
+            <div style="font-size: 32px; font-weight: 800; color: ${c.primary}; margin-bottom: 16px;">29 AZN<span style="font-size: 14px; opacity: 0.7;">/ay</span></div>
+            <ul style="list-style: none; display: flex; flex-direction: column; gap: 10px; font-size: 14px; opacity: 0.8; margin-bottom: 24px;">
+              <li>✓ Limitsiz Saytlar</li>
+              <li>✓ Xüsusi Domen</li>
+              <li>✓ 24/7 Prioritet Dəstək</li>
+            </ul>
+            <button class="sitex-btn" style="width: 100%; padding: 10px; border-radius: 8px; background: ${c.primary}; color: #000; border: none; font-weight: 700; cursor: pointer;">Seç</button>
+          </div>
+        </div>
+      </section>
+      `
+        : activePage === 'blog'
+        ? `
+      <section style="padding: 60px 32px; max-width: 900px; margin: 0 auto;">
+        <h2 style="font-size: 32px; font-weight: 800; margin-bottom: 24px;">Son Məqalələr və Bələdçilər</h2>
+        <div style="display: flex; flex-direction: column; gap: 20px;">
+          <div class="sitex-card" style="padding: 24px; border-radius: ${l.borderRadius}; background: ${c.surface}; border: 1px solid rgba(255,255,255,0.06);">
+            <span style="color: ${c.primary}; font-size: 12px; font-weight: 700;">DİZAYN SİSTEMLƏRİ</span>
+            <h3 style="font-size: 20px; margin: 8px 0;">SiteX Theme Language ilə dizayn tokenlərinin gücü</h3>
+            <p style="opacity: 0.8; font-size: 14px;">STL dilində dəyişənlər və modullu şkalalar ilə veb dizaynı necə sürətləndirmək olar?</p>
+          </div>
+          <div class="sitex-card" style="padding: 24px; border-radius: ${l.borderRadius}; background: ${c.surface}; border: 1px solid rgba(255,255,255,0.06);">
+            <span style="color: ${c.accent}; font-size: 12px; font-weight: 700;">PERFORMANS</span>
+            <h3 style="font-size: 20px; margin: 8px 0;">WCAG 2.2 uyğunluğu və rəng kontrastı</h3>
+            <p style="opacity: 0.8; font-size: 14px;">İstifadəçiləriniz üçün həm estetik, həm də əlçatan interfeys yaratmağın yolları.</p>
+          </div>
+        </div>
+      </section>
+      `
+        : activePage === 'auth'
+        ? `
+      <section style="padding: 80px 20px; display: flex; justify-content: center;">
+        <div class="sitex-card" style="width: 360px; padding: 32px; border-radius: ${l.borderRadius}; background: ${c.surface}; border: 1px solid rgba(255,255,255,0.08); text-align: center;">
+          <h2 style="font-size: 24px; font-weight: 800; margin-bottom: 8px;">Hesaba Giriş</h2>
+          <p style="font-size: 13px; opacity: 0.7; margin-bottom: 24px;">SiteX panelinizə daxil olun</p>
+          <div style="display: flex; flex-direction: column; gap: 12px; text-align: left; margin-bottom: 20px;">
+            <label style="font-size: 12px; font-weight: 600;">E-poçt ünvanı</label>
+            <input type="email" placeholder="ad@sirket.az" style="padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.15); background: rgba(0,0,0,0.2); color: #FFF; outline: none;" />
+            <label style="font-size: 12px; font-weight: 600;">Şifrə</label>
+            <input type="password" placeholder="••••••••" style="padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.15); background: rgba(0,0,0,0.2); color: #FFF; outline: none;" />
+          </div>
+          <button class="sitex-btn" style="width: 100%; padding: 12px; border-radius: 8px; background: ${c.primary}; color: #000; border: none; font-weight: 700; cursor: pointer;">Daxil Ol</button>
+        </div>
+      </section>
+      `
+        : activePage === 'not_found'
+        ? `
+      <section style="padding: 100px 32px; text-align: center;">
+        <h1 style="font-size: 72px; font-weight: 800; color: ${c.primary}; line-height: 1;">404</h1>
+        <h2 style="font-size: 28px; margin: 16px 0;">Səhifə Tapılmadı</h2>
+        <p style="opacity: 0.8; margin-bottom: 28px;">Axtardığınız səhifə silinib və ya ünvanı dəyişdirilib.</p>
+        <button class="sitex-btn" style="padding: 10px 24px; border-radius: ${l.borderRadius}; background: ${c.primary}; color: #000; border: none; font-weight: 700; cursor: pointer;">Ana Səhifəyə Qayıt</button>
+      </section>
+      `
+        : `
+      <!-- Components Palette -->
+      <section style="padding: 40px 32px;">
+        <h2 style="font-size: 28px; margin-bottom: 20px;">Dizayn Komponentləri Palitrası</h2>
+        <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+          <button class="sitex-btn" style="padding: 10px 20px; border-radius: ${l.borderRadius}; background: ${c.primary}; color: #000; border: none; font-weight: 700;">Primary Button</button>
+          <button style="padding: 10px 20px; border-radius: ${l.borderRadius}; background: ${c.secondary}; color: #FFF; border: none; font-weight: 700;">Secondary Button</button>
+          <button style="padding: 10px 20px; border-radius: ${l.borderRadius}; background: ${c.accent}; color: #000; border: none; font-weight: 700;">Accent Button</button>
+        </div>
+      </section>
+      `
+    }
+  </div>
+
+  <script>
+    // Inspect to edit listener
+    window.addEventListener('click', (e) => {
+      const target = e.target.closest('[data-token]');
+      if (target) {
+        const token = target.getAttribute('data-token');
+        window.parent.postMessage({ type: 'INSPECT_TOKEN', token: token }, '*');
+      }
+    });
+
+    // Parent postMessage receiver
+    window.addEventListener('message', (event) => {
+      if (event.data && event.data.type === 'UPDATE_THEME') {
+        document.documentElement.setAttribute('data-theme', event.data.themeMode);
+      }
+    });
+  </script>
+</body>
+</html>`;
+  };
+
+  // Sync postMessage on mode change without full reload
+  useEffect(() => {
+    if (iframeRef.current && iframeRef.current.contentWindow) {
+      iframeRef.current.contentWindow.postMessage(
+        { type: 'UPDATE_THEME', themeMode: previewThemeMode },
+        '*'
+      );
+    }
+  }, [previewThemeMode]);
+
+  // Listen for inspect element messages from iframe
+  useEffect(() => {
+    const handleMessage = (e: MessageEvent) => {
+      if (e.data && e.data.type === 'INSPECT_TOKEN' && onInspectToken) {
+        onInspectToken(e.data.token);
+      }
+    };
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, [onInspectToken]);
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', flex: 1, height: 'calc(100vh - 56px)', background: '#0D0E11', overflow: 'hidden' }}>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        flex: 1,
+        height: 'calc(100vh - 56px)',
+        background: '#0D0E11',
+        overflow: 'hidden',
+      }}
+    >
       {/* Top Controls Bar */}
       <div
         style={{
@@ -61,9 +300,11 @@ export function LivePreviewEngine({
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           {[
             { id: 'home', label: 'Ana Səhifə', icon: Sparkles },
-            { id: 'menu', label: 'Menyu & Məhsullar', icon: Utensils },
-            { id: 'contact', label: 'Əlaqə & Rezervasiya', icon: Phone },
-            { id: 'components', label: 'Komponentlər Palitrası', icon: Layers },
+            { id: 'pricing', label: 'Qiymətlər', icon: DollarSign },
+            { id: 'blog', label: 'Bloq', icon: FileText },
+            { id: 'auth', label: 'Giriş', icon: LogIn },
+            { id: 'not_found', label: '404', icon: AlertOctagon },
+            { id: 'components', label: 'Komponentlər', icon: Layers },
           ].map((item) => {
             const Icon = item.icon;
             const isActive = activePage === item.id;
@@ -76,7 +317,7 @@ export function LivePreviewEngine({
                   display: 'flex',
                   alignItems: 'center',
                   gap: 6,
-                  padding: '6px 12px',
+                  padding: '5px 10px',
                   borderRadius: 6,
                   border: isActive ? '1px solid #00D37D' : '1px solid transparent',
                   background: isActive ? 'rgba(0,211,125,0.12)' : 'transparent',
@@ -87,16 +328,82 @@ export function LivePreviewEngine({
                   transition: 'all 0.15s',
                 }}
               >
-                <Icon size={14} />
+                <Icon size={13} />
                 <span>{item.label}</span>
               </button>
             );
           })}
         </div>
 
-        {/* Device Switcher */}
+        {/* Device, Mode, Zoom Controls */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div style={{ display: 'flex', background: '#0B0C0E', padding: 2, borderRadius: 8, border: '1px solid #22262E' }}>
+          {/* Light / Dark Mode Toggle */}
+          <button
+            type="button"
+            onClick={() => setPreviewThemeMode(previewThemeMode === 'dark' ? 'light' : 'dark')}
+            title="İşıqlı / Qaranlıq Rejim Simulyasiyası"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              padding: '5px 10px',
+              borderRadius: 6,
+              border: '1px solid #282C35',
+              background: '#0B0C0E',
+              color: '#FFF',
+              cursor: 'pointer',
+              fontSize: 12,
+            }}
+          >
+            {previewThemeMode === 'dark' ? (
+              <Moon size={14} color="#00D37D" />
+            ) : (
+              <Sun size={14} color="#FBBF24" />
+            )}
+            <span style={{ textTransform: 'capitalize' }}>{previewThemeMode}</span>
+          </button>
+
+          {/* Zoom Controls */}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 4,
+              background: '#0B0C0E',
+              padding: '2px 6px',
+              borderRadius: 6,
+              border: '1px solid #22262E',
+            }}
+          >
+            <button
+              type="button"
+              onClick={() => setZoomLevel((z) => Math.max(50, z - 10))}
+              style={{ background: 'none', border: 'none', color: '#8888A0', cursor: 'pointer' }}
+            >
+              <ZoomOut size={13} />
+            </button>
+            <span style={{ fontSize: 11, color: '#FFF', minWidth: 34, textAlign: 'center' }}>
+              {zoomLevel}%
+            </span>
+            <button
+              type="button"
+              onClick={() => setZoomLevel((z) => Math.min(150, z + 10))}
+              style={{ background: 'none', border: 'none', color: '#8888A0', cursor: 'pointer' }}
+            >
+              <ZoomIn size={13} />
+            </button>
+          </div>
+
+          {/* Device Switcher */}
+          <div
+            style={{
+              display: 'flex',
+              background: '#0B0C0E',
+              padding: 2,
+              borderRadius: 8,
+              border: '1px solid #22262E',
+            }}
+          >
             <button
               type="button"
               onClick={() => setDevice('desktop')}
@@ -108,7 +415,7 @@ export function LivePreviewEngine({
                 color: device === 'desktop' ? '#00D37D' : '#8888A0',
                 cursor: 'pointer',
               }}
-              title="Desktop Görünüşü"
+              title="Desktop"
             >
               <Monitor size={15} />
             </button>
@@ -123,7 +430,7 @@ export function LivePreviewEngine({
                 color: device === 'tablet' ? '#00D37D' : '#8888A0',
                 cursor: 'pointer',
               }}
-              title="Planşet Görünüşü"
+              title="Planşet"
             >
               <Tablet size={15} />
             </button>
@@ -138,502 +445,90 @@ export function LivePreviewEngine({
                 color: device === 'mobile' ? '#00D37D' : '#8888A0',
                 cursor: 'pointer',
               }}
-              title="Mobil Görünüşü"
+              title="Mobil"
             >
               <Smartphone size={15} />
             </button>
           </div>
 
+          {/* Orientation Toggle for Mobile/Tablet */}
+          {device !== 'desktop' && (
+            <button
+              type="button"
+              onClick={() =>
+                setOrientation(orientation === 'portrait' ? 'landscape' : 'portrait')
+              }
+              style={{
+                padding: '4px 8px',
+                borderRadius: 6,
+                border: '1px solid #282C35',
+                background: '#0B0C0E',
+                color: '#8888A0',
+                fontSize: 11,
+                cursor: 'pointer',
+              }}
+            >
+              {orientation === 'portrait' ? 'Portrait' : 'Landscape'}
+            </button>
+          )}
+
           {hasUnsavedChanges && (
-            <span style={{ fontSize: 11, color: '#FBBF24', background: 'rgba(251,191,36,0.1)', padding: '4px 8px', borderRadius: 6, border: '1px solid rgba(251,191,36,0.2)' }}>
-              ● Yadda saxlanılmamış dəyişikliklər
+            <span
+              style={{
+                fontSize: 11,
+                color: '#FBBF24',
+                background: 'rgba(251,191,36,0.1)',
+                padding: '4px 8px',
+                borderRadius: 6,
+                border: '1px solid rgba(251,191,36,0.2)',
+              }}
+            >
+              ● Dəyişikliklər var
             </span>
           )}
         </div>
       </div>
 
-      {/* Preview Viewport Canvas */}
+      {/* Sandboxed iFrame Viewport Canvas */}
       <div
         style={{
           flex: 1,
-          overflowY: 'auto',
-          background: '#0B0C0E',
+          overflow: 'auto',
+          background: '#07080A',
           display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          padding: '24px 16px',
+          justifyContent: 'center',
+          alignItems: device === 'desktop' ? 'stretch' : 'center',
+          padding: device === 'desktop' ? 0 : 24,
         }}
       >
         <div
-          className="sitex-live-preview-frame"
           style={{
-            width: getContainerWidth(),
-            minHeight: '85vh',
-            background: c.background,
-            color: c.text,
-            fontFamily: t.bodyFont,
-            boxShadow: '0 20px 60px rgba(0,0,0,0.6)',
-            borderRadius: device === 'desktop' ? 8 : 20,
+            width: dims.width,
+            height: dims.height,
+            maxWidth: '100%',
+            transition: 'width 0.3s ease, height 0.3s ease',
+            borderRadius: device === 'desktop' ? 0 : 16,
             overflow: 'hidden',
-            transition: 'width 0.25s ease',
-            border: device === 'desktop' ? '1px solid #22262E' : '6px solid #282C35',
+            boxShadow:
+              device === 'desktop'
+                ? 'none'
+                : '0 24px 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.1)',
+            transform: zoomLevel !== 100 ? `scale(${zoomLevel / 100})` : undefined,
+            transformOrigin: 'top center',
           }}
         >
-          {/* Real Theme Dynamic Header */}
-          <header
+          <iframe
+            ref={iframeRef}
+            srcDoc={buildIframeHtml()}
+            sandbox="allow-scripts allow-same-origin"
             style={{
-              padding: '16px 32px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              background: tokens.header.style === 'glass' ? 'rgba(255,255,255,0.06)' : tokens.header.style === 'solid' ? c.secondary : 'transparent',
-              backdropFilter: tokens.header.style === 'glass' ? 'blur(12px)' : undefined,
-              borderBottom: '1px solid rgba(255,255,255,0.1)',
+              width: '100%',
+              height: '100%',
+              border: 'none',
+              background: previewThemeMode === 'dark' ? c.background : '#FFFFFF',
             }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{ width: 34, height: 34, borderRadius: 8, background: c.primary, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, color: '#000' }}>
-                SX
-              </div>
-              <span style={{ fontFamily: t.headingFont, fontSize: 18, fontWeight: 700, letterSpacing: -0.5 }}>
-                Restoranınız & Lounge
-              </span>
-            </div>
-
-            <nav style={{ display: 'flex', gap: 24, fontSize: 14 }}>
-              <span style={{ cursor: 'pointer', fontWeight: 600 }}>Ana Səhifə</span>
-              <span style={{ cursor: 'pointer', opacity: 0.8 }}>Menyu</span>
-              <span style={{ cursor: 'pointer', opacity: 0.8 }}>Haqqımızda</span>
-              <span style={{ cursor: 'pointer', opacity: 0.8 }}>Əlaqə</span>
-            </nav>
-
-            <button
-              type="button"
-              style={{
-                padding: '8px 18px',
-                borderRadius: tokens.components.button.radius,
-                background: tokens.components.button.style === 'outline' ? 'transparent' : c.primary,
-                color: tokens.components.button.style === 'outline' ? c.primary : '#000',
-                border: tokens.components.button.style === 'outline' ? `1px solid ${c.primary}` : 'none',
-                fontWeight: 700,
-                fontSize: 13,
-                cursor: 'pointer',
-              }}
-            >
-              Rezervasiya Et
-            </button>
-          </header>
-
-          {/* PAGE CONTENT 1: HOME */}
-          {activePage === 'home' && (
-            <div>
-              {/* Hero Section */}
-              <div
-                style={{
-                  padding: '90px 32px',
-                  textAlign: 'center',
-                  background: `linear-gradient(180deg, rgba(0,0,0,0.6), rgba(0,0,0,0.7)), url("https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80") center/cover no-repeat`,
-                  color: '#FFFFFF',
-                }}
-              >
-                <div style={{ maxWidth: 720, margin: '0 auto' }}>
-                  <span
-                    style={{
-                      display: 'inline-block',
-                      padding: '6px 14px',
-                      borderRadius: tokens.components.badge.radius,
-                      background: 'rgba(255,255,255,0.15)',
-                      backdropFilter: 'blur(8px)',
-                      color: c.accent,
-                      fontSize: 12,
-                      fontWeight: 700,
-                      marginBottom: 16,
-                      textTransform: 'uppercase',
-                      letterSpacing: 1,
-                    }}
-                  >
-                    ✦ Xüsusi Qastronomik Təcrübə
-                  </span>
-                  <h1 style={{ fontFamily: t.headingFont, fontSize: device === 'mobile' ? 28 : 46, fontWeight: 800, lineHeight: 1.2, marginBottom: 16 }}>
-                    Dadların və Zərifliyin Mükəmməl Harmoniyası
-                  </h1>
-                  <p style={{ fontSize: 16, opacity: 0.85, lineHeight: 1.6, marginBottom: 28 }}>
-                    Şeflərimizin sevgisi ilə yerli təbii ərzaqlardan hazırlanan ləzzətli yeməklər və unudulmaz mühit.
-                  </p>
-                  <div style={{ display: 'flex', justifyContent: 'center', gap: 14 }}>
-                    <button
-                      type="button"
-                      style={{
-                        padding: '12px 28px',
-                        borderRadius: tokens.components.button.radius,
-                        background: c.primary,
-                        color: '#000',
-                        fontWeight: 700,
-                        fontSize: 14,
-                        border: 'none',
-                        cursor: 'pointer',
-                      }}
-                    >
-                      Menyuya Bax
-                    </button>
-                    <button
-                      type="button"
-                      style={{
-                        padding: '12px 28px',
-                        borderRadius: tokens.components.button.radius,
-                        background: 'rgba(255,255,255,0.1)',
-                        backdropFilter: 'blur(8px)',
-                        color: '#FFF',
-                        fontWeight: 600,
-                        fontSize: 14,
-                        border: '1px solid rgba(255,255,255,0.2)',
-                        cursor: 'pointer',
-                      }}
-                    >
-                      Masa Sifariş Et
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Highlights Feature Cards */}
-              <div style={{ padding: '60px 32px', maxWidth: l.containerWidth, margin: '0 auto' }}>
-                <div style={{ textAlign: 'center', marginBottom: 40 }}>
-                  <h2 style={{ fontFamily: t.headingFont, fontSize: 28, fontWeight: 700, marginBottom: 8 }}>
-                    Niyə Bizi Seçməlisiniz?
-                  </h2>
-                  <p style={{ color: c.mutedText || '#8888A0', fontSize: 14 }}>
-                    Hər bir detala qayğı ilə yanaşırıq
-                  </p>
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: device === 'mobile' ? '1fr' : 'repeat(3, 1fr)', gap: 20 }}>
-                  {[
-                    { title: 'Təbii İnqrediyentlər', desc: 'Hər səhər təzə fermer məhsulları gətirilir.' },
-                    { title: 'Usta Aşpazlar', desc: 'Beynəlxalq təcrübəyə malik peşəkar komanda.' },
-                    { title: 'Sürətli Çatdırılma', desc: 'İsti və təzə şəkildə qapınıza çatdırılma.' },
-                  ].map((card, i) => (
-                    <div
-                      key={i}
-                      style={{
-                        background: c.surface,
-                        borderRadius: tokens.components.card.radius,
-                        padding: tokens.components.card.padding,
-                        border: tokens.components.card.style === 'bordered' ? '1px solid rgba(255,255,255,0.1)' : 'none',
-                        boxShadow: tokens.components.card.style === 'elevated' ? '0 8px 24px rgba(0,0,0,0.08)' : 'none',
-                      }}
-                    >
-                      <h3 style={{ fontFamily: t.headingFont, fontSize: 18, fontWeight: 700, marginBottom: 8, color: c.text }}>
-                        {card.title}
-                      </h3>
-                      <p style={{ fontSize: 14, color: c.mutedText || '#8888A0', lineHeight: 1.5 }}>
-                        {card.desc}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* PAGE CONTENT 2: MENU & CARDS */}
-          {activePage === 'menu' && (
-            <div style={{ padding: '60px 32px', maxWidth: l.containerWidth, margin: '0 auto' }}>
-              <div style={{ textAlign: 'center', marginBottom: 40 }}>
-                <h2 style={{ fontFamily: t.headingFont, fontSize: 32, fontWeight: 700, marginBottom: 8 }}>
-                  Bizim Seçilmiş Menyu
-                </h2>
-                <p style={{ color: c.mutedText || '#8888A0', fontSize: 14 }}>
-                  Ən sevilən yemək və içkilərimiz
-                </p>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: device === 'mobile' ? '1fr' : 'repeat(3, 1fr)', gap: 20 }}>
-                {[
-                  {
-                    name: 'Şah Plovu',
-                    price: '28.00 AZN',
-                    category: 'Əsas Yeməklər',
-                    desc: 'Xırtıldayan lavaş içərisində ətirli zəfəranlı düyü, qaysı, şabalıd və quzu əti.',
-                    img: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80',
-                  },
-                  {
-                    name: 'Can Əti ilə Sac',
-                    price: '34.00 AZN',
-                    category: 'Sac Yeməkləri',
-                    desc: 'Zərif dana əti, badımcan, pomidor, bibər və quyruq yağı ilə ənənəvi sacda.',
-                    img: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=600&q=80',
-                  },
-                  {
-                    name: 'Xüsusi Qrildə Qızılbalıq',
-                    price: '22.50 AZN',
-                    category: 'Dəniz Məhsulları',
-                    desc: 'Təzə qızılbalıq filesi, limonlu kərə yağı sousu və qulançar qarniri ilə.',
-                    img: 'https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?auto=format&fit=crop&w=600&q=80',
-                  },
-                ].map((dish, i) => (
-                  <div
-                    key={i}
-                    style={{
-                      background: c.surface,
-                      borderRadius: tokens.components.card.radius,
-                      overflow: 'hidden',
-                      border: tokens.components.card.style === 'bordered' ? '1px solid rgba(255,255,255,0.1)' : 'none',
-                      boxShadow: tokens.components.card.style === 'elevated' ? '0 8px 24px rgba(0,0,0,0.1)' : 'none',
-                    }}
-                  >
-                    <div style={{ height: 180, background: `url(${dish.img}) center/cover no-repeat` }} />
-                    <div style={{ padding: 20 }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
-                        <h4 style={{ fontFamily: t.headingFont, fontSize: 17, fontWeight: 700, margin: 0 }}>
-                          {dish.name}
-                        </h4>
-                        <span style={{ color: c.primary, fontWeight: 700, fontSize: 16 }}>{dish.price}</span>
-                      </div>
-                      <p style={{ fontSize: 13, color: c.mutedText || '#8888A0', lineHeight: 1.5, marginBottom: 16 }}>
-                        {dish.desc}
-                      </p>
-                      <button
-                        type="button"
-                        style={{
-                          width: '100%',
-                          padding: '10px',
-                          borderRadius: tokens.components.button.radius,
-                          background: c.primary,
-                          color: '#000',
-                          fontWeight: 700,
-                          fontSize: 13,
-                          border: 'none',
-                          cursor: 'pointer',
-                        }}
-                      >
-                        Sifariş Et
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* PAGE CONTENT 3: DESIGN SYSTEM SHOWROOM */}
-          {activePage === 'components' && (
-            <div style={{ padding: '40px 32px', maxWidth: l.containerWidth, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 32 }}>
-              <div>
-                <h3 style={{ fontFamily: t.headingFont, fontSize: 22, fontWeight: 700, marginBottom: 16 }}>
-                  Düymə Stilləri (Button Showcase)
-                </h3>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
-                  <button
-                    type="button"
-                    style={{
-                      padding: '10px 22px',
-                      borderRadius: tokens.components.button.radius,
-                      background: c.primary,
-                      color: '#000',
-                      border: 'none',
-                      fontWeight: 700,
-                      cursor: 'pointer',
-                    }}
-                  >
-                    Əsas Düymə (Primary)
-                  </button>
-                  <button
-                    type="button"
-                    style={{
-                      padding: '10px 22px',
-                      borderRadius: tokens.components.button.radius,
-                      background: 'transparent',
-                      color: c.primary,
-                      border: `2px solid ${c.primary}`,
-                      fontWeight: 700,
-                      cursor: 'pointer',
-                    }}
-                  >
-                    Xəttli Düymə (Outline)
-                  </button>
-                  <button
-                    type="button"
-                    style={{
-                      padding: '10px 22px',
-                      borderRadius: tokens.components.button.radius,
-                      background: c.secondary,
-                      color: '#FFF',
-                      border: 'none',
-                      fontWeight: 600,
-                      cursor: 'pointer',
-                    }}
-                  >
-                    İkinci Dərəcəli (Secondary)
-                  </button>
-                  <button
-                    type="button"
-                    style={{
-                      padding: '10px 22px',
-                      borderRadius: tokens.components.button.radius,
-                      background: c.accent,
-                      color: '#000',
-                      border: 'none',
-                      fontWeight: 700,
-                      cursor: 'pointer',
-                    }}
-                  >
-                    Vurğu Düyməsi (Accent)
-                  </button>
-                </div>
-              </div>
-
-              <div>
-                <h3 style={{ fontFamily: t.headingFont, fontSize: 22, fontWeight: 700, marginBottom: 16 }}>
-                  Form & Daxiletmə Sahələri (Inputs)
-                </h3>
-                <div style={{ display: 'grid', gridTemplateColumns: device === 'mobile' ? '1fr' : 'repeat(2, 1fr)', gap: 16 }}>
-                  <div>
-                    <label style={{ display: 'block', fontSize: 13, marginBottom: 6, fontWeight: 600 }}>Ad və Soyad</label>
-                    <input
-                      type="text"
-                      placeholder="Məsələn: Əli Məmmədov"
-                      style={{
-                        width: '100%',
-                        padding: '10px 14px',
-                        borderRadius: tokens.components.input.radius,
-                        background: c.surface,
-                        border: '1px solid rgba(255,255,255,0.15)',
-                        color: c.text,
-                        fontSize: 13,
-                      }}
-                    />
-                  </div>
-                  <div>
-                    <label style={{ display: 'block', fontSize: 13, marginBottom: 6, fontWeight: 600 }}>Telefon Nömrəsi</label>
-                    <input
-                      type="text"
-                      placeholder="+994 50 123 45 67"
-                      style={{
-                        width: '100%',
-                        padding: '10px 14px',
-                        borderRadius: tokens.components.input.radius,
-                        background: c.surface,
-                        border: '1px solid rgba(255,255,255,0.15)',
-                        color: c.text,
-                        fontSize: 13,
-                      }}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <h3 style={{ fontFamily: t.headingFont, fontSize: 22, fontWeight: 700, marginBottom: 16 }}>
-                  Nişanlar və Teqlər (Badges)
-                </h3>
-                <div style={{ display: 'flex', gap: 10 }}>
-                  <span style={{ padding: '6px 14px', borderRadius: tokens.components.badge.radius, background: c.primary, color: '#000', fontSize: 12, fontWeight: 700 }}>
-                    Aktiv
-                  </span>
-                  <span style={{ padding: '6px 14px', borderRadius: tokens.components.badge.radius, background: c.accent, color: '#000', fontSize: 12, fontWeight: 700 }}>
-                    Populyar
-                  </span>
-                  <span style={{ padding: '6px 14px', borderRadius: tokens.components.badge.radius, background: 'rgba(255,255,255,0.1)', color: '#FFF', fontSize: 12, fontWeight: 600 }}>
-                    Yeni
-                  </span>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* PAGE CONTENT 4: CONTACT */}
-          {activePage === 'contact' && (
-            <div style={{ padding: '60px 32px', maxWidth: l.containerWidth, margin: '0 auto' }}>
-              <div style={{ textAlign: 'center', marginBottom: 40 }}>
-                <h2 style={{ fontFamily: t.headingFont, fontSize: 32, fontWeight: 700, marginBottom: 8 }}>
-                  Masa Rezervasiyası
-                </h2>
-                <p style={{ color: c.mutedText || '#8888A0', fontSize: 14 }}>
-                  Bizimlə əlaqə saxlayın və unudulmaz axşam keçirin
-                </p>
-              </div>
-
-              <div
-                style={{
-                  maxWidth: 540,
-                  margin: '0 auto',
-                  background: c.surface,
-                  borderRadius: tokens.components.card.radius,
-                  padding: 30,
-                  boxShadow: '0 10px 30px rgba(0,0,0,0.15)',
-                }}
-              >
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                  <div>
-                    <label style={{ display: 'block', fontSize: 13, fontWeight: 600, marginBottom: 6 }}>Adınız</label>
-                    <input
-                      type="text"
-                      placeholder="Adınızı daxil edin"
-                      style={{
-                        width: '100%',
-                        padding: '10px 14px',
-                        borderRadius: tokens.components.input.radius,
-                        background: 'rgba(255,255,255,0.05)',
-                        border: '1px solid rgba(255,255,255,0.15)',
-                        color: c.text,
-                      }}
-                    />
-                  </div>
-                  <div>
-                    <label style={{ display: 'block', fontSize: 13, fontWeight: 600, marginBottom: 6 }}>Qonaq Sayı</label>
-                    <select
-                      style={{
-                        width: '100%',
-                        padding: '10px 14px',
-                        borderRadius: tokens.components.input.radius,
-                        background: 'rgba(255,255,255,0.05)',
-                        border: '1px solid rgba(255,255,255,0.15)',
-                        color: c.text,
-                      }}
-                    >
-                      <option value="2">2 nəfərlik</option>
-                      <option value="4">4 nəfərlik</option>
-                      <option value="6">6 nəfərlik</option>
-                      <option value="10+">Böyük qrup (10+ nəfər)</option>
-                    </select>
-                  </div>
-                  <button
-                    type="button"
-                    style={{
-                      width: '100%',
-                      padding: '12px',
-                      borderRadius: tokens.components.button.radius,
-                      background: c.primary,
-                      color: '#000',
-                      fontWeight: 700,
-                      border: 'none',
-                      fontSize: 14,
-                      cursor: 'pointer',
-                      marginTop: 8,
-                    }}
-                  >
-                    Təsdiq Et və Göndər
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Dynamic Footer */}
-          <footer
-            style={{
-              padding: '40px 32px',
-              borderTop: '1px solid rgba(255,255,255,0.1)',
-              background: tokens.footer.style === 'light' ? '#FFFFFF' : tokens.footer.style === 'accent' ? c.accent : '#0B0D10',
-              color: tokens.footer.style === 'light' ? '#111' : '#FFF',
-              textAlign: 'center',
-            }}
-          >
-            <p style={{ fontSize: 13, opacity: 0.8, margin: 0 }}>
-              © 2026 Restoranınız. Bütün hüquqlar qorunur. • Powered by SiteX
-            </p>
-          </footer>
+            title="Live Theme Preview"
+          />
         </div>
       </div>
     </div>

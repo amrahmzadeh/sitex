@@ -5,50 +5,149 @@ import { ThemeConfig } from '@/lib/themes';
 export function stringifySTL(theme: STLThemeNode): string {
   const lines: string[] = [];
 
+  // Top Comments
+  if (theme.comments && theme.comments.length > 0) {
+    theme.comments.forEach((c) => {
+      if (c.type === 'line') {
+        lines.push(`// ${c.text}`);
+      } else {
+        lines.push(`/* ${c.text} */`);
+      }
+    });
+    lines.push('');
+  }
+
+  // Top Imports
+  if (theme.imports && theme.imports.length > 0) {
+    theme.imports.forEach((imp) => {
+      lines.push(`import "${imp}"`);
+    });
+    lines.push('');
+  }
+
   const extendsClause = theme.parentTheme ? ` extends "${theme.parentTheme}"` : '';
   lines.push(`theme "${theme.id}"${extendsClause} {`);
 
-  // Meta
-  lines.push('  meta {');
-  for (const [k, v] of Object.entries(theme.meta || {})) {
-    lines.push(`    ${k}: "${v}"`);
-  }
-  lines.push('  }\n');
+  const formatValue = (v: string): string => {
+    if (!v) return '""';
+    const trimmed = v.trim();
+    if (
+      trimmed.startsWith('colors.') ||
+      trimmed.startsWith('typography.') ||
+      trimmed.startsWith('layout.') ||
+      trimmed.startsWith('tokens.') ||
+      trimmed.startsWith('lighten(') ||
+      trimmed.startsWith('darken(') ||
+      trimmed.startsWith('alpha(') ||
+      trimmed.startsWith('mix(')
+    ) {
+      return trimmed;
+    }
+    // If already quoted
+    if ((trimmed.startsWith('"') && trimmed.endsWith('"')) || (trimmed.startsWith("'") && trimmed.endsWith("'"))) {
+      return trimmed;
+    }
+    return `"${trimmed}"`;
+  };
 
-  // Colors
-  lines.push('  colors {');
-  for (const [k, v] of Object.entries(theme.colors || {})) {
-    const valStr = v.startsWith('#') || v.includes('(') ? `"${v}"` : v;
-    lines.push(`    ${k}: ${valStr}`);
+  // 1. Meta
+  if (theme.meta && Object.keys(theme.meta).length > 0) {
+    lines.push('  meta {');
+    for (const [k, v] of Object.entries(theme.meta)) {
+      lines.push(`    ${k}: "${v}"`);
+    }
+    lines.push('  }\n');
   }
-  lines.push('  }\n');
 
-  // Typography
-  lines.push('  typography {');
-  for (const [k, v] of Object.entries(theme.typography || {})) {
-    const valStr = v.includes(' ') || !/^[a-zA-Z0-9_-]+$/.test(v) ? `"${v}"` : `"${v}"`;
-    lines.push(`    ${k}: ${valStr}`);
+  // 2. Colors
+  if (theme.colors && Object.keys(theme.colors).length > 0) {
+    lines.push('  colors {');
+    for (const [k, v] of Object.entries(theme.colors)) {
+      lines.push(`    ${k}: ${formatValue(v)}`);
+    }
+    lines.push('  }\n');
   }
-  lines.push('  }\n');
 
-  // Layout
-  lines.push('  layout {');
-  for (const [k, v] of Object.entries(theme.layout || {})) {
-    const valStr = /^[0-9]+[a-zA-Z%]+$/.test(v) ? `"${v}"` : `"${v}"`;
-    lines.push(`    ${k}: ${valStr}`);
+  // 3. Typography
+  if (theme.typography && Object.keys(theme.typography).length > 0) {
+    lines.push('  typography {');
+    for (const [k, v] of Object.entries(theme.typography)) {
+      lines.push(`    ${k}: "${v}"`);
+    }
+    lines.push('  }\n');
   }
-  lines.push('  }\n');
 
-  // Components
+  // 4. Layout
+  if (theme.layout && Object.keys(theme.layout).length > 0) {
+    lines.push('  layout {');
+    for (const [k, v] of Object.entries(theme.layout)) {
+      lines.push(`    ${k}: "${v}"`);
+    }
+    lines.push('  }\n');
+  }
+
+  // 5. Tokens
+  if (theme.tokens && Object.keys(theme.tokens).length > 0) {
+    lines.push('  tokens {');
+    for (const [catName, catProps] of Object.entries(theme.tokens)) {
+      lines.push(`    ${catName} {`);
+      for (const [k, v] of Object.entries(catProps)) {
+        lines.push(`      ${k}: ${formatValue(v)}`);
+      }
+      lines.push('    }\n');
+    }
+    lines.push('  }\n');
+  }
+
+  // 6. Modes (Light / Dark)
+  if (theme.modes && Object.keys(theme.modes).length > 0) {
+    lines.push('  modes {');
+    for (const [modeName, modeObj] of Object.entries(theme.modes)) {
+      lines.push(`    ${modeName} {`);
+      for (const [subKey, subVal] of Object.entries(modeObj)) {
+        if (typeof subVal === 'object' && subVal !== null) {
+          lines.push(`      ${subKey} {`);
+          for (const [k, v] of Object.entries(subVal as Record<string, string>)) {
+            lines.push(`        ${k}: ${formatValue(v)}`);
+          }
+          lines.push('      }\n');
+        } else {
+          lines.push(`      ${subKey}: ${formatValue(String(subVal))}`);
+        }
+      }
+      lines.push('    }\n');
+    }
+    lines.push('  }\n');
+  }
+
+  // 7. Responsive
+  if (theme.responsive && Object.keys(theme.responsive).length > 0) {
+    lines.push('  responsive {');
+    for (const [bpName, bpObj] of Object.entries(theme.responsive)) {
+      lines.push(`    ${bpName} {`);
+      for (const [subKey, subVal] of Object.entries(bpObj)) {
+        if (typeof subVal === 'object' && subVal !== null) {
+          lines.push(`      ${subKey} {`);
+          for (const [k, v] of Object.entries(subVal as Record<string, string>)) {
+            lines.push(`        ${k}: ${formatValue(v)}`);
+          }
+          lines.push('      }\n');
+        } else {
+          lines.push(`      ${subKey}: ${formatValue(String(subVal))}`);
+        }
+      }
+      lines.push('    }\n');
+    }
+    lines.push('  }\n');
+  }
+
+  // 8. Components
   if (theme.components && Object.keys(theme.components).length > 0) {
     lines.push('  components {');
     for (const [compName, compProps] of Object.entries(theme.components)) {
       lines.push(`    ${compName} {`);
       for (const [k, v] of Object.entries(compProps)) {
-        const valStr = v.startsWith('colors.') || v.startsWith('layout.') || v.startsWith('typography.')
-          ? v
-          : `"${v}"`;
-        lines.push(`      ${k}: ${valStr}`);
+        lines.push(`      ${k}: ${formatValue(v)}`);
       }
       lines.push('    }\n');
     }
@@ -98,12 +197,6 @@ export function themeConfigToSTL(config: Partial<ThemeConfig>, id = 'SiteXTheme'
         background: 'colors.surface',
         radius: config.borderRadius || '12px',
         style: config.cardStyle || 'elevated',
-      },
-      header: {
-        style: config.headerStyle || 'glass',
-      },
-      footer: {
-        style: config.footerStyle || 'dark',
       },
     },
     customBlocks: {},

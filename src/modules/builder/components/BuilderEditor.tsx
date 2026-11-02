@@ -43,6 +43,7 @@ export function BuilderEditor() {
     versions,
     createSnapshot,
     restoreSnapshot,
+    pruneSnapshots,
     loadThemeDefinition,
   } = useBuilderStore();
 
@@ -185,6 +186,8 @@ export function BuilderEditor() {
           onApplyTheme={(css) => {
             // Live applied
           }}
+          onSave={handleSave}
+          onSwitchMode={setActiveMode}
         />
       )}
 
@@ -222,6 +225,7 @@ export function BuilderEditor() {
           versions={versions}
           onRestoreVersion={restoreSnapshot}
           onCreateSnapshot={createSnapshot}
+          onPruneSnapshots={pruneSnapshots}
         />
       )}
 

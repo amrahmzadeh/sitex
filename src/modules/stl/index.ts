@@ -5,3 +5,5 @@ export * from './validator';
 export * from './compiler';
 export * from './serializer';
 export * from './intellisense';
+export * from './colorUtils';
+export * from './diagnostics';

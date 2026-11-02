@@ -98,6 +98,18 @@ export function useBuilderStore(initialDoc?: Partial<BuilderTemplateDocument>) {
     }
   }, [stlCode]);
 
+  // Prevent accidental loss when navigating away with unsaved changes
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (hasUnsavedChanges) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [hasUnsavedChanges]);
+
   // History push
   const pushHistory = useCallback(
     (newNodes: BuilderNode[]) => {
@@ -282,6 +294,11 @@ export function useBuilderStore(initialDoc?: Partial<BuilderTemplateDocument>) {
     setHasUnsavedChanges(false);
   }, []);
 
+  // Prune Snapshots (Keep 10 most recent)
+  const pruneSnapshots = useCallback(() => {
+    setVersions((prev) => prev.slice(0, 10));
+  }, []);
+
   // Load a ThemeDefinition into the Builder
   const loadThemeDefinition = useCallback((themeDef: ThemeDefinition) => {
     const tokens: GlobalDesignTokens = {
@@ -354,6 +371,7 @@ export function useBuilderStore(initialDoc?: Partial<BuilderTemplateDocument>) {
     versions,
     createSnapshot,
     restoreSnapshot,
+    pruneSnapshots,
     loadThemeDefinition,
   };
 }

@@ -204,13 +204,22 @@ export function serializeTemplateToTheme(doc: BuilderTemplateDocument): ThemeDef
 }
 
 export function exportTemplateAsJSON(doc: BuilderTemplateDocument): string {
-  return JSON.stringify(doc, null, 2);
+  const versionedDoc = {
+    schemaVersion: 2,
+    ...doc,
+  };
+  return JSON.stringify(versionedDoc, null, 2);
 }
 
 export function importTemplateFromJSON(jsonString: string): BuilderTemplateDocument {
   const parsed = JSON.parse(jsonString);
   if (!parsed.id || !Array.isArray(parsed.nodes)) {
     throw new Error('Etibarsız şablon JSON faylı');
+  }
+  // Auto-migration for legacy schema versions
+  if (!parsed.schemaVersion || parsed.schemaVersion < 2) {
+    parsed.schemaVersion = 2;
+    parsed.updatedAt = new Date().toISOString();
   }
   return parsed as BuilderTemplateDocument;
 }
