@@ -19,6 +19,23 @@ import {
   X,
   PanelLeftClose,
   PanelLeftOpen,
+  FolderOpen,
+  Sparkles,
+  GripVertical,
+  Type,
+  Image as ImageIcon,
+  Compass,
+  Utensils,
+  ShieldCheck,
+  MessageSquareQuote,
+  Send,
+  MapPin,
+  PanelBottom,
+  Minus,
+  Box,
+  Images,
+  ZoomIn,
+  ZoomOut,
 } from 'lucide-react';
 import { BuilderNode, DeviceMode, GlobalDesignTokens } from '../types';
 import { listComponents } from '../registry/componentRegistry';
@@ -71,11 +88,187 @@ const PALETTE_PRESETS = [
       primary: '#E07A5F',
       secondary: '#3D405B',
       accent: '#F2CC8F',
-      background: '#2B2D42',
-      surface: '#34374C',
+      background: '#1F202E',
+      surface: '#2B2D42',
       text: '#F4F1DE',
       mutedText: '#A8A29E',
     },
+  },
+  {
+    name: 'Zərif Minimalist',
+    colors: {
+      primary: '#FFFFFF',
+      secondary: '#18181B',
+      accent: '#A1A1AA',
+      background: '#09090B',
+      surface: '#141417',
+      text: '#FAFAFA',
+      mutedText: '#71717A',
+    },
+  },
+];
+
+const STARTER_TEMPLATES = [
+  {
+    id: 'starter-restaurant',
+    title: 'Müasir Restoran & Kafe',
+    description: 'Header, Qəhrəman Başlıq, Xüsusi Menyu, Üstünlüklər, Rəylər və Sonluq.',
+    badge: 'Populyar',
+    nodes: [
+      {
+        id: 'node-nav-1',
+        type: 'navbar',
+        props: {
+          brandName: 'Liman Restoran',
+          links: 'Menyu, Haqqımızda, Qalereya, Əlaqə',
+          ctaText: 'Rezervasiya',
+          bgColor: '#101216',
+        },
+      },
+      {
+        id: 'node-hero-1',
+        type: 'hero',
+        props: {
+          title: 'Ləzzət və Zövqün Tək Ünvanı',
+          subtitle: 'Ənənəvi kulinariya ənənələri və müasir xidmət mədəniyyəti bir arada.',
+          buttonText: 'Menyuya Bax',
+          secondaryButtonText: 'Masa Sifarişi',
+        },
+      },
+      {
+        id: 'node-menu-1',
+        type: 'menu_list',
+        props: {
+          categoryBadge: 'Xüsusi Təkliflər',
+          title: 'Şefin Seçimi Təamlar',
+          items:
+            'Lülə Kebab - 14 AZN, Şah Plov - 28 AZN, Ribeye Steyk - 36 AZN, Qızılbalıq Qrildə - 26 AZN, Tiramisu - 10 AZN',
+        },
+      },
+      {
+        id: 'node-features-1',
+        type: 'features',
+        props: { sectionTitle: 'Niyə Müştərilərimiz Bizi Seçir?' },
+      },
+      {
+        id: 'node-testimonials-1',
+        type: 'testimonials',
+        props: {
+          author: 'Rəşad Quliyev',
+          review: 'Şəhərin ən yaxşı ab-havası və dadlı mətbəxi! Hər həftə ailəmlə gəlirəm.',
+        },
+      },
+      {
+        id: 'node-contact-1',
+        type: 'contact_form',
+        props: { title: 'Masa Rezervasiyası və Əlaqə' },
+      },
+      {
+        id: 'node-footer-1',
+        type: 'footer',
+        props: { copyright: '© 2026 Liman Restoran. Bütün hüquqlar qorunur.' },
+      },
+    ],
+  },
+  {
+    id: 'starter-steakhouse',
+    title: 'Lüks Steykhaus & Lounge',
+    description: 'Qaranlıq zərif interyer, steyk və ət təamları üçün xüsusi dizayn.',
+    badge: 'Premium',
+    nodes: [
+      {
+        id: 'node-nav-2',
+        type: 'navbar',
+        props: {
+          brandName: 'Prime Steakhouse',
+          links: 'Steyklər, Şərab Kartı, Rezervasiya',
+          bgColor: '#0B0D11',
+          ctaText: 'Masa Seçin',
+        },
+      },
+      {
+        id: 'node-hero-2',
+        type: 'hero',
+        props: {
+          title: 'Premium Quru Yetişdirilmiş Ətlər',
+          subtitle: 'Xüsusi reseptlərlə köz üzərində hazırlanan dadlı qastronomik şah əsərləri.',
+          buttonText: 'Steyk Menyu',
+        },
+      },
+      {
+        id: 'node-menu-2',
+        type: 'menu_list',
+        props: {
+          title: 'Dry-Aged Steyklər',
+          items:
+            'Tomahawk Steyk (1.2 kq) - 85 AZN, Ribeye Black Angus - 48 AZN, Filet Mignon - 45 AZN, Wagyu Burger - 22 AZN',
+        },
+      },
+      {
+        id: 'node-gallery-2',
+        type: 'gallery',
+        props: { title: 'İnteryer və Atmosfer' },
+      },
+      {
+        id: 'node-map-2',
+        type: 'map',
+        props: { address: 'Fəvvarələr Meydanı, Tərlan Əliyarbəyov 12, Bakı' },
+      },
+      {
+        id: 'node-footer-2',
+        type: 'footer',
+        props: { copyright: '© 2026 Prime Steakhouse. Bütün hüquqlar qorunur.' },
+      },
+    ],
+  },
+  {
+    id: 'starter-cafe',
+    title: 'Artisan Kafe & Qənnadı',
+    description: 'Qəhvə, səhər yeməkləri və şirniyyat evləri üçün isti və cəlbedici şablon.',
+    badge: 'İsti & Şık',
+    nodes: [
+      {
+        id: 'node-nav-3',
+        type: 'navbar',
+        props: {
+          brandName: 'Aroma Coffee & Bakery',
+          links: 'Qəhvələr, Şirniyyatlar, Brunch, Əlaqə',
+          ctaText: 'Sifariş Ver',
+        },
+      },
+      {
+        id: 'node-hero-3',
+        type: 'hero',
+        props: {
+          title: 'Təzə Qovrulmuş Xüsusi Qəhvə',
+          subtitle: 'Hər səhər təzə bişən kruassanlar və 100% Arabika qəhvə dənələri.',
+          buttonText: 'Qəhvə Kartı',
+        },
+      },
+      {
+        id: 'node-menu-3',
+        type: 'menu_list',
+        props: {
+          title: 'Populyar İçkilər və Desertlər',
+          items:
+            'Flat White - 6 AZN, Spanish Latte - 7 AZN, San Sebastian Cheesecake - 9 AZN, Badamlı Kruassan - 5 AZN',
+        },
+      },
+      {
+        id: 'node-features-3',
+        type: 'features',
+        props: {
+          f1Title: '100% Arabika Dənələri',
+          f2Title: 'Təbii Kərə Yağı',
+          f3Title: 'Rahat Coworking Mühiti',
+        },
+      },
+      {
+        id: 'node-footer-3',
+        type: 'footer',
+        props: { copyright: '© 2026 Aroma Coffee. Bütün hüquqlar qorunur.' },
+      },
+    ],
   },
 ];
 
@@ -130,13 +323,15 @@ export function VisualThemeBuilder({
   onMoveNode,
   onUpdateNodeProps,
 }: VisualThemeBuilderProps) {
-  const [activePanelTab, setActivePanelTab] = useState<'global' | 'layout' | 'components' | 'sections'>('global');
-  const [showAddSectionModal, setShowAddSectionModal] = useState(false);
-  const [searchParam, setSearchParam] = useState('');
-  const [modularScale, setModularScale] = useState(1.2);
+  // Navigation Dock Tab: 'add' | 'layers' | 'design' | 'templates' | 'layout'
+  const [activeDockTab, setActiveDockTab] = useState<'add' | 'layers' | 'design' | 'templates' | 'layout'>('add');
+  const [componentCategory, setComponentCategory] = useState<string>('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [zoomLevel, setZoomLevel] = useState<number>(1);
+  const [insertTargetIndex, setInsertTargetIndex] = useState<number | undefined>(undefined);
 
   // Sidebar width & collapse states
-  const [sidebarWidth, setSidebarWidth] = useState<number>(340);
+  const [sidebarWidth, setSidebarWidth] = useState<number>(360);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const isDraggingRef = useRef(false);
 
@@ -145,7 +340,7 @@ export function VisualThemeBuilder({
     const saved = localStorage.getItem('sitex_builder_sidebar_width');
     if (saved) {
       const parsed = parseInt(saved, 10);
-      if (!isNaN(parsed) && parsed >= 280 && parsed <= 450) {
+      if (!isNaN(parsed) && parsed >= 300 && parsed <= 460) {
         setSidebarWidth(parsed);
       }
     }
@@ -176,7 +371,7 @@ export function VisualThemeBuilder({
     const handleMouseMove = (moveEvent: MouseEvent) => {
       if (!isDraggingRef.current) return;
       const delta = moveEvent.clientX - startX;
-      const newWidth = Math.min(420, Math.max(300, startWidth + delta));
+      const newWidth = Math.min(460, Math.max(300, startWidth + delta));
       setSidebarWidth(newWidth);
     };
 
@@ -192,17 +387,12 @@ export function VisualThemeBuilder({
   };
 
   const selectedNode = nodes.find((n) => n.id === selectedNodeId) || null;
-  const textContrast = checkWCAGContrast(tokens.colors.text, tokens.colors.background);
 
   const handleApplyPreset = (presetColors: GlobalDesignTokens['colors']) => {
     onUpdateTokens({
       ...tokens,
       colors: { ...presetColors },
     });
-  };
-
-  const handleResetTokens = () => {
-    onUpdateTokens(DEFAULT_DESIGN_TOKENS);
   };
 
   const updateColor = (key: keyof GlobalDesignTokens['colors'], value: string) => {
@@ -235,52 +425,41 @@ export function VisualThemeBuilder({
     });
   };
 
-  const updateHeaderStyle = (style: GlobalDesignTokens['header']['style']) => {
-    onUpdateTokens({
-      ...tokens,
-      header: {
-        ...tokens.header,
-        style,
-      },
-    });
+  // Components registry
+  const allComponents = listComponents();
+  const filteredComponents = allComponents.filter((comp) => {
+    const matchesSearch =
+      comp.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      comp.type.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory =
+      componentCategory === 'all' ||
+      (componentCategory === 'layout' && (comp.category === 'layout' || comp.type === 'navbar' || comp.type === 'footer')) ||
+      (componentCategory === 'hero' && comp.type === 'hero') ||
+      (componentCategory === 'menu' && comp.type === 'menu_list') ||
+      (componentCategory === 'content' && (comp.category === 'content' || comp.category === 'typography')) ||
+      (componentCategory === 'media' && (comp.category === 'media' || comp.type === 'image' || comp.type === 'gallery')) ||
+      (componentCategory === 'contact' && (comp.type === 'contact_form' || comp.type === 'map'));
+    return matchesSearch && matchesCategory;
+  });
+
+  const handleInsertComponent = (type: string) => {
+    onAddNode(type, insertTargetIndex);
+    setInsertTargetIndex(undefined);
   };
 
-  const updateFooterStyle = (style: GlobalDesignTokens['footer']['style']) => {
-    onUpdateTokens({
-      ...tokens,
-      footer: {
-        ...tokens.footer,
-        style,
-      },
-    });
+  const handleLoadStarterTemplate = (starter: (typeof STARTER_TEMPLATES)[0]) => {
+    if (confirm(`"${starter.title}" şablonunu tətbiq etmək istəyirsiniz? Mövcud kətan bölmələri yenilənəcək.`)) {
+      onUpdateNodes(starter.nodes as BuilderNode[]);
+      onSelectNode(starter.nodes[0]?.id || null);
+    }
   };
 
-  const updateComponentToken = (
-    component: keyof GlobalDesignTokens['components'],
-    field: string,
-    value: any
-  ) => {
-    onUpdateTokens({
-      ...tokens,
-      components: {
-        ...tokens.components,
-        [component]: {
-          ...tokens.components[component],
-          [field]: value,
-        },
-      },
-    });
-  };
-
-  // Color row definition with 44px standard height
+  // Color row helper
   const renderColorRow = (
     key: keyof GlobalDesignTokens['colors'],
     label: string,
     checkAgainstBg = true
   ) => {
-    if (searchParam && !label.toLowerCase().includes(searchParam.toLowerCase())) {
-      return null;
-    }
     const val = tokens.colors[key] || '#000000';
     const contrast = checkAgainstBg ? checkWCAGContrast(val, tokens.colors.background) : null;
 
@@ -288,9 +467,7 @@ export function VisualThemeBuilder({
       <div
         key={key}
         style={{
-          height: 44,
-          minHeight: 44,
-          maxHeight: 44,
+          height: 42,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
@@ -300,7 +477,6 @@ export function VisualThemeBuilder({
           border: '1px solid #20242E',
           marginBottom: 8,
           boxSizing: 'border-box',
-          transition: 'border-color 0.15s ease',
         }}
       >
         <span style={{ fontSize: 13, color: '#E2E5EE', fontWeight: 500 }}>{label}</span>
@@ -316,7 +492,9 @@ export function VisualThemeBuilder({
                 borderRadius: 4,
                 background: contrast.aaPass ? 'rgba(0, 211, 125, 0.12)' : 'rgba(239, 68, 68, 0.12)',
                 color: contrast.aaPass ? '#00D37D' : '#EF4444',
-                border: contrast.aaPass ? '1px solid rgba(0, 211, 125, 0.25)' : '1px solid rgba(239, 68, 68, 0.25)',
+                border: contrast.aaPass
+                  ? '1px solid rgba(0, 211, 125, 0.25)'
+                  : '1px solid rgba(239, 68, 68, 0.25)',
               }}
             >
               {contrast.aaaPass ? 'AAA' : contrast.aaPass ? 'AA' : 'Fail'}
@@ -348,7 +526,6 @@ export function VisualThemeBuilder({
               position: 'relative',
               overflow: 'hidden',
               flexShrink: 0,
-              boxShadow: '0 1px 3px rgba(0,0,0,0.4)',
             }}
           >
             <input
@@ -386,33 +563,31 @@ export function VisualThemeBuilder({
         .sitex-custom-scroll::-webkit-scrollbar-thumb:hover {
           background: #353C4D;
         }
-        .sitex-panel-tab {
+        .sitex-rail-btn {
+          width: 44px;
           height: 44px;
+          border-radius: 10px;
           border: none;
           background: transparent;
-          color: #8A8F9E;
-          border-bottom: 2px solid transparent;
-          cursor: pointer;
+          color: #7E8494;
           display: flex;
+          flex-direction: column;
           align-items: center;
           justifyContent: center;
-          gap: 6px;
-          font-size: 12px;
-          font-weight: 600;
+          gap: 3px;
+          font-size: 9px;
+          font-weight: 700;
+          cursor: pointer;
           transition: all 0.15s ease;
-          outline: none;
         }
-        .sitex-panel-tab:hover {
-          color: #E2E5EE;
-          background: rgba(255,255,255,0.02);
+        .sitex-rail-btn:hover {
+          background: #14171F;
+          color: #F4F5F8;
         }
-        .sitex-panel-tab:focus-visible {
-          box-shadow: inset 0 0 0 2px #00D37D;
-        }
-        .sitex-panel-tab.active {
-          color: #00D37D;
-          border-bottom-color: #00D37D;
-          background: #14171E;
+        .sitex-rail-btn.active {
+          background: #00D37D;
+          color: #08090C;
+          box-shadow: 0 2px 10px rgba(0, 211, 125, 0.3);
         }
       `}</style>
 
@@ -426,797 +601,723 @@ export function VisualThemeBuilder({
           position: 'relative',
         }}
       >
-        {/* SOL PANEL (320-360px resizable / collapsible) */}
-        {!isCollapsed ? (
+        {/* 1. SLIM LEFT RAIL DOCK (54px) */}
+        <nav
+          aria-label="Studio Əsas Alətlər Paneli"
+          style={{
+            width: 54,
+            minWidth: 54,
+            maxWidth: 54,
+            background: '#090B0E',
+            borderRight: '1px solid #1C202A',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            padding: '10px 0',
+            gap: 8,
+            zIndex: 30,
+            flexShrink: 0,
+            userSelect: 'none',
+            boxSizing: 'border-box',
+          }}
+        >
+          <button
+            type="button"
+            className={`sitex-rail-btn ${activeDockTab === 'add' && !isCollapsed ? 'active' : ''}`}
+            onClick={() => {
+              setActiveDockTab('add');
+              setIsCollapsed(false);
+            }}
+            title="Bölmə & Element Əlavə Et"
+          >
+            <Plus size={18} strokeWidth={2.5} />
+            <span>Əlavə</span>
+          </button>
+
+          <button
+            type="button"
+            className={`sitex-rail-btn ${activeDockTab === 'layers' && !isCollapsed ? 'active' : ''}`}
+            onClick={() => {
+              setActiveDockTab('layers');
+              setIsCollapsed(false);
+            }}
+            title="Səhifə Qatları və Bölmələr Ağacı"
+          >
+            <Layers size={18} />
+            <span>Qatlar</span>
+          </button>
+
+          <button
+            type="button"
+            className={`sitex-rail-btn ${activeDockTab === 'design' && !isCollapsed ? 'active' : ''}`}
+            onClick={() => {
+              setActiveDockTab('design');
+              setIsCollapsed(false);
+            }}
+            title="Qlobal Tema və Dizayn Tokenləri"
+          >
+            <Palette size={18} />
+            <span>Dizayn</span>
+          </button>
+
+          <button
+            type="button"
+            className={`sitex-rail-btn ${activeDockTab === 'templates' && !isCollapsed ? 'active' : ''}`}
+            onClick={() => {
+              setActiveDockTab('templates');
+              setIsCollapsed(false);
+            }}
+            title="Hazır Şablonlar (Starter Kits)"
+          >
+            <FolderOpen size={18} />
+            <span>Şablon</span>
+          </button>
+
+          <button
+            type="button"
+            className={`sitex-rail-btn ${activeDockTab === 'layout' && !isCollapsed ? 'active' : ''}`}
+            onClick={() => {
+              setActiveDockTab('layout');
+              setIsCollapsed(false);
+            }}
+            title="Konteyner və Şəbəkə Tərtibatı"
+          >
+            <Layout size={18} />
+            <span>Tərtibat</span>
+          </button>
+
+          <div style={{ flex: 1 }} />
+
+          <button
+            type="button"
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              color: '#7E8494',
+              cursor: 'pointer',
+              padding: 8,
+              borderRadius: 8,
+            }}
+            title={isCollapsed ? 'Paneli aç ( [ )' : 'Paneli yığ ( [ )'}
+          >
+            {isCollapsed ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}
+          </button>
+        </nav>
+
+        {/* 2. SECONDARY DRAWER PANEL (Resizable, 300px - 440px) */}
+        {!isCollapsed && (
           <aside
             role="region"
-            aria-label="Tema vizual tənzimləmə paneli"
+            aria-label="Studio İdarəetmə Paneli"
             style={{
               width: sidebarWidth,
               minWidth: 300,
-              maxWidth: 420,
+              maxWidth: 440,
               background: '#0D0F14',
-              borderRight: '1px solid #1E222B',
+              borderRight: '1px solid #1C202A',
               display: 'flex',
               flexDirection: 'column',
-              zIndex: 10,
+              zIndex: 20,
               position: 'relative',
               boxSizing: 'border-box',
               flexShrink: 0,
             }}
           >
-            {/* 1. Sticky 44px Sub-tabs */}
-            <div
-              role="tablist"
-              aria-label="Panel bölmələri"
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(4, 1fr)',
-                borderBottom: '1px solid #1E222B',
-                background: '#0A0B0F',
-                position: 'sticky',
-                top: 0,
-                zIndex: 20,
-                height: 44,
-                boxSizing: 'border-box',
-              }}
-            >
-              <button
-                type="button"
-                role="tab"
-                id="panel-tab-global"
-                aria-selected={activePanelTab === 'global'}
-                aria-controls="panel-content-global"
-                onClick={() => setActivePanelTab('global')}
-                className={`sitex-panel-tab ${activePanelTab === 'global' ? 'active' : ''}`}
-                title="Qlobal Rəng və Şrift Parametrləri"
-              >
-                <Palette size={14} />
-                <span>Qlobal</span>
-              </button>
-              <button
-                type="button"
-                role="tab"
-                id="panel-tab-layout"
-                aria-selected={activePanelTab === 'layout'}
-                aria-controls="panel-content-layout"
-                onClick={() => setActivePanelTab('layout')}
-                className={`sitex-panel-tab ${activePanelTab === 'layout' ? 'active' : ''}`}
-                title="Tərtibat və Şəbəkə Parametrləri"
-              >
-                <Layout size={14} />
-                <span>Tərtibat</span>
-              </button>
-              <button
-                type="button"
-                role="tab"
-                id="panel-tab-components"
-                aria-selected={activePanelTab === 'components'}
-                aria-controls="panel-content-components"
-                onClick={() => setActivePanelTab('components')}
-                className={`sitex-panel-tab ${activePanelTab === 'components' ? 'active' : ''}`}
-                title="Komponent Stilləri"
-              >
-                <Sliders size={14} />
-                <span>Stillər</span>
-              </button>
-              <button
-                type="button"
-                role="tab"
-                id="panel-tab-sections"
-                aria-selected={activePanelTab === 'sections'}
-                aria-controls="panel-content-sections"
-                onClick={() => setActivePanelTab('sections')}
-                className={`sitex-panel-tab ${activePanelTab === 'sections' ? 'active' : ''}`}
-                title="Bölmələr İdarəetməsi"
-              >
-                <Layers size={14} />
-                <span>Bölmələr</span>
-              </button>
-            </div>
-
-            {/* 2. Search & Collapse Bar */}
-            <div
-              style={{
-                padding: '8px 12px',
-                borderBottom: '1px solid #1E222B',
-                background: '#0D0F14',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
-              }}
-            >
-              <div
-                style={{
-                  flex: 1,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 6,
-                  background: '#12141A',
-                  border: '1px solid #20242E',
-                  borderRadius: 6,
-                  padding: '4px 8px',
-                }}
-              >
-                <Search size={13} color="#7E8494" />
-                <input
-                  type="text"
-                  placeholder="Parametr axtar…"
-                  value={searchParam}
-                  onChange={(e) => setSearchParam(e.target.value)}
+            {/* TAB: ADD COMPONENTS */}
+            {activeDockTab === 'add' && (
+              <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                <div
                   style={{
-                    background: 'transparent',
-                    border: 'none',
-                    color: '#E2E5EE',
-                    fontSize: 12,
-                    outline: 'none',
-                    width: '100%',
+                    padding: '14px 16px',
+                    borderBottom: '1px solid #1E222B',
+                    background: '#090B0E',
                   }}
-                />
-                {searchParam && (
-                  <button
-                    type="button"
-                    onClick={() => setSearchParam('')}
-                    style={{ background: 'transparent', border: 'none', color: '#7E8494', cursor: 'pointer', padding: 0 }}
-                  >
-                    <X size={12} />
-                  </button>
-                )}
-              </div>
-
-              <button
-                type="button"
-                onClick={() => setIsCollapsed(true)}
-                title="Paneli daralt (Kısayol: [ )"
-                style={{
-                  background: '#12141A',
-                  border: '1px solid #20242E',
-                  borderRadius: 6,
-                  color: '#8A8F9E',
-                  padding: '5px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
-                }}
-              >
-                <PanelLeftClose size={14} />
-              </button>
-            </div>
-
-            {/* 3. Panel Content with Thin Scroll & 24px bottom padding */}
-            <div
-              className="sitex-custom-scroll"
-              style={{
-                flex: 1,
-                overflowY: 'auto',
-                padding: '16px 16px 24px 16px',
-                boxSizing: 'border-box',
-              }}
-            >
-              {/* TAB 1: GLOBAL */}
-              {activePanelTab === 'global' && (
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  {/* Reset to Default */}
-                  <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16 }}>
-                    <button
-                      type="button"
-                      onClick={handleResetTokens}
-                      style={{
-                        padding: '4px 10px',
-                        borderRadius: 6,
-                        border: '1px solid #282D3A',
-                        background: '#12141A',
-                        color: '#8A8F9E',
-                        fontSize: 11,
-                        fontWeight: 600,
-                        cursor: 'pointer',
-                      }}
-                    >
-                      Mənbəyə Qayıt (Sıfırla)
-                    </button>
-                  </div>
-
-                  {/* Palette Presets */}
-                  <div style={{ marginBottom: 24 }}>
-                    <h4
-                      style={{
-                        fontSize: 12,
-                        fontWeight: 700,
-                        color: '#8A8F9E',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.08em',
-                        marginBottom: 12,
-                        margin: 0,
-                      }}
-                    >
-                      PALİTRA TƏKLİFLƏRİ
-                    </h4>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8, marginTop: 12 }}>
-                      {PALETTE_PRESETS.map((p) => (
-                        <button
-                          key={p.name}
-                          type="button"
-                          onClick={() => handleApplyPreset(p.colors)}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span style={{ fontSize: 13, fontWeight: 800, color: '#F4F5F8' }}>
+                        Bölmə & Blok Kataloqu
+                      </span>
+                      {insertTargetIndex !== undefined && (
+                        <span
                           style={{
-                            padding: '8px 10px',
-                            borderRadius: 8,
-                            border: '1px solid #20242E',
-                            background: '#12141A',
-                            color: '#D4D7E2',
-                            fontSize: 12,
-                            fontWeight: 500,
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 8,
-                            textAlign: 'left',
+                            fontSize: 10,
+                            padding: '2px 6px',
+                            borderRadius: 4,
+                            background: 'rgba(0, 211, 125, 0.15)',
+                            color: '#00D37D',
+                            fontWeight: 700,
                           }}
                         >
-                          <span
-                            style={{
-                              width: 12,
-                              height: 12,
-                              borderRadius: '50%',
-                              background: p.colors.primary,
-                              display: 'inline-block',
-                              flexShrink: 0,
-                            }}
-                          />
-                          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                            {p.name}
-                          </span>
-                        </button>
-                      ))}
+                          #{insertTargetIndex + 1}-ci yerə
+                        </span>
+                      )}
                     </div>
+                    {insertTargetIndex !== undefined && (
+                      <button
+                        type="button"
+                        onClick={() => setInsertTargetIndex(undefined)}
+                        style={{ background: 'none', border: 'none', color: '#888', cursor: 'pointer', fontSize: 11 }}
+                      >
+                        ✕ İmtina
+                      </button>
+                    )}
                   </div>
 
-                  {/* Contrast Score Indicator */}
-                  {textContrast && (
-                    <div
+                  {/* Search Input */}
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 8,
+                      background: '#13151D',
+                      border: '1px solid #20242E',
+                      borderRadius: 8,
+                      padding: '6px 10px',
+                    }}
+                  >
+                    <Search size={13} color="#7E8494" />
+                    <input
+                      type="text"
+                      placeholder="Blok və ya komponent axtar..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
                       style={{
-                        padding: '10px 14px',
-                        borderRadius: 8,
-                        background: textContrast.aaPass ? 'rgba(0,211,125,0.08)' : 'rgba(239,68,68,0.08)',
-                        border: textContrast.aaPass ? '1px solid rgba(0,211,125,0.25)' : '1px solid rgba(239,68,68,0.25)',
+                        background: 'transparent',
+                        border: 'none',
+                        color: '#E2E5EE',
+                        fontSize: 12,
+                        width: '100%',
+                        outline: 'none',
+                      }}
+                    />
+                  </div>
+
+                  {/* Category Pills */}
+                  <div
+                    className="sitex-custom-scroll"
+                    style={{
+                      display: 'flex',
+                      gap: 6,
+                      overflowX: 'auto',
+                      paddingTop: 10,
+                      paddingBottom: 2,
+                    }}
+                  >
+                    {[
+                      { id: 'all', label: 'Hamısı' },
+                      { id: 'layout', label: 'Quruluş' },
+                      { id: 'hero', label: 'Qəhrəman' },
+                      { id: 'menu', label: 'Menyu' },
+                      { id: 'content', label: 'Məzmun' },
+                      { id: 'media', label: 'Media' },
+                      { id: 'contact', label: 'Əlaqə' },
+                    ].map((cat) => (
+                      <button
+                        key={cat.id}
+                        type="button"
+                        onClick={() => setComponentCategory(cat.id)}
+                        style={{
+                          padding: '4px 10px',
+                          borderRadius: 20,
+                          fontSize: 11,
+                          fontWeight: 700,
+                          whiteSpace: 'nowrap',
+                          border: componentCategory === cat.id ? '1px solid #00D37D' : '1px solid #20242E',
+                          background: componentCategory === cat.id ? '#00D37D' : '#13151D',
+                          color: componentCategory === cat.id ? '#08090C' : '#8A8F9E',
+                          cursor: 'pointer',
+                          transition: 'all 0.15s ease',
+                        }}
+                      >
+                        {cat.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Component List */}
+                <div
+                  className="sitex-custom-scroll"
+                  style={{
+                    flex: 1,
+                    overflowY: 'auto',
+                    padding: '14px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 10,
+                  }}
+                >
+                  {filteredComponents.map((comp) => (
+                    <div
+                      key={comp.type}
+                      onClick={() => handleInsertComponent(comp.type)}
+                      draggable
+                      onDragStart={(e) => {
+                        e.dataTransfer.setData('text/plain', comp.type);
+                        e.dataTransfer.effectAllowed = 'copy';
+                      }}
+                      style={{
+                        padding: '12px 14px',
+                        borderRadius: 10,
+                        background: '#13151D',
+                        border: '1px solid #20242E',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',
-                        marginBottom: 24,
+                        cursor: 'grab',
+                        transition: 'all 0.15s ease',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.borderColor = '#00D37D';
+                        e.currentTarget.style.background = '#171B24';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.borderColor = '#20242E';
+                        e.currentTarget.style.background = '#13151D';
                       }}
                     >
-                      <span style={{ fontSize: 12, color: textContrast.aaPass ? '#00D37D' : '#EF4444', fontWeight: 600 }}>
-                        WCAG Kontrast Nisbəti: {textContrast.ratio}:1
-                      </span>
-                      <span
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <div
+                          style={{
+                            width: 32,
+                            height: 32,
+                            borderRadius: 8,
+                            background: 'rgba(0, 211, 125, 0.1)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: '#00D37D',
+                          }}
+                        >
+                          <Plus size={16} />
+                        </div>
+                        <div>
+                          <div style={{ fontSize: 13, fontWeight: 700, color: '#F4F5F8' }}>{comp.label}</div>
+                          <div style={{ fontSize: 11, color: '#7E8494', textTransform: 'capitalize' }}>
+                            Kateqoriya: {comp.category}
+                          </div>
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
                         style={{
+                          padding: '5px 10px',
+                          borderRadius: 6,
+                          background: 'rgba(0, 211, 125, 0.12)',
+                          color: '#00D37D',
+                          border: '1px solid rgba(0, 211, 125, 0.25)',
                           fontSize: 11,
                           fontWeight: 700,
-                          padding: '2px 8px',
-                          borderRadius: 4,
-                          background: textContrast.aaPass ? '#00D37D' : '#EF4444',
-                          color: '#08090C',
+                          cursor: 'pointer',
                         }}
                       >
-                        {textContrast.aaaPass ? 'AAA Əla' : textContrast.aaPass ? 'AA Qəbul' : 'Zəif'}
+                        + Əlavə et
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* TAB: LAYERS & OUTLINE */}
+            {activeDockTab === 'layers' && (
+              <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                <div
+                  style={{
+                    padding: '14px 16px',
+                    borderBottom: '1px solid #1E222B',
+                    background: '#090B0E',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <Layers size={16} color="#00D37D" />
+                    <span style={{ fontSize: 13, fontWeight: 800, color: '#F4F5F8' }}>Səhifə Qatları</span>
+                  </div>
+                  <span style={{ fontSize: 11, color: '#888D9E', fontWeight: 600 }}>{nodes.length} Blok</span>
+                </div>
+
+                <div
+                  className="sitex-custom-scroll"
+                  style={{
+                    flex: 1,
+                    overflowY: 'auto',
+                    padding: '12px 14px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 6,
+                  }}
+                >
+                  {nodes.map((node, index) => {
+                    const isSelected = selectedNodeId === node.id;
+                    const def = allComponents.find((c) => c.type === node.type);
+
+                    return (
+                      <div
+                        key={node.id}
+                        onClick={() => onSelectNode(node.id)}
+                        style={{
+                          padding: '10px 12px',
+                          borderRadius: 8,
+                          background: isSelected ? 'rgba(0, 211, 125, 0.1)' : '#13151D',
+                          border: isSelected ? '1px solid #00D37D' : '1px solid #20242E',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          cursor: 'pointer',
+                          transition: 'all 0.15s ease',
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                          <span style={{ fontSize: 11, color: '#687082', width: 14 }}>{index + 1}.</span>
+                          <span style={{ fontSize: 13, fontWeight: 600, color: isSelected ? '#00D37D' : '#F5F5F7' }}>
+                            {def?.label || node.type}
+                          </span>
+                        </div>
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 2 }} onClick={(e) => e.stopPropagation()}>
+                          <button
+                            type="button"
+                            onClick={() => onMoveNode(node.id, 'up')}
+                            disabled={index === 0}
+                            style={{
+                              background: 'transparent',
+                              border: 'none',
+                              color: index === 0 ? '#333' : '#8A8F9E',
+                              padding: 4,
+                              cursor: index === 0 ? 'default' : 'pointer',
+                            }}
+                            title="Yuxarı daşı"
+                          >
+                            <ChevronUp size={13} />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => onMoveNode(node.id, 'down')}
+                            disabled={index === nodes.length - 1}
+                            style={{
+                              background: 'transparent',
+                              border: 'none',
+                              color: index === nodes.length - 1 ? '#333' : '#8A8F9E',
+                              padding: 4,
+                              cursor: index === nodes.length - 1 ? 'default' : 'pointer',
+                            }}
+                            title="Aşağı daşı"
+                          >
+                            <ChevronDown size={13} />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => onDuplicateNode(node.id)}
+                            style={{ background: 'transparent', border: 'none', color: '#8A8F9E', padding: 4, cursor: 'pointer' }}
+                            title="Kopyala"
+                          >
+                            <Copy size={12} />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => onDeleteNode(node.id)}
+                            style={{ background: 'transparent', border: 'none', color: '#F87171', padding: 4, cursor: 'pointer' }}
+                            title="Sil"
+                          >
+                            <Trash2 size={12} />
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* TAB: DESIGN TOKENS */}
+            {activeDockTab === 'design' && (
+              <div
+                className="sitex-custom-scroll"
+                style={{ flex: 1, overflowY: 'auto', padding: '16px', display: 'flex', flexDirection: 'column', gap: 20 }}
+              >
+                {/* 1. Palitra Presets */}
+                <div>
+                  <h4 style={{ fontSize: 13, fontWeight: 700, color: '#F4F5F8', margin: '0 0 10px' }}>
+                    Rəng Palitrası Seçimləri
+                  </h4>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8 }}>
+                    {PALETTE_PRESETS.map((preset) => (
+                      <button
+                        key={preset.name}
+                        type="button"
+                        onClick={() => handleApplyPreset(preset.colors)}
+                        style={{
+                          padding: '10px',
+                          borderRadius: 8,
+                          background: '#13151D',
+                          border: '1px solid #20242E',
+                          textAlign: 'left',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: 6,
+                        }}
+                      >
+                        <div style={{ display: 'flex', gap: 4 }}>
+                          <span style={{ width: 14, height: 14, borderRadius: '50%', background: preset.colors.primary }} />
+                          <span style={{ width: 14, height: 14, borderRadius: '50%', background: preset.colors.accent }} />
+                          <span style={{ width: 14, height: 14, borderRadius: '50%', background: preset.colors.background, border: '1px solid #333' }} />
+                        </div>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: '#E2E5EE' }}>{preset.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 2. Color Tokens */}
+                <div>
+                  <h4 style={{ fontSize: 13, fontWeight: 700, color: '#F4F5F8', margin: '0 0 10px' }}>
+                    Fərdi Rəng Tokenləri
+                  </h4>
+                  {renderColorRow('primary', 'Əsas Rəng (Primary)')}
+                  {renderColorRow('secondary', 'İkinci Rəng (Secondary)')}
+                  {renderColorRow('accent', 'Vurğu Rəngi (Accent)')}
+                  {renderColorRow('background', 'Arxa Fon Rəngi', false)}
+                  {renderColorRow('surface', 'Səth Rəngi (Surface)', false)}
+                  {renderColorRow('text', 'Əsas Mətn Rəngi')}
+                  {renderColorRow('mutedText', 'Sönük Mətn Rəngi')}
+                </div>
+
+                {/* 3. Typography */}
+                <div>
+                  <h4 style={{ fontSize: 13, fontWeight: 700, color: '#F4F5F8', margin: '0 0 10px' }}>
+                    Typoqrafiya və Şriftlər
+                  </h4>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    <div>
+                      <label style={{ fontSize: 11, color: '#888D9E', display: 'block', marginBottom: 4 }}>
+                        Başlıq Şrifti (Heading)
+                      </label>
+                      <select
+                        value={tokens.typography.headingFont}
+                        onChange={(e) => updateTypography('headingFont', e.target.value)}
+                        style={{
+                          width: '100%',
+                          background: '#13151D',
+                          border: '1px solid #20242E',
+                          borderRadius: 8,
+                          padding: '8px 10px',
+                          color: '#F4F5F8',
+                          fontSize: 12,
+                          outline: 'none',
+                        }}
+                      >
+                        {FONT_OPTIONS.map((f) => (
+                          <option key={f} value={f} style={{ background: '#13151D', color: '#FFF' }}>
+                            {f}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label style={{ fontSize: 11, color: '#888D9E', display: 'block', marginBottom: 4 }}>
+                        Əsas Mətn Şrifti (Body)
+                      </label>
+                      <select
+                        value={tokens.typography.bodyFont}
+                        onChange={(e) => updateTypography('bodyFont', e.target.value)}
+                        style={{
+                          width: '100%',
+                          background: '#13151D',
+                          border: '1px solid #20242E',
+                          borderRadius: 8,
+                          padding: '8px 10px',
+                          color: '#F4F5F8',
+                          fontSize: 12,
+                          outline: 'none',
+                        }}
+                      >
+                        {FONT_OPTIONS.map((f) => (
+                          <option key={f} value={f} style={{ background: '#13151D', color: '#FFF' }}>
+                            {f}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 4. Layout Corners */}
+                <div>
+                  <h4 style={{ fontSize: 13, fontWeight: 700, color: '#F4F5F8', margin: '0 0 10px' }}>
+                    Künc Yuvarlaqlığı (Border Radius)
+                  </h4>
+                  <div style={{ display: 'flex', gap: 6 }}>
+                    {['4px', '8px', '12px', '16px', '24px'].map((rad) => (
+                      <button
+                        key={rad}
+                        type="button"
+                        onClick={() => updateLayout('borderRadius', rad)}
+                        style={{
+                          flex: 1,
+                          padding: '8px 0',
+                          borderRadius: 6,
+                          background: tokens.layout.borderRadius === rad ? '#00D37D' : '#13151D',
+                          color: tokens.layout.borderRadius === rad ? '#08090C' : '#888D9E',
+                          border: tokens.layout.borderRadius === rad ? '1px solid #00D37D' : '1px solid #20242E',
+                          fontSize: 11,
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        {rad}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* TAB: STARTER TEMPLATES */}
+            {activeDockTab === 'templates' && (
+              <div
+                className="sitex-custom-scroll"
+                style={{ flex: 1, overflowY: 'auto', padding: '16px', display: 'flex', flexDirection: 'column', gap: 14 }}
+              >
+                <div>
+                  <h4 style={{ fontSize: 13, fontWeight: 800, color: '#F4F5F8', margin: '0 0 4px' }}>
+                    1-Klik Hazır Şablonlar
+                  </h4>
+                  <p style={{ fontSize: 12, color: '#7E8494', margin: 0 }}>
+                    Tam hazır biznes və restoran strukturlarını dərhal kətana tətbiq edin.
+                  </p>
+                </div>
+
+                {STARTER_TEMPLATES.map((starter) => (
+                  <div
+                    key={starter.id}
+                    style={{
+                      background: '#13151D',
+                      border: '1px solid #20242E',
+                      borderRadius: 10,
+                      padding: '14px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 8,
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: '#FFF' }}>{starter.title}</span>
+                      <span
+                        style={{
+                          fontSize: 10,
+                          fontWeight: 800,
+                          padding: '2px 6px',
+                          borderRadius: 4,
+                          background: 'rgba(0, 211, 125, 0.15)',
+                          color: '#00D37D',
+                        }}
+                      >
+                        {starter.badge}
                       </span>
                     </div>
-                  )}
-
-                  {/* Color Palette (44px rows) */}
-                  <div style={{ marginBottom: 24 }}>
-                    <h4
-                      style={{
-                        fontSize: 12,
-                        fontWeight: 700,
-                        color: '#8A8F9E',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.08em',
-                        marginBottom: 12,
-                        margin: 0,
-                      }}
-                    >
-                      RƏNG PALİTRASI
-                    </h4>
-                    <div style={{ marginTop: 12 }}>
-                      {renderColorRow('primary', 'Əsas Rəng (Primary)')}
-                      {renderColorRow('secondary', 'İkinci dərəcəli (Secondary)')}
-                      {renderColorRow('accent', 'Vurğu Rəngi (Accent)')}
-                      {renderColorRow('background', 'Arxa Fon (Background)', false)}
-                      {renderColorRow('surface', 'Kart və Səth (Surface)', false)}
-                      {renderColorRow('text', 'Mətn Rəngi (Text)')}
+                    <p style={{ fontSize: 11, color: '#888D9E', margin: 0, lineHeight: 1.5 }}>
+                      {starter.description}
+                    </p>
+                    <div style={{ fontSize: 11, color: '#687082' }}>
+                      Cəmi {starter.nodes.length} bölmə
                     </div>
-                  </div>
-
-                  {/* Typography */}
-                  <div style={{ marginBottom: 24 }}>
-                    <h4
-                      style={{
-                        fontSize: 12,
-                        fontWeight: 700,
-                        color: '#8A8F9E',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.08em',
-                        marginBottom: 12,
-                        margin: 0,
-                      }}
-                    >
-                      TİPOQRAFİYA
-                    </h4>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 12 }}>
-                      <div>
-                        <label style={{ display: 'block', fontSize: 12, color: '#8A8F9E', marginBottom: 6 }}>
-                          Başlıq Şrifti (Heading)
-                        </label>
-                        <select
-                          value={tokens.typography.headingFont}
-                          onChange={(e) => updateTypography('headingFont', e.target.value)}
-                          style={{
-                            width: '100%',
-                            padding: '8px 10px',
-                            background: '#12141A',
-                            border: '1px solid #20242E',
-                            borderRadius: 6,
-                            color: '#FFF',
-                            fontSize: 13,
-                          }}
-                        >
-                          {FONT_OPTIONS.map((f) => (
-                            <option key={f} value={f}>{f}</option>
-                          ))}
-                        </select>
-                      </div>
-
-                      <div>
-                        <label style={{ display: 'block', fontSize: 12, color: '#8A8F9E', marginBottom: 6 }}>
-                          Mətn Şrifti (Body)
-                        </label>
-                        <select
-                          value={tokens.typography.bodyFont}
-                          onChange={(e) => updateTypography('bodyFont', e.target.value)}
-                          style={{
-                            width: '100%',
-                            padding: '8px 10px',
-                            background: '#12141A',
-                            border: '1px solid #20242E',
-                            borderRadius: 6,
-                            color: '#FFF',
-                            fontSize: 13,
-                          }}
-                        >
-                          {FONT_OPTIONS.map((f) => (
-                            <option key={f} value={f}>{f}</option>
-                          ))}
-                        </select>
-                      </div>
-
-                      <div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6, fontSize: 12 }}>
-                          <span style={{ color: '#8A8F9E' }}>Baza Ölçü</span>
-                          <span style={{ color: '#00D37D', fontWeight: 600 }}>{tokens.typography.baseSize}</span>
-                        </div>
-                        <input
-                          type="range"
-                          min={12}
-                          max={20}
-                          value={parseInt(tokens.typography.baseSize, 10) || 16}
-                          onChange={(e) => updateTypography('baseSize', `${e.target.value}px`)}
-                          style={{ width: '100%', accentColor: '#00D37D' }}
-                        />
-                      </div>
-
-                      <div>
-                        <label style={{ display: 'block', fontSize: 12, color: '#8A8F9E', marginBottom: 6 }}>
-                          Modullu Şrift Şkalası (Modular Scale)
-                        </label>
-                        <select
-                          value={modularScale}
-                          onChange={(e) => setModularScale(parseFloat(e.target.value))}
-                          style={{
-                            width: '100%',
-                            padding: '8px 10px',
-                            background: '#12141A',
-                            border: '1px solid #20242E',
-                            borderRadius: 6,
-                            color: '#FFF',
-                            fontSize: 13,
-                          }}
-                        >
-                          {MODULAR_SCALES.map((s) => (
-                            <option key={s.scale} value={s.scale}>
-                              {s.label}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* TAB 2: LAYOUT */}
-              {activePanelTab === 'layout' && (
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  {/* Header Style */}
-                  <div style={{ marginBottom: 24 }}>
-                    <h4
-                      style={{
-                        fontSize: 12,
-                        fontWeight: 700,
-                        color: '#8A8F9E',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.08em',
-                        marginBottom: 12,
-                        margin: 0,
-                      }}
-                    >
-                      HEADER & NAVİQASİYA
-                    </h4>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8, marginTop: 12 }}>
-                      {[
-                        { id: 'transparent', label: 'Şəffaf' },
-                        { id: 'glass', label: 'Şüşə (Glass)' },
-                        { id: 'solid', label: 'Bütöv (Solid)' },
-                        { id: 'sticky', label: 'Yapışqan (Sticky)' },
-                      ].map((item) => (
-                        <button
-                          key={item.id}
-                          type="button"
-                          onClick={() => updateHeaderStyle(item.id as any)}
-                          style={{
-                            padding: '10px 12px',
-                            borderRadius: 8,
-                            border: tokens.header.style === item.id ? '1px solid #00D37D' : '1px solid #20242E',
-                            background: tokens.header.style === item.id ? 'rgba(0,211,125,0.12)' : '#12141A',
-                            color: tokens.header.style === item.id ? '#00D37D' : '#8A8F9E',
-                            fontSize: 12,
-                            fontWeight: 600,
-                            cursor: 'pointer',
-                          }}
-                        >
-                          {item.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Footer Style */}
-                  <div style={{ marginBottom: 24 }}>
-                    <h4
-                      style={{
-                        fontSize: 12,
-                        fontWeight: 700,
-                        color: '#8A8F9E',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.08em',
-                        marginBottom: 12,
-                        margin: 0,
-                      }}
-                    >
-                      FOOTER DİZAYNI
-                    </h4>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8, marginTop: 12 }}>
-                      {[
-                        { id: 'dark', label: 'Qaranlıq (Dark)' },
-                        { id: 'light', label: 'Açıq (Light)' },
-                        { id: 'accent', label: 'Vurğu (Accent)' },
-                        { id: 'minimal', label: 'Minimal' },
-                      ].map((item) => (
-                        <button
-                          key={item.id}
-                          type="button"
-                          onClick={() => updateFooterStyle(item.id as any)}
-                          style={{
-                            padding: '10px 12px',
-                            borderRadius: 8,
-                            border: tokens.footer.style === item.id ? '1px solid #00D37D' : '1px solid #20242E',
-                            background: tokens.footer.style === item.id ? 'rgba(0,211,125,0.12)' : '#12141A',
-                            color: tokens.footer.style === item.id ? '#00D37D' : '#8A8F9E',
-                            fontSize: 12,
-                            fontWeight: 600,
-                            cursor: 'pointer',
-                          }}
-                        >
-                          {item.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Radius and Spacing */}
-                  <div style={{ marginBottom: 24 }}>
-                    <h4
-                      style={{
-                        fontSize: 12,
-                        fontWeight: 700,
-                        color: '#8A8F9E',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.08em',
-                        marginBottom: 12,
-                        margin: 0,
-                      }}
-                    >
-                      RADİUS VƏ BOŞLUQLAR
-                    </h4>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginTop: 12 }}>
-                      <div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6, fontSize: 12 }}>
-                          <span style={{ color: '#8A8F9E' }}>Künc Yuvarlaqlığı</span>
-                          <span style={{ color: '#00D37D', fontWeight: 600 }}>{tokens.layout.borderRadius}</span>
-                        </div>
-                        <input
-                          type="range"
-                          min={0}
-                          max={24}
-                          value={parseInt(tokens.layout.borderRadius, 10) || 12}
-                          onChange={(e) => updateLayout('borderRadius', `${e.target.value}px`)}
-                          style={{ width: '100%', accentColor: '#00D37D' }}
-                        />
-                      </div>
-
-                      <div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6, fontSize: 12 }}>
-                          <span style={{ color: '#8A8F9E' }}>Seksiyalararası Boşluq</span>
-                          <span style={{ color: '#00D37D', fontWeight: 600 }}>{tokens.layout.spacing}</span>
-                        </div>
-                        <input
-                          type="range"
-                          min={8}
-                          max={32}
-                          step={4}
-                          value={parseInt(tokens.layout.spacing, 10) || 16}
-                          onChange={(e) => updateLayout('spacing', `${e.target.value}px`)}
-                          style={{ width: '100%', accentColor: '#00D37D' }}
-                        />
-                      </div>
-
-                      <div>
-                        <label style={{ display: 'block', fontSize: 12, color: '#8A8F9E', marginBottom: 6 }}>
-                          Konteyner Maksimum Eni
-                        </label>
-                        <select
-                          value={tokens.layout.containerWidth}
-                          onChange={(e) => updateLayout('containerWidth', e.target.value)}
-                          style={{
-                            width: '100%',
-                            padding: '8px 10px',
-                            background: '#12141A',
-                            border: '1px solid #20242E',
-                            borderRadius: 6,
-                            color: '#FFF',
-                            fontSize: 13,
-                          }}
-                        >
-                          <option value="1024px">Kompakt (1024px)</option>
-                          <option value="1200px">Standart (1200px)</option>
-                          <option value="1320px">Geniş (1320px)</option>
-                          <option value="100%">Tam Ekran (100%)</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* TAB 3: COMPONENTS */}
-              {activePanelTab === 'components' && (
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  {/* Buttons */}
-                  <div style={{ marginBottom: 24 }}>
-                    <h4
-                      style={{
-                        fontSize: 12,
-                        fontWeight: 700,
-                        color: '#8A8F9E',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.08em',
-                        marginBottom: 12,
-                        margin: 0,
-                      }}
-                    >
-                      DÜYMƏLƏR (BUTTONS)
-                    </h4>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 12 }}>
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6 }}>
-                        {(['solid', 'outline', 'ghost', 'soft', 'pill'] as const).map((style) => (
-                          <button
-                            key={style}
-                            type="button"
-                            onClick={() => updateComponentToken('button', 'style', style)}
-                            style={{
-                              padding: '8px 10px',
-                              borderRadius: 6,
-                              border: tokens.components.button.style === style ? '1px solid #00D37D' : '1px solid #20242E',
-                              background: tokens.components.button.style === style ? 'rgba(0,211,125,0.12)' : '#12141A',
-                              color: tokens.components.button.style === style ? '#00D37D' : '#8A8F9E',
-                              fontSize: 11,
-                              fontWeight: 600,
-                              cursor: 'pointer',
-                              textTransform: 'capitalize',
-                            }}
-                          >
-                            {style}
-                          </button>
-                        ))}
-                      </div>
-
-                      <div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4, fontSize: 12 }}>
-                          <span style={{ color: '#8A8F9E' }}>Düymə Küncləri</span>
-                          <span style={{ color: '#00D37D', fontWeight: 600 }}>{tokens.components.button.radius}</span>
-                        </div>
-                        <input
-                          type="range"
-                          min={0}
-                          max={24}
-                          value={parseInt(tokens.components.button.radius, 10) || 8}
-                          onChange={(e) => updateComponentToken('button', 'radius', `${e.target.value}px`)}
-                          style={{ width: '100%', accentColor: '#00D37D' }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Cards */}
-                  <div style={{ marginBottom: 24 }}>
-                    <h4
-                      style={{
-                        fontSize: 12,
-                        fontWeight: 700,
-                        color: '#8A8F9E',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.08em',
-                        marginBottom: 12,
-                        margin: 0,
-                      }}
-                    >
-                      KARTLAR (CARDS)
-                    </h4>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6, marginTop: 12 }}>
-                      {(['elevated', 'flat', 'bordered'] as const).map((style) => (
-                        <button
-                          key={style}
-                          type="button"
-                          onClick={() => updateComponentToken('card', 'style', style)}
-                          style={{
-                            padding: '8px 10px',
-                            borderRadius: 6,
-                            border: tokens.components.card.style === style ? '1px solid #00D37D' : '1px solid #20242E',
-                            background: tokens.components.card.style === style ? 'rgba(0,211,125,0.12)' : '#12141A',
-                            color: tokens.components.card.style === style ? '#00D37D' : '#8A8F9E',
-                            fontSize: 11,
-                            fontWeight: 600,
-                            cursor: 'pointer',
-                            textTransform: 'capitalize',
-                          }}
-                        >
-                          {style}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* TAB 4: SECTIONS */}
-              {activePanelTab === 'sections' && (
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                    <h4
-                      style={{
-                        fontSize: 12,
-                        fontWeight: 700,
-                        color: '#8A8F9E',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.08em',
-                        margin: 0,
-                      }}
-                    >
-                      BÖLMƏLƏR SİYAHISI ({nodes.length})
-                    </h4>
                     <button
                       type="button"
-                      onClick={() => setShowAddSectionModal(true)}
+                      onClick={() => handleLoadStarterTemplate(starter)}
                       style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: 4,
-                        padding: '4px 10px',
-                        borderRadius: 6,
+                        marginTop: 4,
+                        padding: '8px 12px',
                         background: '#00D37D',
                         color: '#08090C',
                         border: 'none',
-                        fontSize: 11,
+                        borderRadius: 6,
+                        fontSize: 12,
                         fontWeight: 700,
                         cursor: 'pointer',
+                        boxShadow: '0 2px 8px rgba(0, 211, 125, 0.25)',
                       }}
                     >
-                      <Plus size={12} strokeWidth={3} />
-                      Bölmə Əlavə Et
+                      Şablonu Tətbiq Et
                     </button>
                   </div>
+                ))}
+              </div>
+            )}
 
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                    {nodes.map((node, index) => {
-                      const isSelected = selectedNodeId === node.id;
-                      return (
-                        <div
-                          key={node.id}
-                          onClick={() => onSelectNode(node.id)}
-                          style={{
-                            padding: '10px 12px',
-                            borderRadius: 8,
-                            background: isSelected ? 'rgba(0,211,125,0.1)' : '#12141A',
-                            border: isSelected ? '1px solid #00D37D' : '1px solid #20242E',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            cursor: 'pointer',
-                            transition: 'all 0.15s ease',
-                          }}
-                        >
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                            <span style={{ fontSize: 11, color: '#7E8494', width: 16 }}>{index + 1}.</span>
-                            <span style={{ fontSize: 13, fontWeight: 600, color: isSelected ? '#00D37D' : '#F5F5F7' }}>
-                              {node.type}
-                            </span>
-                          </div>
-
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }} onClick={(e) => e.stopPropagation()}>
-                            <button
-                              type="button"
-                              onClick={() => onMoveNode(node.id, 'up')}
-                              disabled={index === 0}
-                              style={{
-                                background: 'transparent',
-                                border: 'none',
-                                color: index === 0 ? '#333' : '#8A8F9E',
-                                padding: 4,
-                                cursor: index === 0 ? 'default' : 'pointer',
-                              }}
-                              title="Yuxarı daşı"
-                            >
-                              <ChevronUp size={14} />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => onMoveNode(node.id, 'down')}
-                              disabled={index === nodes.length - 1}
-                              style={{
-                                background: 'transparent',
-                                border: 'none',
-                                color: index === nodes.length - 1 ? '#333' : '#8A8F9E',
-                                padding: 4,
-                                cursor: index === nodes.length - 1 ? 'default' : 'pointer',
-                              }}
-                              title="Aşağı daşı"
-                            >
-                              <ChevronDown size={14} />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => onDuplicateNode(node.id)}
-                              style={{ background: 'transparent', border: 'none', color: '#8A8F9E', padding: 4, cursor: 'pointer' }}
-                              title="Təkrarlayın"
-                            >
-                              <Copy size={13} />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => onDeleteNode(node.id)}
-                              style={{ background: 'transparent', border: 'none', color: '#F87171', padding: 4, cursor: 'pointer' }}
-                              title="Sil"
-                            >
-                              <Trash2 size={13} />
-                            </button>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
+            {/* TAB: LAYOUT */}
+            {activeDockTab === 'layout' && (
+              <div
+                className="sitex-custom-scroll"
+                style={{ flex: 1, overflowY: 'auto', padding: '16px', display: 'flex', flexDirection: 'column', gap: 16 }}
+              >
+                <div>
+                  <h4 style={{ fontSize: 13, fontWeight: 700, color: '#F4F5F8', margin: '0 0 6px' }}>
+                    Konteyner Qaydaları
+                  </h4>
+                  <p style={{ fontSize: 11, color: '#7E8494', margin: '0 0 12px' }}>
+                    Saytınızın ümumi eni və bölmələr arasındakı boşluqları idarə edin.
+                  </p>
                 </div>
-              )}
-            </div>
+
+                <div>
+                  <label style={{ fontSize: 11, color: '#888D9E', display: 'block', marginBottom: 4 }}>
+                    Maksimum Səhifə Eni
+                  </label>
+                  <select
+                    value={tokens.layout.containerWidth || '1200px'}
+                    onChange={(e) => updateLayout('containerWidth', e.target.value)}
+                    style={{
+                      width: '100%',
+                      background: '#13151D',
+                      border: '1px solid #20242E',
+                      borderRadius: 8,
+                      padding: '8px 10px',
+                      color: '#F4F5F8',
+                      fontSize: 12,
+                      outline: 'none',
+                    }}
+                  >
+                    <option value="1024px">1024px (Kompakt)</option>
+                    <option value="1200px">1200px (Standart)</option>
+                    <option value="1360px">1360px (Geniş)</option>
+                    <option value="100%">100% (Tam Ekran)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label style={{ fontSize: 11, color: '#888D9E', display: 'block', marginBottom: 4 }}>
+                    Bölmə Daxili Boşluğu (Spacing)
+                  </label>
+                  <select
+                    value={tokens.layout.spacing || '48px'}
+                    onChange={(e) => updateLayout('spacing', e.target.value)}
+                    style={{
+                      width: '100%',
+                      background: '#13151D',
+                      border: '1px solid #20242E',
+                      borderRadius: 8,
+                      padding: '8px 10px',
+                      color: '#F4F5F8',
+                      fontSize: 12,
+                      outline: 'none',
+                    }}
+                  >
+                    <option value="32px">32px (Sıx)</option>
+                    <option value="48px">48px (Orta)</option>
+                    <option value="64px">64px (Geniş)</option>
+                    <option value="96px">96px (Dəbdəbəli)</option>
+                  </select>
+                </div>
+              </div>
+            )}
 
             {/* Resize Drag Handle */}
             <div
@@ -1234,73 +1335,40 @@ export function VisualThemeBuilder({
               }}
             />
           </aside>
-        ) : (
-          /* Collapsed Indicator Button */
-          <div
-            style={{
-              width: 38,
-              borderRight: '1px solid #1E222B',
-              background: '#0D0F14',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              paddingTop: 12,
-              zIndex: 10,
-              flexShrink: 0,
-            }}
-          >
-            <button
-              type="button"
-              onClick={() => setIsCollapsed(false)}
-              title="Paneli genişləndir (Kısayol: [ )"
-              style={{
-                background: '#14171E',
-                border: '1px solid #242936',
-                borderRadius: 6,
-                color: '#00D37D',
-                padding: 6,
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <PanelLeftOpen size={16} />
-            </button>
-          </div>
         )}
 
-        {/* ORTA: Canvas və Cihaz Toolbar-ı */}
+        {/* 3. CENTER: CANVAS & TOOLBAR */}
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', minWidth: 0 }}>
-          {/* 48px Cihaz Seçici & Toolbar */}
+          {/* Canvas Sub-Header Toolbar (46px) */}
           <div
             style={{
-              height: 48,
-              minHeight: 48,
-              maxHeight: 48,
-              background: '#0C0E12',
-              borderBottom: '1px solid #1E222B',
+              height: 46,
+              minHeight: 46,
+              maxHeight: 46,
+              background: '#0B0D12',
+              borderBottom: '1px solid #1C202A',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
               padding: '0 16px',
               userSelect: 'none',
               boxSizing: 'border-box',
+              zIndex: 10,
             }}
           >
-            {/* Tez Məlumat Sol */}
+            {/* Left: Section Count & Insertion Indicator */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: '#8A8F9E' }}>
-              <span style={{ fontWeight: 600, color: '#E2E5EE' }}>İnteraktiv Kətan</span>
+              <span style={{ fontWeight: 600, color: '#E2E5EE' }}>Studio Kətanı</span>
               <span style={{ color: '#2B313E' }}>•</span>
               <span style={{ color: '#00D37D', fontWeight: 600 }}>{nodes.length} Bölmə</span>
             </div>
 
-            {/* Mərkəzləşdirilmiş Cihaz Seçici (Segmented 36px) */}
+            {/* Center: Device Viewport Switcher */}
             <div
               style={{
                 display: 'inline-flex',
-                background: '#12141A',
-                padding: 2,
+                background: '#13151D',
+                padding: 3,
                 borderRadius: 8,
                 border: '1px solid #20242E',
                 gap: 2,
@@ -1313,19 +1381,19 @@ export function VisualThemeBuilder({
                   display: 'flex',
                   alignItems: 'center',
                   gap: 6,
-                  padding: '5px 12px',
+                  padding: '4px 10px',
                   borderRadius: 6,
                   border: 'none',
-                  background: device === 'desktop' ? '#1A1E27' : 'transparent',
+                  background: device === 'desktop' ? '#1E2330' : 'transparent',
                   color: device === 'desktop' ? '#00D37D' : '#8A8F9E',
-                  fontSize: 12,
+                  fontSize: 11,
                   fontWeight: device === 'desktop' ? 700 : 500,
                   cursor: 'pointer',
                   transition: 'all 0.15s ease',
                 }}
               >
-                <Monitor size={14} />
-                <span>Masaüstü (100%)</span>
+                <Monitor size={13} />
+                <span>Masaüstü</span>
               </button>
               <button
                 type="button"
@@ -1334,18 +1402,18 @@ export function VisualThemeBuilder({
                   display: 'flex',
                   alignItems: 'center',
                   gap: 6,
-                  padding: '5px 12px',
+                  padding: '4px 10px',
                   borderRadius: 6,
                   border: 'none',
-                  background: device === 'tablet' ? '#1A1E27' : 'transparent',
+                  background: device === 'tablet' ? '#1E2330' : 'transparent',
                   color: device === 'tablet' ? '#00D37D' : '#8A8F9E',
-                  fontSize: 12,
+                  fontSize: 11,
                   fontWeight: device === 'tablet' ? 700 : 500,
                   cursor: 'pointer',
                   transition: 'all 0.15s ease',
                 }}
               >
-                <Tablet size={14} />
+                <Tablet size={13} />
                 <span>Planşet (768px)</span>
               </button>
               <button
@@ -1355,165 +1423,120 @@ export function VisualThemeBuilder({
                   display: 'flex',
                   alignItems: 'center',
                   gap: 6,
-                  padding: '5px 12px',
+                  padding: '4px 10px',
                   borderRadius: 6,
                   border: 'none',
-                  background: device === 'mobile' ? '#1A1E27' : 'transparent',
+                  background: device === 'mobile' ? '#1E2330' : 'transparent',
                   color: device === 'mobile' ? '#00D37D' : '#8A8F9E',
-                  fontSize: 12,
+                  fontSize: 11,
                   fontWeight: device === 'mobile' ? 700 : 500,
                   cursor: 'pointer',
                   transition: 'all 0.15s ease',
                 }}
               >
-                <Smartphone size={14} />
-                <span>Mobil (375px)</span>
+                <Smartphone size={13} />
+                <span>Mobil (390px)</span>
               </button>
             </div>
 
-            {/* Bölmə Əlavə Et Düyməsi */}
-            <button
-              type="button"
-              onClick={() => setShowAddSectionModal(true)}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 6,
-                padding: '6px 14px',
-                borderRadius: 8,
-                background: '#00D37D',
-                color: '#08090C',
-                border: 'none',
-                fontSize: 12,
-                fontWeight: 700,
-                cursor: 'pointer',
-                boxShadow: '0 2px 8px rgba(0,211,125,0.25)',
-              }}
-            >
-              <Plus size={14} strokeWidth={3} />
-              <span>Bölmə Əlavə Et</span>
-            </button>
+            {/* Right: Zoom & Quick Add */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  background: '#13151D',
+                  borderRadius: 6,
+                  border: '1px solid #20242E',
+                  padding: '2px 4px',
+                }}
+              >
+                <button
+                  type="button"
+                  onClick={() => setZoomLevel((z) => Math.max(0.5, z - 0.1))}
+                  style={{ background: 'none', border: 'none', color: '#888', cursor: 'pointer', padding: 3 }}
+                  title="Kiçilt"
+                >
+                  <ZoomOut size={12} />
+                </button>
+                <span style={{ fontSize: 10, color: '#A0A7B8', minWidth: 34, textAlign: 'center' }}>
+                  {Math.round(zoomLevel * 100)}%
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setZoomLevel((z) => Math.min(1.5, z + 0.1))}
+                  style={{ background: 'none', border: 'none', color: '#888', cursor: 'pointer', padding: 3 }}
+                  title="Böyüt"
+                >
+                  <ZoomIn size={12} />
+                </button>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveDockTab('add');
+                  setIsCollapsed(false);
+                }}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 5,
+                  padding: '5px 12px',
+                  borderRadius: 6,
+                  background: '#00D37D',
+                  color: '#08090C',
+                  border: 'none',
+                  fontSize: 11,
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  boxShadow: '0 2px 8px rgba(0, 211, 125, 0.25)',
+                }}
+              >
+                <Plus size={13} strokeWidth={3} />
+                <span>Bölmə Əlavə Et</span>
+              </button>
+            </div>
           </div>
 
-          {/* Kətan (Single Scroll & Dot Grid) */}
+          {/* Canvas Component */}
           <Canvas
             nodes={nodes}
             selectedNodeId={selectedNodeId}
             onSelectNode={onSelectNode}
             device={device}
             onDropComponent={onAddNode}
-            onOpenAddModal={() => setShowAddSectionModal(true)}
+            onOpenAddModal={() => {
+              setActiveDockTab('add');
+              setIsCollapsed(false);
+            }}
             tokens={tokens}
-            onDeleteNode={onDeleteNode}
-            onChangeNodeType={() => setShowAddSectionModal(true)}
-          />
-        </div>
-
-        {/* SAĞ PANEL: Seçilmiş Bölmə Xassələri (320px) */}
-        {selectedNode && (
-          <PropertiesPanel
-            selectedNode={selectedNode}
-            onUpdateProps={onUpdateNodeProps}
             onDeleteNode={onDeleteNode}
             onDuplicateNode={onDuplicateNode}
             onMoveNode={onMoveNode}
-            onClose={() => onSelectNode('')}
-          />
-        )}
-
-        {/* Bölmə Əlavə Et Modalı */}
-        {showAddSectionModal && (
-          <div
-            style={{
-              position: 'fixed',
-              inset: 0,
-              background: 'rgba(0,0,0,0.7)',
-              backdropFilter: 'blur(6px)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              zIndex: 1000,
+            onChangeNodeType={() => {
+              setActiveDockTab('add');
+              setIsCollapsed(false);
             }}
-            onClick={() => setShowAddSectionModal(false)}
-          >
-            <div
-              style={{
-                width: 560,
-                maxHeight: '80vh',
-                background: '#12141A',
-                borderRadius: 14,
-                border: '1px solid #242936',
-                padding: 24,
-                display: 'flex',
-                flexDirection: 'column',
-                boxShadow: '0 24px 60px rgba(0,0,0,0.7)',
-              }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                <h3 style={{ fontSize: 16, fontWeight: 700, color: '#F5F5F7', margin: 0 }}>
-                  Yeni Bölmə Əlavə Et
-                </h3>
-                <button
-                  type="button"
-                  onClick={() => setShowAddSectionModal(false)}
-                  style={{ background: 'transparent', border: 'none', color: '#8A8F9E', fontSize: 18, cursor: 'pointer' }}
-                >
-                  ✕
-                </button>
-              </div>
+            onInsertAtIndex={(index) => {
+              setInsertTargetIndex(index);
+              setActiveDockTab('add');
+              setIsCollapsed(false);
+            }}
+            zoom={zoomLevel}
+          />
+        </div>
 
-              <div
-                className="sitex-custom-scroll"
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(2, 1fr)',
-                  gap: 10,
-                  overflowY: 'auto',
-                  paddingRight: 4,
-                  maxHeight: '60vh',
-                }}
-              >
-                {listComponents().map((comp) => (
-                  <button
-                    key={comp.type}
-                    type="button"
-                    onClick={() => {
-                      onAddNode(comp.type);
-                      setShowAddSectionModal(false);
-                    }}
-                    style={{
-                      padding: '12px 14px',
-                      borderRadius: 10,
-                      background: '#181B22',
-                      border: '1px solid #242936',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'flex-start',
-                      gap: 4,
-                      cursor: 'pointer',
-                      textAlign: 'left',
-                      transition: 'all 0.15s ease',
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.borderColor = '#00D37D';
-                      e.currentTarget.style.background = '#1E232E';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.borderColor = '#242936';
-                      e.currentTarget.style.background = '#181B22';
-                    }}
-                  >
-                    <span style={{ fontSize: 13, fontWeight: 700, color: '#FFFFFF' }}>{comp.label}</span>
-                    <span style={{ fontSize: 11, color: '#8A8F9E', textTransform: 'capitalize' }}>
-                      Növ: <code>{comp.type}</code>
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
+        {/* 4. RIGHT PROPERTIES PANEL */}
+        <PropertiesPanel
+          selectedNode={selectedNode}
+          onUpdateProps={onUpdateNodeProps}
+          onDeleteNode={onDeleteNode}
+          onDuplicateNode={onDuplicateNode}
+          onMoveNode={onMoveNode}
+          onClose={() => onSelectNode(null)}
+          totalNodesCount={nodes.length}
+        />
       </div>
     </>
   );

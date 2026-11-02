@@ -10,11 +10,15 @@ interface CanvasProps {
   selectedNodeId: string | null;
   onSelectNode: (id: string) => void;
   device: DeviceMode;
-  onDropComponent: (type: string) => void;
+  onDropComponent: (type: string, index?: number) => void;
   onOpenAddModal?: () => void;
   tokens?: GlobalDesignTokens;
   onDeleteNode?: (id: string) => void;
+  onDuplicateNode?: (id: string) => void;
+  onMoveNode?: (id: string, direction: 'up' | 'down') => void;
   onChangeNodeType?: (id: string) => void;
+  onInsertAtIndex?: (index: number) => void;
+  zoom?: number;
 }
 
 export function Canvas({
@@ -26,12 +30,16 @@ export function Canvas({
   onOpenAddModal,
   tokens,
   onDeleteNode,
+  onDuplicateNode,
+  onMoveNode,
   onChangeNodeType,
+  onInsertAtIndex,
+  zoom = 1,
 }: CanvasProps) {
   const getDeviceWidth = () => {
     switch (device) {
       case 'mobile':
-        return 375;
+        return 390;
       case 'tablet':
         return 768;
       case 'desktop':
@@ -46,14 +54,14 @@ export function Canvas({
         flex: 1,
         backgroundImage:
           'radial-gradient(circle, rgba(255, 255, 255, 0.08) 1px, transparent 1px)',
-        backgroundSize: '20px 20px',
+        backgroundSize: '24px 24px',
         backgroundColor: '#090A0D',
         overflowY: 'auto',
         overflowX: 'hidden',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        padding: device === 'desktop' ? '0' : '32px 16px',
+        padding: device === 'desktop' ? '0' : '40px 24px',
         position: 'relative',
         boxSizing: 'border-box',
         height: '100%',
@@ -74,18 +82,21 @@ export function Canvas({
       <div
         style={{
           width: getDeviceWidth(),
-          minHeight: device === 'desktop' ? '100%' : '80vh',
+          maxWidth: '100%',
+          minHeight: device === 'desktop' ? '100%' : '84vh',
           background: tokens?.colors?.background || '#0F1115',
           color: tokens?.colors?.text || '#F5F5F7',
           boxShadow:
             device === 'desktop'
               ? 'none'
-              : '0 24px 64px rgba(0,0,0,0.85), 0 0 0 1px rgba(255,255,255,0.08)',
-          borderRadius: device === 'desktop' ? 0 : 20,
+              : '0 24px 70px rgba(0,0,0,0.85), 0 0 0 1px rgba(255,255,255,0.08)',
+          borderRadius: device === 'desktop' ? 0 : 24,
           overflow: 'hidden',
-          transition: 'width 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-          border: device === 'desktop' ? 'none' : '8px solid #1C202A',
+          transition: 'width 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+          border: device === 'desktop' ? 'none' : '10px solid #1C202B',
           boxSizing: 'border-box',
+          transform: zoom !== 1 ? `scale(${zoom})` : 'none',
+          transformOrigin: 'top center',
         }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -97,8 +108,11 @@ export function Canvas({
           interactive={true}
           tokens={tokens}
           onDeleteNode={onDeleteNode}
+          onDuplicateNode={onDuplicateNode}
+          onMoveNode={onMoveNode}
           onChangeNodeType={onChangeNodeType}
           onOpenAddModal={onOpenAddModal}
+          onInsertAtIndex={onInsertAtIndex}
         />
       </div>
     </div>
