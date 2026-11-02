@@ -70,7 +70,7 @@ export default function MenuPage() {
       if (orgData) {
         if (!isFoodCategory(orgData.siteCategory, orgData.siteSubcategory)) {
           setIsAllowed(false);
-          router.replace('/dashboard');
+          router.replace('/dashboard/services');
           return;
         }
         if (orgData.currency) setCurrency(orgData.currency);

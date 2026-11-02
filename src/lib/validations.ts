@@ -20,6 +20,8 @@ export const organizationSchema = z.object({
   address: z.string().nullable().optional(),
   city: z.string().nullable().optional(),
   mapUrl: z.string().nullable().optional(),
+  siteCategory: z.string().max(80).nullable().optional(),
+  siteSubcategory: z.string().max(80).nullable().optional(),
 });
 
 // Sayt yaratma sorğusu: sayt növü və şablon seçimi əlavə olunur.

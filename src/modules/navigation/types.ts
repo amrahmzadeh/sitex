@@ -5,6 +5,13 @@ export interface SiteContext {
   category?: string | null;
   subcategory?: string | null;
   isPublished?: boolean;
+  productsEnabled?: boolean;
+  hasProducts?: boolean;
+  website?: {
+    pagesConfig?: any;
+    draftTheme?: any;
+    [key: string]: any;
+  } | null;
 }
 
 export interface NavItemConfig {

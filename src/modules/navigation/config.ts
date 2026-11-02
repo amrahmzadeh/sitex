@@ -5,6 +5,8 @@ import {
   Share2,
   Sparkles,
   UtensilsCrossed,
+  Briefcase,
+  Package,
   Image,
   MessageCircle,
   QrCode,
@@ -13,7 +15,7 @@ import {
   Download,
   Settings,
 } from 'lucide-react';
-import { NavItemConfig } from './types';
+import { NavItemConfig, SiteContext } from './types';
 
 export const isFoodCategory = (category?: string | null, subcategory?: string | null): boolean => {
   if (!category && !subcategory) return true;
@@ -27,6 +29,70 @@ export const isFoodCategory = (category?: string | null, subcategory?: string | 
     sub.includes('kafe') ||
     sub.includes('qida')
   );
+};
+
+export const isEnterpriseServiceCategory = (
+  category?: string | null,
+  subcategory?: string | null
+): boolean => {
+  if (!category && !subcategory) return false;
+  const cat = (category || '').toLowerCase();
+  const sub = (subcategory || '').toLowerCase();
+
+  // "Müəssisə Saytı" kateqoriyası
+  if (cat === 'muessise-sayti') {
+    // Restoran və kafe qida kateqoriyasıdır (menyu bölməsini istifadə edir)
+    return !isFoodCategory(cat, sub);
+  }
+
+  const explicitSubcategories = [
+    'klinika-ve-tibb-merkezi',
+    'gozellik-salonu',
+    'tikinti-sirketi',
+    'avtomobil-servisi',
+  ];
+
+  if (explicitSubcategories.some((s) => sub === s || sub.includes(s))) {
+    return !isFoodCategory(cat, sub);
+  }
+
+  return false;
+};
+
+export const isProductsActive = (site: SiteContext | null): boolean => {
+  if (!site) return false;
+  if (site.productsEnabled === true || site.hasProducts === true) return true;
+
+  const draftTheme = site.website?.draftTheme as any;
+  if (
+    draftTheme?.productsEnabled === true ||
+    draftTheme?.hasProducts === true ||
+    draftTheme?.enableProducts === true
+  ) {
+    return true;
+  }
+
+  const pagesConfig = site.website?.pagesConfig;
+  if (Array.isArray(pagesConfig)) {
+    const hasProducts = pagesConfig.some(
+      (p: any) =>
+        (p?.id === 'products' || p?.id === 'mehsullar') && p?.enabled !== false
+    );
+    if (hasProducts) return true;
+  }
+
+  if (typeof window !== 'undefined') {
+    const id = site.id || localStorage.getItem('currentOrgId');
+    if (id) {
+      const stored =
+        localStorage.getItem(`site_${id}_products_enabled`) ||
+        localStorage.getItem(`products_enabled_${id}`);
+      if (stored === 'true') return true;
+      if (stored === 'false') return false;
+    }
+  }
+
+  return false;
 };
 
 export const dashboardNavItems: NavItemConfig[] = [
@@ -44,7 +110,35 @@ export const dashboardNavItems: NavItemConfig[] = [
     isVisible: (site) => {
       if (!site) return true;
       if (!site.category && !site.subcategory) return true;
+      if (isEnterpriseServiceCategory(site.category, site.subcategory)) {
+        return false;
+      }
       return isFoodCategory(site.category, site.subcategory);
+    },
+  },
+  {
+    id: 'services',
+    href: '/dashboard/services',
+    icon: Briefcase,
+    label: 'Xidmətlər',
+    isVisible: (site) => {
+      if (!site) return false;
+      return isEnterpriseServiceCategory(site.category, site.subcategory);
+    },
+  },
+  {
+    id: 'products',
+    href: '/dashboard/products',
+    icon: Package,
+    label: 'Məhsullar',
+    isVisible: (site) => {
+      if (!site) return false;
+      if (isFoodCategory(site.category, site.subcategory)) return false;
+      if (site.category === 'onlayn-magaza') return true;
+      if (isEnterpriseServiceCategory(site.category, site.subcategory)) {
+        return isProductsActive(site);
+      }
+      return false;
     },
   },
   { id: 'media', href: '/dashboard/media', icon: Image, label: 'Media Kitabxanası' },

@@ -124,6 +124,56 @@ test('Navigation: Menyu elementi yalnız restoran və kafe kateqoriyalarında g�
   assert.equal(isNavItemVisible(menuItem, { category: null, subcategory: null }), true);
 });
 
+test('Navigation: Müəssisə Saytı > Restoran və Kafe olduqda yalnız Menyu görünür, digərlərində Xidmətlər və aktiv edildikdə Məhsullar', () => {
+  const menuItem = dashboardNavItems.find((item) => item.id === 'menu');
+  const servicesItem = dashboardNavItems.find((item) => item.id === 'services');
+  const productsItem = dashboardNavItems.find((item) => item.id === 'products');
+
+  assert.ok(menuItem, 'Menyu nav item mövcuddur');
+  assert.ok(servicesItem, 'Xidmətlər nav item mövcuddur');
+  assert.ok(productsItem, 'Məhsullar nav item mövcuddur');
+
+  // 1. "Müəssisə Saytı" > "Restoran və Kafe": yalnız Menyu görünməlidir
+  const restaurantContext = {
+    category: 'muessise-sayti',
+    subcategory: 'restoran-ve-kafe',
+  };
+  assert.equal(isNavItemVisible(menuItem, restaurantContext), true, 'Restoran və Kafe üçün Menyu görünməlidir');
+  assert.equal(isNavItemVisible(servicesItem, restaurantContext), false, 'Restoran və Kafe üçün Xidmətlər görünməməlidir');
+  assert.equal(isNavItemVisible(productsItem, restaurantContext), false, 'Restoran və Kafe üçün Məhsullar görünməməlidir');
+
+  // Hətta productsEnabled: true olsa belə, Restoran və Kafe üçün Məhsullar görünməməlidir
+  assert.equal(isNavItemVisible(productsItem, { ...restaurantContext, productsEnabled: true }), false);
+
+  // 2. Digər Müəssisə Saytı subkateqoriyaları:
+  const enterpriseSubcategories = [
+    'klinika-ve-tibb-merkezi',
+    'gozellik-salonu',
+    'tikinti-sirketi',
+    'avtomobil-servisi',
+  ];
+
+  for (const subcategory of enterpriseSubcategories) {
+    const context = { category: 'muessise-sayti', subcategory };
+
+    // Menyu görünməməlidir
+    assert.equal(isNavItemVisible(menuItem, context), false, `${subcategory} üçün Menyu görünməməlidir`);
+
+    // Xidmətlər görünməlidir
+    assert.equal(isNavItemVisible(servicesItem, context), true, `${subcategory} üçün Xidmətlər görünməlidir`);
+
+    // Məhsullar deaktiv olduqda görünməməlidir
+    assert.equal(isNavItemVisible(productsItem, context), false, `${subcategory} üçün deaktiv Məhsullar görünməməlidir`);
+
+    // Məhsullar aktiv edildikdə görünməlidir
+    assert.equal(
+      isNavItemVisible(productsItem, { ...context, productsEnabled: true }),
+      true,
+      `${subcategory} üçün aktiv Məhsullar görünməlidir`
+    );
+  }
+});
+
 test('Builder Component Registry: Bütün zəruri 14 komponent qeydiyyatdadır', () => {
   const requiredComponents = [
     'navbar',

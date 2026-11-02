@@ -21,7 +21,11 @@ interface Organization {
   logo?: string;
   siteCategory?: string | null;
   siteSubcategory?: string | null;
-  website?: { isPublished: boolean };
+  website?: {
+    isPublished: boolean;
+    pagesConfig?: any;
+    draftTheme?: any;
+  };
 }
 
 export default function DashboardShell({ children }: { children: React.ReactNode }) {
@@ -53,6 +57,28 @@ export default function DashboardShell({ children }: { children: React.ReactNode
       })
       .catch(() => {});
   }, [pathname]);
+
+  useEffect(() => {
+    const handleOrgUpdate = () => {
+      fetch('/api/organizations')
+        .then((r) => r.json())
+        .then((d) => {
+          if (d.organizations?.length) {
+            setOrgs(d.organizations);
+            const saved = typeof window !== 'undefined' ? localStorage.getItem('currentOrgId') : null;
+            const found = d.organizations.find((o: Organization) => o.id === saved);
+            setCurrentOrg(found || d.organizations[0]);
+          }
+        })
+        .catch(() => {});
+    };
+    window.addEventListener('org-updated', handleOrgUpdate);
+    window.addEventListener('storage', handleOrgUpdate);
+    return () => {
+      window.removeEventListener('org-updated', handleOrgUpdate);
+      window.removeEventListener('storage', handleOrgUpdate);
+    };
+  }, []);
 
   const switchOrg = (org: Organization) => {
     setCurrentOrg(org);
@@ -116,7 +142,12 @@ export default function DashboardShell({ children }: { children: React.ReactNode
 
       {/* Nav */}
       <nav style={{ flex: 1, padding: '12px 12px', overflowY: 'auto' }}>
-        {dashboardNavItems.filter((item) => isNavItemVisible(item, currentOrg ? { category: currentOrg.siteCategory, subcategory: currentOrg.siteSubcategory } : null)).map(({ href, icon: Icon, label }) => {
+        {dashboardNavItems.filter((item) => isNavItemVisible(item, currentOrg ? {
+          id: currentOrg.id,
+          category: currentOrg.siteCategory,
+          subcategory: currentOrg.siteSubcategory,
+          website: currentOrg.website,
+        } : null)).map(({ href, icon: Icon, label }) => {
           const active = isActive(href);
           return (
             <Link
