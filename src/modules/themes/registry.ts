@@ -3,6 +3,7 @@ import { elegantTheme } from './builtin/elegant';
 import { modernTheme } from './builtin/modern';
 import { classicTheme } from './builtin/classic';
 import { warmGourmetProTheme } from './builtin/warm-gourmet';
+import { bySalmanovTheme } from './builtin/by-salmanov';
 
 class ThemeRegistry {
   private themes = new Map<string, ThemeDefinition>();
@@ -12,6 +13,7 @@ class ThemeRegistry {
     this.registerTheme(modernTheme);
     this.registerTheme(classicTheme);
     this.registerTheme(warmGourmetProTheme);
+    this.registerTheme(bySalmanovTheme);
   }
 
   public registerTheme(theme: ThemeDefinition): void {

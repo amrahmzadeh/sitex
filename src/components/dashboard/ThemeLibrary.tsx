@@ -351,7 +351,10 @@ export default function ThemeLibrary({
   // Aktiv temanın müəyyənləşdirilməsi
   const isThemeActive = (themeItem: ThemeConfig) => {
     if (activeTheme.id === themeItem.id) return true;
-    if (activeTheme.isProTemplate && themeItem.isProTemplate) return true;
+    if (activeTheme.isProTemplate && themeItem.isProTemplate) {
+      if (activeTheme.id && themeItem.id && activeTheme.id === themeItem.id) return true;
+      return activeTheme.primaryColor === themeItem.primaryColor && activeTheme.brandFont === themeItem.brandFont;
+    }
     if (
       !activeTheme.isProTemplate &&
       !themeItem.isProTemplate &&
