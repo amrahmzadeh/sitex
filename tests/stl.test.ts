@@ -7,6 +7,7 @@ import {
   stringifySTL,
   themeConfigToSTL,
   convertSTLToThemeDefinition,
+  convertSTLToThemeConfig,
 } from '../src/modules/stl';
 
 const sampleSTL = `
@@ -124,4 +125,41 @@ test('STL ThemeConfig dönüşümü və ThemeDefinition inteqrasiyası', () => {
   assert.equal(themeDef.tokens.colors.primary, '#FF6B35');
   assert.equal(themeDef.source, 'custom');
 });
+
+test('STL Bi-directional Roundtrip: ThemeConfig -> STL -> AST -> ThemeConfig', () => {
+  const original = {
+    id: 'luxe-theme',
+    name: 'Luxe Premium Theme',
+    primaryColor: '#00D37D',
+    secondaryColor: '#1A1A2E',
+    accentColor: '#D4A574',
+    backgroundColor: '#0F1117',
+    textColor: '#FFFFFF',
+    headingFont: 'Playfair Display',
+    bodyFont: 'Inter',
+    borderRadius: '16px',
+    buttonStyle: 'outline' as const,
+    cardStyle: 'bordered' as const,
+    headerStyle: 'glass' as const,
+    footerStyle: 'dark' as const,
+  };
+
+  const stlText = themeConfigToSTL(original);
+  assert.ok(stlText.includes('theme "luxe-theme"'));
+  assert.ok(stlText.includes('#00D37D'));
+  assert.ok(stlText.includes('Playfair Display'));
+
+  const { ast, errors } = parseSTL(stlText);
+  assert.equal(errors.length, 0);
+  assert.ok(ast);
+
+  const parsedConfig = convertSTLToThemeConfig(ast);
+  assert.equal(parsedConfig.name, 'Luxe Premium Theme');
+  assert.equal(parsedConfig.primaryColor, '#00D37D');
+  assert.equal(parsedConfig.headingFont, 'Playfair Display');
+  assert.equal(parsedConfig.borderRadius, '16px');
+  assert.equal(parsedConfig.buttonStyle, 'outline');
+  assert.equal(parsedConfig.cardStyle, 'bordered');
+});
+
 

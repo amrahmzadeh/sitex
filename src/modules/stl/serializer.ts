@@ -159,6 +159,71 @@ export function stringifySTL(theme: STLThemeNode): string {
 }
 
 export function themeConfigToSTL(config: Partial<ThemeConfig>, id = 'SiteXTheme'): string {
+  const colorsObj: Record<string, string> = {
+    primary: config.primaryColor || '#00D37D',
+    secondary: config.secondaryColor || '#1A1A2E',
+    accent: config.accentColor || '#D4A574',
+    background: config.backgroundColor || '#FFFFFF',
+    surface: '#F8FAFC',
+    text: config.textColor || '#111315',
+  };
+
+  if (config.whatsappColor) colorsObj.whatsapp = config.whatsappColor;
+  if (config.whatsappIconColor) colorsObj.whatsappIcon = config.whatsappIconColor;
+  if (config.navbarBgColor) colorsObj.navbarBg = config.navbarBgColor;
+  if (config.siteBgColor) colorsObj.siteBg = config.siteBgColor;
+  if (config.footerBgColor) colorsObj.footerBg = config.footerBgColor;
+  if (config.formBgColor) colorsObj.formBg = config.formBgColor;
+  if (config.navbarGradientFrom) colorsObj.navbarGradientFrom = config.navbarGradientFrom;
+  if (config.navbarGradientTo) colorsObj.navbarGradientTo = config.navbarGradientTo;
+  if (config.siteGradientFrom) colorsObj.siteGradientFrom = config.siteGradientFrom;
+  if (config.siteGradientTo) colorsObj.siteGradientTo = config.siteGradientTo;
+  if (config.footerGradientFrom) colorsObj.footerGradientFrom = config.footerGradientFrom;
+  if (config.footerGradientTo) colorsObj.footerGradientTo = config.footerGradientTo;
+
+  const typoObj: Record<string, string> = {
+    heading: config.headingFont || 'Outfit',
+    body: config.bodyFont || 'Inter',
+    baseSize: '16px',
+  };
+  if (config.brandFont) typoObj.brandFont = config.brandFont;
+
+  const layoutObj: Record<string, string> = {
+    containerWidth: '1200px',
+    borderRadius: config.borderRadius || '12px',
+    spacing: '16px',
+    heroHeight: config.heroHeight || '85vh',
+  };
+  if (config.heroOverlay !== undefined) layoutObj.heroOverlay = String(config.heroOverlay);
+  if (config.headerStyle) layoutObj.headerStyle = config.headerStyle;
+  if (config.footerStyle) layoutObj.footerStyle = config.footerStyle;
+  if (config.buttonStyle) layoutObj.buttonStyle = config.buttonStyle;
+  if (config.cardStyle) layoutObj.cardStyle = config.cardStyle;
+  if (config.navbarBgType) layoutObj.navbarBgType = config.navbarBgType;
+  if (config.siteBgType) layoutObj.siteBgType = config.siteBgType;
+  if (config.footerBgType) layoutObj.footerBgType = config.footerBgType;
+  if (config.formBgType) layoutObj.formBgType = config.formBgType;
+
+  const componentsObj: Record<string, Record<string, string>> = {
+    button: {
+      background: 'colors.primary',
+      color: '#FFFFFF',
+      radius: '8px',
+      style: config.buttonStyle || 'solid',
+    },
+    card: {
+      background: 'colors.surface',
+      radius: config.borderRadius || '12px',
+      style: config.cardStyle || 'elevated',
+    },
+    header: {
+      style: config.headerStyle || 'transparent',
+    },
+    footer: {
+      style: config.footerStyle || 'dark',
+    },
+  };
+
   const stlNode: STLThemeNode = {
     type: 'Theme',
     id: config.id || id,
@@ -168,37 +233,10 @@ export function themeConfigToSTL(config: Partial<ThemeConfig>, id = 'SiteXTheme'
       author: 'SiteX User',
       description: config.description || 'SiteX ilə hazırlanmış peşəkar tema',
     },
-    colors: {
-      primary: config.primaryColor || '#00D37D',
-      secondary: config.secondaryColor || '#1A1A2E',
-      accent: config.accentColor || '#D4A574',
-      background: config.backgroundColor || '#FFFFFF',
-      surface: '#F8FAFC',
-      text: config.textColor || '#111315',
-    },
-    typography: {
-      heading: config.headingFont || 'Outfit',
-      body: config.bodyFont || 'Inter',
-      baseSize: '16px',
-    },
-    layout: {
-      containerWidth: '1200px',
-      borderRadius: config.borderRadius || '12px',
-      spacing: '16px',
-    },
-    components: {
-      button: {
-        background: 'colors.primary',
-        color: '#FFFFFF',
-        radius: '8px',
-        style: config.buttonStyle || 'solid',
-      },
-      card: {
-        background: 'colors.surface',
-        radius: config.borderRadius || '12px',
-        style: config.cardStyle || 'elevated',
-      },
-    },
+    colors: colorsObj,
+    typography: typoObj,
+    layout: layoutObj,
+    components: componentsObj,
     customBlocks: {},
     rawAst: [],
     loc: { line: 1, column: 1 },

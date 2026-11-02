@@ -2,10 +2,56 @@
 
 import { useEffect, useState, useMemo, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Loader2, Save, Globe, Eye, Check, Palette, MessageCircle, Layers, Monitor, Smartphone, Sparkles, Clock, Utensils, BookOpen, FileText, Share2, CheckCircle2, Sliders, ExternalLink, RotateCcw } from 'lucide-react';
+import {
+  Loader2,
+  Save,
+  Globe,
+  Eye,
+  Check,
+  Palette,
+  MessageCircle,
+  Layers,
+  Monitor,
+  Smartphone,
+  Tablet,
+  Sparkles,
+  Clock,
+  Utensils,
+  BookOpen,
+  FileText,
+  Share2,
+  CheckCircle2,
+  Sliders,
+  ExternalLink,
+  RotateCcw,
+  Code,
+  History,
+  Plus,
+  FolderPlus,
+  Download,
+  Upload,
+  Copy,
+  Settings as SettingsIcon,
+  Image as ImageIcon,
+} from 'lucide-react';
 import { defaultThemes, ThemeConfig, resolveBg, BRAND_FONTS } from '@/lib/themes';
 import RestaurantSite, { SiteData } from '@/components/themes/RestaurantSite';
 import ThemeLibrary from '@/components/dashboard/ThemeLibrary';
+import {
+  ThemeEditorTab,
+  ViewportMode,
+  ComponentTarget,
+  ThemeVersionRecord,
+  CustomThemeRecord,
+  STLCodeEditor,
+  VisualThemeBuilder,
+  LivePreviewEngine,
+  ThemeAssetsManager,
+  ThemeVersionHistory,
+  ThemeManagementModal,
+  ThemeSettingsPanel,
+} from '@/components/dashboard/theme-editor';
+import { themeConfigToSTL, convertSTLToThemeConfig, parseSTL, compileSTL } from '@/modules/stl';
 
 function useCurrentOrg() {
   const [orgId, setOrgId] = useState<string | null>(null);
@@ -303,7 +349,19 @@ function ImageUploadField({
 export default function ThemePage() {
   const orgId = useCurrentOrg();
   const [theme, setTheme] = useState<ThemeConfig>(defaultThemes.elegant);
-  const [activeTab, setActiveTab] = useState<'library' | 'customizer'>('library');
+  const [stlCode, setStlCode] = useState<string>(() => themeConfigToSTL(defaultThemes.elegant));
+  const [activeTab, setActiveTab] = useState<ThemeEditorTab | 'customizer'>('builder');
+  const [viewport, setViewport] = useState<ViewportMode>('desktop');
+  const [selectedComponent, setSelectedComponent] = useState<ComponentTarget>('all');
+  const [modalType, setModalType] = useState<'create' | 'duplicate' | 'rename' | 'import' | 'export' | null>(null);
+
+  // Undo / Redo history
+  const [history, setHistory] = useState<ThemeConfig[]>([defaultThemes.elegant]);
+  const [historyIdx, setHistoryIdx] = useState<number>(0);
+
+  // Versions history
+  const [versions, setVersions] = useState<ThemeVersionRecord[]>([]);
+
   const [previewTheme, setPreviewTheme] = useState<ThemeConfig | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [slug, setSlug] = useState('');
@@ -326,11 +384,15 @@ export default function ThemePage() {
           setOrgData(d.organization);
           if (d.organization.website?.draftTheme) {
             const dt = d.organization.website.draftTheme as Partial<ThemeConfig>;
-            setTheme({
+            const loadedTheme: ThemeConfig = {
               ...defaultThemes.elegant,
               ...dt,
               isProTemplate: Boolean(dt.isProTemplate),
-            });
+            };
+            setTheme(loadedTheme);
+            setStlCode(themeConfigToSTL(loadedTheme));
+            setHistory([loadedTheme]);
+            setHistoryIdx(0);
           }
           setSlug(d.organization.slug || '');
           setOrgLogo(d.organization.logo || '');
@@ -339,6 +401,87 @@ export default function ThemePage() {
       })
       .finally(() => setLoading(false));
   }, [orgId]);
+
+  // Load versions from localStorage
+  useEffect(() => {
+    if (!orgId) return;
+    const key = `sitex_theme_versions_${orgId}`;
+    const stored = localStorage.getItem(key);
+    if (stored) {
+      try {
+        setVersions(JSON.parse(stored));
+      } catch {
+        setVersions([]);
+      }
+    } else {
+      const initialVer: ThemeVersionRecord = {
+        id: 'ver_init_' + Date.now(),
+        version: '1.0',
+        title: 'İlkin Tema Versiyası',
+        timestamp: Date.now(),
+        author: 'SiteX Sistemi',
+        trigger: 'auto',
+        theme: defaultThemes.elegant,
+        stlCode: themeConfigToSTL(defaultThemes.elegant),
+      };
+      setVersions([initialVer]);
+      localStorage.setItem(key, JSON.stringify([initialVer]));
+    }
+  }, [orgId]);
+
+  const pushThemeChange = (newTheme: ThemeConfig) => {
+    const nextHist = history.slice(0, historyIdx + 1);
+    nextHist.push(newTheme);
+    if (nextHist.length > 50) nextHist.shift();
+    setHistory(nextHist);
+    setHistoryIdx(nextHist.length - 1);
+    setTheme(newTheme);
+    setStlCode(themeConfigToSTL(newTheme));
+  };
+
+  const handleUndo = () => {
+    if (historyIdx > 0) {
+      const prev = history[historyIdx - 1];
+      setHistoryIdx(historyIdx - 1);
+      setTheme(prev);
+      setStlCode(themeConfigToSTL(prev));
+    }
+  };
+
+  const handleRedo = () => {
+    if (historyIdx < history.length - 1) {
+      const next = history[historyIdx + 1];
+      setHistoryIdx(historyIdx + 1);
+      setTheme(next);
+      setStlCode(themeConfigToSTL(next));
+    }
+  };
+
+  const recordVersion = (
+    title: string,
+    note?: string,
+    trigger: ThemeVersionRecord['trigger'] = 'manual',
+    customTheme?: ThemeConfig
+  ) => {
+    const t = customTheme || theme;
+    const currentList = versions;
+    const newVer: ThemeVersionRecord = {
+      id: 'ver_' + Date.now(),
+      version: `${currentList.length + 1}.0`,
+      title,
+      note,
+      timestamp: Date.now(),
+      author: orgName || 'SiteX User',
+      trigger,
+      theme: t,
+      stlCode: themeConfigToSTL(t),
+    };
+    const updated = [newVer, ...currentList].slice(0, 30);
+    setVersions(updated);
+    if (orgId) {
+      localStorage.setItem(`sitex_theme_versions_${orgId}`, JSON.stringify(updated));
+    }
+  };
 
   const saveDraft = async () => {
     if (!orgId) return;
@@ -350,6 +493,7 @@ export default function ThemePage() {
         body: JSON.stringify({ theme }),
       });
       setSaved(true);
+      recordVersion('Qaralama Saxlandı', 'İstifadəçi tərəfindən saxlanıldı', 'manual');
       setTimeout(() => setSaved(false), 3000);
     } finally { setSaving(false); }
   };
@@ -361,6 +505,7 @@ export default function ThemePage() {
       await saveDraft();
       await fetch(`/api/organizations/${orgId}/publish`, { method: 'POST' });
       setPublished(true);
+      recordVersion('Saytda Yayınlandı', 'Canlı saytda aktiv edildi', 'publish');
       setTimeout(() => setPublished(false), 3000);
     } finally { setPublishing(false); }
   };
@@ -371,7 +516,7 @@ export default function ThemePage() {
       ...t,
       isProTemplate: Boolean(t.isProTemplate),
     };
-    setTheme(nextTheme);
+    pushThemeChange(nextTheme);
     setPreviewTheme(null);
 
     if (orgId) {
@@ -382,6 +527,7 @@ export default function ThemePage() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ theme: nextTheme }),
         });
+        recordVersion(`"${t.name}" Teması Tətbiq Edildi`, 'Kitabxanadan seçildi', 'manual', nextTheme);
         setToastMessage(`"${t.name}" teması uğurla tətbiq edildi!`);
         setTimeout(() => setToastMessage(null), 3500);
       } catch (err) {
@@ -390,6 +536,67 @@ export default function ThemePage() {
         setSaving(false);
       }
     }
+  };
+
+  const handleCreateTheme = (name: string, description: string, baseId?: string) => {
+    const base = (baseId && defaultThemes[baseId]) ? defaultThemes[baseId] : defaultThemes.modern;
+    const newId = 'custom-' + Date.now();
+    const created: ThemeConfig = {
+      ...base,
+      id: newId,
+      name,
+      description,
+    };
+    pushThemeChange(created);
+    recordVersion(`Yeni Tema: "${name}"`, description, 'manual', created);
+    setToastMessage(`"${name}" adlı yeni tema yaradıldı və tətbiq edildi!`);
+    setTimeout(() => setToastMessage(null), 3500);
+  };
+
+  const handleDuplicateTheme = (name: string) => {
+    const newId = 'copy-' + Date.now();
+    const duplicated: ThemeConfig = {
+      ...theme,
+      id: newId,
+      name,
+    };
+    pushThemeChange(duplicated);
+    recordVersion(`Kopya: "${name}"`, 'Əvvəlki temadan kopyalandı', 'manual', duplicated);
+    setToastMessage(`"${name}" nüsxəsi yaradıldı!`);
+    setTimeout(() => setToastMessage(null), 3500);
+  };
+
+  const handleRenameTheme = (newName: string) => {
+    const updated: ThemeConfig = {
+      ...theme,
+      name: newName,
+    };
+    pushThemeChange(updated);
+    setToastMessage(`Tema adı "${newName}" olaraq dəyişdirildi!`);
+    setTimeout(() => setToastMessage(null), 3500);
+  };
+
+  const handleImportTheme = (imported: ThemeConfig, importedStl?: string) => {
+    pushThemeChange(imported);
+    if (importedStl) setStlCode(importedStl);
+    recordVersion(`İdxal: "${imported.name || 'İdxal edilmiş tema'}"`, 'Fayldan daxil edildi', 'import', imported);
+    setToastMessage(`"${imported.name || 'Tema'}" uğurla idxal edildi!`);
+    setTimeout(() => setToastMessage(null), 3500);
+  };
+
+  const handleResetDefault = () => {
+    const resetTheme = defaultThemes.elegant;
+    pushThemeChange(resetTheme);
+    recordVersion('Standart Temaya Sıfırlama', 'İlkin parametrlərə qaytarıldı', 'manual', resetTheme);
+    setToastMessage('Tema standart ayarlara sıfırlandı!');
+    setTimeout(() => setToastMessage(null), 3500);
+  };
+
+  const handleRestoreVersion = (ver: ThemeVersionRecord) => {
+    pushThemeChange(ver.theme);
+    if (ver.stlCode) setStlCode(ver.stlCode);
+    setToastMessage(`v${ver.version} ("${ver.title}") uğurla bərpa edildi!`);
+    setTimeout(() => setToastMessage(null), 3500);
   };
 
   const effectiveTheme = previewTheme || theme;
@@ -535,16 +742,116 @@ export default function ThemePage() {
       <div style={{ marginBottom: 20, display: 'flex', flexDirection: 'column', gap: 14 }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
           <div>
-            <h1 style={{ fontSize: 22, fontWeight: 700, color: '#FFFFFF', margin: 0, display: 'flex', alignItems: 'center', gap: 10 }}>
-              <Palette size={24} color="#00D37D" />
-              Tema İdarəetmə Mərkəzi
-            </h1>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <h1 style={{ fontSize: 22, fontWeight: 700, color: '#FFFFFF', margin: 0, display: 'flex', alignItems: 'center', gap: 10 }}>
+                <Palette size={24} color="#00D37D" />
+                Tema Redaktoru
+              </h1>
+              <span
+                style={{
+                  fontSize: 12,
+                  padding: '3px 10px',
+                  borderRadius: 999,
+                  background: 'rgba(0,211,125,0.15)',
+                  color: '#00D37D',
+                  fontWeight: 600,
+                  border: '1px solid rgba(0,211,125,0.3)',
+                }}
+              >
+                {theme.name || 'SiteX Tema'}
+              </span>
+            </div>
             <p style={{ fontSize: 13, color: '#8888A0', margin: '4px 0 0' }}>
-              Saytınız üçün peşəkar dizayn temalarını seçin, canlı önizləyin və fərdiləşdirin.
+              Wix və Webflow səviyyəsində vizual redaktor, STL proqramlaşdırma dili və canlı önizləmə sistemi.
             </p>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          {/* Top Quick Actions */}
+          <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
+            <button
+              type="button"
+              onClick={() => setModalType('create')}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                padding: '7px 12px',
+                borderRadius: 8,
+                border: '1px solid #3A3A4E',
+                background: '#1F2230',
+                color: '#E0E2EC',
+                fontSize: 12,
+                fontWeight: 600,
+                cursor: 'pointer',
+              }}
+            >
+              <Plus size={13} color="#00D37D" />
+              Yeni Tema
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setModalType('duplicate')}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                padding: '7px 12px',
+                borderRadius: 8,
+                border: '1px solid #3A3A4E',
+                background: '#1F2230',
+                color: '#E0E2EC',
+                fontSize: 12,
+                fontWeight: 600,
+                cursor: 'pointer',
+              }}
+            >
+              <Copy size={13} color="#7C5CFC" />
+              Kopyala
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setModalType('import')}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                padding: '7px 12px',
+                borderRadius: 8,
+                border: '1px solid #3A3A4E',
+                background: '#1F2230',
+                color: '#E0E2EC',
+                fontSize: 12,
+                fontWeight: 600,
+                cursor: 'pointer',
+              }}
+            >
+              <Upload size={13} color="#38BDF8" />
+              İdxal Et
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setModalType('export')}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                padding: '7px 12px',
+                borderRadius: 8,
+                border: '1px solid #3A3A4E',
+                background: '#1F2230',
+                color: '#E0E2EC',
+                fontSize: 12,
+                fontWeight: 600,
+                cursor: 'pointer',
+              }}
+            >
+              <Download size={13} color="#F59E0B" />
+              İxrac Et
+            </button>
+
             {slug && (
               <a
                 href={`/site/${slug}`}
@@ -567,6 +874,7 @@ export default function ThemePage() {
                 Saytı aç
               </a>
             )}
+
             <button
               onClick={saveDraft}
               disabled={saving}
@@ -576,6 +884,7 @@ export default function ThemePage() {
               {saving ? <Loader2 size={13} style={{ animation: 'spin 1s linear infinite' }} /> : saved ? <Check size={13} color="#34D399" /> : <Save size={13} />}
               {saved ? 'Saxlandı' : 'Qaralama saxla'}
             </button>
+
             <button
               onClick={publish}
               disabled={publishing}
@@ -589,50 +898,44 @@ export default function ThemePage() {
         </div>
 
         {/* Tab Switcher */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, borderBottom: '1px solid #2A2A3A', paddingBottom: 10 }}>
-          <button
-            type="button"
-            onClick={() => setActiveTab('library')}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              padding: '8px 18px',
-              borderRadius: 8,
-              border: activeTab === 'library' ? '1px solid #00D37D' : '1px solid transparent',
-              background: activeTab === 'library' ? 'rgba(0, 211, 125, 0.12)' : 'transparent',
-              color: activeTab === 'library' ? '#00D37D' : '#8888A0',
-              fontWeight: activeTab === 'library' ? 700 : 500,
-              fontSize: 13,
-              cursor: 'pointer',
-              transition: 'all 0.15s',
-            }}
-          >
-            <Sparkles size={16} />
-            Tema Kitabxanası
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab('customizer')}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              padding: '8px 18px',
-              borderRadius: 8,
-              border: activeTab === 'customizer' ? '1px solid #7C5CFC' : '1px solid transparent',
-              background: activeTab === 'customizer' ? 'rgba(124, 92, 252, 0.15)' : 'transparent',
-              color: activeTab === 'customizer' ? '#C4B5FD' : '#8888A0',
-              fontWeight: activeTab === 'customizer' ? 700 : 500,
-              fontSize: 13,
-              cursor: 'pointer',
-              transition: 'all 0.15s',
-            }}
-          >
-            <Sliders size={16} />
-            Fərdiləşdirmə & Detallar
-          </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, borderBottom: '1px solid #2A2A3A', paddingBottom: 10, overflowX: 'auto' }}>
+          {[
+            { id: 'builder', label: 'Vizual Redaktor', icon: Palette, color: '#00D37D' },
+            { id: 'code', label: 'STL Kod Redaktoru', icon: Code, color: '#7C5CFC' },
+            { id: 'library', label: 'Tema Kitabxanası', icon: Sparkles, color: '#38BDF8' },
+            { id: 'assets', label: 'Aktivlər & Şəkillər', icon: ImageIcon, color: '#F59E0B' },
+            { id: 'versions', label: 'Versiya Tarixçəsi', icon: History, color: '#EC4899' },
+            { id: 'settings', label: 'Parametrlər', icon: SettingsIcon, color: '#94A3B8' },
+            { id: 'customizer', label: 'Qabaqcıl Detallar', icon: Sliders, color: '#C4B5FD' },
+          ].map((tabItem) => {
+            const Icon = tabItem.icon;
+            const isActive = activeTab === tabItem.id;
+            return (
+              <button
+                key={tabItem.id}
+                type="button"
+                onClick={() => setActiveTab(tabItem.id as any)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  padding: '8px 16px',
+                  borderRadius: 8,
+                  border: isActive ? `1px solid ${tabItem.color}` : '1px solid transparent',
+                  background: isActive ? `${tabItem.color}18` : 'transparent',
+                  color: isActive ? tabItem.color : '#8888A0',
+                  fontWeight: isActive ? 700 : 500,
+                  fontSize: 13,
+                  cursor: 'pointer',
+                  transition: 'all 0.15s',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                <Icon size={16} />
+                {tabItem.label}
+              </button>
+            );
+          })}
         </div>
 
         {/* Uğur Bildirişi Toast */}
@@ -658,28 +961,130 @@ export default function ThemePage() {
         )}
       </div>
 
-      <div
-        className="theme-workspace-grid"
-        style={{
-          display: 'grid',
-          gridTemplateColumns: activeTab === 'library' ? 'minmax(0, 1.4fr) minmax(360px, 460px)' : '340px 1fr',
-          gap: 24,
-          alignItems: 'start',
-          maxWidth: '100%',
-        }}
-      >
-      {/* Left Panel */}
-      {activeTab === 'library' ? (
-        <ThemeLibrary
-          activeTheme={theme}
-          previewTheme={previewTheme}
-          onPreview={(t) => setPreviewTheme(t)}
-          onApply={applyTheme}
-          onCancelPreview={() => setPreviewTheme(null)}
-          onSwitchToCustomizer={() => setActiveTab('customizer')}
-          isSaving={saving}
+      {/* Visual Builder Workspace */}
+      {activeTab === 'builder' && (
+        <div
+          className="theme-workspace-grid"
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'minmax(340px, 420px) 1fr',
+            gap: 20,
+            alignItems: 'start',
+            height: 'calc(100vh - 200px)',
+            minHeight: 700,
+          }}
+        >
+          <VisualThemeBuilder
+            theme={theme}
+            onChange={pushThemeChange}
+            onUndo={handleUndo}
+            onRedo={handleRedo}
+            canUndo={historyIdx > 0}
+            canRedo={historyIdx < history.length - 1}
+            selectedComponent={selectedComponent}
+            onSelectComponent={setSelectedComponent}
+          />
+          <LivePreviewEngine
+            theme={theme}
+            siteData={previewSiteData}
+            slug={slug}
+            viewport={viewport}
+            onViewportChange={setViewport}
+            selectedComponent={selectedComponent}
+            onSelectComponent={setSelectedComponent}
+          />
+        </div>
+      )}
+
+      {/* STL Code Editor Workspace */}
+      {activeTab === 'code' && (
+        <div
+          className="theme-workspace-grid"
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'minmax(480px, 1.2fr) minmax(360px, 1fr)',
+            gap: 20,
+            alignItems: 'start',
+            height: 'calc(100vh - 200px)',
+            minHeight: 700,
+          }}
+        >
+          <STLCodeEditor
+            initialCode={stlCode}
+            onCodeChange={setStlCode}
+            onCompileSuccess={(ast) => {
+              try {
+                const converted = convertSTLToThemeConfig(ast, theme);
+                setTheme(converted);
+              } catch {
+                // ignore
+              }
+            }}
+          />
+          <LivePreviewEngine
+            theme={theme}
+            siteData={previewSiteData}
+            slug={slug}
+            viewport={viewport}
+            onViewportChange={setViewport}
+            selectedComponent={selectedComponent}
+            onSelectComponent={setSelectedComponent}
+          />
+        </div>
+      )}
+
+      {/* Assets Manager Workspace */}
+      {activeTab === 'assets' && (
+        <ThemeAssetsManager
+          theme={theme}
+          orgId={orgId}
+          onChange={pushThemeChange}
         />
-      ) : (
+      )}
+
+      {/* Version History Workspace */}
+      {activeTab === 'versions' && (
+        <ThemeVersionHistory
+          versions={versions}
+          currentTheme={theme}
+          onRestore={handleRestoreVersion}
+          onCreateSnapshot={(title, note) => recordVersion(title, note, 'manual')}
+        />
+      )}
+
+      {/* Settings Workspace */}
+      {activeTab === 'settings' && (
+        <ThemeSettingsPanel
+          theme={theme}
+          onChange={pushThemeChange}
+          onResetDefault={handleResetDefault}
+        />
+      )}
+
+      {/* Library or Customizer Workspaces */}
+      {(activeTab === 'library' || activeTab === 'customizer') && (
+        <div
+          className="theme-workspace-grid"
+          style={{
+            display: 'grid',
+            gridTemplateColumns: activeTab === 'library' ? 'minmax(0, 1.4fr) minmax(360px, 460px)' : '340px 1fr',
+            gap: 24,
+            alignItems: 'start',
+            maxWidth: '100%',
+          }}
+        >
+        {/* Left Panel */}
+        {activeTab === 'library' ? (
+          <ThemeLibrary
+            activeTheme={theme}
+            previewTheme={previewTheme}
+            onPreview={(t) => setPreviewTheme(t)}
+            onApply={applyTheme}
+            onCancelPreview={() => setPreviewTheme(null)}
+            onSwitchToCustomizer={() => setActiveTab('builder')}
+            isSaving={saving}
+          />
+        ) : (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
         <div style={{ display: 'flex', gap: 10 }}>
           <button
@@ -2292,6 +2697,18 @@ export default function ThemePage() {
         </div>
       </div>
     </div>
+    )}
+
+    {/* Theme Management Modal */}
+    <ThemeManagementModal
+      type={modalType}
+      currentTheme={theme}
+      onClose={() => setModalType(null)}
+      onCreateTheme={handleCreateTheme}
+      onDuplicateTheme={handleDuplicateTheme}
+      onRenameTheme={handleRenameTheme}
+      onImportTheme={handleImportTheme}
+    />
     </>
   );
 }

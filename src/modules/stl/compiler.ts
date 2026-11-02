@@ -3,6 +3,7 @@ import { ThemeDefinition, ThemeTokens } from '../themes/types';
 import { getTheme } from '../themes/registry';
 import { validateSTLTheme } from './validator';
 import { STL_DIAGNOSTICS } from './diagnostics';
+import { ThemeConfig } from '@/lib/themes';
 import {
   lightenColor,
   darkenColor,
@@ -415,4 +416,72 @@ export function convertSTLToThemeDefinition(themeNode: STLThemeNode): ThemeDefin
     sections: [],
     createdAt: new Date().toISOString(),
   };
+}
+
+export function convertSTLToThemeConfig(
+  themeNode: STLThemeNode,
+  fallbackConfig?: Partial<ThemeConfig>
+): ThemeConfig {
+  const compiled = compileSTL(themeNode);
+  const colors = compiled.theme?.colors || {};
+  const typography = compiled.theme?.typography || {};
+  const layout = compiled.theme?.layout || {};
+  const components = compiled.theme?.components || {};
+
+  const base: ThemeConfig = {
+    id: themeNode.id.toLowerCase().replace(/[^a-z0-9_-]/g, '-'),
+    name: themeNode.meta.name || themeNode.id,
+    description: themeNode.meta.description || 'SiteX ilə hazırlanmış peşəkar tema',
+    templateId: fallbackConfig?.templateId || 'modern',
+    primaryColor: colors.primary || '#00D37D',
+    secondaryColor: colors.secondary || '#1A1A2E',
+    accentColor: colors.accent || '#D4A574',
+    backgroundColor: colors.background || '#FFFFFF',
+    textColor: colors.text || '#111315',
+    headingFont: typography.heading || 'Outfit',
+    bodyFont: typography.body || 'Inter',
+    brandFont: typography.brandFont || fallbackConfig?.brandFont,
+    borderRadius: layout.borderRadius || '12px',
+    heroHeight: layout.heroHeight || fallbackConfig?.heroHeight || '85vh',
+    heroOverlay: layout.heroOverlay ? parseFloat(layout.heroOverlay) : (fallbackConfig?.heroOverlay ?? 0.5),
+    buttonStyle: (components.button?.style as any) || (layout.buttonStyle as any) || fallbackConfig?.buttonStyle || 'solid',
+    cardStyle: (components.card?.style as any) || (layout.cardStyle as any) || fallbackConfig?.cardStyle || 'elevated',
+    headerStyle: (components.header?.style as any) || (layout.headerStyle as any) || fallbackConfig?.headerStyle || 'transparent',
+    footerStyle: (components.footer?.style as any) || (layout.footerStyle as any) || fallbackConfig?.footerStyle || 'dark',
+    navbarBgType: (layout.navbarBgType as any) || fallbackConfig?.navbarBgType || 'solid',
+    navbarBgColor: colors.navbarBg || layout.navbarBgColor || fallbackConfig?.navbarBgColor || colors.secondary || '#1A1A2E',
+    navbarGradientFrom: colors.navbarGradientFrom || layout.navbarGradientFrom || fallbackConfig?.navbarGradientFrom,
+    navbarGradientTo: colors.navbarGradientTo || layout.navbarGradientTo || fallbackConfig?.navbarGradientTo,
+    navbarGradientDir: layout.navbarGradientDir || fallbackConfig?.navbarGradientDir || '135deg',
+    siteBgType: (layout.siteBgType as any) || fallbackConfig?.siteBgType || 'solid',
+    siteBgColor: colors.siteBg || colors.background || fallbackConfig?.siteBgColor || '#FFFFFF',
+    siteGradientFrom: colors.siteGradientFrom || layout.siteGradientFrom || fallbackConfig?.siteGradientFrom,
+    siteGradientTo: colors.siteGradientTo || layout.siteGradientTo || fallbackConfig?.siteGradientTo,
+    siteGradientDir: layout.siteGradientDir || fallbackConfig?.siteGradientDir || '135deg',
+    footerBgType: (layout.footerBgType as any) || fallbackConfig?.footerBgType || 'solid',
+    footerBgColor: colors.footerBg || layout.footerBgColor || fallbackConfig?.footerBgColor || colors.secondary || '#1A1A2E',
+    footerGradientFrom: colors.footerGradientFrom || layout.footerGradientFrom || fallbackConfig?.footerGradientFrom,
+    footerGradientTo: colors.footerGradientTo || layout.footerGradientTo || fallbackConfig?.footerGradientTo,
+    footerGradientDir: layout.footerGradientDir || fallbackConfig?.footerGradientDir || '135deg',
+    formBgType: (layout.formBgType as any) || fallbackConfig?.formBgType || 'solid',
+    formBgColor: colors.formBg || colors.surface || fallbackConfig?.formBgColor || '#FFFFFF',
+    formGradientFrom: colors.formGradientFrom || layout.formGradientFrom || fallbackConfig?.formGradientFrom,
+    formGradientTo: colors.formGradientTo || layout.formGradientTo || fallbackConfig?.formGradientTo,
+    formGradientDir: layout.formGradientDir || fallbackConfig?.formGradientDir || '135deg',
+    whatsappColor: colors.whatsapp || fallbackConfig?.whatsappColor || '#25D366',
+    whatsappIconColor: colors.whatsappIcon || fallbackConfig?.whatsappIconColor || '#FFFFFF',
+    previewGradient: [colors.primary || '#00D37D', colors.secondary || '#1A1A2E'],
+    category: ['xususi-tema', 'stl-tema'],
+    ...fallbackConfig,
+    ...(colors.primary ? { primaryColor: colors.primary } : {}),
+    ...(colors.secondary ? { secondaryColor: colors.secondary } : {}),
+    ...(colors.accent ? { accentColor: colors.accent } : {}),
+    ...(colors.background ? { backgroundColor: colors.background } : {}),
+    ...(colors.text ? { textColor: colors.text } : {}),
+    ...(typography.heading ? { headingFont: typography.heading } : {}),
+    ...(typography.body ? { bodyFont: typography.body } : {}),
+    ...(layout.borderRadius ? { borderRadius: layout.borderRadius } : {}),
+  };
+
+  return base;
 }

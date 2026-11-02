@@ -98,7 +98,7 @@ export const isProductsActive = (site: SiteContext | null): boolean => {
 export const dashboardNavItems: NavItemConfig[] = [
   { id: 'dashboard', href: '/dashboard', icon: LayoutDashboard, label: 'Ana Səhifə' },
   { id: 'website', href: '/dashboard/website', icon: Globe, label: 'Veb Saytım' },
-  { id: 'theme', href: '/dashboard/theme', icon: Palette, label: 'Tema' },
+  { id: 'theme', href: '/dashboard/theme', icon: Palette, label: 'Tema Redaktoru' },
   { id: 'social', href: '/dashboard/social', icon: Share2, label: 'Sosial Media' },
   { id: 'splash', href: '/dashboard/splash', icon: Sparkles, label: 'Splash Screen' },
   {
