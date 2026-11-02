@@ -172,6 +172,29 @@ test('Navigation: Müəssisə Saytı > Restoran və Kafe olduqda yalnız Menyu g
       `${subcategory} üçün aktiv Məhsullar görünməlidir`
     );
   }
+
+  // 3. Otel və Turizm:
+  const hotelContext = { category: 'muessise-sayti', subcategory: 'otel-ve-turizm' };
+  // Standart vəziyyətdə Xidmətlər görünür, Menyu görünmür
+  assert.equal(isNavItemVisible(servicesItem, hotelContext), true, 'Otel və Turizm üçün Xidmətlər görünməlidir');
+  assert.equal(isNavItemVisible(menuItem, hotelContext), false, 'Menyu aktiv edilmədikdə Otel və Turizm üçün Menyu görünməməlidir');
+
+  // Menyu aktiv edildikdə isə Xidmətlərlə birgə Menyu da görünməlidir!
+  const hotelWithMenu = {
+    ...hotelContext,
+    menuEnabled: true,
+  };
+  assert.equal(isNavItemVisible(servicesItem, hotelWithMenu), true, 'Otel və Turizm üçün Xidmətlər aktiv qalmalıdır');
+  assert.equal(isNavItemVisible(menuItem, hotelWithMenu), true, 'Menyu aktiv edildikdə Otel və Turizm üçün Menyu da görünməlidir');
+
+  // draftTheme üzərindən menuEnabled aktiv edildikdə də görünməlidir
+  const hotelWithDraftMenu = {
+    ...hotelContext,
+    website: {
+      draftTheme: { menuEnabled: true },
+    },
+  };
+  assert.equal(isNavItemVisible(menuItem, hotelWithDraftMenu), true, 'draftTheme.menuEnabled olduqda Menyu görünməlidir');
 });
 
 test('Builder Component Registry: Bütün zəruri 14 komponent qeydiyyatdadır', () => {

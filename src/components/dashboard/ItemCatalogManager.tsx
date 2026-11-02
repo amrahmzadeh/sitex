@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Plus, Pencil, Trash2, X, Loader2,
   Tag, DollarSign, Eye, EyeOff, Star, Flame, Sparkles, Upload, ChevronDown, Film,
-  Search, Check, Briefcase, Package, ArrowRight, ToggleLeft, ToggleRight
+  Search, Check, Briefcase, Package, ArrowRight, ToggleLeft, ToggleRight, UtensilsCrossed
 } from 'lucide-react';
 
 interface Category {
@@ -78,6 +78,8 @@ export default function ItemCatalogManager({ type }: ItemCatalogManagerProps) {
   // Products enabled state
   const [productsActive, setProductsActive] = useState(false);
   const [togglingProducts, setTogglingProducts] = useState(false);
+  const [menuActive, setMenuActive] = useState(false);
+  const [togglingMenu, setTogglingMenu] = useState(false);
 
   // Modals
   const [showCatModal, setShowCatModal] = useState(false);
@@ -112,6 +114,12 @@ export default function ItemCatalogManager({ type }: ItemCatalogManagerProps) {
     } else if (local === 'false') {
       setProductsActive(false);
     }
+    const localMenu = localStorage.getItem(`site_${orgId}_menu_enabled`);
+    if (localMenu === 'true') {
+      setMenuActive(true);
+    } else if (localMenu === 'false') {
+      setMenuActive(false);
+    }
   }, [orgId]);
 
   useEffect(() => {
@@ -132,6 +140,11 @@ export default function ItemCatalogManager({ type }: ItemCatalogManagerProps) {
             draft?.hasProducts === true ||
             localStorage.getItem(`site_${orgId}_products_enabled`) === 'true';
           setProductsActive(Boolean(isProd));
+          const isMenu =
+            draft?.menuEnabled === true ||
+            draft?.hasMenu === true ||
+            localStorage.getItem(`site_${orgId}_menu_enabled`) === 'true';
+          setMenuActive(Boolean(isMenu));
         }
         setCategories(cats.categories || []);
         setItems(its.items || []);
@@ -164,6 +177,32 @@ export default function ItemCatalogManager({ type }: ItemCatalogManagerProps) {
       router.refresh();
     } finally {
       setTogglingProducts(false);
+    }
+  };
+
+  const toggleMenuModule = async () => {
+    if (!orgId) return;
+    setTogglingMenu(true);
+    const nextState = !menuActive;
+    try {
+      localStorage.setItem(`site_${orgId}_menu_enabled`, nextState ? 'true' : 'false');
+      localStorage.setItem(`menu_enabled_${orgId}`, nextState ? 'true' : 'false');
+      setMenuActive(nextState);
+
+      await fetch(`/api/organizations/${orgId}/theme`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          menuEnabled: nextState,
+          hasMenu: nextState,
+        }),
+      }).catch(() => {});
+
+      window.dispatchEvent(new Event('org-updated'));
+      window.dispatchEvent(new Event('storage'));
+      router.refresh();
+    } finally {
+      setTogglingMenu(false);
     }
   };
 
@@ -376,6 +415,53 @@ export default function ItemCatalogManager({ type }: ItemCatalogManagerProps) {
             >
               {productsActive ? <ToggleRight size={18} color="#00D37D" /> : <ToggleLeft size={18} />}
               {productsActive ? 'Məhsullar Aktivdir' : '+ Məhsullar Bölməsini Aktiv Et'}
+            </button>
+          )}
+
+          {/* Toggle Menu Button (Müəssisə / Otel saytlarında menyu) */}
+          {isServices && (
+            <button
+              onClick={toggleMenuModule}
+              disabled={togglingMenu}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                padding: '9px 14px',
+                borderRadius: 10,
+                fontSize: 13,
+                fontWeight: 500,
+                background: menuActive ? 'rgba(0,211,125,0.15)' : '#231F20',
+                border: menuActive ? '1px solid rgba(0,211,125,0.4)' : '1px solid #383334',
+                color: menuActive ? '#00D37D' : '#8888A0',
+                cursor: 'pointer',
+                transition: 'all 0.15s',
+              }}
+              title="Sidebar-da və saytda Menyu bölməsini aktiv və ya deaktiv edin"
+            >
+              {menuActive ? <ToggleRight size={18} color="#00D37D" /> : <ToggleLeft size={18} />}
+              {menuActive ? 'Menyu Aktivdir' : '+ Menyu Bölməsini Aktiv Et'}
+            </button>
+          )}
+
+          {isServices && menuActive && (
+            <button
+              onClick={() => router.push('/dashboard/menu')}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                padding: '9px 14px',
+                borderRadius: 10,
+                fontSize: 13,
+                fontWeight: 500,
+                background: '#231F20',
+                border: '1px solid #383334',
+                color: '#E8E8F0',
+                cursor: 'pointer',
+              }}
+            >
+              <UtensilsCrossed size={16} color="#00D37D" /> Menyuya Keç
             </button>
           )}
 

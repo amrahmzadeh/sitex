@@ -59,6 +59,54 @@ export const isEnterpriseServiceCategory = (
   return false;
 };
 
+export const isMenuActive = (site: SiteContext | null): boolean => {
+  if (!site) return false;
+  // Qida kateqoriyalarında menyu həmişə aktivdir
+  if (isFoodCategory(site.category, site.subcategory)) return true;
+
+  if ((site as any).menuEnabled === true || (site as any).hasMenu === true) return true;
+
+  const draftTheme = site.website?.draftTheme as any;
+  if (
+    draftTheme?.menuEnabled === true ||
+    draftTheme?.hasMenu === true ||
+    draftTheme?.enableMenu === true
+  ) {
+    return true;
+  }
+
+  const publishedTheme = site.website?.publishedTheme as any;
+  if (
+    publishedTheme?.menuEnabled === true ||
+    publishedTheme?.hasMenu === true ||
+    publishedTheme?.enableMenu === true
+  ) {
+    return true;
+  }
+
+  const pagesConfig = site.website?.pagesConfig;
+  if (Array.isArray(pagesConfig)) {
+    const hasMenu = pagesConfig.some(
+      (p: any) =>
+        (p?.id === 'menu' || p?.id === 'menyu') && p?.enabled !== false
+    );
+    if (hasMenu) return true;
+  }
+
+  if (typeof window !== 'undefined') {
+    const id = site.id || localStorage.getItem('currentOrgId');
+    if (id) {
+      const stored =
+        localStorage.getItem(`site_${id}_menu_enabled`) ||
+        localStorage.getItem(`menu_enabled_${id}`);
+      if (stored === 'true') return true;
+      if (stored === 'false') return false;
+    }
+  }
+
+  return false;
+};
+
 export const isProductsActive = (site: SiteContext | null): boolean => {
   if (!site) return false;
   if (site.productsEnabled === true || site.hasProducts === true) return true;
@@ -110,10 +158,13 @@ export const dashboardNavItems: NavItemConfig[] = [
     isVisible: (site) => {
       if (!site) return true;
       if (!site.category && !site.subcategory) return true;
-      if (isEnterpriseServiceCategory(site.category, site.subcategory)) {
-        return false;
+      if (isFoodCategory(site.category, site.subcategory)) {
+        return true;
       }
-      return isFoodCategory(site.category, site.subcategory);
+      if (isEnterpriseServiceCategory(site.category, site.subcategory)) {
+        return isMenuActive(site);
+      }
+      return isMenuActive(site);
     },
   },
   {

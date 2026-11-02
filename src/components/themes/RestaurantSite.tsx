@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { ThemeConfig, defaultThemes, getGoogleFontsUrl, resolveBg } from '@/lib/themes';
 import { formatPrice, formatWhatsAppUrl } from '@/lib/utils';
+import { isFoodCategory, isEnterpriseServiceCategory, isMenuActive } from '@/modules/navigation';
 import SplashScreen, { SplashConfig } from './SplashScreen';
 import ProRestaurantSite from './ProRestaurantSite';
 import FoodVideoPlayer from './FoodVideoPlayer';
@@ -28,11 +29,18 @@ export interface MenuCategory {
 
 export interface SiteData {
   organization: {
+    id?: string;
     name: string; slug: string; logo?: string; description?: string;
     phone?: string; email?: string; address?: string; city?: string; mapUrl?: string; currency: string;
+    siteCategory?: string;
+    siteSubcategory?: string;
   };
   website: {
     theme: Record<string, unknown>;
+    pages?: unknown;
+    pagesConfig?: unknown;
+    draftTheme?: unknown;
+    publishedTheme?: unknown;
     seoTitle?: string;
     seoDescription?: string;
     splashEnabled?: boolean;
@@ -727,9 +735,19 @@ export default function RestaurantSite({ data, initialTable }: { data: SiteData;
   const cartCount = cartEntries.reduce((s, e) => s + e.quantity, 0);
   const cartTotal = cartEntries.reduce((s, e) => s + (e.item.discountPrice || e.item.price) * e.quantity, 0);
 
+  const isFood = isFoodCategory(organization.siteCategory, organization.siteSubcategory);
+  const isEnterprise = isEnterpriseServiceCategory(organization.siteCategory, organization.siteSubcategory);
+  const isMenuOn = isFood || isMenuActive({
+    id: organization.id,
+    category: organization.siteCategory,
+    subcategory: organization.siteSubcategory,
+    website: data.website as any,
+  });
+
   const sections = [
     { id: 'home', label: 'Ana Səhifə' },
-    { id: 'menu', label: 'Menyu' },
+    ...(isEnterprise ? [{ id: 'services', label: 'Xidmətlər' }] : []),
+    ...(isMenuOn || !isEnterprise ? [{ id: 'menu', label: 'Menyu' }] : []),
     { id: 'about', label: 'Haqqımızda' },
     { id: 'contact', label: 'Əlaqə' },
   ];
@@ -902,6 +920,7 @@ export default function RestaurantSite({ data, initialTable }: { data: SiteData;
       <div
         className="restaurant-site-container"
         style={{
+          position: 'relative',
           background: theme.backgroundImageUrl
             ? `linear-gradient(rgba(0,0,0,${theme.backgroundOverlay ?? 0.4}), rgba(0,0,0,${theme.backgroundOverlay ?? 0.4})), url(${theme.backgroundImageUrl}) center/cover fixed no-repeat`
             : siteBg,
@@ -912,10 +931,11 @@ export default function RestaurantSite({ data, initialTable }: { data: SiteData;
           overflowX: 'hidden',
         }}
       >
-        {/* Fixed Header */}
+        {/* Sticky Header */}
         <header
+          data-theme-header="true"
           style={{
-            position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
+            position: 'sticky', top: 0, left: 0, right: 0, zIndex: 100,
             backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)',
             background: navbarBg,
             borderBottom: `1px solid ${theme.primaryColor}20`,
@@ -1035,8 +1055,8 @@ export default function RestaurantSite({ data, initialTable }: { data: SiteData;
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.2 }}
               style={{
-                position: 'fixed',
-                top: 64,
+                position: 'absolute',
+                top: '100%',
                 left: 0,
                 right: 0,
                 zIndex: 99,
@@ -1202,7 +1222,7 @@ export default function RestaurantSite({ data, initialTable }: { data: SiteData;
               style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 24 }}
             >
               <button
-                onClick={() => scrollTo('menu')}
+                onClick={() => scrollTo(isEnterprise ? 'services' : 'menu')}
                 style={{
                   background: theme.primaryColor, color: '#fff', border: 'none', borderRadius: theme.borderRadius,
                   padding: '14px 32px', fontSize: 16, fontWeight: 700, cursor: 'pointer', fontFamily: theme.bodyFont,
@@ -1211,7 +1231,7 @@ export default function RestaurantSite({ data, initialTable }: { data: SiteData;
                 onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'; }}
                 onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = 'translateY(0)'; }}
               >
-                Menyuya bax
+                {isEnterprise ? 'Xidmətlərə bax' : 'Menyuya bax'}
               </button>
             </motion.div>
           </div>
@@ -1317,15 +1337,16 @@ export default function RestaurantSite({ data, initialTable }: { data: SiteData;
           </section>
         )}
 
-        {/* Full Menu */}
+        {/* Full Catalog (Services / Menu) */}
         <section id="menu" className="theme-section-padding" style={{ padding: '80px 24px' }}>
+          <div id="services" />
           <div style={{ maxWidth: 1200, margin: '0 auto' }}>
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} style={{ textAlign: 'center', marginBottom: 36 }}>
               <p style={{ color: theme.primaryColor, fontSize: 13, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 10 }}>
-                🍽️ Tam Menyu
+                {isEnterprise && !isMenuOn ? '💼 Xidmətlərimiz' : isEnterprise && isMenuOn ? '💼 Xidmətlər & 🍽️ Menyu' : '🍽️ Tam Menyu'}
               </p>
               <h2 style={{ fontFamily: theme.headingFont, fontSize: 'clamp(26px, 4vw, 42px)', fontWeight: 800, color: theme.textColor, margin: 0 }}>
-                Yeməklərimiz
+                {isEnterprise && !isMenuOn ? 'Təklif Etdiyimiz Xidmətlər' : isEnterprise && isMenuOn ? 'Xidmətlərimiz və Menyu' : 'Yeməklərimiz'}
               </h2>
             </motion.div>
 

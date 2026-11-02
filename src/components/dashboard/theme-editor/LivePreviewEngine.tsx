@@ -252,13 +252,18 @@ export default function LivePreviewEngine({
 
       {/* Scoped Preview Containment Styles */}
       <style>{`
-        .sitex-preview-canvas header {
+        .sitex-preview-canvas header,
+        .sitex-preview-canvas [data-theme-header] {
           position: sticky !important;
           top: 0 !important;
           left: 0 !important;
           right: 0 !important;
           width: 100% !important;
           z-index: 50 !important;
+        }
+        .sitex-preview-canvas {
+          contain: layout paint;
+          transform: translateZ(0);
         }
       `}</style>
 

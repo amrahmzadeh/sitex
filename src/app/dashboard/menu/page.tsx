@@ -8,7 +8,7 @@ import {
   Tag, DollarSign, Eye, EyeOff, Star, Flame, Sparkles, Upload, ChevronDown, Film, AlertCircle,
   Check, Search,
 } from 'lucide-react';
-import { isFoodCategory } from '@/modules/navigation';
+import { isFoodCategory, isMenuActive } from '@/modules/navigation';
 
 interface Category { id: string; name: string; description?: string; isVisible: boolean; sortOrder: number; _count?: { menuItems: number }; }
 interface MenuItem {
@@ -68,7 +68,15 @@ export default function MenuPage() {
     ]).then(([cats, its, org]) => {
       const orgData = org.organization;
       if (orgData) {
-        if (!isFoodCategory(orgData.siteCategory, orgData.siteSubcategory)) {
+        const menuAllowed =
+          isFoodCategory(orgData.siteCategory, orgData.siteSubcategory) ||
+          isMenuActive({
+            id: orgData.id,
+            category: orgData.siteCategory,
+            subcategory: orgData.siteSubcategory,
+            website: orgData.website,
+          });
+        if (!menuAllowed) {
           setIsAllowed(false);
           router.replace('/dashboard/services');
           return;

@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { ThemeConfig, resolveBg } from '@/lib/themes';
 import { formatPrice, formatWhatsAppUrl } from '@/lib/utils';
+import { isFoodCategory, isEnterpriseServiceCategory, isMenuActive } from '@/modules/navigation';
 import SplashScreen, { SplashConfig } from './SplashScreen';
 import FoodVideoPlayer from './FoodVideoPlayer';
 import { SocialIconsGroup } from './SocialIcons';
@@ -238,6 +239,16 @@ export default function ProRestaurantSite({
   const cardBackground = theme.formBgColor || '#181B1E';
   const footerBackground = theme.footerBgColor || '#0c0e10';
   const waColor = theme.whatsappColor || '#25D366';
+
+  const orgAny = organization as any;
+  const isFood = isFoodCategory(orgAny.siteCategory, orgAny.siteSubcategory);
+  const isEnterprise = isEnterpriseServiceCategory(orgAny.siteCategory, orgAny.siteSubcategory);
+  const isMenuOn = isFood || isMenuActive({
+    id: orgAny.id,
+    category: orgAny.siteCategory,
+    subcategory: orgAny.siteSubcategory,
+    website: data.website as any,
+  });
 
   return (
     <>
@@ -533,7 +544,12 @@ export default function ProRestaurantSite({
               {/* Desktop Navigation */}
               <nav className="hidden-mobile" style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
                 <a href="#hero" style={{ color: saffronGold, fontWeight: 600, fontSize: 14, textDecoration: 'none', borderBottom: `2px solid ${saffronGold}`, paddingBottom: 2 }}>Ana Səhifə</a>
-                <a href="#menyu" style={{ color: '#9BA3AF', fontSize: 14, textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={(e) => (e.currentTarget.style.color = '#F7F8F9')} onMouseLeave={(e) => (e.currentTarget.style.color = '#9BA3AF')}>Menyu</a>
+                {isEnterprise && (
+                  <a href="#menyu" style={{ color: '#9BA3AF', fontSize: 14, textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={(e) => (e.currentTarget.style.color = '#F7F8F9')} onMouseLeave={(e) => (e.currentTarget.style.color = '#9BA3AF')}>Xidmətlər</a>
+                )}
+                {(isMenuOn || !isEnterprise) && (
+                  <a href="#menyu" style={{ color: '#9BA3AF', fontSize: 14, textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={(e) => (e.currentTarget.style.color = '#F7F8F9')} onMouseLeave={(e) => (e.currentTarget.style.color = '#9BA3AF')}>Menyu</a>
+                )}
                 <a href="#haqqimizda" style={{ color: '#9BA3AF', fontSize: 14, textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={(e) => (e.currentTarget.style.color = '#F7F8F9')} onMouseLeave={(e) => (e.currentTarget.style.color = '#9BA3AF')}>Haqqımızda</a>
                 <a href="#elaqe" style={{ color: '#9BA3AF', fontSize: 14, textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={(e) => (e.currentTarget.style.color = '#F7F8F9')} onMouseLeave={(e) => (e.currentTarget.style.color = '#9BA3AF')}>Əlaqə</a>
               </nav>
@@ -591,8 +607,8 @@ export default function ProRestaurantSite({
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.2 }}
               style={{
-                position: 'fixed',
-                top: 64,
+                position: 'absolute',
+                top: '100%',
                 left: 0,
                 right: 0,
                 zIndex: 99,
@@ -609,7 +625,8 @@ export default function ProRestaurantSite({
             >
               {[
                 { href: '#hero', label: 'Ana Səhifə', icon: <Utensils size={16} color={saffronGold} /> },
-                { href: '#menyu', label: 'Menyu', icon: <Utensils size={16} color={saffronGold} /> },
+                ...(isEnterprise ? [{ href: '#menyu', label: 'Xidmətlər', icon: <Utensils size={16} color={saffronGold} /> }] : []),
+                ...(isMenuOn || !isEnterprise ? [{ href: '#menyu', label: 'Menyu', icon: <Utensils size={16} color={saffronGold} /> }] : []),
                 { href: '#haqqimizda', label: 'Haqqımızda', icon: <Award size={16} color={saffronGold} /> },
                 { href: '#elaqe', label: 'Əlaqə & İş Saatları', icon: <MapPin size={16} color={saffronGold} /> },
               ].map((link) => (

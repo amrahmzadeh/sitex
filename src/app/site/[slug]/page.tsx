@@ -77,6 +77,7 @@ async function getSiteData(slug: string): Promise<SiteData | null> {
 
     return {
       organization: {
+        id: org.id,
         name: org.name,
         slug: org.slug,
         logo: org.logo || undefined,
@@ -87,10 +88,15 @@ async function getSiteData(slug: string): Promise<SiteData | null> {
         city: org.city || undefined,
         mapUrl: org.mapUrl || undefined,
         currency: org.currency,
+        siteCategory: org.siteCategory || undefined,
+        siteSubcategory: org.siteSubcategory || undefined,
       },
       website: {
         theme: (org.website.publishedTheme as Record<string, unknown>) || {},
         pages: org.website.publishedPages,
+        pagesConfig: org.website.pagesConfig,
+        draftTheme: org.website.draftTheme,
+        publishedTheme: org.website.publishedTheme,
         seoTitle: org.website.seoTitle || undefined,
         seoDescription: org.website.seoDescription || undefined,
         ogImage: org.website.ogImage || undefined,

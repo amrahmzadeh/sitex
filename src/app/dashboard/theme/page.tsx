@@ -686,12 +686,16 @@ export default function ThemePage() {
         city: orgData?.city || 'Bakı',
         mapUrl: orgData?.mapUrl || '',
         currency: orgData?.currency || 'AZN',
+        siteCategory: orgData?.siteCategory,
+        siteSubcategory: orgData?.siteSubcategory,
       },
       website: {
         theme: {
           ...effectiveTheme,
           isProTemplate: isProActive,
         },
+        draftTheme: effectiveTheme,
+        pagesConfig: orgData?.website?.pagesConfig,
         seoTitle: orgName,
         seoDescription: orgData?.description,
       },
@@ -736,13 +740,18 @@ export default function ThemePage() {
             grid-template-columns: 1fr !important;
           }
         }
-        .sitex-preview-canvas header {
+        .sitex-preview-canvas header,
+        .sitex-preview-canvas [data-theme-header] {
           position: sticky !important;
           top: 0 !important;
           left: 0 !important;
           right: 0 !important;
           width: 100% !important;
           z-index: 50 !important;
+        }
+        .sitex-preview-canvas {
+          contain: layout paint;
+          transform: translateZ(0);
         }
       `}</style>
 

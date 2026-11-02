@@ -38,9 +38,15 @@ function resolveSection(categoryId?: string | null, subcategoryId?: string | nul
 
   const subcategory = getSiteSubcategory(categoryId, subcategoryId);
   const subcategoryName = subcategory?.name.toLowerCase() || '';
+  const subId = (subcategoryId || '').toLowerCase();
 
   if (category.id === 'muessise-sayti') {
-    const isFood = subcategoryName.includes('restoran') || subcategoryName.includes('kafe');
+    const isFood =
+      subId === 'restoran-ve-kafe' ||
+      subId.includes('restoran') ||
+      subId.includes('kafe') ||
+      subcategoryName.includes('restoran') ||
+      subcategoryName.includes('kafe');
     return isFood ? { id: 'menu', name: 'Menyu' } : { id: 'services', name: 'Xidmətlər' };
   }
 
@@ -49,14 +55,28 @@ function resolveSection(categoryId?: string | null, subcategoryId?: string | nul
 
 export function getDefaultPagesForSite(
   categoryId?: string | null,
-  subcategoryId?: string | null
+  subcategoryId?: string | null,
+  options?: { includeMenu?: boolean; includeServices?: boolean }
 ): DefaultSitePage[] {
   const section = resolveSection(categoryId, subcategoryId);
 
-  return [
+  const pages: DefaultSitePage[] = [
     { id: 'home', name: 'Ana Səhifə', enabled: true, order: 0 },
     { id: 'about', name: 'Haqqımızda', enabled: true, order: 1 },
-    { id: section.id, name: section.name, enabled: true, order: 2 },
-    { id: 'contact', name: 'Əlaqə', enabled: true, order: 3 },
   ];
+
+  if (section.id === 'services') {
+    pages.push({ id: 'services', name: 'Xidmətlər', enabled: true, order: 2 });
+    if (options?.includeMenu) {
+      pages.push({ id: 'menu', name: 'Menyu', enabled: true, order: 3 });
+    }
+  } else {
+    pages.push({ id: section.id, name: section.name, enabled: true, order: 2 });
+    if (options?.includeServices) {
+      pages.push({ id: 'services', name: 'Xidmətlər', enabled: true, order: 3 });
+    }
+  }
+
+  pages.push({ id: 'contact', name: 'Əlaqə', enabled: true, order: pages.length });
+  return pages;
 }
