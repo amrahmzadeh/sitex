@@ -12,6 +12,7 @@ import { VersionHistory } from './VersionHistory';
 import { ImportExportModal } from './ImportExportModal';
 import { serializeTemplateToTheme, importTemplateFromJSON } from '../serializer';
 import { parseSTL, compileSTL } from '../../stl';
+import '../registry/builtinComponents';
 
 export function BuilderEditor() {
   const {

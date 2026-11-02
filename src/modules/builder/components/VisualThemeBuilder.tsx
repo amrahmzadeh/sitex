@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { BuilderNode, DeviceMode, GlobalDesignTokens } from '../types';
 import { getComponent, listComponents } from '../registry/componentRegistry';
+import '../registry/builtinComponents';
 import { DEFAULT_DESIGN_TOKENS } from '../serializer';
 import { checkWCAGContrast } from '../../stl/colorUtils';
 import { Canvas } from './Canvas';
@@ -896,17 +897,34 @@ export function VisualThemeBuilder({
         {/* Device Switcher Header */}
         <div
           style={{
-            height: 44,
-            background: '#13151A',
-            borderBottom: '1px solid #22262E',
+            height: 46,
+            background: '#0E1014',
+            borderBottom: '1px solid #1C1F26',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center',
-            gap: 12,
-            padding: '0 16px',
+            justifyContent: 'space-between',
+            padding: '0 20px',
+            userSelect: 'none',
           }}
         >
-          <div style={{ display: 'flex', background: '#0B0C0E', padding: 3, borderRadius: 8, border: '1px solid #22262E' }}>
+          {/* Quick Info Left */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: '#8888A0' }}>
+            <span style={{ fontWeight: 600, color: '#C0C0D0' }}>İnteraktiv Kətan</span>
+            <span style={{ color: '#444' }}>•</span>
+            <span style={{ color: '#00D37D', fontWeight: 600 }}>{nodes.length} Bölmə</span>
+          </div>
+
+          {/* Centered Device Switcher */}
+          <div
+            style={{
+              display: 'flex',
+              background: '#14161C',
+              padding: 2,
+              borderRadius: 8,
+              border: '1px solid #20242D',
+              gap: 2,
+            }}
+          >
             <button
               type="button"
               onClick={() => onSetDevice('desktop')}
@@ -914,18 +932,19 @@ export function VisualThemeBuilder({
                 display: 'flex',
                 alignItems: 'center',
                 gap: 6,
-                padding: '4px 12px',
+                padding: '5px 12px',
                 borderRadius: 6,
                 border: 'none',
-                background: device === 'desktop' ? '#1F232B' : 'transparent',
-                color: device === 'desktop' ? '#00D37D' : '#8888A0',
+                background: device === 'desktop' ? '#1F232D' : 'transparent',
+                color: device === 'desktop' ? '#00E58F' : '#8888A0',
                 fontSize: 12,
-                fontWeight: 600,
+                fontWeight: device === 'desktop' ? 700 : 500,
                 cursor: 'pointer',
+                transition: 'all 0.15s ease',
               }}
             >
               <Monitor size={14} />
-              Desktop (100%)
+              <span>Desktop (100%)</span>
             </button>
             <button
               type="button"
@@ -934,18 +953,19 @@ export function VisualThemeBuilder({
                 display: 'flex',
                 alignItems: 'center',
                 gap: 6,
-                padding: '4px 12px',
+                padding: '5px 12px',
                 borderRadius: 6,
                 border: 'none',
-                background: device === 'tablet' ? '#1F232B' : 'transparent',
-                color: device === 'tablet' ? '#00D37D' : '#8888A0',
+                background: device === 'tablet' ? '#1F232D' : 'transparent',
+                color: device === 'tablet' ? '#00E58F' : '#8888A0',
                 fontSize: 12,
-                fontWeight: 600,
+                fontWeight: device === 'tablet' ? 700 : 500,
                 cursor: 'pointer',
+                transition: 'all 0.15s ease',
               }}
             >
               <Tablet size={14} />
-              Planşet (768px)
+              <span>Planşet (768px)</span>
             </button>
             <button
               type="button"
@@ -954,20 +974,44 @@ export function VisualThemeBuilder({
                 display: 'flex',
                 alignItems: 'center',
                 gap: 6,
-                padding: '4px 12px',
+                padding: '5px 12px',
                 borderRadius: 6,
                 border: 'none',
-                background: device === 'mobile' ? '#1F232B' : 'transparent',
-                color: device === 'mobile' ? '#00D37D' : '#8888A0',
+                background: device === 'mobile' ? '#1F232D' : 'transparent',
+                color: device === 'mobile' ? '#00E58F' : '#8888A0',
                 fontSize: 12,
-                fontWeight: 600,
+                fontWeight: device === 'mobile' ? 700 : 500,
                 cursor: 'pointer',
+                transition: 'all 0.15s ease',
               }}
             >
               <Smartphone size={14} />
-              Mobil (375px)
+              <span>Mobil (375px)</span>
             </button>
           </div>
+
+          {/* Add Section Right Button */}
+          <button
+            type="button"
+            onClick={() => setShowAddSectionModal(true)}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              padding: '6px 14px',
+              borderRadius: 8,
+              background: '#00D37D',
+              color: '#000',
+              border: 'none',
+              fontSize: 12,
+              fontWeight: 800,
+              cursor: 'pointer',
+              boxShadow: '0 2px 8px rgba(0,211,125,0.2)',
+            }}
+          >
+            <Plus size={14} strokeWidth={3} />
+            <span>Bölmə Əlavə Et</span>
+          </button>
         </div>
 
         {/* The Live Interactive Canvas */}
@@ -977,6 +1021,7 @@ export function VisualThemeBuilder({
           onSelectNode={onSelectNode}
           device={device}
           onDropComponent={onAddNode}
+          onOpenAddModal={() => setShowAddSectionModal(true)}
         />
       </div>
 
@@ -988,6 +1033,7 @@ export function VisualThemeBuilder({
           onDeleteNode={onDeleteNode}
           onDuplicateNode={onDuplicateNode}
           onMoveNode={onMoveNode}
+          onClose={() => onSelectNode('')}
         />
       )}
 

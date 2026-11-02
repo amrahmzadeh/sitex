@@ -1,5 +1,6 @@
 export * from './types';
 export * from './registry/componentRegistry';
+export * from './registry/builtinComponents';
 export * from './renderer';
 export * from './serializer';
 export * from './components/BuilderEditor';

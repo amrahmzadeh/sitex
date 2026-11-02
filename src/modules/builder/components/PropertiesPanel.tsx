@@ -1,9 +1,10 @@
 'use client';
 
 import React from 'react';
+import '../registry/builtinComponents';
 import { BuilderNode } from '../types';
 import { getComponent } from '../registry/componentRegistry';
-import { Trash2, Copy, MoveUp, MoveDown } from 'lucide-react';
+import { Trash2, Copy, X, Sliders, RotateCcw } from 'lucide-react';
 
 interface PropertiesPanelProps {
   selectedNode: BuilderNode | null;
@@ -11,6 +12,7 @@ interface PropertiesPanelProps {
   onDeleteNode: (id: string) => void;
   onDuplicateNode: (id: string) => void;
   onMoveNode: (id: string, direction: 'up' | 'down') => void;
+  onClose?: () => void;
 }
 
 export function PropertiesPanel({
@@ -19,11 +21,40 @@ export function PropertiesPanel({
   onDeleteNode,
   onDuplicateNode,
   onMoveNode,
+  onClose,
 }: PropertiesPanelProps) {
   if (!selectedNode) {
     return (
-      <div style={{ width: 320, borderLeft: '1px solid #383334', background: '#181B1E', padding: 20, color: '#8888A0', textAlign: 'center' }}>
-        <p style={{ fontSize: 14, marginTop: 40 }}>Redaktə etmək üçün kətandan və ya katmanlardan bir element seçin.</p>
+      <div style={{
+        width: 300,
+        borderLeft: '1px solid #1E232F',
+        background: '#0D0F14',
+        padding: 24,
+        color: '#687082',
+        textAlign: 'center',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexShrink: 0
+      }}>
+        <div style={{
+          width: 44,
+          height: 44,
+          borderRadius: 10,
+          background: '#13161F',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginBottom: 12,
+          color: '#8B93A7'
+        }}>
+          <Sliders size={20} />
+        </div>
+        <p style={{ fontSize: 13, fontWeight: 500, margin: 0, color: '#8B93A7' }}>Xüsusiyyətlər Paneli</p>
+        <p style={{ fontSize: 11, marginTop: 6, lineHeight: 1.5, color: '#555C6E' }}>
+          Tənzimləmək üçün kətandan və ya qatlardan bir element seçin.
+        </p>
       </div>
     );
   }
@@ -31,8 +62,38 @@ export function PropertiesPanel({
   const def = getComponent(selectedNode.type);
   if (!def) {
     return (
-      <div style={{ width: 320, borderLeft: '1px solid #383334', background: '#181B1E', padding: 20, color: '#F87171' }}>
-        Element sxemi tapılmadı: {selectedNode.type}
+      <div style={{
+        width: 300,
+        borderLeft: '1px solid #1E232F',
+        background: '#0D0F14',
+        padding: 20,
+        color: '#F87171',
+        flexShrink: 0
+      }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+          <span style={{ fontSize: 13, fontWeight: 600 }}>Element tapılmadı</span>
+          {onClose && (
+            <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: '#8B93A7', cursor: 'pointer' }}>
+              <X size={15} />
+            </button>
+          )}
+        </div>
+        <p style={{ fontSize: 12 }}>Naməlum tip: <code>{selectedNode.type}</code></p>
+        <button
+          onClick={() => onDeleteNode(selectedNode.id)}
+          style={{
+            marginTop: 12,
+            padding: '6px 12px',
+            background: 'rgba(239, 68, 68, 0.15)',
+            border: '1px solid rgba(239, 68, 68, 0.3)',
+            borderRadius: 6,
+            color: '#EF4444',
+            fontSize: 12,
+            cursor: 'pointer',
+          }}
+        >
+          Elementi sil
+        </button>
       </div>
     );
   }
@@ -42,48 +103,129 @@ export function PropertiesPanel({
   };
 
   return (
-    <div style={{ width: 320, borderLeft: '1px solid #383334', background: '#181B1E', display: 'flex', flexDirection: 'column' }}>
+    <div style={{
+      width: 300,
+      borderLeft: '1px solid #1E232F',
+      background: '#0D0F14',
+      display: 'flex',
+      flexDirection: 'column',
+      flexShrink: 0,
+      userSelect: 'none'
+    }}>
       {/* Header */}
-      <div style={{ padding: '16px 20px', borderBottom: '1px solid #383334', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div>
-          <h3 style={{ fontSize: 15, fontWeight: 700, color: '#F5F5F7', margin: 0 }}>{def.label}</h3>
-          <span style={{ fontSize: 11, color: '#8888A0', textTransform: 'uppercase' }}>ID: {selectedNode.id}</span>
+      <div style={{
+        padding: '12px 16px',
+        borderBottom: '1px solid #1E232F',
+        background: '#090A0D',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between'
+      }}>
+        <div style={{ overflow: 'hidden' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#00D37D' }} />
+            <h3 style={{ fontSize: 13, fontWeight: 700, color: '#F5F5F7', margin: 0, textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+              {def.label}
+            </h3>
+          </div>
+          <span style={{ fontSize: 10, color: '#687082', fontFamily: 'monospace' }}>#{selectedNode.id.slice(0, 10)}</span>
         </div>
-        <div style={{ display: 'flex', gap: 6 }}>
+        <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
           <button
             onClick={() => onDuplicateNode(selectedNode.id)}
-            style={{ background: '#282C32', border: 'none', borderRadius: 6, padding: 6, color: '#E2E2E5', cursor: 'pointer' }}
+            style={{
+              background: '#151922',
+              border: '1px solid #1E232F',
+              borderRadius: 6,
+              padding: '5px 7px',
+              color: '#8B93A7',
+              cursor: 'pointer',
+            }}
             title="Kopyasını çıxar"
           >
-            <Copy size={14} />
+            <Copy size={13} />
           </button>
           <button
             onClick={() => onDeleteNode(selectedNode.id)}
-            style={{ background: 'rgba(239,68,68,0.15)', border: 'none', borderRadius: 6, padding: 6, color: '#EF4444', cursor: 'pointer' }}
+            style={{
+              background: 'rgba(239,68,68,0.1)',
+              border: '1px solid rgba(239,68,68,0.2)',
+              borderRadius: 6,
+              padding: '5px 7px',
+              color: '#EF4444',
+              cursor: 'pointer',
+            }}
             title="Sil"
           >
-            <Trash2 size={14} />
+            <Trash2 size={13} />
           </button>
+          {onClose && (
+            <button
+              onClick={onClose}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                padding: '5px',
+                color: '#687082',
+                cursor: 'pointer',
+                marginLeft: 4,
+              }}
+              title="Bağla"
+            >
+              <X size={15} />
+            </button>
+          )}
         </div>
       </div>
 
       {/* Form Fields */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: 20, display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div style={{ flex: 1, overflowY: 'auto', padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: 14 }}>
         {Object.entries(def.propSchema).map(([key, schema]) => {
           const val = selectedNode.props[key] !== undefined ? selectedNode.props[key] : schema.defaultValue;
 
           return (
-            <div key={key}>
-              <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#B0B0B8', marginBottom: 6 }}>
-                {schema.label}
-              </label>
+            <div key={key} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <label style={{ fontSize: 11, fontWeight: 600, color: '#9DA5B4', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+                  {schema.label}
+                </label>
+                {val !== schema.defaultValue && (
+                  <button
+                    onClick={() => handleChange(key, schema.defaultValue)}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: '#687082',
+                      cursor: 'pointer',
+                      padding: 0,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 2,
+                      fontSize: 10
+                    }}
+                    title="İlkin dəyərə qaytar"
+                  >
+                    <RotateCcw size={10} />
+                    <span>Sıfırla</span>
+                  </button>
+                )}
+              </div>
 
               {schema.type === 'string' && (
                 <input
                   type="text"
                   value={val || ''}
                   onChange={(e) => handleChange(key, e.target.value)}
-                  style={{ width: '100%', padding: '8px 12px', background: '#121416', border: '1px solid #383334', borderRadius: 6, color: '#FFF', fontSize: 13 }}
+                  style={{
+                    width: '100%',
+                    padding: '7px 10px',
+                    background: '#13161F',
+                    border: '1px solid #1E232F',
+                    borderRadius: 6,
+                    color: '#E6E9F0',
+                    fontSize: 12,
+                    outline: 'none',
+                  }}
                 />
               )}
 
@@ -92,7 +234,17 @@ export function PropertiesPanel({
                   rows={3}
                   value={val || ''}
                   onChange={(e) => handleChange(key, e.target.value)}
-                  style={{ width: '100%', padding: '8px 12px', background: '#121416', border: '1px solid #383334', borderRadius: 6, color: '#FFF', fontSize: 13, resize: 'vertical' }}
+                  style={{
+                    width: '100%',
+                    padding: '7px 10px',
+                    background: '#13161F',
+                    border: '1px solid #1E232F',
+                    borderRadius: 6,
+                    color: '#E6E9F0',
+                    fontSize: 12,
+                    resize: 'vertical',
+                    outline: 'none',
+                  }}
                 />
               )}
 
@@ -101,23 +253,50 @@ export function PropertiesPanel({
                   type="number"
                   value={val !== undefined ? val : 0}
                   onChange={(e) => handleChange(key, Number(e.target.value))}
-                  style={{ width: '100%', padding: '8px 12px', background: '#121416', border: '1px solid #383334', borderRadius: 6, color: '#FFF', fontSize: 13 }}
+                  style={{
+                    width: '100%',
+                    padding: '7px 10px',
+                    background: '#13161F',
+                    border: '1px solid #1E232F',
+                    borderRadius: 6,
+                    color: '#E6E9F0',
+                    fontSize: 12,
+                    outline: 'none',
+                  }}
                 />
               )}
 
               {schema.type === 'color' && (
-                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
                   <input
                     type="color"
                     value={val || '#000000'}
                     onChange={(e) => handleChange(key, e.target.value)}
-                    style={{ width: 40, height: 36, border: 'none', borderRadius: 6, cursor: 'pointer', background: 'transparent' }}
+                    style={{
+                      width: 32,
+                      height: 32,
+                      border: '1px solid #1E232F',
+                      borderRadius: 6,
+                      cursor: 'pointer',
+                      background: 'transparent',
+                      padding: 1,
+                    }}
                   />
                   <input
                     type="text"
                     value={val || ''}
                     onChange={(e) => handleChange(key, e.target.value)}
-                    style={{ flex: 1, padding: '8px 12px', background: '#121416', border: '1px solid #383334', borderRadius: 6, color: '#FFF', fontSize: 13 }}
+                    style={{
+                      flex: 1,
+                      padding: '7px 10px',
+                      background: '#13161F',
+                      border: '1px solid #1E232F',
+                      borderRadius: 6,
+                      color: '#E6E9F0',
+                      fontSize: 12,
+                      fontFamily: 'monospace',
+                      outline: 'none',
+                    }}
                   />
                 </div>
               )}
@@ -126,7 +305,16 @@ export function PropertiesPanel({
                 <select
                   value={val || ''}
                   onChange={(e) => handleChange(key, e.target.value)}
-                  style={{ width: '100%', padding: '8px 12px', background: '#121416', border: '1px solid #383334', borderRadius: 6, color: '#FFF', fontSize: 13 }}
+                  style={{
+                    width: '100%',
+                    padding: '7px 10px',
+                    background: '#13161F',
+                    border: '1px solid #1E232F',
+                    borderRadius: 6,
+                    color: '#E6E9F0',
+                    fontSize: 12,
+                    outline: 'none',
+                  }}
                 >
                   {schema.options?.map((opt) => (
                     <option key={opt.value} value={opt.value}>
@@ -137,14 +325,23 @@ export function PropertiesPanel({
               )}
 
               {schema.type === 'boolean' && (
-                <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+                <label style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  cursor: 'pointer',
+                  padding: '6px 10px',
+                  background: '#13161F',
+                  border: '1px solid #1E232F',
+                  borderRadius: 6,
+                }}>
                   <input
                     type="checkbox"
                     checked={Boolean(val)}
                     onChange={(e) => handleChange(key, e.target.checked)}
-                    style={{ width: 16, height: 16 }}
+                    style={{ accentColor: '#00D37D', cursor: 'pointer' }}
                   />
-                  <span style={{ fontSize: 13, color: '#F5F5F7' }}>Aktiv et</span>
+                  <span style={{ fontSize: 12, color: '#E6E9F0' }}>Aktiv</span>
                 </label>
               )}
 
@@ -155,13 +352,28 @@ export function PropertiesPanel({
                     value={val || ''}
                     onChange={(e) => handleChange(key, e.target.value)}
                     placeholder="https://..."
-                    style={{ width: '100%', padding: '8px 12px', background: '#121416', border: '1px solid #383334', borderRadius: 6, color: '#FFF', fontSize: 13 }}
+                    style={{
+                      width: '100%',
+                      padding: '7px 10px',
+                      background: '#13161F',
+                      border: '1px solid #1E232F',
+                      borderRadius: 6,
+                      color: '#E6E9F0',
+                      fontSize: 12,
+                      outline: 'none',
+                    }}
                   />
                   {val && (
                     <img
                       src={val}
                       alt="preview"
-                      style={{ width: '100%', height: 80, objectFit: 'cover', borderRadius: 6, border: '1px solid #383334' }}
+                      style={{
+                        width: '100%',
+                        height: 80,
+                        objectFit: 'cover',
+                        borderRadius: 6,
+                        border: '1px solid #1E232F'
+                      }}
                     />
                   )}
                 </div>
@@ -173,4 +385,5 @@ export function PropertiesPanel({
     </div>
   );
 }
+
 
