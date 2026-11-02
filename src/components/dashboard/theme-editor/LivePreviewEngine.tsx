@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { ThemeConfig } from '@/lib/themes';
 import RestaurantSite, { SiteData } from '@/components/themes/RestaurantSite';
+import { isEnterpriseServiceCategory, isMenuActive } from '@/modules/navigation';
 import { ViewportMode, ComponentTarget } from './types';
 
 interface LivePreviewEngineProps {
@@ -55,6 +56,43 @@ export default function LivePreviewEngine({
       },
     };
   }, [siteData, theme]);
+
+  const previewPages = React.useMemo(() => {
+    const isSpeechAcademy =
+      theme.id === 'mehinIsmayilova' ||
+      theme.proTemplateId === 'speech-academy' ||
+      theme.templateId === 'speech-academy' ||
+      theme.proTemplateId === 'mehin-ismayilova';
+    const isEnterprise =
+      isEnterpriseServiceCategory(
+        siteData?.organization?.siteCategory,
+        siteData?.organization?.siteSubcategory
+      ) ||
+      siteData?.organization?.siteSubcategory === 'otel-ve-turizm' ||
+      isSpeechAcademy;
+
+    const hasMenu =
+      !isEnterprise ||
+      isMenuActive({
+        id: siteData?.organization?.id,
+        category: siteData?.organization?.siteCategory,
+        subcategory: siteData?.organization?.siteSubcategory,
+        website: siteData?.website as any,
+      });
+
+    const pages = [{ id: 'home', label: 'Ana Səhifə' }];
+    if (isEnterprise) {
+      pages.push({ id: 'services', label: 'Xidmətlər' });
+      if (hasMenu) {
+        pages.push({ id: 'menu', label: 'Menyu' });
+      }
+    } else {
+      pages.push({ id: 'menu', label: 'Menyu' });
+    }
+    pages.push({ id: 'about', label: 'Haqqımızda' });
+    pages.push({ id: 'contact', label: 'Əlaqə' });
+    return pages;
+  }, [theme, siteData]);
 
   // Viewport widths
   const containerWidth =
@@ -163,12 +201,7 @@ export default function LivePreviewEngine({
 
         {/* Page Switcher */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-          {[
-            { id: 'home', label: 'Ana Səhifə' },
-            { id: 'menu', label: 'Menyu' },
-            { id: 'about', label: 'Haqqımızda' },
-            { id: 'contact', label: 'Əlaqə' },
-          ].map((pg) => (
+          {previewPages.map((pg) => (
             <button
               key={pg.id}
               type="button"
@@ -254,16 +287,25 @@ export default function LivePreviewEngine({
       <style>{`
         .sitex-preview-canvas header,
         .sitex-preview-canvas [data-theme-header] {
-          position: sticky !important;
+          position: relative !important;
           top: 0 !important;
-          left: 0 !important;
-          right: 0 !important;
+          left: auto !important;
+          right: auto !important;
           width: 100% !important;
-          z-index: 50 !important;
+          max-width: 100% !important;
+          z-index: 10 !important;
         }
         .sitex-preview-canvas {
           contain: layout paint;
           transform: translateZ(0);
+        }
+        .sitex-preview-canvas .restaurant-site-container,
+        .sitex-preview-canvas .pro-restaurant-site,
+        .sitex-preview-canvas .speech-academy-root {
+          overflow-x: clip !important;
+          position: relative !important;
+          width: 100% !important;
+          max-width: 100% !important;
         }
       `}</style>
 

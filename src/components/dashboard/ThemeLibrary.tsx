@@ -303,7 +303,8 @@ export default function ThemeLibrary({
       { id: 'food', label: 'Restoran & Kafe' },
       { id: 'modern', label: 'Müasir & Biznes' },
       { id: 'classic', label: 'Klassik & Zərif' },
-      { id: 'pro', label: 'Street Food (PRO)' },
+      { id: 'services', label: 'Xidmət & Müəssisə' },
+      { id: 'pro', label: 'PRO Şablonlar' },
     ];
   }, []);
 
@@ -312,6 +313,12 @@ export default function ThemeLibrary({
     return themesList.filter((t) => {
       // Kateqoriya filtri
       if (selectedCategory === 'pro' && !t.isProTemplate) return false;
+      if (selectedCategory === 'services') {
+        const catStr = (t.category || []).join(' ').toLowerCase() + ' ' + t.name.toLowerCase();
+        if (!catStr.includes('müəssisə') && !catStr.includes('xidmət') && !catStr.includes('portfolio') && !catStr.includes('təlim')) {
+          return false;
+        }
+      }
       if (selectedCategory === 'food') {
         const catStr = (t.category || []).join(' ').toLowerCase();
         if (!catStr.includes('restoran') && !catStr.includes('kafe') && !catStr.includes('qida') && !t.isProTemplate) {

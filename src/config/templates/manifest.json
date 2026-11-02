@@ -194,6 +194,17 @@
       "source": { "path": "templates/by-salmanov-restaurant", "ref": "v1.0.0" }
     },
     {
+      "id": "mehin-ismayilova-pro",
+      "name": "Mehin İsmayılova (Speech Academy)",
+      "description": "Nitq mədəniyyəti, diksiya təlimləri, tədbir aparıcılığı və peşəkar səsləndirmə üçün premium editorial şablon.",
+      "category": "muessise-sayti",
+      "subcategory": "otel-ve-turizm",
+      "version": "1.0.0",
+      "themePreset": "mehinIsmayilova",
+      "preview": { "gradient": ["#e6c184", "#101c2e"] },
+      "source": { "path": "templates/mehin-ismayilova-pro", "ref": "v1.0.0" }
+    },
+    {
       "id": "muessise-klinika",
       "name": "Klinika və Tibb Mərkəzi",
       "description": "Klinikalar və tibb mərkəzləri üçün xidmət kataloqu və etibarlı dizayn.",

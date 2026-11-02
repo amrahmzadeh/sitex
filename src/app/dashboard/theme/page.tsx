@@ -742,16 +742,25 @@ export default function ThemePage() {
         }
         .sitex-preview-canvas header,
         .sitex-preview-canvas [data-theme-header] {
-          position: sticky !important;
+          position: relative !important;
           top: 0 !important;
-          left: 0 !important;
-          right: 0 !important;
+          left: auto !important;
+          right: auto !important;
           width: 100% !important;
-          z-index: 50 !important;
+          max-width: 100% !important;
+          z-index: 10 !important;
         }
         .sitex-preview-canvas {
           contain: layout paint;
           transform: translateZ(0);
+        }
+        .sitex-preview-canvas .restaurant-site-container,
+        .sitex-preview-canvas .pro-restaurant-site,
+        .sitex-preview-canvas .speech-academy-root {
+          overflow-x: clip !important;
+          position: relative !important;
+          width: 100% !important;
+          max-width: 100% !important;
         }
       `}</style>
 

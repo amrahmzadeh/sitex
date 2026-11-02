@@ -4,6 +4,7 @@ import { modernTheme } from './builtin/modern';
 import { classicTheme } from './builtin/classic';
 import { warmGourmetProTheme } from './builtin/warm-gourmet';
 import { bySalmanovTheme } from './builtin/by-salmanov';
+import { speechAcademyTheme } from './builtin/speech-academy';
 
 class ThemeRegistry {
   private themes = new Map<string, ThemeDefinition>();
@@ -14,6 +15,7 @@ class ThemeRegistry {
     this.registerTheme(classicTheme);
     this.registerTheme(warmGourmetProTheme);
     this.registerTheme(bySalmanovTheme);
+    this.registerTheme(speechAcademyTheme);
   }
 
   public registerTheme(theme: ThemeDefinition): void {

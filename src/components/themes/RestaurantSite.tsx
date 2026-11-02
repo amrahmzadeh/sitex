@@ -12,6 +12,7 @@ import { formatPrice, formatWhatsAppUrl } from '@/lib/utils';
 import { isFoodCategory, isEnterpriseServiceCategory, isMenuActive } from '@/modules/navigation';
 import SplashScreen, { SplashConfig } from './SplashScreen';
 import ProRestaurantSite from './ProRestaurantSite';
+import SpeechAcademySite from './SpeechAcademySite';
 import FoodVideoPlayer from './FoodVideoPlayer';
 import { SocialIconsGroup } from './SocialIcons';
 import SocialMediaFeed from './SocialMediaFeed';
@@ -677,6 +678,14 @@ export default function RestaurantSite({ data, initialTable }: { data: SiteData;
   }, [data.organization.slug, initialTable]);
 
   if (theme.isProTemplate) {
+    if (
+      theme.proTemplateId === 'speech-academy' ||
+      theme.templateId === 'speech-academy' ||
+      theme.id === 'mehinIsmayilova' ||
+      theme.proTemplateId === 'mehin-ismayilova'
+    ) {
+      return <SpeechAcademySite data={data} theme={theme} />;
+    }
     return <ProRestaurantSite data={data} theme={theme} table={table} />;
   }
   const { organization, whatsapp, socialLinks, workingHours, menuCategories } = data;

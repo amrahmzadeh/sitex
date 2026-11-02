@@ -30,16 +30,19 @@ test('Theme Registry: Mövcud 4 daxili tema qeydiyyatdan keçib', () => {
   const classic = getTheme('classic');
   const warmGourmetPro = getTheme('warmGourmetPro');
   const bySalmanov = getTheme('bySalmanov');
+  const mehinIsmayilova = getTheme('mehinIsmayilova');
 
   assert.ok(elegant, 'Elegant tema mövcuddur');
   assert.ok(modern, 'Modern tema mövcuddur');
   assert.ok(classic, 'Classic tema mövcuddur');
   assert.ok(warmGourmetPro, 'Warm Gourmet Pro tema mövcuddur');
   assert.ok(bySalmanov, 'By Salmanov tema mövcuddur');
+  assert.ok(mehinIsmayilova, 'Mehin Ismayilova tema mövcuddur');
 
   assert.equal(elegant?.source, 'builtin');
   assert.equal(warmGourmetPro?.tokens.colors.primary, '#ffc665');
   assert.equal(bySalmanov?.tokens.colors.primary, '#cc0000');
+  assert.equal(mehinIsmayilova?.tokens.colors.primary, '#765a26');
 });
 
 test('Theme Registry: Yeni tema qeydiyyatı və kateqoriya filtri', () => {
