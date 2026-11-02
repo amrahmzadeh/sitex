@@ -736,6 +736,14 @@ export default function ThemePage() {
             grid-template-columns: 1fr !important;
           }
         }
+        .sitex-preview-canvas header {
+          position: sticky !important;
+          top: 0 !important;
+          left: 0 !important;
+          right: 0 !important;
+          width: 100% !important;
+          z-index: 50 !important;
+        }
       `}</style>
 
       {/* Top Header & Tab Navigation */}
@@ -2678,6 +2686,7 @@ export default function ThemePage() {
           }}
         >
           <div
+            className="sitex-preview-canvas"
             style={{
               width: previewDevice === 'mobile' ? 390 : '100%',
               height: 'calc(100vh - 120px)',
@@ -2689,6 +2698,8 @@ export default function ThemePage() {
               boxShadow: previewDevice === 'mobile' ? '0 16px 40px rgba(0,0,0,0.8)' : '0 8px 30px rgba(0,0,0,0.4)',
               transform: 'translateZ(0)',
               position: 'relative',
+              isolation: 'isolate',
+              contain: 'paint layout',
               background: effectiveTheme.backgroundColor || '#121416',
             }}
           >

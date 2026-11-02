@@ -250,6 +250,18 @@ export default function LivePreviewEngine({
         </div>
       </div>
 
+      {/* Scoped Preview Containment Styles */}
+      <style>{`
+        .sitex-preview-canvas header {
+          position: sticky !important;
+          top: 0 !important;
+          left: 0 !important;
+          right: 0 !important;
+          width: 100% !important;
+          z-index: 50 !important;
+        }
+      `}</style>
+
       {/* Canvas Viewport Frame */}
       <div
         style={{
@@ -263,24 +275,27 @@ export default function LivePreviewEngine({
         }}
       >
         <div
+          className="sitex-preview-canvas"
           style={{
             width: containerWidth,
             maxWidth: '100%',
             height: viewport === 'desktop' ? '100%' : '844px',
-            transform: scale !== 100 ? `scale(${scale / 100})` : undefined,
+            transform: scale !== 100 ? `scale(${scale / 100})` : 'translateZ(0)',
             transformOrigin: 'top center',
             transition: 'width 0.25s ease',
             borderRadius: viewport === 'mobile' ? 36 : viewport === 'tablet' ? 24 : 0,
             border:
               viewport !== 'desktop'
                 ? '8px solid #232738'
-                : 'none',
+                : '1px solid #282A3A',
             boxShadow:
               viewport !== 'desktop'
                 ? '0 25px 60px -15px rgba(0,0,0,0.7), 0 0 0 1px #383D55'
                 : 'none',
             overflow: 'hidden',
             position: 'relative',
+            isolation: 'isolate',
+            contain: 'paint layout',
             background: theme.backgroundColor || '#FFFFFF',
           }}
         >
@@ -303,11 +318,15 @@ export default function LivePreviewEngine({
 
           {/* Site Rendering */}
           <div
+            className="sitex-preview-canvas"
             style={{
               width: '100%',
               height: '100%',
               overflowY: 'auto',
               position: 'relative',
+              transform: 'translateZ(0)',
+              isolation: 'isolate',
+              contain: 'paint layout',
             }}
             onClick={(e) => {
               if (inspectMode && onSelectComponent) {

@@ -46,3 +46,4 @@ export interface CustomThemeRecord {
   updatedAt: number;
   createdAt: number;
 }
+
