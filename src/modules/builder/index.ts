@@ -3,4 +3,10 @@ export * from './registry/componentRegistry';
 export * from './renderer';
 export * from './serializer';
 export * from './components/BuilderEditor';
-
+export * from './components/VisualThemeBuilder';
+export * from './components/STLEditor';
+export * from './components/LivePreviewEngine';
+export * from './components/ThemeManager';
+export * from './components/AssetsManager';
+export * from './components/VersionHistory';
+export * from './components/ImportExportModal';

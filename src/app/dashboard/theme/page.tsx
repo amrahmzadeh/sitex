@@ -545,6 +545,25 @@ export default function ThemePage() {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <a
+              href="/dashboard/builder"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                padding: '7px 14px',
+                borderRadius: 8,
+                background: 'linear-gradient(135deg, rgba(0, 211, 125, 0.15), rgba(124, 92, 252, 0.15))',
+                border: '1px solid #00D37D',
+                color: '#00D37D',
+                fontSize: 12,
+                fontWeight: 700,
+                textDecoration: 'none',
+              }}
+            >
+              <Sparkles size={13} />
+              Tema Redaktoru (STL & Visual)
+            </a>
             {slug && (
               <a
                 href={`/site/${slug}`}

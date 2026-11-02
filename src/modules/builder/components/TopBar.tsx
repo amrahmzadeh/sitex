@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { DeviceMode } from '../types';
+import { DeviceMode, BuilderActiveMode } from '../types';
 import {
   Monitor,
   Tablet,
@@ -12,13 +12,22 @@ import {
   Upload,
   Save,
   Eye,
+  Code2,
+  Palette,
+  Layers,
+  History,
+  Image,
+  Globe,
+  Loader2,
+  Check,
+  CheckCircle2,
 } from 'lucide-react';
 
 interface TopBarProps {
   templateName: string;
   onUpdateName: (name: string) => void;
-  device: DeviceMode;
-  onSetDevice: (device: DeviceMode) => void;
+  activeMode: BuilderActiveMode;
+  onSetActiveMode: (mode: BuilderActiveMode) => void;
   canUndo: boolean;
   canRedo: boolean;
   onUndo: () => void;
@@ -27,13 +36,15 @@ interface TopBarProps {
   onImport: () => void;
   onSave: () => void;
   saving?: boolean;
+  saved?: boolean;
+  hasUnsavedChanges?: boolean;
 }
 
 export function TopBar({
   templateName,
   onUpdateName,
-  device,
-  onSetDevice,
+  activeMode,
+  onSetActiveMode,
   canUndo,
   canRedo,
   onUndo,
@@ -42,182 +53,228 @@ export function TopBar({
   onImport,
   onSave,
   saving,
+  saved,
+  hasUnsavedChanges,
 }: TopBarProps) {
   return (
     <header
       style={{
         height: 56,
-        background: '#181B1E',
-        borderBottom: '1px solid #383334',
+        background: '#13151A',
+        borderBottom: '1px solid #22262E',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         padding: '0 20px',
+        zIndex: 50,
       }}
     >
-      {/* Title Input */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-        <input
-          type="text"
-          value={templateName}
-          onChange={(e) => onUpdateName(e.target.value)}
-          style={{
-            background: 'transparent',
-            border: '1px solid transparent',
-            color: '#F5F5F7',
-            fontSize: 16,
-            fontWeight: 700,
-            padding: '4px 8px',
-            borderRadius: 6,
-          }}
-          onFocus={(e) => (e.currentTarget.style.borderColor = '#383334')}
-          onBlur={(e) => (e.currentTarget.style.borderColor = 'transparent')}
-        />
-        <span style={{ fontSize: 11, background: 'rgba(0,211,125,0.15)', color: '#00D37D', padding: '2px 8px', borderRadius: 12, fontWeight: 600 }}>
-          Wix-Style Builder
-        </span>
+      {/* Title & Brand */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div
+            style={{
+              width: 28,
+              height: 28,
+              borderRadius: 6,
+              background: '#00D37D',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontWeight: 800,
+              fontSize: 13,
+              color: '#000',
+            }}
+          >
+            SX
+          </div>
+          <input
+            type="text"
+            value={templateName}
+            onChange={(e) => onUpdateName(e.target.value)}
+            style={{
+              background: 'transparent',
+              border: '1px solid transparent',
+              color: '#F5F5F7',
+              fontSize: 15,
+              fontWeight: 700,
+              padding: '3px 6px',
+              borderRadius: 6,
+            }}
+            onFocus={(e) => (e.currentTarget.style.borderColor = '#2E333E')}
+            onBlur={(e) => (e.currentTarget.style.borderColor = 'transparent')}
+          />
+        </div>
+
+        {hasUnsavedChanges ? (
+          <span style={{ fontSize: 11, background: 'rgba(251,191,36,0.12)', color: '#FBBF24', padding: '2px 8px', borderRadius: 12, fontWeight: 600 }}>
+            ● Dəyişikliklər var
+          </span>
+        ) : (
+          <span style={{ fontSize: 11, background: 'rgba(0,211,125,0.12)', color: '#00D37D', padding: '2px 8px', borderRadius: 12, fontWeight: 600 }}>
+            ✓ Yadda saxlanılıb
+          </span>
+        )}
       </div>
 
-      {/* Device Viewport Selector */}
-      <div style={{ display: 'flex', background: '#121416', padding: 3, borderRadius: 8, border: '1px solid #383334' }}>
-        <button
-          onClick={() => onSetDevice('desktop')}
-          style={{
-            padding: '6px 12px',
-            background: device === 'desktop' ? '#282C32' : 'transparent',
-            color: device === 'desktop' ? '#00D37D' : '#8888A0',
-            border: 'none',
-            borderRadius: 6,
-            cursor: 'pointer',
-          }}
-          title="Desktop Görünüşü"
-        >
-          <Monitor size={16} />
-        </button>
-        <button
-          onClick={() => onSetDevice('tablet')}
-          style={{
-            padding: '6px 12px',
-            background: device === 'tablet' ? '#282C32' : 'transparent',
-            color: device === 'tablet' ? '#00D37D' : '#8888A0',
-            border: 'none',
-            borderRadius: 6,
-            cursor: 'pointer',
-          }}
-          title="Planşet Görünüşü"
-        >
-          <Tablet size={16} />
-        </button>
-        <button
-          onClick={() => onSetDevice('mobile')}
-          style={{
-            padding: '6px 12px',
-            background: device === 'mobile' ? '#282C32' : 'transparent',
-            color: device === 'mobile' ? '#00D37D' : '#8888A0',
-            border: 'none',
-            borderRadius: 6,
-            cursor: 'pointer',
-          }}
-          title="Mobil Görünüş"
-        >
-          <Smartphone size={16} />
-        </button>
+      {/* Mode Switcher Buttons */}
+      <div
+        style={{
+          display: 'flex',
+          background: '#0B0C0E',
+          padding: 3,
+          borderRadius: 10,
+          border: '1px solid #22262E',
+          gap: 2,
+        }}
+      >
+        {[
+          { id: 'visual', label: 'Vizual Redaktor', icon: Palette },
+          { id: 'code', label: 'Kod Redaktoru (STL)', icon: Code2 },
+          { id: 'preview', label: 'Canlı Önizləmə', icon: Eye },
+          { id: 'themes', label: 'Tema İdarəetməsi', icon: Layers },
+          { id: 'assets', label: 'Aktivlər', icon: Image },
+          { id: 'history', label: 'Tarixçə', icon: History },
+        ].map((item) => {
+          const Icon = item.icon;
+          const isActive = activeMode === item.id;
+          return (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => onSetActiveMode(item.id as any)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                padding: '6px 14px',
+                borderRadius: 8,
+                border: 'none',
+                background: isActive ? '#1F232B' : 'transparent',
+                color: isActive ? '#00D37D' : '#8888A0',
+                fontSize: 12,
+                fontWeight: isActive ? 700 : 500,
+                cursor: 'pointer',
+                transition: 'all 0.15s ease',
+              }}
+            >
+              <Icon size={14} color={isActive ? '#00D37D' : '#8888A0'} />
+              <span>{item.label}</span>
+            </button>
+          );
+        })}
       </div>
 
-      {/* Actions */}
+      {/* Undo / Redo & Actions */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         {/* Undo / Redo */}
-        <div style={{ display: 'flex', gap: 2, marginRight: 8 }}>
+        <div style={{ display: 'flex', gap: 2, background: '#0B0C0E', padding: 2, borderRadius: 8, border: '1px solid #22262E' }}>
           <button
+            type="button"
             onClick={onUndo}
             disabled={!canUndo}
             style={{
-              padding: '6px 8px',
+              padding: '6px 10px',
               background: 'transparent',
+              color: canUndo ? '#C0C0D0' : '#444',
               border: 'none',
-              color: canUndo ? '#F5F5F7' : '#555',
-              cursor: canUndo ? 'pointer' : 'not-allowed',
+              borderRadius: 6,
+              cursor: canUndo ? 'pointer' : 'default',
             }}
             title="Geri al (Undo)"
           >
-            <Undo2 size={16} />
+            <Undo2 size={14} />
           </button>
           <button
+            type="button"
             onClick={onRedo}
             disabled={!canRedo}
             style={{
-              padding: '6px 8px',
+              padding: '6px 10px',
               background: 'transparent',
+              color: canRedo ? '#C0C0D0' : '#444',
               border: 'none',
-              color: canRedo ? '#F5F5F7' : '#555',
-              cursor: canRedo ? 'pointer' : 'not-allowed',
+              borderRadius: 6,
+              cursor: canRedo ? 'pointer' : 'default',
             }}
-            title="İrəli (Redo)"
+            title="İrəli al (Redo)"
           >
-            <Redo2 size={16} />
+            <Redo2 size={14} />
           </button>
         </div>
 
-        {/* JSON Import/Export */}
+        {/* Import & Export */}
         <button
+          type="button"
           onClick={onImport}
           style={{
-            padding: '6px 12px',
-            background: '#22252A',
-            border: '1px solid #383334',
-            color: '#E2E2E5',
+            padding: '7px 12px',
+            background: 'rgba(255,255,255,0.03)',
+            color: '#C0C0D0',
+            border: '1px solid #282C35',
             borderRadius: 8,
             fontSize: 12,
             fontWeight: 600,
+            cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
             gap: 6,
-            cursor: 'pointer',
           }}
         >
-          <Upload size={14} /> İdxal
-        </button>
-        <button
-          onClick={onExport}
-          style={{
-            padding: '6px 12px',
-            background: '#22252A',
-            border: '1px solid #383334',
-            color: '#E2E2E5',
-            borderRadius: 8,
-            fontSize: 12,
-            fontWeight: 600,
-            display: 'flex',
-            alignItems: 'center',
-            gap: 6,
-            cursor: 'pointer',
-          }}
-        >
-          <Download size={14} /> İxrac
+          <Upload size={13} />
+          İdxal
         </button>
 
-        {/* Save & Publish Theme */}
         <button
+          type="button"
+          onClick={onExport}
+          style={{
+            padding: '7px 12px',
+            background: 'rgba(255,255,255,0.03)',
+            color: '#C0C0D0',
+            border: '1px solid #282C35',
+            borderRadius: 8,
+            fontSize: 12,
+            fontWeight: 600,
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6,
+          }}
+        >
+          <Download size={13} />
+          İxrac
+        </button>
+
+        {/* Save button */}
+        <button
+          type="button"
           onClick={onSave}
           disabled={saving}
           style={{
-            padding: '8px 16px',
-            background: '#00D37D',
-            color: '#000000',
+            padding: '7px 16px',
+            background: saved ? '#00D37D' : '#00D37D',
+            color: '#000',
             border: 'none',
             borderRadius: 8,
-            fontSize: 13,
+            fontSize: 12,
             fontWeight: 700,
+            cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
-            gap: 8,
-            cursor: 'pointer',
+            gap: 6,
           }}
         >
-          <Save size={15} /> {saving ? 'Yadda saxlanılır...' : 'Yadda Saxla & Yayımla'}
+          {saving ? (
+            <Loader2 size={13} style={{ animation: 'spin 1s linear infinite' }} />
+          ) : saved ? (
+            <Check size={13} />
+          ) : (
+            <Save size={13} />
+          )}
+          <span>{saved ? 'Saxlandı' : 'Yadda Saxla'}</span>
         </button>
       </div>
     </header>
   );
 }
-
