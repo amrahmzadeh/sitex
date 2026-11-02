@@ -170,6 +170,94 @@
       "themePreset": "modern",
       "preview": { "gradient": ["#FF6B35", "#FAFAFA"] },
       "source": { "path": "templates/landing-generic", "ref": "v1.0.0" }
+    },
+    {
+      "id": "muessise-restoran-kafe",
+      "name": "Restoran və Kafe (Warm Gourmet)",
+      "description": "Restoran və kafelər üçün zərif menyu və interaktiv dizayn.",
+      "category": "muessise-sayti",
+      "subcategory": "restoran-ve-kafe",
+      "version": "1.0.0",
+      "themePreset": "warmGourmetPro",
+      "preview": { "gradient": ["#ffc665", "#121416"] },
+      "source": { "path": "templates/muessise-restoran-kafe", "ref": "v1.0.0" }
+    },
+    {
+      "id": "by-salmanov-restaurant",
+      "name": "By Salmanov (PRO)",
+      "description": "Lüks restoran və kafelər üçün qırmızı və qara tonlarda premium dizayn.",
+      "category": "muessise-sayti",
+      "subcategory": "restoran-ve-kafe",
+      "version": "1.0.0",
+      "themePreset": "bySalmanov",
+      "preview": { "gradient": ["#cc0000", "#0a0a0c"] },
+      "source": { "path": "templates/by-salmanov-restaurant", "ref": "v1.0.0" }
+    },
+    {
+      "id": "muessise-klinika",
+      "name": "Klinika və Tibb Mərkəzi",
+      "description": "Klinikalar və tibb mərkəzləri üçün xidmət kataloqu və etibarlı dizayn.",
+      "category": "muessise-sayti",
+      "subcategory": "klinika-ve-tibb-merkezi",
+      "version": "1.0.0",
+      "themePreset": "modern",
+      "preview": { "gradient": ["#22D3EE", "#1B1B2F"] },
+      "source": { "path": "templates/muessise-klinika", "ref": "v1.0.0" }
+    },
+    {
+      "id": "muessise-gozellik",
+      "name": "Gözəllik Salonu",
+      "description": "Gözəllik və SPA salonları üçün estetik və zərif xidmət vitrini.",
+      "category": "muessise-sayti",
+      "subcategory": "gozellik-salonu",
+      "version": "1.0.0",
+      "themePreset": "elegant",
+      "preview": { "gradient": ["#EC4899", "#1F1D2B"] },
+      "source": { "path": "templates/muessise-gozellik", "ref": "v1.0.0" }
+    },
+    {
+      "id": "muessise-tikinti",
+      "name": "Tikinti Şirkəti",
+      "description": "Tikinti və təmir şirkətləri üçün güclü və etibarlı xidmət şablonu.",
+      "category": "muessise-sayti",
+      "subcategory": "tikinti-sirketi",
+      "version": "1.0.0",
+      "themePreset": "classic",
+      "preview": { "gradient": ["#F59E0B", "#1C1917"] },
+      "source": { "path": "templates/muessise-tikinti", "ref": "v1.0.0" }
+    },
+    {
+      "id": "muessise-avtomobil",
+      "name": "Avtomobil Servisi",
+      "description": "Avto servis və texniki xidmət mərkəzləri üçün dinamik şablon.",
+      "category": "muessise-sayti",
+      "subcategory": "avtomobil-servisi",
+      "version": "1.0.0",
+      "themePreset": "modern",
+      "preview": { "gradient": ["#3B82F6", "#0F172A"] },
+      "source": { "path": "templates/muessise-avtomobil", "ref": "v1.0.0" }
+    },
+    {
+      "id": "muessise-xeber-media",
+      "name": "Xəbər və Media",
+      "description": "Xəbər portalları və media qurumları üçün oxunaqlı şablon.",
+      "category": "muessise-sayti",
+      "subcategory": "xeber-ve-media",
+      "version": "1.0.0",
+      "themePreset": "classic",
+      "preview": { "gradient": ["#8B0000", "#FFFEF7"] },
+      "source": { "path": "templates/muessise-xeber-media", "ref": "v1.0.0" }
+    },
+    {
+      "id": "muessise-emlak-agentliyi",
+      "name": "Daşınmaz Əmlak Agentliyi",
+      "description": "Əmlak agentlikləri üçün elan və xidmət təqdimatı.",
+      "category": "muessise-sayti",
+      "subcategory": "dasinmaz-emlak-agentliyi",
+      "version": "1.0.0",
+      "themePreset": "classic",
+      "preview": { "gradient": ["#8B0000", "#FFFEF7"] },
+      "source": { "path": "templates/muessise-emlak-agentliyi", "ref": "v1.0.0" }
     }
   ]
 }

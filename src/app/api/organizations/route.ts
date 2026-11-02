@@ -103,6 +103,7 @@ export async function POST(req: Request) {
     if (
       selectedTemplate &&
       siteCategory &&
+      selectedTemplate.source?.repository &&
       (selectedTemplate.category !== siteCategory || selectedTemplate.subcategory !== siteSubcategory)
     ) {
       return NextResponse.json(

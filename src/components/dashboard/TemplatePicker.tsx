@@ -53,15 +53,31 @@ export default function TemplatePicker({
     ])
       .then(([tplData, themeData]) => {
         const githubTemplates: TemplateOption[] = tplData.templates || [];
-        const customThemes: TemplateOption[] = (themeData.themes || []).map((t: any) => ({
-          id: t.id,
-          name: t.name,
-          description: t.description,
-          version: t.version,
-          preview: { gradient: t.previewGradient || ['#00D37D', '#121416'] },
-          requiresGitHub: false,
-          installable: true,
-        }));
+        const isFood = categoryId.includes('restoran') || categoryId.includes('kafe') || subcategoryId.includes('restoran') || subcategoryId.includes('kafe');
+
+        const customThemes: TemplateOption[] = (themeData.themes || [])
+          .filter((t: any) => {
+            if (!t.category) return true;
+            const catList = Array.isArray(t.category) ? t.category : [t.category];
+            const lowerCats = catList.map((c: string) => c.toLowerCase());
+            if (isFood) {
+              return lowerCats.some((c: string) => c.includes('restoran') || c.includes('kafe') || c.includes('street') || c.includes('food') || c.includes('pro'));
+            }
+            return (
+              lowerCats.includes(categoryId.toLowerCase()) ||
+              lowerCats.includes(subcategoryId.toLowerCase()) ||
+              lowerCats.some((c: string) => c.includes('muasir') || c.includes('modern') || c.includes('klassik'))
+            );
+          })
+          .map((t: any) => ({
+            id: t.id,
+            name: t.name,
+            description: t.description,
+            version: t.version,
+            preview: { gradient: t.previewGradient || ['#00D37D', '#121416'] },
+            requiresGitHub: false,
+            installable: true,
+          }));
 
         // Merge, avoiding duplicate IDs
         const existingIds = new Set(githubTemplates.map((t) => t.id));

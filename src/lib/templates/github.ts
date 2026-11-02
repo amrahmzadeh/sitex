@@ -8,6 +8,8 @@ import {
   type TemplateDefinition,
   type TemplateManifest,
 } from './manifest';
+import { defaultThemes } from '@/lib/themes';
+import { getTheme } from '@/modules/themes';
 
 /** Uzaq manifestdə (varsa) və ya lokal manifestdə şablon tərifini tapır. */
 export async function getTemplateDefinition(
@@ -15,7 +17,38 @@ export async function getTemplateDefinition(
 ): Promise<TemplateDefinition | undefined> {
   const remote = await fetchRemoteManifest();
   const manifest = remote.manifest || getLocalManifest();
-  return manifest.templates.find((template) => template.id === templateId);
+  const found = manifest.templates.find((template) => template.id === templateId);
+  if (found) return found;
+
+  const dt = defaultThemes[templateId];
+  if (dt) {
+    return {
+      id: templateId,
+      name: dt.name,
+      description: dt.description || '',
+      category: 'muessise-sayti',
+      subcategory: 'restoran-ve-kafe',
+      version: '1.0.0',
+      themePreset: templateId,
+      preview: { gradient: (dt.previewGradient as [string, string]) || ['#00D37D', '#121416'] },
+    };
+  }
+
+  const themeDef = getTheme(templateId);
+  if (themeDef) {
+    return {
+      id: themeDef.id,
+      name: themeDef.name,
+      description: themeDef.description || '',
+      category: Array.isArray(themeDef.category) ? themeDef.category[0] : 'muessise-sayti',
+      subcategory: 'restoran-ve-kafe',
+      version: themeDef.version || '1.0.0',
+      themePreset: defaultThemes[themeDef.id] ? themeDef.id : 'elegant',
+      preview: { gradient: (themeDef.previewGradient as [string, string]) || ['#00D37D', '#121416'] },
+    };
+  }
+
+  return undefined;
 }
 
 /**

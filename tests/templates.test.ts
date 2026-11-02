@@ -241,3 +241,19 @@ test('naməlum şablon 404 xətası qaytarır', async () => {
     (error: unknown) => error instanceof Error && 'status' in error && error.status === 404
   );
 });
+
+test('daxili temalar (bySalmanov, warmGourmetPro və s.) şablon kimi tapılır və tətbiq olunur', async () => {
+  const bySal = await getTemplateDefinition('bySalmanov');
+  assert.ok(bySal);
+  assert.equal(bySal?.name, 'By Salmanov (PRO)');
+
+  const resolved = await resolveTemplateTheme('bySalmanov');
+  assert.equal(resolved.templateId, 'bySalmanov');
+  assert.equal(resolved.source, 'builtin');
+  assert.equal(resolved.theme.primaryColor, '#cc0000');
+
+  const muessiseRestoran = await getTemplateDefinition('muessise-restoran-kafe');
+  assert.ok(muessiseRestoran);
+  assert.equal(muessiseRestoran?.category, 'muessise-sayti');
+  assert.equal(muessiseRestoran?.subcategory, 'restoran-ve-kafe');
+});
