@@ -545,25 +545,6 @@ export default function ThemePage() {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <a
-              href="/dashboard/builder"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6,
-                padding: '7px 14px',
-                borderRadius: 8,
-                background: 'linear-gradient(135deg, rgba(0, 211, 125, 0.15), rgba(124, 92, 252, 0.15))',
-                border: '1px solid #00D37D',
-                color: '#00D37D',
-                fontSize: 12,
-                fontWeight: 700,
-                textDecoration: 'none',
-              }}
-            >
-              <Sparkles size={13} />
-              Tema Redaktoru (STL & Visual)
-            </a>
             {slug && (
               <a
                 href={`/site/${slug}`}
@@ -2224,11 +2205,6 @@ export default function ThemePage() {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <h2 style={{ fontSize: 18, fontWeight: 700, color: '#E8E8F0', margin: 0 }}>Canlı Önizləmə</h2>
-            {isProActive && (
-              <span style={{ background: 'linear-gradient(135deg, #E5A93C, #F59E0B)', color: '#111315', fontSize: 11, fontWeight: 800, padding: '2px 8px', borderRadius: 9999 }}>
-                PRO ŞABLON AKTİV
-              </span>
-            )}
             {slug && (
               <a
                 href={`/site/${slug}`}

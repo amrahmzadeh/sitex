@@ -78,17 +78,50 @@ export async function POST(
       select: { sortOrder: true },
     });
 
-    const { sortOrder: _unused, ...restWithoutOrder } = rest;
+    if (rest.isFeatured) {
+      await prisma.menuItem.updateMany({
+        where: { organizationId: orgId },
+        data: { isFeatured: false },
+      });
+    }
+
+    const { sortOrder: _unused, ...restWithoutOrderClean } = rest;
     const item = await prisma.menuItem.create({
       data: {
         organizationId: orgId,
         name,
         slug,
         sortOrder: (maxOrder?.sortOrder ?? -1) + 1,
-        ...restWithoutOrder,
+        ...restWithoutOrderClean,
       },
       include: { category: true, images: true },
     });
+
+    if (item.isFeatured) {
+      const website = await prisma.website.findUnique({
+        where: { organizationId: orgId },
+      });
+      if (website) {
+        const draft = {
+          ...(typeof website.draftTheme === 'object' && website.draftTheme ? (website.draftTheme as any) : {}),
+          heroDishId: item.id,
+          heroDishTitle: item.name,
+          heroDishImage: item.image || '',
+          heroDishSubtitle: item.description || '',
+        };
+        const published = {
+          ...(typeof website.publishedTheme === 'object' && website.publishedTheme ? (website.publishedTheme as any) : {}),
+          heroDishId: item.id,
+          heroDishTitle: item.name,
+          heroDishImage: item.image || '',
+          heroDishSubtitle: item.description || '',
+        };
+        await prisma.website.update({
+          where: { organizationId: orgId },
+          data: { draftTheme: draft, publishedTheme: published },
+        });
+      }
+    }
 
     return NextResponse.json({ item }, { status: 201 });
   } catch (error) {

@@ -240,26 +240,6 @@ export default function DashboardShell({ children }: { children: React.ReactNode
 
       {/* Main */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-        {/* Topbar */}
-        <header style={{ height: 60, borderBottom: '1px solid #383334', display: 'flex', alignItems: 'center', padding: '0 24px', gap: 16, flexShrink: 0 }}>
-          <button
-            onClick={() => setSidebarOpen((p) => !p)}
-            style={{ border: 'none', background: 'transparent', color: '#8888A0', cursor: 'pointer', padding: 4, display: 'none' }}
-          >
-            <Menu size={20} />
-          </button>
-          <div style={{ flex: 1 }} />
-          {currentOrg && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: '#8888A0' }}>
-              <Building2 size={14} />
-              <span>{currentOrg.name}</span>
-              {currentOrg.website?.isPublished
-                ? <span style={{ background: 'rgba(52,211,153,0.15)', color: '#34D399', padding: '2px 8px', borderRadius: 100, fontSize: 11 }}>Yayınlanıb</span>
-                : <span style={{ background: 'rgba(251,191,36,0.15)', color: '#FBBF24', padding: '2px 8px', borderRadius: 100, fontSize: 11 }}>Qaralama</span>}
-            </div>
-          )}
-        </header>
-
         {/* Page Content */}
         <main
           className="dash-main"

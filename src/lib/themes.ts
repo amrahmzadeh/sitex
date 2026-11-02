@@ -66,6 +66,7 @@ export interface ThemeConfig {
   heroFeature2?: string;
   heroFeature3?: string;
   heroDishBadge?: string;
+  heroDishId?: string;
   heroDishImage?: string;
   heroDishTitle?: string;
   heroDishSubtitle?: string;

@@ -172,12 +172,18 @@ export default function ProRestaurantSite({
 
   // Featured dish for hero card
   const heroDish = useMemo(() => {
+    if (theme.heroDishId) {
+      for (const cat of menuCategories) {
+        const match = cat.menuItems.find(m => m.id === theme.heroDishId);
+        if (match) return match;
+      }
+    }
     for (const cat of menuCategories) {
       const feat = cat.menuItems.find(m => m.isFeatured);
       if (feat) return feat;
     }
     return menuCategories[0]?.menuItems[0] || null;
-  }, [menuCategories]);
+  }, [menuCategories, theme.heroDishId]);
 
   // Real-time open status
   const isOpenNow = useMemo(() => {
@@ -902,8 +908,8 @@ export default function ProRestaurantSite({
                     }}
                   >
                     <img
-                      src={theme.heroDishImage || theme.headerImageUrl || heroDish?.image || FALLBACK_HERO_IMAGE}
-                      alt={theme.heroDishTitle || heroDish?.name || organization.name}
+                      src={heroDish?.image || theme.heroDishImage || theme.headerImageUrl || FALLBACK_HERO_IMAGE}
+                      alt={heroDish?.name || theme.heroDishTitle || organization.name}
                       style={{
                         width: '100%',
                         height: '100%',
@@ -970,10 +976,10 @@ export default function ProRestaurantSite({
                           fontFamily: "'Playfair Display', serif",
                         }}
                       >
-                        {theme.heroDishTitle || heroDish?.name || 'Ənənəvi Xüsusi Resept'}
+                        {heroDish?.name || theme.heroDishTitle || 'Ənənəvi Xüsusi Resept'}
                       </h3>
                       <p style={{ margin: '4px 0 0', fontSize: 13, color: '#9BA3AF' }}>
-                        {theme.heroDishSubtitle || 'Ənənəvi kərə yağı və xüsusi ədviyyatlarla'}
+                        {heroDish?.description || heroDish?.ingredients || theme.heroDishSubtitle || 'Ənənəvi kərə yağı və xüsusi ədviyyatlarla'}
                       </p>
                     </div>
                     <div style={{ textAlign: 'right' }}>
@@ -2277,10 +2283,39 @@ export default function ProRestaurantSite({
                   }}
                 >
                   {cartEntries.length === 0 ? (
-                    <div style={{ textAlign: 'center', padding: '60px 0', color: '#9BA3AF' }}>
-                      <ShoppingCart size={48} strokeWidth={1.2} style={{ marginBottom: 12, opacity: 0.4 }} />
-                      <p style={{ margin: 0, fontSize: 16, fontWeight: 600 }}>Səbətiniz hələ boşdur</p>
-                      <p style={{ margin: '4px 0 0', fontSize: 13, opacity: 0.7 }}>
+                    <div
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        textAlign: 'center',
+                        padding: '60px 20px',
+                        color: '#9BA3AF',
+                        width: '100%',
+                        margin: '0 auto',
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: 80,
+                          height: 80,
+                          borderRadius: '50%',
+                          backgroundColor: 'rgba(255, 255, 255, 0.04)',
+                          border: '1px solid rgba(255, 255, 255, 0.08)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          marginBottom: 16,
+                          margin: '0 auto 16px',
+                        }}
+                      >
+                        <ShoppingCart size={36} strokeWidth={1.3} style={{ display: 'block', margin: '0 auto', opacity: 0.5 }} />
+                      </div>
+                      <p style={{ margin: 0, fontSize: 16, fontWeight: 600, color: '#F7F8F9', textAlign: 'center' }}>
+                        Səbətiniz hələ boşdur
+                      </p>
+                      <p style={{ margin: '6px 0 0', fontSize: 13, opacity: 0.7, textAlign: 'center', maxWidth: 260 }}>
                         Menyudan sevdiyiniz yeməkləri əlavə edin
                       </p>
                     </div>

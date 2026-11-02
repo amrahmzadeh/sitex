@@ -12,7 +12,6 @@ import {
   CreditCard,
   Download,
   Settings,
-  Layers,
 } from 'lucide-react';
 import { NavItemConfig } from './types';
 
@@ -33,7 +32,6 @@ export const isFoodCategory = (category?: string | null, subcategory?: string | 
 export const dashboardNavItems: NavItemConfig[] = [
   { id: 'dashboard', href: '/dashboard', icon: LayoutDashboard, label: 'Ana Səhifə' },
   { id: 'website', href: '/dashboard/website', icon: Globe, label: 'Veb Saytım' },
-  { id: 'builder', href: '/dashboard/builder', icon: Layers, label: 'Tema Redaktoru' },
   { id: 'theme', href: '/dashboard/theme', icon: Palette, label: 'Tema' },
   { id: 'social', href: '/dashboard/social', icon: Share2, label: 'Sosial Media' },
   { id: 'splash', href: '/dashboard/splash', icon: Sparkles, label: 'Splash Screen' },

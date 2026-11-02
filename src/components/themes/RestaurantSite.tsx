@@ -408,10 +408,10 @@ function CartDrawer({
             {/* Items list */}
             <div style={{ flex: 1, overflowY: 'auto', padding: 20, display: 'flex', flexDirection: 'column', gap: 12 }}>
               {entries.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '60px 20px', color: `${theme.textColor}80` }}>
-                  <ShoppingCart size={48} style={{ margin: '0 auto 16px', opacity: 0.3 }} />
-                  <p style={{ fontWeight: 600, fontSize: 16, marginBottom: 8, color: theme.textColor }}>Səbətiniz boşdur</p>
-                  <p style={{ fontSize: 13, lineHeight: 1.5 }}>Menyudan bəyəndiyiniz yeməkləri seçib səbətə əlavə edin.</p>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '60px 20px', color: `${theme.textColor}80`, width: '100%' }}>
+                  <ShoppingCart size={48} style={{ display: 'block', margin: '0 auto 16px', opacity: 0.3 }} />
+                  <p style={{ fontWeight: 600, fontSize: 16, marginBottom: 8, color: theme.textColor, textAlign: 'center' }}>Səbətiniz boşdur</p>
+                  <p style={{ fontSize: 13, lineHeight: 1.5, textAlign: 'center', maxWidth: 280 }}>Menyudan bəyəndiyiniz yeməkləri seçib səbətə əlavə edin.</p>
                 </div>
               ) : (
                 entries.map(({ item, quantity }) => {

@@ -1,12 +1,5 @@
-'use client';
-
-import dynamic from 'next/dynamic';
-
-const BuilderEditor = dynamic(
-  () => import('@/modules/builder').then((mod) => mod.BuilderEditor),
-  { ssr: false }
-);
+import { redirect } from 'next/navigation';
 
 export default function BuilderPage() {
-  return <BuilderEditor />;
+  redirect('/dashboard/theme');
 }

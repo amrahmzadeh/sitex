@@ -43,11 +43,44 @@ export async function PATCH(
       }
     }
 
+    if (result.data.isFeatured === true) {
+      await prisma.menuItem.updateMany({
+        where: { organizationId: orgId, id: { not: itemId } },
+        data: { isFeatured: false },
+      });
+    }
+
     const item = await prisma.menuItem.update({
       where: { id: itemId, organizationId: orgId },
       data: result.data,
       include: { category: true, images: true },
     });
+
+    if (item.isFeatured) {
+      const website = await prisma.website.findUnique({
+        where: { organizationId: orgId },
+      });
+      if (website) {
+        const draft = {
+          ...(typeof website.draftTheme === 'object' && website.draftTheme ? (website.draftTheme as any) : {}),
+          heroDishId: item.id,
+          heroDishTitle: item.name,
+          heroDishImage: item.image || '',
+          heroDishSubtitle: item.description || '',
+        };
+        const published = {
+          ...(typeof website.publishedTheme === 'object' && website.publishedTheme ? (website.publishedTheme as any) : {}),
+          heroDishId: item.id,
+          heroDishTitle: item.name,
+          heroDishImage: item.image || '',
+          heroDishSubtitle: item.description || '',
+        };
+        await prisma.website.update({
+          where: { organizationId: orgId },
+          data: { draftTheme: draft, publishedTheme: published },
+        });
+      }
+    }
 
     return NextResponse.json({ item });
   } catch (error: any) {

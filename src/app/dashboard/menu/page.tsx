@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Plus, Pencil, Trash2, X, Loader2, UtensilsCrossed,
   Tag, DollarSign, Eye, EyeOff, Star, Flame, Sparkles, Upload, ChevronDown, Film, AlertCircle,
+  Check, Search,
 } from 'lucide-react';
 import { isFoodCategory } from '@/modules/navigation';
 
@@ -52,6 +53,10 @@ export default function MenuPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
   const [currency, setCurrency] = useState('AZN');
+  const [heroDishId, setHeroDishId] = useState<string | null>(null);
+  const [settingHero, setSettingHero] = useState<string | null>(null);
+  const [showHeroPickerModal, setShowHeroPickerModal] = useState(false);
+  const [heroSearchQuery, setHeroSearchQuery] = useState('');
 
   useEffect(() => {
     if (!orgId) return;
@@ -69,6 +74,9 @@ export default function MenuPage() {
           return;
         }
         if (orgData.currency) setCurrency(orgData.currency);
+        const draft = orgData.website?.draftTheme as any;
+        const currentHero = draft?.heroDishId || its.items?.find((i: MenuItem) => i.isFeatured)?.id || null;
+        setHeroDishId(currentHero);
       }
       setCategories(cats.categories || []);
       setItems(its.items || []);
@@ -197,7 +205,13 @@ export default function MenuPage() {
         alert(data.error || 'Xəta baş verdi');
         return;
       }
-      if (editItem) {
+      if (payload.isFeatured) {
+        setHeroDishId(data.item.id);
+        setItems(its => its.map(x => ({
+          ...(x.id === (editItem ? editItem.id : data.item.id) ? data.item : x),
+          isFeatured: x.id === data.item.id,
+        })));
+      } else if (editItem) {
         const oldCatId = editItem.categoryId;
         const newCatId = data.item.categoryId;
         setItems(its => its.map(x => x.id === editItem.id ? { ...x, ...data.item } : x));
@@ -214,13 +228,50 @@ export default function MenuPage() {
     } finally { setSaving(false); }
   };
 
+  const setAsHeroDish = async (itemId: string | null) => {
+    if (!orgId) return;
+    setSettingHero(itemId ?? 'clear');
+    try {
+      const res = await fetch(`/api/organizations/${orgId}/menu/hero-dish`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ itemId }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setHeroDishId(itemId);
+        setItems(prev => prev.map(item => ({
+          ...item,
+          isFeatured: item.id === itemId,
+        })));
+        setShowHeroPickerModal(false);
+      } else {
+        alert(data.error || 'Xəta baş verdi');
+      }
+    } catch (e: any) {
+      alert(e?.message || 'Xəta baş verdi');
+    } finally {
+      setSettingHero(null);
+    }
+  };
+
   const deleteItem = async (id: string, _catId: string) => {
     if (!orgId || !confirm('Yemək silinsin?')) return;
     await fetch(`/api/organizations/${orgId}/menu/items/${id}`, { method: 'DELETE' });
     setItems(its => its.filter(x => x.id !== id));
+    if (heroDishId === id) setHeroDishId(null);
   };
 
   const catItems = items.filter(i => i.categoryId === activeCategory);
+  const currentHeroItem = items.find(i => i.id === heroDishId) || items.find(i => i.isFeatured) || null;
+  const currentHeroCategory = currentHeroItem ? categories.find(c => c.id === currentHeroItem.categoryId) : null;
+
+  const filteredPickerItems = items.filter(it => {
+    if (!heroSearchQuery.trim()) return true;
+    const q = heroSearchQuery.toLowerCase();
+    const cat = categories.find(c => c.id === it.categoryId);
+    return it.name.toLowerCase().includes(q) || cat?.name.toLowerCase().includes(q);
+  });
 
   if (loading) return (
     <div style={{ display: 'grid', gap: 16 }}>
@@ -238,6 +289,90 @@ export default function MenuPage() {
         <button onClick={() => openCatModal()} className="dash-btn-primary" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <Plus size={16} /> Kateqoriya əlavə et
         </button>
+      </div>
+
+      {/* Günün Sevimli Təamı (Başlıq Kartı) Bloku */}
+      <div
+        className="dash-card"
+        style={{
+          padding: '16px 20px',
+          marginBottom: 24,
+          border: '1.5px solid rgba(245, 158, 11, 0.45)',
+          background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(20, 22, 26, 0.95) 100%)',
+          borderRadius: 14,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 16,
+          flexWrap: 'wrap',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.25)',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14, minWidth: 260, flex: 1 }}>
+          {currentHeroItem?.image ? (
+            <img
+              src={currentHeroItem.image}
+              alt={currentHeroItem.name}
+              style={{ width: 60, height: 60, borderRadius: 10, objectFit: 'cover', border: '1px solid rgba(245, 158, 11, 0.4)', flexShrink: 0 }}
+            />
+          ) : (
+            <div style={{ width: 60, height: 60, borderRadius: 10, background: 'rgba(245, 158, 11, 0.15)', border: '1px solid rgba(245, 158, 11, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <Sparkles size={24} color="#FBBF24" />
+            </div>
+          )}
+          <div style={{ minWidth: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+              <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: '#FBBF24', background: 'rgba(251, 191, 36, 0.15)', padding: '2px 8px', borderRadius: 100, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                <Star size={11} fill="#FBBF24" /> Günün Sevimli Təamı (Başlıq Kartı)
+              </span>
+              {currentHeroCategory && (
+                <span style={{ fontSize: 12, color: '#8888A0' }}>· {currentHeroCategory.name}</span>
+              )}
+            </div>
+            <h3 style={{ margin: '4px 0 0', fontSize: 16, fontWeight: 700, color: '#F7F8F9', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              {currentHeroItem ? currentHeroItem.name : 'Təyin edilməyib'}
+            </h3>
+            <p style={{ margin: '2px 0 0', fontSize: 12, color: '#9BA3AF' }}>
+              {currentHeroItem
+                ? `${(currentHeroItem.discountPrice || currentHeroItem.price).toFixed(2)} ${currency} · Saytın ana səhifəsindəki başlıq kartında göstərilir`
+                : 'Saytın ana səhifəsindəki başlıq kartında göstəriləcək yeməyi buradan seçin'}
+            </p>
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <button
+            type="button"
+            onClick={() => setShowHeroPickerModal(true)}
+            className="dash-btn-primary"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              padding: '8px 14px',
+              fontSize: 13,
+              background: '#F59E0B',
+              borderColor: '#D97706',
+              color: '#000',
+              fontWeight: 600,
+            }}
+          >
+            <Sparkles size={14} />
+            {currentHeroItem ? 'Yeməyi Dəyiş' : 'Yemək Seç'}
+          </button>
+          {currentHeroItem && (
+            <button
+              type="button"
+              onClick={() => setAsHeroDish(null)}
+              disabled={settingHero === 'clear'}
+              className="dash-btn-secondary"
+              style={{ padding: '8px 12px', fontSize: 13, color: '#8888A0' }}
+              title="Günün təamı seçimini sıfırla"
+            >
+              {settingHero === 'clear' ? <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} /> : 'Sıfırla'}
+            </button>
+          )}
+        </div>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: 24, alignItems: 'start' }}>
@@ -323,7 +458,11 @@ export default function MenuPage() {
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 4 }}>
                             <span style={{ fontSize: 15, fontWeight: 600, color: '#E8E8F0' }}>{item.name}</span>
-                            {item.isFeatured && <span style={{ background: 'rgba(251,191,36,0.15)', color: '#FBBF24', fontSize: 10, padding: '1px 6px', borderRadius: 100 }}>Seçilmiş</span>}
+                            {(item.id === currentHeroItem?.id || item.isFeatured) && (
+                              <span style={{ background: 'linear-gradient(135deg, rgba(245,158,11,0.25), rgba(229,169,60,0.35))', color: '#FBBF24', border: '1px solid rgba(251,191,36,0.5)', fontSize: 10, fontWeight: 700, padding: '1px 8px', borderRadius: 100, display: 'inline-flex', alignItems: 'center', gap: 3 }}>
+                                <Star size={10} fill="#FBBF24" /> Başlıq Kartı
+                              </span>
+                            )}
                             {item.isNew && <span style={{ background: 'rgba(52,211,153,0.15)', color: '#34D399', fontSize: 10, padding: '1px 6px', borderRadius: 100 }}>Yeni</span>}
                             {item.isPopular && <span style={{ background: 'rgba(248,113,113,0.15)', color: '#F87171', fontSize: 10, padding: '1px 6px', borderRadius: 100 }}>Populyar</span>}
                             {item.video && <span style={{ background: 'rgba(255,159,28,0.18)', color: '#FF9F1C', fontSize: 10, padding: '1px 6px', borderRadius: 100, display: 'inline-flex', alignItems: 'center', gap: 3 }}>🎬 Video</span>}
@@ -341,6 +480,55 @@ export default function MenuPage() {
                           </div>
                         </div>
                         <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
+                          {item.id === currentHeroItem?.id || item.isFeatured ? (
+                            <button
+                              type="button"
+                              disabled
+                              title="Günün Sevimli Təamı kimi seçilib"
+                              style={{
+                                border: '1px solid rgba(251,191,36,0.5)',
+                                background: 'rgba(251,191,36,0.15)',
+                                color: '#FBBF24',
+                                padding: '6px 10px',
+                                borderRadius: 8,
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: 4,
+                                fontSize: 12,
+                                fontWeight: 600,
+                                cursor: 'default',
+                              }}
+                            >
+                              <Check size={13} /> Günün Təamı
+                            </button>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => setAsHeroDish(item.id)}
+                              disabled={settingHero === item.id}
+                              title="Bu yeməyi saytın başlıq kartında Günün Sevimli Təamı et"
+                              style={{
+                                border: '1px solid rgba(251,191,36,0.3)',
+                                background: 'rgba(251,191,36,0.05)',
+                                color: '#FBBF24',
+                                cursor: 'pointer',
+                                padding: '6px 10px',
+                                borderRadius: 8,
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: 4,
+                                fontSize: 12,
+                                fontWeight: 500,
+                              }}
+                            >
+                              {settingHero === item.id ? (
+                                <Loader2 size={13} style={{ animation: 'spin 1s linear infinite' }} />
+                              ) : (
+                                <Star size={13} />
+                              )}
+                              Günün Təamı et
+                            </button>
+                          )}
                           <button
                             onClick={() => openItemModal(item)}
                             style={{ border: '1px solid #2A2A3A', background: 'transparent', color: '#8888A0', cursor: 'pointer', padding: '6px 10px', borderRadius: 8, display: 'flex', alignItems: 'center', gap: 4, fontSize: 13 }}
@@ -619,22 +807,53 @@ export default function MenuPage() {
                 </div>
 
                 {/* Badges */}
-                <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-                  {[
-                    { key: 'isFeatured', label: 'Seçilmiş', color: '#FBBF24' },
-                    { key: 'isNew', label: 'Yeni', color: '#34D399' },
-                    { key: 'isPopular', label: 'Populyar', color: '#F87171' },
-                    { key: 'isVisible', label: 'Görünür', color: '#7C5CFC' },
-                  ].map(({ key, label, color }) => (
-                    <label key={key} style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', fontSize: 13, color }}>
-                      <input
-                        type="checkbox"
-                        checked={!!itemForm[key as keyof typeof itemForm]}
-                        onChange={(e) => setItemForm(p => ({ ...p, [key]: e.target.checked }))}
-                      />
-                      {label}
-                    </label>
-                  ))}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  <label
+                    style={{
+                      display: 'flex',
+                      alignItems: 'flex-start',
+                      gap: 10,
+                      padding: '12px 14px',
+                      borderRadius: 10,
+                      background: itemForm.isFeatured ? 'rgba(251,191,36,0.12)' : 'rgba(255,255,255,0.03)',
+                      border: itemForm.isFeatured ? '1px solid rgba(251,191,36,0.5)' : '1px solid #2A2A3A',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s',
+                    }}
+                  >
+                    <input
+                      type="checkbox"
+                      style={{ marginTop: 3 }}
+                      checked={!!itemForm.isFeatured}
+                      onChange={(e) => setItemForm(p => ({ ...p, isFeatured: e.target.checked }))}
+                    />
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <Star size={14} color="#FBBF24" fill={itemForm.isFeatured ? '#FBBF24' : 'none'} />
+                        <span style={{ fontSize: 13, fontWeight: 700, color: '#FBBF24' }}>Günün Sevimli Təamı (Başlıq Kartı)</span>
+                      </div>
+                      <p style={{ margin: '2px 0 0', fontSize: 11, color: '#8888A0' }}>
+                        Bu yemək saytın ana səhifəsindəki başlıq kartında (Hero) nümayiş etdiriləcək.
+                      </p>
+                    </div>
+                  </label>
+
+                  <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+                    {[
+                      { key: 'isNew', label: 'Yeni', color: '#34D399' },
+                      { key: 'isPopular', label: 'Populyar', color: '#F87171' },
+                      { key: 'isVisible', label: 'Görünür', color: '#7C5CFC' },
+                    ].map(({ key, label, color }) => (
+                      <label key={key} style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', fontSize: 13, color }}>
+                        <input
+                          type="checkbox"
+                          checked={!!itemForm[key as keyof typeof itemForm]}
+                          onChange={(e) => setItemForm(p => ({ ...p, [key]: e.target.checked }))}
+                        />
+                        {label}
+                      </label>
+                    ))}
+                  </div>
                 </div>
               </div>
 
@@ -643,6 +862,155 @@ export default function MenuPage() {
                 <button onClick={saveItem} disabled={saving} className="dash-btn-primary" style={{ flex: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
                   {saving && <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} />}
                   {editItem ? 'Yadda saxla' : 'Əlavə et'}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Hero Dish Picker Modal */}
+      <AnimatePresence>
+        {showHeroPickerModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            style={{
+              position: 'fixed',
+              inset: 0,
+              background: 'rgba(0,0,0,0.75)',
+              zIndex: 110,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: 20,
+            }}
+            onClick={() => setShowHeroPickerModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.92, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.92, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                background: '#181A20',
+                border: '1px solid #2A2E39',
+                borderRadius: 18,
+                padding: 24,
+                width: '100%',
+                maxWidth: 540,
+                maxHeight: '85vh',
+                display: 'flex',
+                flexDirection: 'column',
+                boxShadow: '0 20px 40px rgba(0,0,0,0.5)',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+                <div>
+                  <h3 style={{ fontSize: 18, fontWeight: 700, color: '#F7F8F9', display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <Star size={18} color="#FBBF24" fill="#FBBF24" /> Günün Sevimli Təamını Seç
+                  </h3>
+                  <p style={{ fontSize: 12, color: '#8888A0', margin: '4px 0 0' }}>
+                    Saytın ana səhifəsinin ən yuxarı kartında nümayiş etdiriləcək yemək.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowHeroPickerModal(false)}
+                  style={{ border: 'none', background: 'transparent', color: '#8888A0', cursor: 'pointer', padding: 4 }}
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              {/* Search box */}
+              <div style={{ position: 'relative', marginBottom: 16 }}>
+                <Search size={16} color="#8888A0" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
+                <input
+                  className="dash-input"
+                  style={{ paddingLeft: 36 }}
+                  placeholder="Yemək və ya kateqoriya axtar..."
+                  value={heroSearchQuery}
+                  onChange={(e) => setHeroSearchQuery(e.target.value)}
+                  autoFocus
+                />
+              </div>
+
+              {/* Dishes list */}
+              <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 8, paddingRight: 4 }}>
+                {filteredPickerItems.length === 0 ? (
+                  <div style={{ textAlign: 'center', padding: '32px 16px', color: '#8888A0', fontSize: 13 }}>
+                    Heç bir yemək tapılmadı
+                  </div>
+                ) : (
+                  filteredPickerItems.map((it) => {
+                    const isCurrent = it.id === currentHeroItem?.id || it.isFeatured;
+                    const cat = categories.find(c => c.id === it.categoryId);
+                    return (
+                      <div
+                        key={it.id}
+                        onClick={() => setAsHeroDish(it.id)}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 12,
+                          padding: '10px 14px',
+                          borderRadius: 10,
+                          cursor: 'pointer',
+                          background: isCurrent ? 'rgba(251,191,36,0.12)' : 'rgba(255,255,255,0.02)',
+                          border: isCurrent ? '1px solid rgba(251,191,36,0.5)' : '1px solid #262933',
+                          transition: 'all 0.15s',
+                        }}
+                      >
+                        {it.image ? (
+                          <img src={it.image} alt={it.name} style={{ width: 44, height: 44, borderRadius: 8, objectFit: 'cover', flexShrink: 0 }} />
+                        ) : (
+                          <div style={{ width: 44, height: 44, borderRadius: 8, background: '#252833', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                            <UtensilsCrossed size={18} color="#666" />
+                          </div>
+                        )}
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                            <span style={{ fontSize: 14, fontWeight: 600, color: '#F7F8F9', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                              {it.name}
+                            </span>
+                            {cat && <span style={{ fontSize: 10, color: '#8888A0', background: 'rgba(255,255,255,0.06)', padding: '1px 6px', borderRadius: 4 }}>{cat.name}</span>}
+                          </div>
+                          <p style={{ margin: '2px 0 0', fontSize: 12, fontWeight: 600, color: '#FBBF24' }}>
+                            {(it.discountPrice || it.price).toFixed(2)} {currency}
+                          </p>
+                        </div>
+                        <div>
+                          {isCurrent ? (
+                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: '#FBBF24', fontSize: 12, fontWeight: 600 }}>
+                              <Check size={14} /> Seçilib
+                            </span>
+                          ) : (
+                            <button
+                              type="button"
+                              className="dash-btn-secondary"
+                              style={{ padding: '6px 12px', fontSize: 12, color: '#FBBF24', borderColor: 'rgba(251,191,36,0.3)' }}
+                              disabled={settingHero === it.id}
+                            >
+                              {settingHero === it.id ? <Loader2 size={12} style={{ animation: 'spin 1s linear infinite' }} /> : 'Seç'}
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 16, paddingTop: 12, borderTop: '1px solid #2A2E39' }}>
+                <button
+                  type="button"
+                  onClick={() => setShowHeroPickerModal(false)}
+                  className="dash-btn-secondary"
+                  style={{ fontSize: 13 }}
+                >
+                  Bağla
                 </button>
               </div>
             </motion.div>
