@@ -14,6 +14,7 @@ import {
   CreditCard,
   Download,
   Settings,
+  Inbox,
 } from 'lucide-react';
 import { NavItemConfig, SiteContext } from './types';
 
@@ -217,6 +218,7 @@ export const dashboardNavItems: NavItemConfig[] = [
       return false;
     },
   },
+  { id: 'inquiries', href: '/dashboard/inquiries', icon: Inbox, label: 'Müraciətlər' },
   { id: 'media', href: '/dashboard/media', icon: Image, label: 'Media Kitabxanası' },
   { id: 'whatsapp', href: '/dashboard/whatsapp', icon: MessageCircle, label: 'Sifariş Ayarları' },
   { id: 'qr', href: '/dashboard/qr', icon: QrCode, label: 'QR Yaradıcı' },

@@ -208,6 +208,12 @@ test('Navigation: Müəssisə Saytı > Restoran və Kafe olduqda yalnız Menyu g
   const personalBlogContext = { category: 'sexsi-blog', subcategory: 'doktor-blogu' };
   assert.equal(isNavItemVisible(servicesItem, personalBlogContext), true, 'Şəxsi Bloq üçün Xidmətlər görünməlidir');
   assert.equal(isNavItemVisible(menuItem, personalBlogContext), false, 'Menyu aktiv edilmədikdə Menyu görünməməlidir');
+
+  // 6. Müraciətlər (Inquiries):
+  const inquiriesItem = dashboardNavItems.find((item) => item.id === 'inquiries');
+  assert.ok(inquiriesItem, 'Müraciətlər nav item mövcuddur');
+  assert.equal(isNavItemVisible(inquiriesItem, personalOfficialContext), true, 'Şəxsi və Rəsmi Sayt üçün Müraciətlər görünməlidir');
+  assert.equal(isNavItemVisible(inquiriesItem, restaurantContext), true, 'Restoran üçün də Müraciətlər görünməlidir');
 });
 
 test('Builder Component Registry: Bütün zəruri 14 komponent qeydiyyatdadır', () => {

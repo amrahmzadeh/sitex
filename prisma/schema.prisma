@@ -94,6 +94,7 @@ model Organization {
   workingHours     WorkingHours[]
   qrSettings       QRSettings?
   socialFeedPosts  SocialFeedPost[]
+  contactSubmissions ContactSubmission[]
 }
 
 // ==================== QR SETTINGS ====================
@@ -339,4 +340,35 @@ model SocialFeedPost {
   updatedAt       DateTime     @updatedAt
 
   organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+}
+
+
+// ==================== CONTACT FORM SUBMISSIONS / INQUIRIES ====================
+
+model ContactSubmission {
+  id              String                  @id @default(cuid())
+  organizationId  String
+  fullName        String
+  email           String?
+  phone           String?
+  service         String?
+  subject         String?
+  message         String                  @db.Text
+  status          ContactSubmissionStatus @default(NEW)
+  notes           String?                 @db.Text
+  metadata        Json?
+  createdAt       DateTime                @default(now())
+  updatedAt       DateTime                @updatedAt
+
+  organization    Organization            @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, createdAt])
+  @@index([organizationId, status])
+}
+
+enum ContactSubmissionStatus {
+  NEW
+  IN_PROGRESS
+  RESOLVED
+  ARCHIVED
 }

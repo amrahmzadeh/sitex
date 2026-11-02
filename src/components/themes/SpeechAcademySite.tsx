@@ -30,6 +30,7 @@ export default function SpeechAcademySite({ data, theme }: SpeechAcademySiteProp
     message: '',
   });
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   // Theme Colors & Accents
   const primaryColor = theme.primaryColor || '#765a26';
@@ -138,10 +139,28 @@ export default function SpeechAcademySite({ data, theme }: SpeechAcademySiteProp
     setMobileMenuOpen(false);
   };
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitting(true);
+    try {
+      await fetch(`/api/site/${organization.slug}/contact`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fullName: formState.fullName,
+          phone: formState.phone,
+          email: formState.email || (formState.phone.includes('@') ? formState.phone : undefined),
+          service: formState.service,
+          message: formState.message,
+        }),
+      });
+    } catch (err) {
+      console.error('Form submission error:', err);
+    } finally {
+      setSubmitting(false);
+    }
     if (whatsapp?.isEnabled && whatsapp.phoneNumber) {
-      const msg = `Salam! Saytınızdan müraciət edirəm:\n👤 *Ad:* ${formState.fullName}\n📧 *E-poçt:* ${formState.email}\n📱 *Telefon:* ${formState.phone}\n💼 *Xidmət:* ${formState.service}\n💬 *Mesaj:* ${formState.message}`;
+      const msg = `Salam! Saytınızdan müraciət edirəm:\n👤 *Ad:* ${formState.fullName}\n📱 *Əlaqə:* ${formState.phone}\n💼 *Xidmət:* ${formState.service}\n💬 *Mesaj:* ${formState.message}`;
       const url = formatWhatsAppUrl(whatsapp.countryCode || '994', whatsapp.phoneNumber, msg);
       window.open(url, '_blank');
     }
@@ -1437,6 +1456,7 @@ export default function SpeechAcademySite({ data, theme }: SpeechAcademySiteProp
 
                   <button
                     type="submit"
+                    disabled={submitting}
                     className="gold-glow"
                     style={{
                       width: '100%',
@@ -1456,7 +1476,7 @@ export default function SpeechAcademySite({ data, theme }: SpeechAcademySiteProp
                       marginTop: 6,
                     }}
                   >
-                    <span>Göndər</span>
+                    <span>{submitting ? "Göndərilir..." : "Göndər"}</span>
                     <Send size={16} />
                   </button>
                 </form>
