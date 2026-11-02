@@ -180,6 +180,93 @@ export default function ItemCatalogManager({ type }: ItemCatalogManagerProps) {
     }
   };
 
+  const seedTemplateServices = async () => {
+    if (!orgId) return;
+    setSaving(true);
+    try {
+      // 1. Create or find category
+      let catId = categories[0]?.id;
+      if (!catId) {
+        const catRes = await fetch(`/api/organizations/${orgId}/menu/categories`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: 'Əsas Xidmətlər',
+            description: 'Peşəkar fərdi və korporativ xidmətlər',
+            isVisible: true,
+          }),
+        });
+        const catData = await catRes.json();
+        if (catData?.category?.id) {
+          catId = catData.category.id;
+          setCategories([catData.category]);
+          setActiveCategory(catId);
+        }
+      }
+
+      if (!catId) return;
+
+      const templateServices = [
+        {
+          name: 'Diksiya təlimləri',
+          description: 'Düzgün tənəffüs, aydın artikulyasiya, nitq qüsurlarının aradan qaldırılması və səhnə qorxusuna qalib gəlmək texnikaları.',
+          price: 150,
+          portionSize: 'Tədris proqramı',
+          prepTime: 'Fərdi və korporativ səviyyədə',
+          isPopular: true,
+          isFeatured: true,
+          categoryId: catId,
+        },
+        {
+          name: 'Tədbir aparıcılığı',
+          description: 'Beynəlxalq forumlar, dövlət səviyyəli konfranslar, korporativ qala gecələri və nüfuzlu təqdimatların zərif idarə olunması.',
+          price: 300,
+          portionSize: 'Protokol və moderatorluq',
+          prepTime: 'Dövlət və özəl tədbirlər, brend təqdimatları',
+          isPopular: true,
+          categoryId: catId,
+        },
+        {
+          name: 'Peşəkar səsləndirmə',
+          description: 'Radio və TV reklamları, korporativ imic filmləri, audio kitablar və sənədli layihələr üçün unikal tembr və diksiya.',
+          price: 200,
+          portionSize: 'Studiya keyfiyyəti',
+          prepTime: 'Reklam çarxları, korporativ videolar və layihələr',
+          isPopular: true,
+          categoryId: catId,
+        },
+        {
+          name: 'Brend siması',
+          description: 'Nüfuzlu brendlərin imic çəkilişləri, sosial çarxlar və ictimaiyyətlə əlaqələr layihələrində estetik və inamlı təmsilçilik.',
+          price: 500,
+          portionSize: 'Brend əməkdaşlığı',
+          prepTime: 'Yaradıcı vizual layihələr və reklam kampaniyaları',
+          isNew: true,
+          categoryId: catId,
+        },
+      ];
+
+      for (const s of templateServices) {
+        await fetch(`/api/organizations/${orgId}/menu/items`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(s),
+        });
+      }
+
+      // Reload
+      const [catsRes, itemsRes] = await Promise.all([
+        fetch(`/api/organizations/${orgId}/menu/categories`).then((r) => r.json()),
+        fetch(`/api/organizations/${orgId}/menu/items`).then((r) => r.json()),
+      ]);
+      setCategories(catsRes.categories || []);
+      setItems(itemsRes.items || []);
+      if (catsRes.categories?.[0]) setActiveCategory(catsRes.categories[0].id);
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const toggleMenuModule = async () => {
     if (!orgId) return;
     setTogglingMenu(true);
@@ -258,7 +345,12 @@ export default function ItemCatalogManager({ type }: ItemCatalogManagerProps) {
     setEditItem(item || null);
     setItemForm(
       item
-        ? { ...item, video: item.video || '' }
+        ? {
+            ...item,
+            video: item.video || '',
+            portionSize: item.portionSize || '',
+            prepTime: item.prepTime || '',
+          }
         : {
             name: '',
             price: 0,
@@ -267,6 +359,8 @@ export default function ItemCatalogManager({ type }: ItemCatalogManagerProps) {
             isFeatured: false,
             isNew: false,
             isPopular: false,
+            portionSize: '',
+            prepTime: '',
             video: '',
           }
     );
@@ -323,6 +417,8 @@ export default function ItemCatalogManager({ type }: ItemCatalogManagerProps) {
         isNew: itemForm.isNew || false,
         isPopular: itemForm.isPopular || false,
         isVisible: itemForm.isVisible !== false,
+        portionSize: itemForm.portionSize || null,
+        prepTime: itemForm.prepTime || null,
       };
       const res = await fetch(url, {
         method,
@@ -493,6 +589,18 @@ export default function ItemCatalogManager({ type }: ItemCatalogManagerProps) {
           >
             <Plus size={16} /> Kateqoriya əlavə et
           </button>
+
+          {isServices && (
+            <button
+              onClick={seedTemplateServices}
+              disabled={saving}
+              className="dash-btn-secondary"
+              style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, borderColor: '#E5A93C' }}
+              title="Şablon xidmətlərini (Diksiya təlimləri, Tədbir aparıcılığı, Peşəkar səsləndirmə, Brend siması) əlavə et"
+            >
+              <Sparkles size={16} color="#E5A93C" /> Şablon Xidmətlərini Yüklə
+            </button>
+          )}
 
           <button
             onClick={() => openItemModal()}
@@ -1021,6 +1129,30 @@ export default function ItemCatalogManager({ type }: ItemCatalogManagerProps) {
                     className="dash-input"
                     placeholder="Qısa məlumat..."
                   />
+                </div>
+
+                {/* Service Tag & Badge (portionSize & prepTime) */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                  <div>
+                    <label className="dash-label">{isServices ? 'Alt Qeyd / Teq' : 'Porsiya / Çəki'}</label>
+                    <input
+                      type="text"
+                      value={itemForm.portionSize || ''}
+                      onChange={(e) => setItemForm((p) => ({ ...p, portionSize: e.target.value }))}
+                      placeholder={isServices ? 'Məsələn: Tədris proqramı' : 'Məsələn: 350 qr'}
+                      className="dash-input"
+                    />
+                  </div>
+                  <div>
+                    <label className="dash-label">{isServices ? 'Üst Nişan / Mətn' : 'Hazırlanma Vaxtı'}</label>
+                    <input
+                      type="text"
+                      value={itemForm.prepTime || ''}
+                      onChange={(e) => setItemForm((p) => ({ ...p, prepTime: e.target.value }))}
+                      placeholder={isServices ? 'Məsələn: Fərdi və korporativ səviyyədə' : 'Məsələn: 20 dəq'}
+                      className="dash-input"
+                    />
+                  </div>
                 </div>
 
                 {/* Image upload */}

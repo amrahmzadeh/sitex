@@ -108,6 +108,16 @@ export default function SpeechAcademySite({ data, theme }: SpeechAcademySiteProp
     },
   ];
 
+  const getItemIcon = (name: string, idx: number) => {
+    const n = (name || '').toLowerCase();
+    if (n.includes('diksiya') || n.includes('nitq') || n.includes('təlim')) return Mic;
+    if (n.includes('aparıcı') || n.includes('tədbir') || n.includes('konfrans')) return Award;
+    if (n.includes('səs') || n.includes('audio') || n.includes('radio')) return Headphones;
+    if (n.includes('brend') || n.includes('sima') || n.includes('reklam')) return Star;
+    const fallbackIcons = [Mic, Award, Headphones, Star];
+    return fallbackIcons[idx % fallbackIcons.length];
+  };
+
   // Map real catalog items to service cards if present
   const allCatalogItems = useMemo(() => {
     return menuCategories.flatMap((cat) =>
@@ -899,82 +909,106 @@ export default function SpeechAcademySite({ data, theme }: SpeechAcademySiteProp
           >
             {hasCatalogItems ? (
               // Real Services from Catalog
-              allCatalogItems.map((item) => (
-                <div
-                  key={item.id}
-                  className="subtle-card-shadow"
-                  style={{
-                    backgroundColor: '#ffffff',
-                    borderRadius: 16,
-                    border: '1px solid rgba(230, 193, 132, 0.45)',
-                    padding: 32,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'space-between',
-                    transition: 'all 0.25s',
-                  }}
-                >
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
-                      <span
+              allCatalogItems.map((item, idx) => {
+                const IconComponent = getItemIcon(item.name, idx);
+                return (
+                  <div
+                    key={item.id}
+                    className="subtle-card-shadow"
+                    style={{
+                      backgroundColor: '#ffffff',
+                      borderRadius: 16,
+                      border: '1px solid rgba(230, 193, 132, 0.45)',
+                      padding: 32,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'space-between',
+                      transition: 'all 0.25s',
+                    }}
+                  >
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+                        <span
+                          style={{
+                            fontSize: 12,
+                            fontWeight: 700,
+                            color: primaryColor,
+                            backgroundColor: '#f6f3f2',
+                            padding: '6px 14px',
+                            borderRadius: 100,
+                            maxWidth: '75%',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                          }}
+                        >
+                          {item.prepTime || item.categoryName}
+                        </span>
+                        <div
+                          style={{
+                            width: 44,
+                            height: 44,
+                            borderRadius: 12,
+                            backgroundColor: 'rgba(255, 222, 169, 0.35)',
+                            color: primaryColor,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            flexShrink: 0,
+                          }}
+                        >
+                          <IconComponent size={22} />
+                        </div>
+                      </div>
+                      {item.image && (
+                        <img
+                          src={item.image}
+                          alt={item.name}
+                          style={{ width: '100%', height: 160, objectFit: 'cover', borderRadius: 10, marginBottom: 16 }}
+                        />
+                      )}
+                      <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 8, margin: '0 0 10px 0' }}>
+                        <h3 style={{ fontFamily: headingFont, fontSize: 22, fontWeight: 600, color: secondaryColor, margin: 0 }}>
+                          {item.name}
+                        </h3>
+                        {item.price > 0 && (
+                          <span style={{ fontFamily: headingFont, fontSize: 18, fontWeight: 700, color: primaryColor, whiteSpace: 'nowrap' }}>
+                            {formatPrice(item.discountPrice || item.price, organization.currency)}
+                          </span>
+                        )}
+                      </div>
+                      <p style={{ fontSize: 15, lineHeight: 1.6, color: '#44474c', margin: 0 }}>
+                        {item.description || 'Yüksək səviyyəli peşəkar xidmət.'}
+                      </p>
+                    </div>
+
+                    <div style={{ marginTop: 28, paddingTop: 18, borderTop: '1px solid rgba(197, 198, 205, 0.25)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: primaryColor }}>
+                        {item.portionSize || 'Fərdi yanaşma'}
+                      </span>
+                      <a
+                        href="#elaqe"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setFormState((p) => ({ ...p, service: item.name }));
+                          scrollTo('#elaqe');
+                        }}
                         style={{
-                          fontSize: 12,
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 4,
+                          fontSize: 14,
                           fontWeight: 700,
-                          color: primaryColor,
-                          backgroundColor: '#f6f3f2',
-                          padding: '6px 12px',
-                          borderRadius: 100,
+                          color: secondaryColor,
                         }}
                       >
-                        {item.categoryName}
-                      </span>
-                      {item.price > 0 && (
-                        <span style={{ fontFamily: headingFont, fontSize: 18, fontWeight: 700, color: secondaryColor }}>
-                          {formatPrice(item.discountPrice || item.price, organization.currency)}
-                        </span>
-                      )}
+                        <span>Müraciət et</span>
+                        <ArrowUpRight size={16} />
+                      </a>
                     </div>
-                    {item.image && (
-                      <img
-                        src={item.image}
-                        alt={item.name}
-                        style={{ width: '100%', height: 160, objectFit: 'cover', borderRadius: 10, marginBottom: 16 }}
-                      />
-                    )}
-                    <h3 style={{ fontFamily: headingFont, fontSize: 22, fontWeight: 600, color: secondaryColor, margin: '0 0 10px 0' }}>
-                      {item.name}
-                    </h3>
-                    <p style={{ fontSize: 15, lineHeight: 1.6, color: '#44474c', margin: 0 }}>
-                      {item.description || 'Yüksək səviyyəli peşəkar xidmət.'}
-                    </p>
                   </div>
-
-                  <div style={{ marginTop: 28, paddingTop: 18, borderTop: '1px solid rgba(197, 198, 205, 0.25)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <span style={{ fontSize: 13, fontWeight: 600, color: primaryColor }}>
-                      {item.portionSize || 'Fərdi yanaşma'}
-                    </span>
-                    <a
-                      href="#elaqe"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setFormState((p) => ({ ...p, service: item.name }));
-                        scrollTo('#elaqe');
-                      }}
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: 4,
-                        fontSize: 14,
-                        fontWeight: 700,
-                        color: secondaryColor,
-                      }}
-                    >
-                      <span>Müraciət et</span>
-                      <ArrowUpRight size={16} />
-                    </a>
-                  </div>
-                </div>
-              ))
+                );
+              })
             ) : (
               // Default 4 Editorial Service Cards from code.html
               defaultServices.map((svc) => {

@@ -41,7 +41,7 @@ interface SiteData {
     menuItems: Array<{
       id: string; name: string; slug: string; description?: string; price: number; discountPrice?: number;
       image?: string; video?: string; isFeatured: boolean; isNew: boolean; isPopular: boolean;
-      ingredients?: string; allergens?: string; portionSize?: string;
+      ingredients?: string; allergens?: string; portionSize?: string; prepTime?: string;
     }>;
   }>;
 }
