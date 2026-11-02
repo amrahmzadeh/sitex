@@ -259,16 +259,23 @@ export function PropertiesPanel({
             <button
               onClick={onClose}
               style={{
-                background: 'transparent',
-                border: 'none',
-                padding: '5px',
-                color: '#687082',
+                background: 'rgba(255, 255, 255, 0.08)',
+                border: '1px solid rgba(255, 255, 255, 0.16)',
+                borderRadius: 6,
+                padding: '4px 9px',
+                color: '#F4F5F8',
                 cursor: 'pointer',
-                marginLeft: 4,
+                marginLeft: 6,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 4,
+                fontSize: 11,
+                fontWeight: 700,
               }}
               title="Paneli bağla"
             >
-              <X size={15} />
+              <X size={13} strokeWidth={2.5} />
+              <span>Bağla</span>
             </button>
           )}
         </div>

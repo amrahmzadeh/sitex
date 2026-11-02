@@ -626,6 +626,7 @@ export function VisualThemeBuilder({
             right: 0 !important;
             bottom: 0 !important;
             width: min(340px, 92vw) !important;
+            max-width: 92vw !important;
             z-index: 100 !important;
             box-shadow: -14px 0 40px rgba(0,0,0,0.85) !important;
           }
