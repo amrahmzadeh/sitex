@@ -1,6 +1,9 @@
 export interface ThemeConfig {
   id: string;
   name: string;
+  description?: string;
+  category?: string[];
+  previewGradient?: string[];
   primaryColor: string;
   secondaryColor: string;
   accentColor: string;
@@ -109,6 +112,9 @@ export const defaultThemes: Record<string, ThemeConfig> = {
   elegant: {
     id: 'elegant',
     name: 'Elegant',
+    description: 'Zərif qızılı tonlar və klassik serif şriftlərlə premium dizayn.',
+    category: ['Restoran & Kafe', 'Zərif & Premium'],
+    previewGradient: ['#D4A574', '#FFF8F0'],
     primaryColor: '#D4A574',
     secondaryColor: '#2C1810',
     accentColor: '#E8C9A0',
@@ -128,6 +134,9 @@ export const defaultThemes: Record<string, ThemeConfig> = {
   modern: {
     id: 'modern',
     name: 'Modern',
+    description: 'Müasir kontrastlar, canlı narıncı vurğular və təmiz həndəsi xətlər.',
+    category: ['Müasir', 'Korporativ'],
+    previewGradient: ['#FF6B35', '#1B1B2F'],
     primaryColor: '#FF6B35',
     secondaryColor: '#1B1B2F',
     accentColor: '#FFE4CC',
@@ -147,6 +156,9 @@ export const defaultThemes: Record<string, ThemeConfig> = {
   classic: {
     id: 'classic',
     name: 'Klassik',
+    description: 'Zəngin qırmızı və qızılı elementlərlə ənənəvi, prestijli üslub.',
+    category: ['Klassik & Ənənəvi', 'Bloq'],
+    previewGradient: ['#8B0000', '#FFFEF7'],
     primaryColor: '#8B0000',
     secondaryColor: '#1A1A2E',
     accentColor: '#FFD700',
@@ -166,6 +178,9 @@ export const defaultThemes: Record<string, ThemeConfig> = {
   warmGourmetPro: {
     id: 'warmGourmetPro',
     name: 'Warm Gourmet (PRO)',
+    description: 'Street food və qastronomiya məkanları üçün qaranlıq fon və kəhrəba vurğuları.',
+    category: ['Restoran & Kafe', 'Street Food', 'PRO'],
+    previewGradient: ['#ffc665', '#121416'],
     primaryColor: '#ffc665',
     secondaryColor: '#1e2022',
     accentColor: '#e5a93c',

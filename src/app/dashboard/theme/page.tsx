@@ -2,9 +2,10 @@
 
 import { useEffect, useState, useMemo, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Loader2, Save, Globe, Eye, Check, Palette, MessageCircle, Layers, Monitor, Smartphone, Sparkles, Clock, Utensils, BookOpen, FileText, Share2 } from 'lucide-react';
+import { Loader2, Save, Globe, Eye, Check, Palette, MessageCircle, Layers, Monitor, Smartphone, Sparkles, Clock, Utensils, BookOpen, FileText, Share2, CheckCircle2, Sliders, ExternalLink, RotateCcw } from 'lucide-react';
 import { defaultThemes, ThemeConfig, resolveBg, BRAND_FONTS } from '@/lib/themes';
 import RestaurantSite, { SiteData } from '@/components/themes/RestaurantSite';
+import ThemeLibrary from '@/components/dashboard/ThemeLibrary';
 
 function useCurrentOrg() {
   const [orgId, setOrgId] = useState<string | null>(null);
@@ -302,6 +303,9 @@ function ImageUploadField({
 export default function ThemePage() {
   const orgId = useCurrentOrg();
   const [theme, setTheme] = useState<ThemeConfig>(defaultThemes.elegant);
+  const [activeTab, setActiveTab] = useState<'library' | 'customizer'>('library');
+  const [previewTheme, setPreviewTheme] = useState<ThemeConfig | null>(null);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [slug, setSlug] = useState('');
   const [orgLogo, setOrgLogo] = useState('');
   const [orgName, setOrgName] = useState('');
@@ -361,15 +365,35 @@ export default function ThemePage() {
     } finally { setPublishing(false); }
   };
 
-  const applyTheme = (t: ThemeConfig) => {
-    setTheme(prev => ({
-      ...prev,
+  const applyTheme = async (t: ThemeConfig) => {
+    const nextTheme: ThemeConfig = {
+      ...(defaultThemes[t.id] || t),
       ...t,
       isProTemplate: Boolean(t.isProTemplate),
-    }));
+    };
+    setTheme(nextTheme);
+    setPreviewTheme(null);
+
+    if (orgId) {
+      setSaving(true);
+      try {
+        await fetch(`/api/organizations/${orgId}/theme`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ theme: nextTheme }),
+        });
+        setToastMessage(`"${t.name}" teması uğurla tətbiq edildi!`);
+        setTimeout(() => setToastMessage(null), 3500);
+      } catch (err) {
+        console.error('Tema tətbiq olunarkən xəta:', err);
+      } finally {
+        setSaving(false);
+      }
+    }
   };
 
-  const isProActive = Boolean(theme.isProTemplate);
+  const effectiveTheme = previewTheme || theme;
+  const isProActive = Boolean(effectiveTheme.isProTemplate);
 
   const previewSiteData = useMemo<SiteData>(() => {
     const rawCategories = orgData?.menuCategories || [];
@@ -458,7 +482,7 @@ export default function ThemePage() {
       },
       website: {
         theme: {
-          ...theme,
+          ...effectiveTheme,
           isProTemplate: isProActive,
         },
         seoTitle: orgName,
@@ -489,7 +513,7 @@ export default function ThemePage() {
       ],
       menuCategories: categories,
     };
-  }, [orgData, orgName, slug, orgLogo, theme, isProActive]);
+  }, [orgData, orgName, slug, orgLogo, theme, previewTheme, effectiveTheme, isProActive]);
 
   if (loading) return <div style={{ display: 'grid', gap: 16 }}>{[...Array(5)].map((_, i) => <div key={i} className="skeleton" style={{ height: 60, borderRadius: 12 }} />)}</div>;
 
@@ -499,8 +523,163 @@ export default function ThemePage() {
         rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Bebas+Neue&family=Cinzel:wght@600;700;900&family=Cormorant+Garamond:ital,wght@0,600;1,600&family=Dancing+Script:wght@700&family=DM+Serif+Display:ital@0;1&family=Great+Vibes&family=Kaushan+Script&family=Lobster&family=Marcellus&family=Montserrat:wght@700;800&family=Oswald:wght@600&family=Outfit:wght@700;800&family=Pacifico&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Prata&family=Righteous&family=Satisfy&display=swap"
       />
-      <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: 24, alignItems: 'start', maxWidth: '100%' }}>
+      <style>{`
+        @media (max-width: 1080px) {
+          .theme-workspace-grid {
+            grid-template-columns: 1fr !important;
+          }
+        }
+      `}</style>
+
+      {/* Top Header & Tab Navigation */}
+      <div style={{ marginBottom: 20, display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
+          <div>
+            <h1 style={{ fontSize: 22, fontWeight: 700, color: '#FFFFFF', margin: 0, display: 'flex', alignItems: 'center', gap: 10 }}>
+              <Palette size={24} color="#00D37D" />
+              Tema İdarəetmə Mərkəzi
+            </h1>
+            <p style={{ fontSize: 13, color: '#8888A0', margin: '4px 0 0' }}>
+              Saytınız üçün peşəkar dizayn temalarını seçin, canlı önizləyin və fərdiləşdirin.
+            </p>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            {slug && (
+              <a
+                href={`/site/${slug}`}
+                target="_blank"
+                rel="noreferrer"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  padding: '7px 12px',
+                  borderRadius: 8,
+                  border: '1px solid #3A3A4E',
+                  background: 'rgba(255,255,255,0.03)',
+                  color: '#B0B0C0',
+                  fontSize: 12,
+                  textDecoration: 'none',
+                }}
+              >
+                <ExternalLink size={13} />
+                Saytı aç
+              </a>
+            )}
+            <button
+              onClick={saveDraft}
+              disabled={saving}
+              className="dash-btn-secondary"
+              style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, padding: '7px 14px' }}
+            >
+              {saving ? <Loader2 size={13} style={{ animation: 'spin 1s linear infinite' }} /> : saved ? <Check size={13} color="#34D399" /> : <Save size={13} />}
+              {saved ? 'Saxlandı' : 'Qaralama saxla'}
+            </button>
+            <button
+              onClick={publish}
+              disabled={publishing}
+              className="dash-btn-primary"
+              style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, padding: '7px 16px' }}
+            >
+              {publishing ? <Loader2 size={13} style={{ animation: 'spin 1s linear infinite' }} /> : published ? <Check size={13} /> : <Globe size={13} />}
+              {published ? 'Yayınlandı!' : 'Yayınla'}
+            </button>
+          </div>
+        </div>
+
+        {/* Tab Switcher */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, borderBottom: '1px solid #2A2A3A', paddingBottom: 10 }}>
+          <button
+            type="button"
+            onClick={() => setActiveTab('library')}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              padding: '8px 18px',
+              borderRadius: 8,
+              border: activeTab === 'library' ? '1px solid #00D37D' : '1px solid transparent',
+              background: activeTab === 'library' ? 'rgba(0, 211, 125, 0.12)' : 'transparent',
+              color: activeTab === 'library' ? '#00D37D' : '#8888A0',
+              fontWeight: activeTab === 'library' ? 700 : 500,
+              fontSize: 13,
+              cursor: 'pointer',
+              transition: 'all 0.15s',
+            }}
+          >
+            <Sparkles size={16} />
+            Tema Kitabxanası
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab('customizer')}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              padding: '8px 18px',
+              borderRadius: 8,
+              border: activeTab === 'customizer' ? '1px solid #7C5CFC' : '1px solid transparent',
+              background: activeTab === 'customizer' ? 'rgba(124, 92, 252, 0.15)' : 'transparent',
+              color: activeTab === 'customizer' ? '#C4B5FD' : '#8888A0',
+              fontWeight: activeTab === 'customizer' ? 700 : 500,
+              fontSize: 13,
+              cursor: 'pointer',
+              transition: 'all 0.15s',
+            }}
+          >
+            <Sliders size={16} />
+            Fərdiləşdirmə & Detallar
+          </button>
+        </div>
+
+        {/* Uğur Bildirişi Toast */}
+        {toastMessage && (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 10,
+              padding: '12px 18px',
+              borderRadius: 10,
+              background: 'rgba(0, 211, 125, 0.15)',
+              border: '1.5px solid #00D37D',
+              color: '#00D37D',
+              fontSize: 13,
+              fontWeight: 600,
+              boxShadow: '0 4px 16px rgba(0, 211, 125, 0.2)',
+            }}
+          >
+            <CheckCircle2 size={18} />
+            <span>{toastMessage}</span>
+          </div>
+        )}
+      </div>
+
+      <div
+        className="theme-workspace-grid"
+        style={{
+          display: 'grid',
+          gridTemplateColumns: activeTab === 'library' ? 'minmax(0, 1.4fr) minmax(360px, 460px)' : '340px 1fr',
+          gap: 24,
+          alignItems: 'start',
+          maxWidth: '100%',
+        }}
+      >
       {/* Left Panel */}
+      {activeTab === 'library' ? (
+        <ThemeLibrary
+          activeTheme={theme}
+          previewTheme={previewTheme}
+          onPreview={(t) => setPreviewTheme(t)}
+          onApply={applyTheme}
+          onCancelPreview={() => setPreviewTheme(null)}
+          onSwitchToCustomizer={() => setActiveTab('customizer')}
+          isSaving={saving}
+        />
+      ) : (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
         <div style={{ display: 'flex', gap: 10 }}>
           <button
@@ -1960,9 +2139,69 @@ export default function ThemePage() {
           </div>
         </div>
       </div>
+      )}
 
       {/* Preview */}
       <div style={{ position: 'sticky', top: 20 }}>
+        {previewTheme && (
+          <div
+            style={{
+              marginBottom: 12,
+              padding: '10px 14px',
+              borderRadius: 10,
+              background: 'linear-gradient(135deg, rgba(124, 92, 252, 0.25), rgba(0, 211, 125, 0.15))',
+              border: '1.5px solid #7C5CFC',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: 8,
+              boxShadow: '0 4px 16px rgba(124, 92, 252, 0.25)',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: '#FFFFFF' }}>
+              <Eye size={16} color="#C4B5FD" />
+              <span>
+                <strong>"{previewTheme.name}"</strong> canlı önizlənilir
+              </span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <button
+                type="button"
+                onClick={() => setPreviewTheme(null)}
+                style={{
+                  background: 'rgba(255,255,255,0.08)',
+                  border: '1px solid rgba(255,255,255,0.2)',
+                  borderRadius: 6,
+                  color: '#FFFFFF',
+                  fontSize: 11,
+                  fontWeight: 600,
+                  padding: '4px 10px',
+                  cursor: 'pointer',
+                }}
+              >
+                Çıx
+              </button>
+              <button
+                type="button"
+                disabled={saving}
+                onClick={() => applyTheme(previewTheme)}
+                style={{
+                  background: '#00D37D',
+                  border: 'none',
+                  borderRadius: 6,
+                  color: '#0D1117',
+                  fontSize: 11,
+                  fontWeight: 700,
+                  padding: '4px 12px',
+                  cursor: saving ? 'not-allowed' : 'pointer',
+                }}
+              >
+                {saving ? 'Tətbiq edilir...' : 'Tətbiq et'}
+              </button>
+            </div>
+          </div>
+        )}
+
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <h2 style={{ fontSize: 18, fontWeight: 700, color: '#E8E8F0', margin: 0 }}>Canlı Önizləmə</h2>
@@ -2050,7 +2289,7 @@ export default function ThemePage() {
               boxShadow: previewDevice === 'mobile' ? '0 16px 40px rgba(0,0,0,0.8)' : '0 8px 30px rgba(0,0,0,0.4)',
               transform: 'translateZ(0)',
               position: 'relative',
-              background: theme.backgroundColor || '#121416',
+              background: effectiveTheme.backgroundColor || '#121416',
             }}
           >
             <RestaurantSite data={previewSiteData} />

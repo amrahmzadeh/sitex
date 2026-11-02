@@ -38,3 +38,4 @@ export const modernTheme: ThemeDefinition = {
   },
   sections: [],
 };
+

@@ -449,3 +449,4 @@ export function registerAllBuiltinComponents() {
 
 // Auto-register on import
 registerAllBuiltinComponents();
+

@@ -24,3 +24,4 @@ export const componentRegistry = new ComponentRegistry();
 export const registerComponent = (comp: ComponentDefinition) => componentRegistry.register(comp);
 export const getComponent = (type: string) => componentRegistry.get(type);
 export const listComponents = () => componentRegistry.list();
+

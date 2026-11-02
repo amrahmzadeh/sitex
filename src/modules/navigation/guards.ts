@@ -16,3 +16,4 @@ export function isNavItemVisible(item: NavItemConfig, site: SiteContext | null):
 
   return true;
 }
+

@@ -173,3 +173,4 @@ test('Builder Serializer: Template sənədini ThemeDefinition-a və JSON-a çevi
   assert.equal(themeDef.sections.length, 2);
   assert.ok(ThemeDefinitionSchema.safeParse(themeDef).success);
 });
+

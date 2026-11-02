@@ -42,3 +42,4 @@ export interface BuilderTemplateDocument {
   nodes: BuilderNode[];
   updatedAt: string;
 }
+

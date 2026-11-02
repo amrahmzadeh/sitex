@@ -15,3 +15,4 @@ export interface NavItemConfig {
   visibleFor?: string[];
   isVisible?: (site: SiteContext | null) => boolean;
 }
+

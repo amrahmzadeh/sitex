@@ -34,3 +34,4 @@ export function ThemeProvider({ theme, children }: ThemeProviderProps) {
     </div>
   );
 }
+

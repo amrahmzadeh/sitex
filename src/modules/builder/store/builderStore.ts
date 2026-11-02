@@ -168,3 +168,4 @@ export function useBuilderStore(initialDoc?: Partial<BuilderTemplateDocument>) {
     canRedo: historyIndex < history.length - 1,
   };
 }
+

@@ -38,3 +38,4 @@ export const classicTheme: ThemeDefinition = {
   },
   sections: [],
 };
+

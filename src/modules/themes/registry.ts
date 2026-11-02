@@ -58,3 +58,4 @@ export const registerTheme = (theme: ThemeDefinition) => themeRegistry.registerT
 export const getTheme = (idOrSlug: string) => themeRegistry.getTheme(idOrSlug);
 export const listThemes = (options?: { category?: string; source?: 'builtin' | 'custom' }) =>
   themeRegistry.listThemes(options);
+
