@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { motion } from 'framer-motion';
+import { isMenuSupportedCategory, isMenuActive } from '@/modules/navigation';
+import { Briefcase, Package } from 'lucide-react';
 import {
   UtensilsCrossed, Globe, Eye, Plus, ArrowRight,
   TrendingUp, Clock, CheckCircle2, AlertCircle, Share2,
@@ -89,34 +91,72 @@ export default function DashboardPage() {
                 </div>
 
                 {/* Stats */}
-                <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
-                  <div>
-                    <p style={{ fontSize: 24, fontWeight: 700, color: '#00D37D' }}>{org.menuItemCount}</p>
-                    <p style={{ fontSize: 12, color: '#8888A0' }}>Yemək</p>
-                  </div>
-                  <div>
-                    <p style={{ fontSize: 24, fontWeight: 700, color: '#22D3EE' }}>{org.categoryCount}</p>
-                    <p style={{ fontSize: 12, color: '#8888A0' }}>Kateqoriya</p>
-                  </div>
-                  <div>
-                    <p style={{ fontSize: 24, fontWeight: 700, color: '#34D399' }}>
-                      {org.website?.isPublished ? '✓' : '—'}
-                    </p>
-                    <p style={{ fontSize: 12, color: '#8888A0' }}>Yayın</p>
-                  </div>
-                </div>
+                {(() => {
+                  const hasMenu = isMenuSupportedCategory(org.siteCategory, org.siteSubcategory) || isMenuActive({
+                    id: org.id,
+                    category: org.siteCategory,
+                    subcategory: org.siteSubcategory,
+                    website: org.website,
+                  });
+                  return (
+                    <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
+                      {hasMenu ? (
+                        <>
+                          <div>
+                            <p style={{ fontSize: 24, fontWeight: 700, color: '#00D37D' }}>{org.menuItemCount}</p>
+                            <p style={{ fontSize: 12, color: '#8888A0' }}>Yemək</p>
+                          </div>
+                          <div>
+                            <p style={{ fontSize: 24, fontWeight: 700, color: '#22D3EE' }}>{org.categoryCount}</p>
+                            <p style={{ fontSize: 12, color: '#8888A0' }}>Kateqoriya</p>
+                          </div>
+                        </>
+                      ) : (
+                        <div>
+                          <p style={{ fontSize: 24, fontWeight: 700, color: '#22D3EE' }}>Xidmət</p>
+                          <p style={{ fontSize: 12, color: '#8888A0' }}>Bölmə</p>
+                        </div>
+                      )}
+                      <div>
+                        <p style={{ fontSize: 24, fontWeight: 700, color: '#34D399' }}>
+                          {org.website?.isPublished ? '✓' : '—'}
+                        </p>
+                        <p style={{ fontSize: 12, color: '#8888A0' }}>Yayın</p>
+                      </div>
+                    </div>
+                  );
+                })()}
               </div>
 
               {/* Actions */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8, minWidth: 160 }}>
-                <Link
-                  href={`/dashboard/menu`}
-                  className="dash-btn-primary"
-                  style={{ textDecoration: 'none', textAlign: 'center', fontSize: 13 }}
-                >
-                  <UtensilsCrossed size={14} style={{ marginRight: 6 }} />
-                  Menyunu idarə et
-                </Link>
+                {(() => {
+                  const hasMenu = isMenuSupportedCategory(org.siteCategory, org.siteSubcategory) || isMenuActive({
+                    id: org.id,
+                    category: org.siteCategory,
+                    subcategory: org.siteSubcategory,
+                    website: org.website,
+                  });
+                  return hasMenu ? (
+                    <Link
+                      href={`/dashboard/menu`}
+                      className="dash-btn-primary"
+                      style={{ textDecoration: 'none', textAlign: 'center', fontSize: 13 }}
+                    >
+                      <UtensilsCrossed size={14} style={{ marginRight: 6 }} />
+                      Menyunu idarə et
+                    </Link>
+                  ) : (
+                    <Link
+                      href={`/dashboard/services`}
+                      className="dash-btn-primary"
+                      style={{ textDecoration: 'none', textAlign: 'center', fontSize: 13 }}
+                    >
+                      <Briefcase size={14} style={{ marginRight: 6 }} />
+                      Xidmətləri idarə et
+                    </Link>
+                  );
+                })()}
                 {isSuperAdmin && (
                   <Link
                     href="/dashboard/theme"
@@ -150,13 +190,27 @@ export default function DashboardPage() {
           Sürətli əməliyyatlar
         </h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 12 }}>
-          {[
-            { href: '/dashboard/menu', icon: Plus, label: 'Yemək əlavə et', color: '#00D37D' },
+          {(() => {
+            const firstOrg = orgs[0];
+            const hasMenu = firstOrg
+              ? isMenuSupportedCategory(firstOrg.siteCategory, firstOrg.siteSubcategory) || isMenuActive({
+                  id: firstOrg.id,
+                  category: firstOrg.siteCategory,
+                  subcategory: firstOrg.siteSubcategory,
+                  website: firstOrg.website,
+                })
+              : true;
+            return [
+              hasMenu
+                ? { href: '/dashboard/menu', icon: Plus, label: 'Yemək əlavə et', color: '#00D37D' }
+                : { href: '/dashboard/services', icon: Briefcase, label: 'Xidmət əlavə et', color: '#00D37D' },
+            ];
+          })().concat([
             ...(isSuperAdmin ? [{ href: '/dashboard/theme', icon: Globe, label: 'Tema dəyiş', color: '#22D3EE' }] : []),
             { href: '/dashboard/social', icon: Share2, label: 'Sosial Media', color: '#E1306C' },
             { href: '/dashboard/whatsapp', icon: ArrowRight, label: 'WhatsApp qur', color: '#34D399' },
             { href: '/dashboard/new-organization', icon: Plus, label: 'Müəssisə yarat', color: '#FBBF24' },
-          ].map(({ href, icon: Icon, label, color }) => (
+          ]).map(({ href, icon: Icon, label, color }) => (
             <Link
               key={href}
               href={href}
