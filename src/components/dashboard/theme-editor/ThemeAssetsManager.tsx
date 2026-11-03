@@ -37,6 +37,11 @@ export default function ThemeAssetsManager({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [activeSlotKey, setActiveSlotKey] = useState<keyof ThemeConfig | null>(null);
 
+  const isRandevuTheme =
+    theme.templateId === 'randevu-cafe' ||
+    theme.proTemplateId === 'randevu-cafe' ||
+    theme.id === 'randevuCafe';
+
   const assetSlots: AssetSlot[] = [
     {
       key: 'headerImageUrl',
@@ -45,6 +50,38 @@ export default function ThemeAssetsManager({
       url: theme.headerImageUrl,
       recommendedSize: '1920 × 1080 px (16:9)',
     },
+    {
+      key: 'aboutImageUrl',
+      title: isRandevuTheme ? 'Haqqımızda Bölməsinin Şəkli (Aşpaz / Komanda / İnteryer)' : 'Haqqımızda Bölməsinin Şəkli',
+      description: isRandevuTheme ? 'Haqqımızda bölməsində sol tərəfdə göstərilən usta aşpaz və ya məkan şəkli.' : 'Saytın, komandanın və ya məkanın interyerini əks etdirən foto.',
+      url: theme.aboutImageUrl,
+      recommendedSize: '1200 × 800 px (4:3 və ya portret)',
+    },
+    ...(isRandevuTheme
+      ? [
+          {
+            key: 'heroMainImage' as keyof ThemeConfig,
+            title: 'Hero Əsas Şəkli (Bento Sol Böyük Şəkil)',
+            description: 'Randevu Lounge Hero hissəsindəki bento şəbəkəsinin əsas böyük yemək şəkli.',
+            url: theme.heroMainImage,
+            recommendedSize: '1200 × 900 px (4:3 və ya 16:10)',
+          },
+          {
+            key: 'heroImage2' as keyof ThemeConfig,
+            title: 'Hero Şəkil 2 (Bento Sağ Yuxarı - Qəhvə / Detal)',
+            description: 'Bento şəbəkəsinin sağ yuxarı kvadrat şəffaf/detal vizualı (məs: Arabika qəhvəsi).',
+            url: theme.heroImage2,
+            recommendedSize: '800 × 800 px (1:1 Kvadrat)',
+          },
+          {
+            key: 'heroImage3' as keyof ThemeConfig,
+            title: 'Hero Şəkil 3 (Bento Sağ Aşağı - İnteryer / Ab-hava)',
+            description: 'Bento şəbəkəsinin sağ aşağı kvadrat interyer və ya səmimi mühit şəkli.',
+            url: theme.heroImage3,
+            recommendedSize: '800 × 800 px (1:1 Kvadrat)',
+          },
+        ]
+      : []),
     {
       key: 'backgroundImageUrl',
       title: 'Ümumi Səhifə Arxa Fonu',
@@ -58,13 +95,6 @@ export default function ThemeAssetsManager({
       description: 'Hero hissəsində fərqləndirilən yemək və ya xidmət vizualı.',
       url: theme.heroDishImage,
       recommendedSize: '800 × 800 px (Şəffaf PNG tövsiyə olunur)',
-    },
-    {
-      key: 'aboutImageUrl',
-      title: 'Haqqımızda Bölməsinin Şəkli',
-      description: 'Saytın, komandanın və ya məkanın interyerini əks etdirən foto.',
-      url: theme.aboutImageUrl,
-      recommendedSize: '1200 × 800 px (4:3)',
     },
   ];
 
