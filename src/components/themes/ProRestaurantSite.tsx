@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { parseSetItems, formatSetSummary } from '@/lib/set-dishes';
 import {
   Phone, MapPin, Clock, MessageCircle, X,
   ShoppingCart, Plus, Minus, Check, ArrowRight,
@@ -17,6 +18,8 @@ import SocialMediaFeed from './SocialMediaFeed';
 
 export interface MenuItem {
   id: string;
+  isSet?: boolean;
+  setItems?: string | null;
   name: string;
   slug: string;
   description?: string;
@@ -1253,6 +1256,21 @@ export default function ProRestaurantSite({
                             {item.portionSize || (item.isFeatured ? 'Seçilmiş' : 'Yeni')}
                           </span>
                         )}
+                        {item.isSet && (
+                          <span
+                            style={{
+                              fontSize: 11,
+                              fontWeight: 700,
+                              color: '#FCD34D',
+                              background: 'rgba(217, 119, 6, 0.25)',
+                              border: '1px solid rgba(245, 158, 11, 0.4)',
+                              padding: '2px 8px',
+                              borderRadius: 6,
+                            }}
+                          >
+                            🍱 SET
+                          </span>
+                        )}
                       </div>
 
                       {/* Title & Description */}
@@ -1281,6 +1299,21 @@ export default function ProRestaurantSite({
                         >
                           {item.description}
                         </p>
+                      )}
+                      {item.isSet && item.setItems && (
+                        <div
+                          style={{
+                            marginTop: 8,
+                            padding: '6px 10px',
+                            background: 'rgba(255, 255, 255, 0.03)',
+                            borderRadius: 6,
+                            border: '1px dashed rgba(245, 158, 11, 0.3)',
+                            fontSize: 11,
+                            color: '#FCD34D',
+                          }}
+                        >
+                          <span style={{ fontWeight: 600 }}>Tərkibi:</span> {formatSetSummary(item.setItems)}
+                        </div>
                       )}
                     </div>
 
@@ -2583,6 +2616,84 @@ export default function ProRestaurantSite({
                         {selectedItem.description}
                       </p>
                     )}
+
+                    {selectedItem.isSet && selectedItem.setItems && (() => {
+                      const setItems = parseSetItems(selectedItem.setItems);
+                      if (setItems.length === 0) return null;
+                      return (
+                        <div
+                          style={{
+                            marginTop: 16,
+                            padding: 14,
+                            background: 'rgba(217, 119, 6, 0.08)',
+                            border: '1px solid rgba(245, 158, 11, 0.25)',
+                            borderRadius: 12,
+                          }}
+                        >
+                          <div
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 8,
+                              marginBottom: 10,
+                              fontWeight: 700,
+                              fontSize: 13,
+                              color: '#FCD34D',
+                              textTransform: 'uppercase',
+                              letterSpacing: 0.5,
+                            }}
+                          >
+                            🍱 Setə daxil olan yemək və içkilər
+                          </div>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                            {setItems.map((si, idx) => (
+                              <div
+                                key={idx}
+                                style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'space-between',
+                                  padding: '6px 10px',
+                                  background: 'rgba(0,0,0,0.3)',
+                                  borderRadius: 8,
+                                  fontSize: 13,
+                                  color: '#F7F8F9',
+                                }}
+                              >
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                  <span
+                                    style={{
+                                      display: 'inline-flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                      minWidth: 22,
+                                      height: 22,
+                                      padding: '0 6px',
+                                      borderRadius: 11,
+                                      background: 'rgba(245, 158, 11, 0.2)',
+                                      color: '#FCD34D',
+                                      fontSize: 11,
+                                      fontWeight: 700,
+                                    }}
+                                  >
+                                    {si.quantity || 1}x
+                                  </span>
+                                  <span style={{ fontWeight: 500 }}>{si.name}</span>
+                                  {si.portion && (
+                                    <span style={{ fontSize: 11, color: '#9BA3AF' }}>({si.portion})</span>
+                                  )}
+                                </div>
+                                {si.note && (
+                                  <span style={{ fontSize: 11, color: '#9BA3AF', fontStyle: 'italic' }}>
+                                    {si.note}
+                                  </span>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })()}
 
                     {(selectedItem.portionSize || selectedItem.ingredients || selectedItem.allergens) && (
                       <div

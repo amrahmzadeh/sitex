@@ -4,18 +4,19 @@ import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Plus, Pencil, Trash2, X, Loader2, UtensilsCrossed,
+  Plus, Pencil, Package, Layers, Trash2, X, Loader2, UtensilsCrossed,
   Tag, DollarSign, Eye, EyeOff, Star, Flame, Sparkles, Upload, ChevronDown, Film, AlertCircle,
   Check, Search,
 } from 'lucide-react';
 import { isFoodCategory, isMenuActive } from '@/modules/navigation';
+import { parseSetItems, serializeSetItems, formatSetSummary, type SetItemEntry } from '@/lib/set-dishes';
 
 interface Category { id: string; name: string; description?: string; isVisible: boolean; sortOrder: number; _count?: { menuItems: number }; }
 interface MenuItem {
   id: string; name: string; description?: string; price: number; discountPrice?: number;
   categoryId: string; image?: string; video?: string; isFeatured: boolean; isNew: boolean; isPopular: boolean;
   isVisible: boolean; ingredients?: string; allergens?: string; portionSize?: string;
-  prepTime?: string;
+  prepTime?: string; isSet?: boolean; setItems?: string | null;
 }
 
 function useCurrentOrg() {
@@ -57,6 +58,12 @@ export default function MenuPage() {
   const [settingHero, setSettingHero] = useState<string | null>(null);
   const [showHeroPickerModal, setShowHeroPickerModal] = useState(false);
   const [heroSearchQuery, setHeroSearchQuery] = useState('');
+  const [currentSetList, setCurrentSetList] = useState<SetItemEntry[]>([]);
+  const [quickDishSelect, setQuickDishSelect] = useState('');
+  const [customSetDishName, setCustomSetDishName] = useState('');
+  const [customSetDishPortion, setCustomSetDishPortion] = useState('');
+  const [customSetDishQty, setCustomSetDishQty] = useState(1);
+  const [menuFilter, setMenuFilter] = useState<'all' | 'single' | 'sets'>('all');
 
   useEffect(() => {
     if (!orgId) return;
@@ -133,10 +140,59 @@ export default function MenuPage() {
     if (activeCategory === id) setActiveCategory(categories.find(x => x.id !== id)?.id || null);
   };
 
-  const openItemModal = (item?: MenuItem) => {
+  const openItemModal = (item?: MenuItem, forceSet?: boolean) => {
     setEditItem(item || null);
-    setItemForm(item ? { ...item, video: item.video || '' } : { name: '', price: 0, categoryId: activeCategory || '', isVisible: true, isFeatured: false, isNew: false, isPopular: false, video: '' });
+    const isSetVal = item ? Boolean(item.isSet) : Boolean(forceSet);
+    const parsedList = item?.setItems ? parseSetItems(item.setItems) : [];
+    setCurrentSetList(parsedList);
+    setQuickDishSelect('');
+    setCustomSetDishName('');
+    setCustomSetDishPortion('');
+    setCustomSetDishQty(1);
+
+    setItemForm(
+      item
+        ? { ...item, video: item.video || '', isSet: isSetVal, setItems: item.setItems || '' }
+        : {
+            name: '',
+            price: 0,
+            categoryId: activeCategory || '',
+            isVisible: true,
+            isFeatured: false,
+            isNew: false,
+            isPopular: false,
+            video: '',
+            isSet: isSetVal,
+            setItems: '',
+          }
+    );
     setShowItemModal(true);
+  };
+
+  const addDishToSet = (dishName: string, portion?: string, qty = 1, price?: number) => {
+    if (!dishName.trim()) return;
+    setCurrentSetList(prev => {
+      const existing = prev.find(p => p.name.toLowerCase() === dishName.trim().toLowerCase());
+      if (existing) {
+        return prev.map(p => p.name.toLowerCase() === dishName.trim().toLowerCase()
+          ? { ...p, quantity: (Number(p.quantity) || 1) + qty }
+          : p
+        );
+      }
+      return [...prev, { name: dishName.trim(), quantity: qty, portion: portion?.trim() || undefined, price }];
+    });
+  };
+
+  const removeDishFromSet = (idx: number) => {
+    setCurrentSetList(prev => prev.filter((_, i) => i !== idx));
+  };
+
+  const updateSetItemQty = (idx: number, qty: number) => {
+    if (qty <= 0) {
+      removeDishFromSet(idx);
+      return;
+    }
+    setCurrentSetList(prev => prev.map((p, i) => i === idx ? { ...p, quantity: qty } : p));
   };
 
   const handleImageUpload = async (file: File) => {
@@ -206,6 +262,8 @@ export default function MenuPage() {
         isNew: Boolean(itemForm.isNew),
         isPopular: Boolean(itemForm.isPopular),
         isVisible: itemForm.isVisible !== false,
+        isSet: Boolean(itemForm.isSet),
+        setItems: itemForm.isSet ? serializeSetItems(currentSetList) : null,
       };
       const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
       const data = await res.json();
@@ -430,10 +488,56 @@ export default function MenuPage() {
                 <h2 style={{ fontSize: 16, fontWeight: 600, color: '#E8E8F0' }}>
                   {categories.find(c => c.id === activeCategory)?.name} — {catItems.length} yemək
                 </h2>
-                <button onClick={() => openItemModal()} className="dash-btn-primary" style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13 }}>
-                  <Plus size={14} /> Yemək əlavə et
-                </button>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                  <button
+                    onClick={() => openItemModal(undefined, true)}
+                    className="dash-btn-secondary"
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 6,
+                      fontSize: 13,
+                      background: 'rgba(245, 158, 11, 0.12)',
+                      border: '1px solid rgba(245, 158, 11, 0.4)',
+                      color: '#FBBF24',
+                    }}
+                  >
+                    🍱 + Yemək Seti yarat
+                  </button>
+                  <button onClick={() => openItemModal(undefined, false)} className="dash-btn-primary" style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13 }}>
+                    <Plus size={14} /> Yemək əlavə et
+                  </button>
+                </div>
               </div>
+
+              {/* Filter pills: Hamısı / Tək Yeməklər / Setlər */}
+              {catItems.length > 0 && (
+                <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+                  {[
+                    { id: 'all', label: `Hamısı (${catItems.length})` },
+                    { id: 'single', label: `Tək Yeməklər (${catItems.filter(i => !i.isSet).length})` },
+                    { id: 'sets', label: `🍱 Yemək Setləri (${catItems.filter(i => i.isSet).length})` },
+                  ].map(tab => (
+                    <button
+                      key={tab.id}
+                      type="button"
+                      onClick={() => setMenuFilter(tab.id as any)}
+                      style={{
+                        padding: '6px 14px',
+                        borderRadius: 20,
+                        fontSize: 12,
+                        fontWeight: 600,
+                        border: menuFilter === tab.id ? '1px solid #7C5CFC' : '1px solid #2A2A3A',
+                        background: menuFilter === tab.id ? 'rgba(124, 92, 252, 0.2)' : 'rgba(255,255,255,0.02)',
+                        color: menuFilter === tab.id ? '#A78BFA' : '#8888A0',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      {tab.label}
+                    </button>
+                  ))}
+                </div>
+              )}
 
               {catItems.length === 0 ? (
                 <div className="dash-card" style={{ padding: 48, textAlign: 'center' }}>
@@ -446,7 +550,11 @@ export default function MenuPage() {
               ) : (
                 <div style={{ display: 'grid', gap: 12 }}>
                   <AnimatePresence>
-                    {catItems.map((item) => (
+                    {catItems.filter(item => {
+                      if (menuFilter === 'single') return !item.isSet;
+                      if (menuFilter === 'sets') return !!item.isSet;
+                      return true;
+                    }).map((item) => (
                       <motion.div
                         key={item.id}
                         layout
@@ -466,6 +574,11 @@ export default function MenuPage() {
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 4 }}>
                             <span style={{ fontSize: 15, fontWeight: 600, color: '#E8E8F0' }}>{item.name}</span>
+                            {item.isSet && (
+                              <span style={{ background: 'rgba(245,158,11,0.2)', color: '#FCD34D', border: '1px solid rgba(245,158,11,0.4)', fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 100, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                                🍱 YEMƏK SETİ
+                              </span>
+                            )}
                             {(item.id === currentHeroItem?.id || item.isFeatured) && (
                               <span style={{ background: 'linear-gradient(135deg, rgba(245,158,11,0.25), rgba(229,169,60,0.35))', color: '#FBBF24', border: '1px solid rgba(251,191,36,0.5)', fontSize: 10, fontWeight: 700, padding: '1px 8px', borderRadius: 100, display: 'inline-flex', alignItems: 'center', gap: 3 }}>
                                 <Star size={10} fill="#FBBF24" /> Başlıq Kartı
@@ -476,6 +589,11 @@ export default function MenuPage() {
                             {item.video && <span style={{ background: 'rgba(255,159,28,0.18)', color: '#FF9F1C', fontSize: 10, padding: '1px 6px', borderRadius: 100, display: 'inline-flex', alignItems: 'center', gap: 3 }}>🎬 Video</span>}
                           </div>
                           {item.description && <p style={{ fontSize: 12, color: '#8888A0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.description}</p>}
+                          {item.isSet && item.setItems && (
+                            <div style={{ marginTop: 4, fontSize: 11, color: '#FCD34D', background: 'rgba(245,158,11,0.08)', padding: '2px 8px', borderRadius: 6, display: 'inline-block' }}>
+                              <span style={{ fontWeight: 600 }}>Tərkib:</span> {formatSetSummary(item.setItems)}
+                            </div>
+                          )}
                           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 4 }}>
                             {item.discountPrice ? (
                               <>
@@ -778,8 +896,275 @@ export default function MenuPage() {
               </div>
 
               <div style={{ display: 'grid', gap: 14 }}>
+                {/* Mode Selector: Tək Yemək vs Yemək Seti */}
+                <div style={{ padding: 4, background: '#12141C', borderRadius: 12, border: '1px solid #2A2A3A', display: 'flex', gap: 4 }}>
+                  <button
+                    type="button"
+                    onClick={() => setItemForm(p => ({ ...p, isSet: false }))}
+                    style={{
+                      flex: 1,
+                      padding: '8px 12px',
+                      borderRadius: 8,
+                      border: 'none',
+                      background: !itemForm.isSet ? '#7C5CFC' : 'transparent',
+                      color: !itemForm.isSet ? '#FFF' : '#8888A0',
+                      fontWeight: 600,
+                      fontSize: 13,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 6,
+                    }}
+                  >
+                    🍽️ Tək Yemək
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setItemForm(p => ({ ...p, isSet: true }))}
+                    style={{
+                      flex: 1,
+                      padding: '8px 12px',
+                      borderRadius: 8,
+                      border: 'none',
+                      background: itemForm.isSet ? 'linear-gradient(135deg, #D97706, #F59E0B)' : 'transparent',
+                      color: itemForm.isSet ? '#FFF' : '#8888A0',
+                      fontWeight: 700,
+                      fontSize: 13,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 6,
+                    }}
+                  >
+                    🍱 Yemək Seti / Kombo
+                  </button>
+                </div>
+
+                {/* Set Items Builder Section (shown only when isSet is true) */}
+                {itemForm.isSet && (
+                  <div
+                    style={{
+                      padding: 16,
+                      background: 'rgba(245, 158, 11, 0.06)',
+                      border: '1px solid rgba(245, 158, 11, 0.3)',
+                      borderRadius: 14,
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+                      <div>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: '#FCD34D' }}>
+                          🍱 Setə Daxil Olan Məhsullar ({currentSetList.length})
+                        </span>
+                        <p style={{ margin: '2px 0 0', fontSize: 11, color: '#9BA3AF' }}>
+                          Menyudakı mövcud təamlardan seçin və ya sərbəst yemək/içki adı əlavə edin.
+                        </p>
+                      </div>
+                      {currentSetList.length > 0 && (() => {
+                        const sumPrice = currentSetList.reduce((acc, cur) => acc + (cur.price ? cur.price * (Number(cur.quantity) || 1) : 0), 0);
+                        return sumPrice > 0 ? (
+                          <div style={{ fontSize: 11, color: '#A78BFA', textAlign: 'right' }}>
+                            <span>Ayrı-ayrı: {sumPrice.toFixed(2)} {currency}</span>
+                          </div>
+                        ) : null;
+                      })()}
+                    </div>
+
+                    {/* Quick Add from Existing Menu Items */}
+                    <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+                      <select
+                        className="dash-input"
+                        style={{ flex: 1, fontSize: 12, padding: '7px 10px' }}
+                        value={quickDishSelect}
+                        onChange={(e) => setQuickDishSelect(e.target.value)}
+                      >
+                        <option value="">-- Menyudan yemək seçin --</option>
+                        {items
+                          .filter(it => !it.isSet && it.id !== editItem?.id)
+                          .map(it => (
+                            <option key={it.id} value={it.id}>
+                              {it.name} {it.price ? `(${it.price.toFixed(2)} ${currency})` : ''}
+                            </option>
+                          ))}
+                      </select>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (!quickDishSelect) return;
+                          const found = items.find(it => it.id === quickDishSelect);
+                          if (found) {
+                            addDishToSet(found.name, found.portionSize, 1, found.price);
+                            setQuickDishSelect('');
+                          }
+                        }}
+                        disabled={!quickDishSelect}
+                        className="dash-btn-secondary"
+                        style={{ padding: '7px 14px', fontSize: 12, whiteSpace: 'nowrap' }}
+                      >
+                        + Əlavə et
+                      </button>
+                    </div>
+
+                    {/* Custom Item Quick Input (e.g. Cola 0.5L, Çörək, Sous) */}
+                    <div style={{ display: 'flex', gap: 6, marginBottom: 14 }}>
+                      <input
+                        className="dash-input"
+                        style={{ flex: 2, fontSize: 12, padding: '7px 10px' }}
+                        value={customSetDishName}
+                        onChange={(e) => setCustomSetDishName(e.target.value)}
+                        placeholder="və ya sərbəst: Məs: Coca-Cola 0.5L, Sous"
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            if (customSetDishName.trim()) {
+                              addDishToSet(customSetDishName, customSetDishPortion, customSetDishQty);
+                              setCustomSetDishName('');
+                              setCustomSetDishPortion('');
+                              setCustomSetDishQty(1);
+                            }
+                          }
+                        }}
+                      />
+                      <input
+                        className="dash-input"
+                        style={{ width: 80, fontSize: 12, padding: '7px 10px' }}
+                        value={customSetDishPortion}
+                        onChange={(e) => setCustomSetDishPortion(e.target.value)}
+                        placeholder="Ölçü"
+                      />
+                      <input
+                        className="dash-input"
+                        type="number"
+                        min="1"
+                        style={{ width: 55, fontSize: 12, padding: '7px 8px', textAlign: 'center' }}
+                        value={customSetDishQty}
+                        onChange={(e) => setCustomSetDishQty(parseInt(e.target.value) || 1)}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (!customSetDishName.trim()) return;
+                          addDishToSet(customSetDishName, customSetDishPortion, customSetDishQty);
+                          setCustomSetDishName('');
+                          setCustomSetDishPortion('');
+                          setCustomSetDishQty(1);
+                        }}
+                        disabled={!customSetDishName.trim()}
+                        className="dash-btn-secondary"
+                        style={{ padding: '7px 12px', fontSize: 12 }}
+                      >
+                        +
+                      </button>
+                    </div>
+
+                    {/* List of items currently in this Set */}
+                    {currentSetList.length === 0 ? (
+                      <div
+                        style={{
+                          padding: 14,
+                          textAlign: 'center',
+                          borderRadius: 8,
+                          border: '1px dashed rgba(245, 158, 11, 0.3)',
+                          color: '#9BA3AF',
+                          fontSize: 12,
+                        }}
+                      >
+                        Hələ heç bir təam əlavə olunmayıb. Yuxarıdakı seçimdən setə yeməklər əlavə edin.
+                      </div>
+                    ) : (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                        {currentSetList.map((si, idx) => (
+                          <div
+                            key={idx}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              padding: '8px 12px',
+                              background: 'rgba(0,0,0,0.3)',
+                              borderRadius: 8,
+                              border: '1px solid rgba(255,255,255,0.06)',
+                            }}
+                          >
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, minWidth: 0 }}>
+                              <span style={{ fontSize: 13, fontWeight: 600, color: '#E8E8F0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                {si.name}
+                              </span>
+                              {si.portion && (
+                                <span style={{ fontSize: 11, color: '#8888A0' }}>({si.portion})</span>
+                              )}
+                              {si.price ? (
+                                <span style={{ fontSize: 11, color: '#34D399' }}>({si.price.toFixed(2)} {currency})</span>
+                              ) : null}
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                              <button
+                                type="button"
+                                onClick={() => updateSetItemQty(idx, (Number(si.quantity) || 1) - 1)}
+                                style={{
+                                  width: 24,
+                                  height: 24,
+                                  borderRadius: 6,
+                                  border: '1px solid #2A2A3A',
+                                  background: 'rgba(255,255,255,0.05)',
+                                  color: '#E8E8F0',
+                                  cursor: 'pointer',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  fontSize: 13,
+                                }}
+                              >
+                                -
+                              </button>
+                              <span style={{ fontSize: 12, fontWeight: 700, color: '#FCD34D', minWidth: 16, textAlign: 'center' }}>
+                                {si.quantity || 1}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => updateSetItemQty(idx, (Number(si.quantity) || 1) + 1)}
+                                style={{
+                                  width: 24,
+                                  height: 24,
+                                  borderRadius: 6,
+                                  border: '1px solid #2A2A3A',
+                                  background: 'rgba(255,255,255,0.05)',
+                                  color: '#E8E8F0',
+                                  cursor: 'pointer',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  fontSize: 13,
+                                }}
+                              >
+                                +
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => removeDishFromSet(idx)}
+                                style={{
+                                  border: 'none',
+                                  background: 'transparent',
+                                  color: '#F87171',
+                                  cursor: 'pointer',
+                                  padding: '4px',
+                                  marginLeft: 4,
+                                }}
+                                title="Sil"
+                              >
+                                <Trash2 size={14} />
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 <div>
-                  <label className="dash-label">Yemək adı *</label>
+                  <label className="dash-label">{itemForm.isSet ? 'Set / Kombo adı *' : 'Yemək adı *'}</label>
                   <input className="dash-input" value={itemForm.name || ''} onChange={(e) => setItemForm(p => ({ ...p, name: e.target.value }))} placeholder="Məs: Margherita Pizza" />
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>

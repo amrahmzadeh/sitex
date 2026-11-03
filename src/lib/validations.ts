@@ -60,6 +60,8 @@ export const menuItemSchema = z.object({
   sortOrder: z.number().int().default(0),
   seoTitle: z.string().nullable().optional(),
   seoDescription: z.string().nullable().optional(),
+  isSet: z.boolean().default(false),
+  setItems: z.string().nullable().optional(),
 });
 
 export const whatsappSchema = z.object({

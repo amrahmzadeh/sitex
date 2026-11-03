@@ -14,6 +14,7 @@ import SplashScreen, { SplashConfig } from './SplashScreen';
 import ProRestaurantSite from './ProRestaurantSite';
 import SpeechAcademySite from './SpeechAcademySite';
 import FoodVideoPlayer from './FoodVideoPlayer';
+import { parseSetItems, formatSetSummary } from '@/lib/set-dishes';
 import { SocialIconsGroup } from './SocialIcons';
 import SocialMediaFeed from './SocialMediaFeed';
 
@@ -21,6 +22,7 @@ export interface MenuItem {
   id: string; name: string; slug: string; description?: string; price: number; discountPrice?: number;
   image?: string; video?: string; isFeatured: boolean; isNew: boolean; isPopular: boolean;
   ingredients?: string; allergens?: string; portionSize?: string; prepTime?: string;
+  isSet?: boolean; setItems?: string | null;
 }
 
 export interface MenuCategory {
@@ -119,7 +121,8 @@ function ItemModal({
     setTimeout(() => setAdded(false), 1500);
   };
 
-  const singleOrderMsg = `Salam! Sifariş vermək istəyirəm:${table ? `\n📍 *MASA:* ${table}` : ''}\n\n🍽️ ${item.name} — ${qty} ədəd x ${unitPrice.toFixed(2)} ${currency} = ${totalPrice.toFixed(2)} ${currency}`;
+  const setInfo = item.isSet && item.setItems ? ` (🍱 Set tərkibi: ${formatSetSummary(item.setItems)})` : '';
+  const singleOrderMsg = `Salam! Sifariş vermək istəyirəm:${table ? `\n📍 *MASA:* ${table}` : ''}\n\n🍽️ ${item.name}${setInfo} — ${qty} ədəd x ${unitPrice.toFixed(2)} ${currency} = ${totalPrice.toFixed(2)} ${currency}`;
   const singleWhatsAppUrl = whatsapp?.isEnabled && whatsapp.phoneNumber
     ? formatWhatsAppUrl(whatsapp.countryCode, whatsapp.phoneNumber, singleOrderMsg)
     : null;
@@ -178,6 +181,7 @@ function ItemModal({
           </div>
 
           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 16 }}>
+            {item.isSet && <span style={{ background: 'linear-gradient(135deg, rgba(245,158,11,0.25), rgba(229,169,60,0.35))', color: '#FBBF24', border: '1px solid rgba(251,191,36,0.5)', padding: '4px 12px', borderRadius: 100, fontSize: 12, fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 4 }}>🍱 YEMƏK SETİ</span>}
             {item.isFeatured && <span style={{ background: `${theme.primaryColor}20`, color: theme.primaryColor, padding: '4px 10px', borderRadius: 100, fontSize: 12, fontWeight: 600 }}>⭐ Seçilmiş</span>}
             {item.isNew && <span style={{ background: '#34D39920', color: '#34D399', padding: '4px 10px', borderRadius: 100, fontSize: 12, fontWeight: 600 }}>✨ Yeni</span>}
             {item.isPopular && <span style={{ background: '#F8717120', color: '#F87171', padding: '4px 10px', borderRadius: 100, fontSize: 12, fontWeight: 600 }}>🔥 Populyar</span>}
@@ -200,6 +204,32 @@ function ItemModal({
               <span style={{ fontSize: 28, fontWeight: 800, color: theme.primaryColor }}>{formatPrice(item.price, currency)}</span>
             )}
           </div>
+
+          {item.isSet && item.setItems && (
+            <div style={{ background: `${theme.primaryColor}12`, border: `1px solid ${theme.primaryColor}30`, borderRadius: theme.borderRadius, padding: 16, marginBottom: 20 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10, color: theme.primaryColor, fontWeight: 700, fontSize: 14 }}>
+                <span>🍱</span>
+                <span>Setə daxil olan yemək və içkilər:</span>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {parseSetItems(item.setItems).map((si, idx) => (
+                  <div key={idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 13, color: theme.textColor, paddingBottom: 6, borderBottom: idx < parseSetItems(item.setItems).length - 1 ? `1px dashed ${theme.textColor}15` : 'none' }}>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span style={{ color: '#34D399', fontWeight: 800 }}>✔</span>
+                      <span style={{ fontWeight: 600 }}>{si.name}</span>
+                      {si.portion && <span style={{ opacity: 0.65, fontSize: 12 }}>({si.portion})</span>}
+                      {si.note && <span style={{ opacity: 0.6, fontSize: 11, fontStyle: 'italic' }}>— {si.note}</span>}
+                    </span>
+                    {si.quantity && (
+                      <span style={{ fontWeight: 700, opacity: 0.9, background: `${theme.primaryColor}25`, color: theme.primaryColor, padding: '2px 8px', borderRadius: 100, fontSize: 11 }}>
+                        {si.quantity}
+                      </span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {(item.ingredients || item.allergens || item.portionSize) && (
             <div style={{ background: `${theme.secondaryColor}10`, borderRadius: theme.borderRadius, padding: 16, marginBottom: 20 }}>
@@ -1414,16 +1444,21 @@ export default function RestaurantSite({ data, initialTable }: { data: SiteData;
                     )}
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ display: 'flex', gap: 4, marginBottom: 4, flexWrap: 'wrap' }}>
+                        {item.isSet && <span style={{ background: 'rgba(245,158,11,0.22)', color: '#FBBF24', border: '1px solid rgba(251,191,36,0.45)', fontSize: 9, padding: '1px 7px', borderRadius: 100, fontWeight: 800, display: 'inline-flex', alignItems: 'center', gap: 3 }}>🍱 SET</span>}
                         {item.isNew && <span style={{ background: '#34D39918', color: '#34D399', fontSize: 9, padding: '1px 6px', borderRadius: 100, fontWeight: 700 }}>YENİ</span>}
                         {item.isPopular && <span style={{ background: '#F8717118', color: '#F87171', fontSize: 9, padding: '1px 6px', borderRadius: 100, fontWeight: 700 }}>POPULYAR</span>}
                         {item.isFeatured && <span style={{ background: `${theme.primaryColor}18`, color: theme.primaryColor, fontSize: 9, padding: '1px 6px', borderRadius: 100, fontWeight: 700 }}>SEÇİLMİŞ</span>}
                       </div>
                       <h3 style={{ fontFamily: theme.headingFont, fontSize: 15, fontWeight: 700, color: theme.textColor, marginBottom: 4 }}>{item.name}</h3>
-                      {item.description && (
+                      {item.isSet && item.setItems ? (
+                        <div style={{ fontSize: 11, color: '#FBBF24', lineHeight: 1.35, marginBottom: 8, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                          🍱 <strong>Set:</strong> {formatSetSummary(item.setItems)}
+                        </div>
+                      ) : item.description ? (
                         <p style={{ fontSize: 12, color: `${theme.textColor}77`, lineHeight: 1.4, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', marginBottom: 8 }}>
                           {item.description}
                         </p>
-                      )}
+                      ) : null}
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
                           {item.discountPrice ? (
