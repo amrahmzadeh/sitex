@@ -151,15 +151,42 @@ function Header({ data, theme, activeSection }: { data: SiteData; theme: ThemeCo
 
 // ─── Hero Section ────────────────────────────────────────────────────────────
 function HeroSection({ data, theme }: { data: SiteData; theme: ThemeConfig }) {
-  const { organization } = data;
+  const { organization, menuCategories } = data;
   const primary = theme.primaryColor || PRIMARY;
   const secondary = theme.secondaryColor || SECONDARY;
   const heading = theme.headingFont || 'Playfair Display';
   const body = theme.bodyFont || 'Plus Jakarta Sans';
 
-  const mainImg = theme.heroMainImage || HERO_MAIN_IMG;
-  const img2 = theme.heroImage2 || HERO_IMG2;
-  const img3 = theme.heroImage3 || HERO_IMG3;
+  // Menyudan seçilmiş günün yeməkləri / xüsusi təamlar
+  const allMenuItems = menuCategories?.flatMap(c => c.menuItems) || [];
+
+  // Əsas xüsusi yemək (Hero Dish / Günün Təamı)
+  const heroDish = (() => {
+    if (theme.heroDishId) {
+      const match = allMenuItems.find(m => m.id === theme.heroDishId);
+      if (match) return match;
+    }
+    const featured = allMenuItems.find(m => m.isFeatured);
+    if (featured) return featured;
+    const popular = allMenuItems.find(m => m.isPopular);
+    if (popular) return popular;
+    return allMenuItems[0] || null;
+  })();
+
+  // Yan bento yeməkləri (ikinci və üçüncü seçilmiş yeməklər)
+  const secondaryDishes = allMenuItems.filter(m => m.id !== heroDish?.id);
+  const dish2 = secondaryDishes.find(m => m.isPopular || m.isNew) || secondaryDishes[0] || null;
+  const dish3 = secondaryDishes.find(m => m.id !== dish2?.id) || secondaryDishes[1] || null;
+
+  const mainImg = theme.heroMainImage || heroDish?.image || HERO_MAIN_IMG;
+  const img2 = theme.heroImage2 || dish2?.image || HERO_IMG2;
+  const img3 = theme.heroImage3 || dish3?.image || HERO_IMG3;
+
+  const mainLabel = theme.heroDishTitle || heroDish?.name || theme.heroMainImageLabel || 'Günün Sevimli Təamı';
+  const mainBadge = theme.heroDishBadge || 'Günün Sevimli Təamı';
+  const img2Label = dish2?.name || theme.heroImage2Label || 'Arabika Qəhvəsi';
+  const img3Label = dish3?.name || theme.heroImage3Label || 'Səmimi Mühit';
+
   const badge = theme.heroBadgeText || 'AİLƏVİ VƏ PREMIUM LOUNGE TƏCRÜBƏSİ';
   const headline = theme.heroHeadline || organization.name;
   const sub = theme.heroSubheadline || organization.description || 'Ləziz təamlar, xüsusi qəhvə çeşidləri və isti ailəvi ab-hava.';
@@ -170,10 +197,6 @@ function HeroSection({ data, theme }: { data: SiteData; theme: ThemeConfig }) {
   const cta2 = theme.heroCta2 || 'Rezervasiya Et';
   const rating = theme.heroRatingScore || '4.9';
   const ratingLabel = theme.heroRatingLabel || 'Xoşbəxt Qonaqlar';
-  const mainLabel = theme.heroMainImageLabel || 'Özel Dad Palitrası';
-  const mainBadge = theme.heroMainImageBadge || 'Gündəlik Təzə';
-  const img2Label = theme.heroImage2Label || 'Arabika Qəhvəsi';
-  const img3Label = theme.heroImage3Label || 'Səmimi Mühit';
 
   const scrollTo = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
 
@@ -240,25 +263,45 @@ function HeroSection({ data, theme }: { data: SiteData; theme: ThemeConfig }) {
         {/* Right: bento image grid */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gridTemplateRows: 'auto auto', gap: 12 }}>
           {/* Main large image */}
-          <div style={{ gridColumn: '1 / 2', gridRow: '1 / 3', position: 'relative', borderRadius: 20, overflow: 'hidden', aspectRatio: '4/5' }}>
-            <img src={mainImg} alt="Main" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            <div style={{ position: 'absolute', bottom: 12, left: 12, background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(10px)', borderRadius: 12, padding: '8px 14px' }}>
-              <span style={{ display: 'block', fontSize: 10, fontFamily: body, color: primary, fontWeight: 700, letterSpacing: '0.05em' }}>{mainBadge}</span>
-              <span style={{ fontSize: 13, fontFamily: heading, fontWeight: 700, color: TEXT }}>{mainLabel}</span>
+          <div style={{ gridColumn: '1 / 2', gridRow: '1 / 3', position: 'relative', borderRadius: 20, overflow: 'hidden', aspectRatio: '4/5', background: '#e9e8e5' }}>
+            <img src={mainImg} alt={mainLabel} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0) 50%)' }} />
+            <div style={{ position: 'absolute', bottom: 12, left: 12, right: 12, background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(10px)', borderRadius: 12, padding: '10px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+              <div>
+                <span style={{ display: 'block', fontSize: 10, fontFamily: body, color: primary, fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase' }}>{mainBadge}</span>
+                <span style={{ fontSize: 14, fontFamily: heading, fontWeight: 700, color: TEXT, display: 'block' }}>{mainLabel}</span>
+              </div>
+              {heroDish && (
+                <span style={{ fontSize: 13, fontFamily: body, fontWeight: 700, color: primary }}>
+                  {formatPrice(heroDish.discountPrice || heroDish.price, organization.currency || 'AZN')}
+                </span>
+              )}
             </div>
           </div>
           {/* Top-right image */}
-          <div style={{ position: 'relative', borderRadius: 20, overflow: 'hidden', aspectRatio: '1/1' }}>
-            <img src={img2} alt="Coffee" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            <div style={{ position: 'absolute', bottom: 10, left: 10, background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(8px)', borderRadius: 10, padding: '6px 12px' }}>
-              <span style={{ fontSize: 12, fontFamily: body, fontWeight: 600, color: TEXT }}>{img2Label}</span>
+          <div style={{ position: 'relative', borderRadius: 20, overflow: 'hidden', aspectRatio: '1/1', background: '#e9e8e5' }}>
+            <img src={img2} alt={img2Label} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0) 40%)' }} />
+            <div style={{ position: 'absolute', bottom: 10, left: 10, right: 10, background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(8px)', borderRadius: 10, padding: '6px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: 12, fontFamily: body, fontWeight: 600, color: TEXT, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{img2Label}</span>
+              {dish2 && (
+                <span style={{ fontSize: 11, fontFamily: body, fontWeight: 700, color: primary, marginLeft: 6 }}>
+                  {formatPrice(dish2.discountPrice || dish2.price, organization.currency || 'AZN')}
+                </span>
+              )}
             </div>
           </div>
           {/* Bottom-right image */}
-          <div style={{ position: 'relative', borderRadius: 20, overflow: 'hidden', aspectRatio: '1/1' }}>
-            <img src={img3} alt="Ambiance" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            <div style={{ position: 'absolute', bottom: 10, left: 10, background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(8px)', borderRadius: 10, padding: '6px 12px' }}>
-              <span style={{ fontSize: 12, fontFamily: body, fontWeight: 600, color: TEXT }}>{img3Label}</span>
+          <div style={{ position: 'relative', borderRadius: 20, overflow: 'hidden', aspectRatio: '1/1', background: '#e9e8e5' }}>
+            <img src={img3} alt={img3Label} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0) 40%)' }} />
+            <div style={{ position: 'absolute', bottom: 10, left: 10, right: 10, background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(8px)', borderRadius: 10, padding: '6px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: 12, fontFamily: body, fontWeight: 600, color: TEXT, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{img3Label}</span>
+              {dish3 && (
+                <span style={{ fontSize: 11, fontFamily: body, fontWeight: 700, color: primary, marginLeft: 6 }}>
+                  {formatPrice(dish3.discountPrice || dish3.price, organization.currency || 'AZN')}
+                </span>
+              )}
             </div>
           </div>
         </div>
