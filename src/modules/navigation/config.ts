@@ -32,6 +32,24 @@ export const isFoodCategory = (category?: string | null, subcategory?: string | 
   );
 };
 
+export const isHospitalityCategory = (category?: string | null, subcategory?: string | null): boolean => {
+  if (!category && !subcategory) return false;
+  const cat = (category || '').toLowerCase();
+  const sub = (subcategory || '').toLowerCase();
+  return (
+    cat.includes('hotel') ||
+    cat.includes('otel') ||
+    cat.includes('qonaq') ||
+    sub.includes('hotel') ||
+    sub.includes('otel') ||
+    sub.includes('qonaq')
+  );
+};
+
+export const isMenuSupportedCategory = (category?: string | null, subcategory?: string | null): boolean => {
+  return isFoodCategory(category, subcategory) || isHospitalityCategory(category, subcategory);
+};
+
 export const isEnterpriseServiceCategory = (
   category?: string | null,
   subcategory?: string | null
@@ -89,6 +107,7 @@ export const isMenuActive = (site: SiteContext | null): boolean => {
   if (!site) return false;
   // Qida kateqoriyalarında menyu həmişə aktivdir
   if (isFoodCategory(site.category, site.subcategory)) return true;
+
 
   if ((site as any).menuEnabled === true || (site as any).hasMenu === true) return true;
 
@@ -180,12 +199,18 @@ export const dashboardNavItems: NavItemConfig[] = [
     href: '/dashboard/menu',
     icon: UtensilsCrossed,
     label: 'Menyu',
-    visibleFor: ['restoran-ve-qida-sayti', 'restoran', 'kafe-ve-qehvexana', 'kafe', 'fast-food'],
+    visibleFor: [
+      'restoran-ve-qida-sayti', 'restoran', 'kafe-ve-qehvexana', 'kafe', 'fast-food',
+      'otel-ve-turizm', 'otel-ve-qonaq-evi', 'seyahat-ve-turizm-sayti', 'hotel'
+    ],
     isVisible: (site) => {
       if (!site) return true;
       if (!site.category && !site.subcategory) return true;
       if (isFoodCategory(site.category, site.subcategory)) {
         return true;
+      }
+      if (isHospitalityCategory(site.category, site.subcategory)) {
+        return isMenuActive(site);
       }
       if (isEnterpriseServiceCategory(site.category, site.subcategory)) {
         return isMenuActive(site);
