@@ -1942,7 +1942,7 @@ export default function ThemePage() {
             )}
           </div>
           <p style={{ fontSize: 11, color: '#8888A0', marginBottom: 12, lineHeight: 1.4 }}>
-            Navbar-dakı loqo yanı, Hero əsas başlığı və Footer-dəki restoran adınız üçün havalı və xüsusi şrift:
+            Navbar-dakı loqo yanı, Hero əsas başlığı və Footer-dəki sayt adınız üçün havalı və xüsusi şrift:
           </p>
 
           {/* Live Preview Box */}

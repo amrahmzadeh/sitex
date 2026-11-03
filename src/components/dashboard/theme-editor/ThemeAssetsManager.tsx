@@ -62,7 +62,7 @@ export default function ThemeAssetsManager({
     {
       key: 'aboutImageUrl',
       title: 'Haqqımızda Bölməsinin Şəkli',
-      description: 'Restoranın, komandanın və ya məkanın interyerini əks etdirən foto.',
+      description: 'Saytın, komandanın və ya məkanın interyerini əks etdirən foto.',
       url: theme.aboutImageUrl,
       recommendedSize: '1200 × 800 px (4:3)',
     },
