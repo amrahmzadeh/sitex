@@ -19,6 +19,8 @@ interface OrgData {
   website?: { isPublished: boolean; publishedAt?: string };
   menuItemCount: number;
   categoryCount: number;
+  siteCategory?: string | null;
+  siteSubcategory?: string | null;
   role: string;
 }
 

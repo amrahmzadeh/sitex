@@ -238,7 +238,7 @@ export default function WebsitePage() {
               { title: 'Tema redaktoru', desc: 'Rənglər, fontlar, dizayn', href: '/dashboard/theme', color: '#00D37D' },
               { title: 'Splash Screen', desc: 'Video və animasiya ekranı', href: '/dashboard/splash', color: '#EC4899' },
             ] : []),
-            ...(isMenuSupportedCategory(siteCategory, siteSubcategory) || isMenuActive({ id: orgId, category: siteCategory, subcategory: siteSubcategory })
+            ...(isMenuSupportedCategory(siteCategory, siteSubcategory) || isMenuActive({ id: orgId || undefined, category: siteCategory || undefined, subcategory: siteSubcategory || undefined })
               ? [{ title: 'Menyu idarəetməsi', desc: 'Kateqoriyalar və yeməklər', href: '/dashboard/menu', color: '#22D3EE' }]
               : [{ title: 'Xidmətlər', desc: 'Xidmət və bölmələrin idarəsi', href: '/dashboard/services', color: '#22D3EE' }]),
             { title: 'Sifariş ayarları', desc: 'WhatsApp parametrləri', href: '/dashboard/whatsapp', color: '#34D399' },
