@@ -35,6 +35,7 @@ yarn-error.log*
 
 # deploy kredensialları (SSH açarı və host konfiqi)
 .deploy/
+.freebuff/website-templates/
 
 # vercel
 .vercel
