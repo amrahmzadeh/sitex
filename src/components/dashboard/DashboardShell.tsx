@@ -147,7 +147,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
           category: currentOrg.siteCategory,
           subcategory: currentOrg.siteSubcategory,
           website: currentOrg.website,
-        } : null)).map(({ href, icon: Icon, label }) => {
+        } : null, (session?.user as { role?: string })?.role)).map(({ href, icon: Icon, label }) => {
           const active = isActive(href);
           return (
             <Link

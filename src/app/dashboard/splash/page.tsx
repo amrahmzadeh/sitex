@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Sparkles, Video, Code2, Play, Eye, Save,
@@ -138,6 +140,16 @@ const CODE_TEMPLATES = [
 ];
 
 export default function SplashPage() {
+  const { data: session, status: sessionStatus } = useSession();
+  const router = useRouter();
+  const isSuperAdmin = (session?.user as { role?: string })?.role === 'SUPER_ADMIN';
+
+  useEffect(() => {
+    if (sessionStatus !== 'loading' && !isSuperAdmin) {
+      router.replace('/dashboard');
+    }
+  }, [sessionStatus, isSuperAdmin, router]);
+
   const { orgId, slug } = useCurrentOrg();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -209,12 +221,16 @@ export default function SplashPage() {
     }));
   };
 
-  if (loading) {
+  if (sessionStatus === 'loading' || loading) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 300 }}>
         <Loader2 size={32} style={{ animation: 'spin 1s linear infinite', color: '#7C5CFC' }} />
       </div>
     );
+  }
+
+  if (!isSuperAdmin) {
+    return null;
   }
 
   return (

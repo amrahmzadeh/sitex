@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useState, useMemo, useRef } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import {
   Loader2,
@@ -347,6 +349,16 @@ function ImageUploadField({
 }
 
 export default function ThemePage() {
+  const { data: session, status: sessionStatus } = useSession();
+  const router = useRouter();
+  const isSuperAdmin = (session?.user as { role?: string })?.role === 'SUPER_ADMIN';
+
+  useEffect(() => {
+    if (sessionStatus !== 'loading' && !isSuperAdmin) {
+      router.replace('/dashboard');
+    }
+  }, [sessionStatus, isSuperAdmin, router]);
+
   const orgId = useCurrentOrg();
   const [theme, setTheme] = useState<ThemeConfig>(defaultThemes.elegant);
   const [stlCode, setStlCode] = useState<string>(() => themeConfigToSTL(defaultThemes.elegant));
@@ -726,7 +738,13 @@ export default function ThemePage() {
     };
   }, [orgData, orgName, slug, orgLogo, theme, previewTheme, effectiveTheme, isProActive]);
 
-  if (loading) return <div style={{ display: 'grid', gap: 16 }}>{[...Array(5)].map((_, i) => <div key={i} className="skeleton" style={{ height: 60, borderRadius: 12 }} />)}</div>;
+  if (sessionStatus === 'loading' || loading) {
+    return <div style={{ display: 'grid', gap: 16 }}>{[...Array(5)].map((_, i) => <div key={i} className="skeleton" style={{ height: 60, borderRadius: 12 }} />)}</div>;
+  }
+
+  if (!isSuperAdmin) {
+    return null;
+  }
 
   return (
     <>

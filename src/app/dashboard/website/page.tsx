@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useSession } from 'next-auth/react';
 import { motion } from 'framer-motion';
 import { Globe, Check, Loader2, Eye, Trash2, X, Palette, RefreshCw } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -51,6 +52,8 @@ function useCurrentOrg() {
 }
 
 export default function WebsitePage() {
+  const { data: session } = useSession();
+  const isSuperAdmin = (session?.user as { role?: string })?.role === 'SUPER_ADMIN';
   const {
     orgId, slug, isPublished, siteCategory, siteSubcategory,
     templateId, templateVersion, templateSource,
@@ -230,8 +233,10 @@ export default function WebsitePage() {
         {/* Info Cards */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
           {[
-            { title: 'Tema redaktoru', desc: 'Rənglər, fontlar, dizayn', href: '/dashboard/theme', color: '#00D37D' },
-            { title: 'Splash Screen', desc: 'Video və animasiya ekranı', href: '/dashboard/splash', color: '#EC4899' },
+            ...(isSuperAdmin ? [
+              { title: 'Tema redaktoru', desc: 'Rənglər, fontlar, dizayn', href: '/dashboard/theme', color: '#00D37D' },
+              { title: 'Splash Screen', desc: 'Video və animasiya ekranı', href: '/dashboard/splash', color: '#EC4899' },
+            ] : []),
             { title: 'Menyu idarəetməsi', desc: 'Kateqoriyalar və yeməklər', href: '/dashboard/menu', color: '#22D3EE' },
             { title: 'Sifariş ayarları', desc: 'WhatsApp parametrləri', href: '/dashboard/whatsapp', color: '#34D399' },
           ].map(({ title, desc, href, color }) => (

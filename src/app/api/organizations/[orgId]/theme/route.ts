@@ -6,6 +6,9 @@ import { prisma } from '@/lib/db';
 async function verifyAccess(orgId: string) {
   const session = await getServerSession(authOptions);
   if (!session?.user) return null;
+  const userRole = (session.user as { role?: string }).role;
+  // Admin xaric hec bir istifadeci tema deyise bilmez
+  if (userRole !== 'SUPER_ADMIN') return null;
   const userId = (session.user as { id: string }).id;
   return prisma.membership.findUnique({
     where: { userId_organizationId: { userId, organizationId: orgId } },

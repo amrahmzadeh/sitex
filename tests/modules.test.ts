@@ -127,6 +127,24 @@ test('Navigation: Menyu elementi yalnız restoran və kafe kateqoriyalarında g�
   assert.equal(isNavItemVisible(menuItem, { category: null, subcategory: null }), true);
 });
 
+test('Navigation: Tema Redaktoru və Splash Screen yalnız SUPER_ADMIN üçün görünür', () => {
+  const themeItem = dashboardNavItems.find((item) => item.id === 'theme');
+  const splashItem = dashboardNavItems.find((item) => item.id === 'splash');
+
+  assert.ok(themeItem, 'Tema nav item mövcuddur');
+  assert.ok(splashItem, 'Splash nav item mövcuddur');
+
+  // Normal USER üçün gizli olmalıdır
+  assert.equal(isNavItemVisible(themeItem, null, 'USER'), false);
+  assert.equal(isNavItemVisible(splashItem, null, 'USER'), false);
+  assert.equal(isNavItemVisible(themeItem, null, null), false);
+  assert.equal(isNavItemVisible(splashItem, null, undefined), false);
+
+  // SUPER_ADMIN üçün görünməlidir
+  assert.equal(isNavItemVisible(themeItem, null, 'SUPER_ADMIN'), true);
+  assert.equal(isNavItemVisible(splashItem, null, 'SUPER_ADMIN'), true);
+});
+
 test('Navigation: Müəssisə Saytı > Restoran və Kafe olduqda yalnız Menyu görünür, digərlərində Xidmətlər və aktiv edildikdə Məhsullar', () => {
   const menuItem = dashboardNavItems.find((item) => item.id === 'menu');
   const servicesItem = dashboardNavItems.find((item) => item.id === 'services');

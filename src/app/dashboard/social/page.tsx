@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useSession } from 'next-auth/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Trash2, Save, Check, Loader2, ExternalLink, Eye, EyeOff, Sparkles, Image as ImageIcon, RefreshCw } from 'lucide-react';
 import { PLATFORM_INFO } from '@/components/themes/SocialIcons';
@@ -50,6 +51,8 @@ interface SocialFeedPostItem {
 }
 
 export default function SocialPage() {
+  const { data: session } = useSession();
+  const isSuperAdmin = (session?.user as { role?: string })?.role === 'SUPER_ADMIN';
   const orgId = useCurrentOrg();
   const [activeTab, setActiveTab] = useState<'links' | 'feed'>('links');
   
@@ -307,46 +310,48 @@ export default function SocialPage() {
         </button>
       </div>
 
-      {/* Quick Link to Theme settings */}
-      <div
-        style={{
-          marginBottom: 24,
-          padding: '14px 18px',
-          borderRadius: 12,
-          background: 'linear-gradient(135deg, rgba(124, 92, 252, 0.12), rgba(30, 25, 45, 0.5))',
-          border: '1px solid rgba(124, 92, 252, 0.3)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: 14,
-        }}
-      >
-        <div>
-          <div style={{ fontSize: 13, fontWeight: 700, color: '#A78BFA', display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
-            <span>✨</span>
-            <span>Feed Modulunun Dizayn Tənzimləmələri</span>
-          </div>
-          <div style={{ fontSize: 12, color: '#C4C4D4', lineHeight: 1.4 }}>
-            Feed-in görünüşünü (qrid/karusel, sütun sayı, rənglər, kart stilləri) <strong>Dizayn</strong> bölməsindən fərdiləşdirə bilərsiniz.
-          </div>
-        </div>
-        <a
-          href="/dashboard/theme"
+      {/* Quick Link to Theme settings (Admin only) */}
+      {isSuperAdmin && (
+        <div
           style={{
-            padding: '7px 14px',
-            borderRadius: 8,
-            background: '#7C5CFC',
-            color: '#FFF',
-            fontSize: 12,
-            fontWeight: 700,
-            textDecoration: 'none',
-            whiteSpace: 'nowrap',
-            flexShrink: 0,
+            marginBottom: 24,
+            padding: '14px 18px',
+            borderRadius: 12,
+            background: 'linear-gradient(135deg, rgba(124, 92, 252, 0.12), rgba(30, 25, 45, 0.5))',
+            border: '1px solid rgba(124, 92, 252, 0.3)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 14,
           }}
         >
-          Dizaynı Dəyiş →
-        </a>
-      </div>
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: '#A78BFA', display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
+              <span>✨</span>
+              <span>Feed Modulunun Dizayn Tənzimləmələri</span>
+            </div>
+            <div style={{ fontSize: 12, color: '#C4C4D4', lineHeight: 1.4 }}>
+              Feed-in görünüşünü (qrid/karusel, sütun sayı, rənglər, kart stilləri) <strong>Dizayn</strong> bölməsindən fərdiləşdirə bilərsiniz.
+            </div>
+          </div>
+          <a
+            href="/dashboard/theme"
+            style={{
+              padding: '7px 14px',
+              borderRadius: 8,
+              background: '#7C5CFC',
+              color: '#FFF',
+              fontSize: 12,
+              fontWeight: 700,
+              textDecoration: 'none',
+              whiteSpace: 'nowrap',
+              flexShrink: 0,
+            }}
+          >
+            Dizaynı Dəyiş →
+          </a>
+        </div>
+      )}
 
       {/* TAB 1: SOCIAL LINKS */}
       {activeTab === 'links' && (

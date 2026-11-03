@@ -13,6 +13,11 @@ export async function GET(
       return NextResponse.json({ error: 'İcazəsiz giriş' }, { status: 401 });
     }
 
+    const userRole = (session.user as { role?: string }).role;
+    if (userRole !== 'SUPER_ADMIN') {
+      return NextResponse.json({ error: 'Yalnız adminlər splash screen redaktə edə bilər' }, { status: 403 });
+    }
+
     const { orgId } = await params;
     const userId = (session.user as { id: string }).id;
 

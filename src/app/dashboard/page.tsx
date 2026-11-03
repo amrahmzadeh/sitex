@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
 import { motion } from 'framer-motion';
 import {
   UtensilsCrossed, Globe, Eye, Plus, ArrowRight,
@@ -20,6 +21,8 @@ interface OrgData {
 }
 
 export default function DashboardPage() {
+  const { data: session } = useSession();
+  const isSuperAdmin = (session?.user as { role?: string })?.role === 'SUPER_ADMIN';
   const [orgs, setOrgs] = useState<OrgData[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -114,14 +117,16 @@ export default function DashboardPage() {
                   <UtensilsCrossed size={14} style={{ marginRight: 6 }} />
                   Menyunu idarə et
                 </Link>
-                <Link
-                  href="/dashboard/theme"
-                  className="dash-btn-secondary"
-                  style={{ textDecoration: 'none', textAlign: 'center', fontSize: 13 }}
-                >
-                  <Globe size={14} style={{ marginRight: 6 }} />
-                  Saytı düzəlt
-                </Link>
+                {isSuperAdmin && (
+                  <Link
+                    href="/dashboard/theme"
+                    className="dash-btn-secondary"
+                    style={{ textDecoration: 'none', textAlign: 'center', fontSize: 13 }}
+                  >
+                    <Globe size={14} style={{ marginRight: 6 }} />
+                    Saytı düzəlt
+                  </Link>
+                )}
                 {org.website?.isPublished && (
                   <a
                     href={`/site/${org.slug}`}
@@ -147,7 +152,7 @@ export default function DashboardPage() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 12 }}>
           {[
             { href: '/dashboard/menu', icon: Plus, label: 'Yemək əlavə et', color: '#00D37D' },
-            { href: '/dashboard/theme', icon: Globe, label: 'Tema dəyiş', color: '#22D3EE' },
+            ...(isSuperAdmin ? [{ href: '/dashboard/theme', icon: Globe, label: 'Tema dəyiş', color: '#22D3EE' }] : []),
             { href: '/dashboard/social', icon: Share2, label: 'Sosial Media', color: '#E1306C' },
             { href: '/dashboard/whatsapp', icon: ArrowRight, label: 'WhatsApp qur', color: '#34D399' },
             { href: '/dashboard/new-organization', icon: Plus, label: 'Müəssisə yarat', color: '#FBBF24' },

@@ -1,6 +1,14 @@
 import { NavItemConfig, SiteContext } from './types';
 
-export function isNavItemVisible(item: NavItemConfig, site: SiteContext | null): boolean {
+export function isNavItemVisible(
+  item: NavItemConfig,
+  site: SiteContext | null,
+  userRole?: string | null
+): boolean {
+  if (item.adminOnly && userRole !== 'SUPER_ADMIN') {
+    return false;
+  }
+
   if (item.isVisible) {
     return item.isVisible(site);
   }
