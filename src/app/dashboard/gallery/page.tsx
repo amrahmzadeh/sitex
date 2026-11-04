@@ -357,40 +357,7 @@ export default function GalleryPage() {
           </div>
 
           {/* Action Row */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12, paddingTop: 8 }}>
-            {/* Upload directly */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <input
-                type="file"
-                ref={fileInputRef}
-                accept="image/*"
-                onChange={handleFileUpload}
-                style={{ display: 'none' }}
-              />
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={uploading}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  padding: '9px 14px',
-                  borderRadius: 8,
-                  background: 'rgba(255,255,255,0.05)',
-                  border: '1px solid #383334',
-                  color: '#B0B0B8',
-                  fontSize: 13,
-                  cursor: uploading ? 'not-allowed' : 'pointer',
-                  transition: 'all 0.15s',
-                }}
-              >
-                {uploading ? <Loader2 size={15} className="animate-spin" /> : <Upload size={15} />}
-                {uploading ? 'Yüklənir...' : 'Cihazdan şəkil yüklə'}
-              </button>
-              <span style={{ fontSize: 12, color: '#888' }}>və ya birbaşa şəkil URL-i yapışdırın</span>
-            </div>
-
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', flexWrap: 'wrap', gap: 12, paddingTop: 8 }}>
             {/* Submit button */}
             <button
               type="submit"
@@ -448,7 +415,7 @@ export default function GalleryPage() {
           <Images size={44} color="#383334" style={{ margin: '0 auto 14px' }} />
           <h3 style={{ fontSize: 16, fontWeight: 600, color: '#F5F5F7', marginBottom: 6 }}>Hələ heç bir şəkil əlavə edilməyib</h3>
           <p style={{ fontSize: 13, maxWidth: 420, margin: '0 auto 16px' }}>
-            Yuxarıdakı formadan şəkil linki yapışdıraraq və ya birbaşa şəkil yükləyərək saytınızın Qalareya bölməsinə fotolar əlavə edin.
+            Yuxarıdakı formadan şəkil linki yapışdıraraq saytınızın Qalareya bölməsinə fotolar əlavə edin.
           </p>
         </div>
       ) : (
