@@ -83,7 +83,7 @@ function Header({ data, theme, activeSection }: { data: SiteData; theme: ThemeCo
               <Coffee size={22} color="#fff" />
             </div>
           )}
-          <span style={{ fontFamily: heading, fontWeight: 700, fontSize: 20, color: primary, letterSpacing: '-0.3px' }}>{organization.name}</span>
+          <span className="randevu-logo-text" style={{ fontFamily: heading, fontWeight: 700, fontSize: 20, color: primary, letterSpacing: '-0.3px', whiteSpace: 'nowrap' }}>{organization.name}</span>
         </div>
 
         {/* Desktop Nav */}
@@ -110,7 +110,8 @@ function Header({ data, theme, activeSection }: { data: SiteData; theme: ThemeCo
           {organization.phone && (
             <a
               href={`tel:${organization.phone}`}
-              style={{ display: 'flex', alignItems: 'center', gap: 6, fontFamily: body, fontSize: 13, fontWeight: 600, color: primary, textDecoration: 'none', padding: '8px 14px', border: `1.5px solid ${primary}20`, borderRadius: 100 }}
+              className="randevu-phone-link"
+              style={{ display: 'flex', alignItems: 'center', gap: 6, fontFamily: body, fontSize: 13, fontWeight: 600, color: primary, textDecoration: 'none', padding: '8px 14px', border: `1.5px solid ${primary}20`, borderRadius: 100, whiteSpace: 'nowrap' }}
             >
               <Phone size={14} /> {organization.phone}
             </a>
@@ -118,7 +119,8 @@ function Header({ data, theme, activeSection }: { data: SiteData; theme: ThemeCo
           {showContact && (
             <button
               onClick={() => scrollTo('reservation')}
-              style={{ background: primary, color: '#fff', border: 'none', borderRadius: 100, padding: '10px 20px', fontFamily: body, fontSize: 13, fontWeight: 700, cursor: 'pointer' }}
+              className="randevu-reserve-btn"
+              style={{ background: primary, color: '#fff', border: 'none', borderRadius: 100, padding: '10px 20px', fontFamily: body, fontSize: 13, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}
             >
               Rezervasiya
             </button>
@@ -145,13 +147,40 @@ function Header({ data, theme, activeSection }: { data: SiteData; theme: ThemeCo
               {link.label}
             </button>
           ))}
+          {organization.phone && (
+            <a
+              href={`tel:${organization.phone}`}
+              style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                marginTop: 14, padding: '12px 16px', borderRadius: 12,
+                background: `${primary}12`, color: primary, textDecoration: 'none',
+                fontFamily: body, fontSize: 14, fontWeight: 700,
+              }}
+            >
+              <Phone size={16} /> {organization.phone}
+            </a>
+          )}
         </div>
       )}
 
       <style>{`
-        @media (max-width: 768px) {
+        @media (max-width: 860px) {
           .randevu-desktop-nav { display: none !important; }
+          .randevu-phone-link { display: none !important; }
           .randevu-mobile-menu-btn { display: flex !important; }
+        }
+        @media (max-width: 480px) {
+          .randevu-logo-text {
+            font-size: 16px !important;
+            max-width: 140px !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            white-space: nowrap !important;
+          }
+          .randevu-reserve-btn {
+            padding: 8px 14px !important;
+            font-size: 12px !important;
+          }
         }
       `}</style>
     </header>
@@ -228,7 +257,7 @@ function HeroSection({ data, theme }: { data: SiteData; theme: ThemeConfig }) {
       <div style={{ position: 'absolute', top: '10%', left: '-5%', width: 500, height: 500, background: `radial-gradient(circle, ${primary}18 0%, transparent 70%)`, pointerEvents: 'none' }} />
       <div style={{ position: 'absolute', bottom: '5%', right: '-5%', width: 400, height: 400, background: `radial-gradient(circle, ${secondary}14 0%, transparent 70%)`, pointerEvents: 'none' }} />
 
-      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '60px 20px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 60, alignItems: 'center', width: '100%' }}>
+      <div className="randevu-hero-grid" style={{ maxWidth: 1200, margin: '0 auto', padding: '60px 20px', width: '100%' }}>
         {/* Left: text */}
         <div>
           <span style={{ display: 'inline-block', background: `${primary}12`, color: primary, border: `1px solid ${primary}25`, borderRadius: 100, padding: '6px 16px', fontFamily: body, fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', marginBottom: 24 }}>
@@ -252,7 +281,7 @@ function HeroSection({ data, theme }: { data: SiteData; theme: ThemeConfig }) {
             ))}
           </div>
 
-          <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', alignItems: 'center' }}>
+          <div className="randevu-hero-cta" style={{ display: 'flex', gap: 14, flexWrap: 'wrap', alignItems: 'center' }}>
             <button
               onClick={() => scrollTo('menu')}
               style={{ background: primary, color: '#fff', border: 'none', borderRadius: 100, padding: '14px 28px', fontFamily: body, fontSize: 15, fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s', boxShadow: `0 6px 24px ${primary}40` }}
@@ -375,9 +404,25 @@ function HeroSection({ data, theme }: { data: SiteData; theme: ThemeConfig }) {
       </div>
 
       <style>{`
-        @media (max-width: 768px) {
-          #hero > div { grid-template-columns: 1fr !important; }
-          #hero > div > div:last-child { display: none; }
+        .randevu-hero-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 60px;
+          align-items: center;
+        }
+        @media (max-width: 860px) {
+          .randevu-hero-grid {
+            grid-template-columns: 1fr !important;
+            gap: 36px !important;
+            padding: 40px 16px 20px 16px !important;
+          }
+          .randevu-hero-cta {
+            width: 100% !important;
+          }
+          .randevu-hero-cta button {
+            flex: 1 1 auto !important;
+            min-width: 140px !important;
+          }
         }
       `}</style>
     </section>
@@ -480,11 +525,12 @@ function MenuSection({ data, theme, cart, onAddToCart, onOpenCart }: { data: Sit
 
         {/* Category chips */}
         {allCats.length > 0 && (
-          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center', marginBottom: 40 }}>
+          <div className="randevu-category-bar">
             {allCats.map(cat => (
               <button
                 key={cat.id}
                 onClick={() => setActiveId(cat.id)}
+                className="randevu-category-btn"
                 style={{
                   background: activeId === cat.id ? primary : '#fff',
                   color: activeId === cat.id ? '#fff' : TEXT,
@@ -502,7 +548,7 @@ function MenuSection({ data, theme, cart, onAddToCart, onOpenCart }: { data: Sit
 
         {/* Items grid */}
         {items.length > 0 ? (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
+          <div className="randevu-menu-grid">
             {items.map(item => (
               <MenuCard key={item.id} item={item} theme={theme} currency={organization.currency} data={data} cart={cart} onAddToCart={onAddToCart} onOpenCart={onOpenCart} />
             ))}
@@ -515,11 +561,47 @@ function MenuSection({ data, theme, cart, onAddToCart, onOpenCart }: { data: Sit
       </div>
 
       <style>{`
-        @media (max-width: 768px) {
-          #menu .menu-grid { grid-template-columns: 1fr !important; }
+        .randevu-category-bar {
+          display: flex;
+          gap: 10px;
+          flex-wrap: wrap;
+          justify-content: center;
+          margin-bottom: 40px;
+        }
+        .randevu-menu-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 24px;
         }
         @media (max-width: 1024px) {
-          #menu .menu-grid { grid-template-columns: repeat(2, 1fr) !important; }
+          .randevu-menu-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 16px !important;
+          }
+        }
+        @media (max-width: 640px) {
+          .randevu-category-bar {
+            flex-wrap: nowrap !important;
+            justify-content: flex-start !important;
+            overflow-x: auto !important;
+            padding: 4px 4px 14px 4px !important;
+            margin-bottom: 24px !important;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+          }
+          .randevu-category-bar::-webkit-scrollbar {
+            display: none;
+          }
+          .randevu-category-btn {
+            flex-shrink: 0 !important;
+            white-space: nowrap !important;
+            padding: 8px 16px !important;
+            font-size: 13px !important;
+          }
+          .randevu-menu-grid {
+            grid-template-columns: 1fr !important;
+            gap: 16px !important;
+          }
         }
       `}</style>
     </section>
@@ -701,7 +783,7 @@ function OffersSection({ data, theme }: { data?: SiteData; theme: ThemeConfig })
           <p style={{ fontFamily: body, fontSize: 16, color: 'rgba(255,255,255,0.6)', maxWidth: 560, margin: '0 auto' }}>{subtitle}</p>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 24 }}>
+        <div className="randevu-offers-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))', gap: 24 }}>
           {offers.map((offer, i) => (
             <div
               key={i}
@@ -758,6 +840,14 @@ function OffersSection({ data, theme }: { data?: SiteData; theme: ThemeConfig })
           ))}
         </div>
       </div>
+      <style>{`
+        @media (max-width: 640px) {
+          .randevu-offers-grid {
+            grid-template-columns: 1fr !important;
+            gap: 16px !important;
+          }
+        }
+      `}</style>
     </section>
   );
 }
@@ -909,8 +999,8 @@ function ReservationSection({ data, theme }: { data: SiteData; theme: ThemeConfi
           <p style={{ fontFamily: body, fontSize: 16, color: `${TEXT}AA` }}>{subtitle}</p>
         </div>
 
-        <form onSubmit={handleSubmit} style={{ background: '#fff', borderRadius: 24, padding: '40px', boxShadow: '0 8px 40px rgba(0,0,0,0.06)', border: `1px solid ${primary}10` }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+        <form onSubmit={handleSubmit} className="randevu-reservation-form" style={{ background: '#fff', borderRadius: 24, padding: '40px', boxShadow: '0 8px 40px rgba(0,0,0,0.06)', border: `1px solid ${primary}10` }}>
+          <div className="randevu-reservation-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
             <div>
               <label style={labelStyle}>Ad, Soyad *</label>
               <input required style={inputStyle} value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder="Adınız" />
@@ -949,8 +1039,14 @@ function ReservationSection({ data, theme }: { data: SiteData; theme: ThemeConfi
       </div>
 
       <style>{`
-        @media (max-width: 600px) {
-          #reservation form > div { grid-template-columns: 1fr !important; }
+        @media (max-width: 640px) {
+          .randevu-reservation-form {
+            padding: 24px 16px !important;
+          }
+          .randevu-reservation-grid {
+            grid-template-columns: 1fr !important;
+            gap: 14px !important;
+          }
         }
       `}</style>
     </section>
@@ -983,7 +1079,7 @@ function ContactSection({ data, theme }: { data: SiteData; theme: ThemeConfig })
           <p style={{ fontFamily: body, fontSize: 16, color: `${TEXT}AA`, maxWidth: 540, margin: '0 auto' }}>{subtitle}</p>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 40, alignItems: 'start' }}>
+        <div className="randevu-contact-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 40, alignItems: 'start' }}>
           {/* Info cards */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             {infoCards.map((card, i) => (
@@ -1071,7 +1167,10 @@ function ContactSection({ data, theme }: { data: SiteData; theme: ThemeConfig })
 
       <style>{`
         @media (max-width: 768px) {
-          #contact > div > div:last-child { grid-template-columns: 1fr !important; }
+          .randevu-contact-grid {
+            grid-template-columns: 1fr !important;
+            gap: 28px !important;
+          }
         }
       `}</style>
     </section>
