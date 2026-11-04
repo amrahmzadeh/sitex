@@ -150,3 +150,4 @@ export async function POST(
     return NextResponse.json({ error: 'Import zamanı xəta baş verdi' }, { status: 500 });
   }
 }
+
