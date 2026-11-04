@@ -94,6 +94,7 @@ model Organization {
   workingHours     WorkingHours[]
   qrSettings       QRSettings?
   socialFeedPosts  SocialFeedPost[]
+  galleryItems     GalleryItem[]
   contactSubmissions ContactSubmission[]
 }
 
@@ -373,4 +374,23 @@ enum ContactSubmissionStatus {
   IN_PROGRESS
   RESOLVED
   ARCHIVED
+}
+
+
+// ==================== GALLERY ====================
+
+model GalleryItem {
+  id             String       @id @default(cuid())
+  organizationId String
+  url            String       @db.Text
+  title          String?
+  description    String?      @db.Text
+  sortOrder      Int          @default(0)
+  isVisible      Boolean      @default(true)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, sortOrder])
 }

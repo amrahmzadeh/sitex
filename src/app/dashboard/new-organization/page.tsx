@@ -143,7 +143,7 @@ export default function NewOrganizationPage() {
       return;
     }
     if (step === 4 && !form.name.trim()) {
-      setError('Müəssisə adı tələb olunur');
+      setError('Sayt adı tələb olunur');
       return;
     }
 
@@ -153,7 +153,7 @@ export default function NewOrganizationPage() {
 
   const handleSubmit = async () => {
     if (!form.name.trim()) {
-      setError('Müəssisə adı tələb olunur');
+      setError('Sayt adı tələb olunur');
       setStep(4);
       return;
     }
@@ -174,7 +174,7 @@ export default function NewOrganizationPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error || 'Müəssisə yaradılarkən xəta baş verdi');
+        setError(data.error || 'Sayt yaradılarkən xəta baş verdi');
         return;
       }
       if (data.organization?.id) {
@@ -436,7 +436,7 @@ export default function NewOrganizationPage() {
               </div>
               <div>
                 <h2 style={{ fontSize: 17, fontWeight: 600, color: '#E8E8F0', margin: 0 }}>Əsas məlumatlar</h2>
-                <p style={{ fontSize: 13, color: '#8888A0', margin: 0 }}>Müəssisə adı və təsviri</p>
+                <p style={{ fontSize: 13, color: '#8888A0', margin: 0 }}>Sayt adı və təsviri</p>
               </div>
             </div>
 
@@ -449,8 +449,8 @@ export default function NewOrganizationPage() {
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               <div>
-                <label className="dash-label">Müəssisə adı *</label>
-                <input className="dash-input" value={form.name} onChange={(e) => set('name', e.target.value)} placeholder="Məs: Ləzzət Restoranı" />
+                <label className="dash-label">Sayt adı *</label>
+                <input className="dash-input" value={form.name} onChange={(e) => set('name', e.target.value)} placeholder="Məs: Mənim Saytım" />
               </div>
               <div>
                 <label className="dash-label">Qısa təsvir</label>
@@ -458,14 +458,14 @@ export default function NewOrganizationPage() {
                   className="dash-input"
                   value={form.description}
                   onChange={(e) => set('description', e.target.value)}
-                  placeholder="Müəssisəniz haqqında qısa məlumat..."
+                  placeholder="Saytınız haqqında qısa məlumat..."
                   rows={3}
                   style={{ resize: 'vertical' }}
                 />
               </div>
               <div>
                 <label className="dash-label">E-poçt</label>
-                <input className="dash-input" type="email" value={form.email} onChange={(e) => set('email', e.target.value)} placeholder="restoran@example.com" />
+                <input className="dash-input" type="email" value={form.email} onChange={(e) => set('email', e.target.value)} placeholder="sayt@example.com" />
               </div>
             </div>
 

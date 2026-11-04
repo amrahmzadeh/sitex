@@ -735,6 +735,7 @@ export default function ThemePage() {
         { dayOfWeek: 0, openTime: '', closeTime: '', isClosed: true },
       ],
       menuCategories: categories,
+      galleryItems: orgData?.galleryItems || [],
     };
   }, [orgData, orgName, slug, orgLogo, theme, previewTheme, effectiveTheme, isProActive]);
 

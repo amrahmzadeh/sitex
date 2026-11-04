@@ -661,19 +661,21 @@ function OffersSection({ theme }: { theme: ThemeConfig }) {
 }
 
 // ─── Gallery Section ─────────────────────────────────────────────────────────
-function GallerySection({ theme }: { theme: ThemeConfig }) {
+function GallerySection({ theme, items }: { theme: ThemeConfig; items?: Array<{ id?: string; url: string; title?: string | null }> }) {
   const primary = theme.primaryColor || PRIMARY;
   const heading = theme.headingFont || 'Playfair Display';
   const body = theme.bodyFont || 'Plus Jakarta Sans';
 
-  const images = [
-    'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&q=80',
-    'https://images.unsplash.com/photo-1544148103-0773bf10d330?w=600&q=80',
-    'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&q=80',
-    'https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?w=600&q=80',
-    'https://images.unsplash.com/photo-1600891964092-4316c288032e?w=600&q=80',
-    'https://images.unsplash.com/photo-1428515613728-6b4607e44363?w=600&q=80',
+  const defaultImages = [
+    { url: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&q=80', title: 'Qəhvə Barı' },
+    { url: 'https://images.unsplash.com/photo-1544148103-0773bf10d330?w=600&q=80', title: 'İsti Atmosfer' },
+    { url: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&q=80', title: 'Ləziz Təamlar' },
+    { url: 'https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?w=600&q=80', title: 'Xüsusi Qonaq Otağı' },
+    { url: 'https://images.unsplash.com/photo-1600891964092-4316c288032e?w=600&q=80', title: 'Gourmet Menyusu' },
+    { url: 'https://images.unsplash.com/photo-1428515613728-6b4607e44363?w=600&q=80', title: 'Açıq Hava Terrası' },
   ];
+
+  const displayList = items && items.length > 0 ? items : defaultImages;
 
   return (
     <section id="gallery" style={{ padding: '100px 20px', background: '#fff' }}>
@@ -682,13 +684,45 @@ function GallerySection({ theme }: { theme: ThemeConfig }) {
           <span style={{ display: 'inline-block', background: `${primary}10`, color: primary, border: `1px solid ${primary}20`, borderRadius: 100, padding: '5px 14px', fontFamily: body, fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', marginBottom: 16 }}>QALEREYA</span>
           <h2 style={{ fontFamily: heading, fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: 800, color: TEXT }}>Məkanımızdan Görüntülər</h2>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
-          {images.map((img, i) => (
-            <div key={i} style={{ borderRadius: 16, overflow: 'hidden', aspectRatio: i === 0 || i === 4 ? '16/10' : '1/1' }}>
-              <img src={img} alt={`Gallery ${i + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.4s ease' }}
-                onMouseEnter={e => (e.currentTarget as HTMLImageElement).style.transform = 'scale(1.05)'}
-                onMouseLeave={e => (e.currentTarget as HTMLImageElement).style.transform = 'scale(1)'}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20 }}>
+          {displayList.map((item, i) => (
+            <div
+              key={i}
+              style={{
+                borderRadius: 16,
+                overflow: 'hidden',
+                aspectRatio: '4/3',
+                position: 'relative',
+                boxShadow: '0 4px 20px rgba(0,0,0,0.06)',
+                background: '#f5f5f7',
+              }}
+            >
+              <img
+                src={item.url}
+                alt={item.title || `Qalereya ${i + 1}`}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.4s ease' }}
+                onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.05)')}
+                onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
               />
+              {item.title && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    padding: '24px 16px 12px',
+                    background: 'linear-gradient(transparent, rgba(0,0,0,0.75))',
+                    color: '#fff',
+                    fontFamily: body,
+                    fontSize: 14,
+                    fontWeight: 600,
+                    pointerEvents: 'none',
+                  }}
+                >
+                  {item.title}
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -1014,7 +1048,7 @@ export default function RandevuCafeSite({ data, theme }: { data: SiteData; theme
         <AboutSection data={data} theme={theme} />
         <MenuSection data={data} theme={theme} />
         <OffersSection theme={theme} />
-        <GallerySection theme={theme} />
+        <GallerySection theme={theme} items={data.galleryItems} />
         <ReservationSection data={data} theme={theme} />
         <ContactSection data={data} theme={theme} />
         <Footer data={data} theme={theme} />

@@ -25,6 +25,8 @@ interface QRDesign {
 interface OrgInfo {
   name: string;
   slug: string;
+  siteCategory: string | null;
+  siteSubcategory?: string | null;
 }
 
 interface TextLine {
@@ -50,11 +52,32 @@ const DEFAULT_DESIGN: QRDesign = {
 const TEMPLATES: Record<string, Partial<QRDesign> & { label: string; desc: string }> = {
   minimal: { label: 'Minimal', desc: 'Təmiz ağ fon', fgColor: '#1A1A2E', bgColor: '#FFFFFF' },
   premium: { label: 'Premium', desc: 'Qızılı vurğu', fgColor: '#B8860B', bgColor: '#FFFFF8' },
-  modern: { label: 'Modern', desc: 'Bənövşəyi', fgColor: '#7C5CFC', bgColor: '#F5F0FF' },
+  modern: { label: 'Modern', desc: 'Bənövşəyi', fgColor: '#00D37D', bgColor: '#F5F0FF' },
   dark: { label: 'Dark', desc: 'Qaranlıq fon', fgColor: '#E8E8F0', bgColor: '#0F0F14' },
   classic: { label: 'Classic', desc: 'Ənənəvi qəhvəyi', fgColor: '#2C1810', bgColor: '#FFF8F0' },
   branding: { label: 'Branding', desc: 'Canlı qırmızı', fgColor: '#CC0000', bgColor: '#FFFFFF' },
 };
+
+
+// Kateqoriya yoxlanışı: Yalnız Restoran və Hotel kateqoriyalarında masa funksiyaları göstərilir
+function isTableCategory(category?: string | null, subcategory?: string | null): boolean {
+  if (!category && !subcategory) return false;
+  const cat = (category || '').toLowerCase();
+  const sub = (subcategory || '').toLowerCase();
+  return (
+    cat.includes('restoran') ||
+    cat.includes('kafe') ||
+    cat.includes('qida') ||
+    cat.includes('hotel') ||
+    cat.includes('otel') ||
+    sub.includes('restoran') ||
+    sub.includes('kafe') ||
+    sub.includes('qida') ||
+    sub.includes('hotel') ||
+    sub.includes('otel') ||
+    sub.includes('qonaq')
+  );
+}
 
 // ─── Helper: Compute Text Lines Under QR ─────────────────────────────────────
 function getTextLines(design: QRDesign, restaurantName?: string, tableNumber?: string): TextLine[] {
@@ -335,7 +358,7 @@ function useCurrentOrg() {
         .then(r => r.json())
         .then(d => {
           if (d.organization) {
-            setOrgInfo({ name: d.organization.name, slug: d.organization.slug });
+            setOrgInfo({ name: d.organization.name, slug: d.organization.slug, siteCategory: d.organization.siteCategory ?? null, siteSubcategory: d.organization.siteSubcategory ?? null });
           }
         })
         .catch(() => {});
@@ -403,7 +426,7 @@ function QRCanvas({
 
   return (
     <div style={{ position: 'relative', minHeight: 60, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      {!rendered && <Loader2 size={20} color="#7C5CFC" style={{ position: 'absolute', animation: 'spin 1s linear infinite' }} />}
+      {!rendered && <Loader2 size={20} color="#00D37D" style={{ position: 'absolute', animation: 'spin 1s linear infinite' }} />}
       <canvas
         ref={canvasRef}
         style={{
@@ -487,7 +510,7 @@ function QRCard({
         </button>
         <button
           className="dash-btn-secondary"
-          style={{ fontSize: 11, padding: '6px 8px', display: 'flex', alignItems: 'center', gap: 4, justifyContent: 'center', borderColor: 'rgba(124,92,252,0.4)', color: '#A78BFA' }}
+          style={{ fontSize: 11, padding: '6px 8px', display: 'flex', alignItems: 'center', gap: 4, justifyContent: 'center', borderColor: 'rgba(0,211,125,0.4)', color: '#00D37D' }}
           onClick={handleSvg}
           disabled={downloading !== null}
           title="Limitsiz miqyaslanan Vektor SVG formatı"
@@ -504,7 +527,7 @@ export default function QRPage() {
   const { orgId, orgInfo } = useCurrentOrg();
   const [tableCount, setTableCount] = useState(10);
   const [design, setDesign] = useState<QRDesign>(DEFAULT_DESIGN);
-  const [activeTab, setActiveTab] = useState<'general' | 'tables' | 'design' | 'manage'>('general');
+  const [activeTab, setActiveTab] = useState<'general' | 'tables' | 'design' | 'manage' | 'site'>('general');
   const [previewMode, setPreviewMode] = useState<'general' | 'table'>('general');
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -535,6 +558,18 @@ export default function QRPage() {
       }
     }).finally(() => setLoading(false));
   }, [orgId]);
+
+  // Reset tab when category becomes known — non-restaurant shouldn't land on restaurant-only tabs
+  useEffect(() => {
+    if (!orgInfo) return;
+    const isTable = isTableCategory(orgInfo.siteCategory, orgInfo.siteSubcategory);
+    if (!isTable && (activeTab === 'general' || activeTab === 'tables' || activeTab === 'manage')) {
+      setActiveTab('site');
+    }
+    if (isTable && activeTab === 'site') {
+      setActiveTab('general');
+    }
+  }, [orgInfo?.siteCategory]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const setD = <K extends keyof QRDesign>(k: K, v: QRDesign[K]) =>
     setDesign(prev => ({ ...prev, [k]: v }));
@@ -609,7 +644,7 @@ export default function QRPage() {
       const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
 
       const items = [
-        { url: generalUrl, tableNumber: undefined, label: 'Ümumi Restoran QR' },
+        { url: generalUrl, tableNumber: undefined, label: 'Ümumi Sayt QR' },
         ...Array.from({ length: tableCount }, (_, i) => ({
           url: tableUrl(i + 1),
           tableNumber: String(i + 1).padStart(2, '0'),
@@ -718,22 +753,31 @@ export default function QRPage() {
     </div>
   );
 
-  const tabs = [
-    { id: 'general' as const, label: 'Ümumi QR', icon: Globe },
-    { id: 'tables' as const, label: 'Masa QR-ları', icon: Table2 },
-    { id: 'design' as const, label: 'Dizayn', icon: Palette },
-    { id: 'manage' as const, label: 'İdarə et', icon: Layers },
-  ];
+  const isTableSupported = isTableCategory(orgInfo?.siteCategory, orgInfo?.siteSubcategory);
+
+  const tabs = isTableSupported
+    ? [
+        { id: 'general' as const, label: 'Ümumi QR', icon: Globe },
+        { id: 'tables' as const, label: 'Masa QR-ları', icon: Table2 },
+        { id: 'design' as const, label: 'Dizayn', icon: Palette },
+        { id: 'manage' as const, label: 'İdarə et', icon: Layers },
+      ]
+    : [
+        { id: 'site' as const, label: 'Sayt QR', icon: Globe },
+        { id: 'design' as const, label: 'Dizayn', icon: Palette },
+      ];
 
   return (
     <div style={{ maxWidth: 960 }}>
       {/* Header */}
       <div style={{ marginBottom: 28 }}>
         <h1 style={{ fontSize: 26, fontWeight: 700, color: '#E8E8F0', display: 'flex', alignItems: 'center', gap: 12 }}>
-          <QrCode size={28} color="#7C5CFC" /> QR Yaradıcı
+          <QrCode size={28} color="#00D37D" /> QR Yaradıcı
         </h1>
         <p style={{ color: '#8888A0', fontSize: 14, marginTop: 4 }}>
-          Restoran və masa QR kodlarını HD və Vektor formatlarda yaradın, fərdiləşdirin və idarə edin
+          {isTableSupported
+            ? 'Sayt və masa QR kodlarını HD və Vektor formatlarda yaradın, fərdiləşdirin və idarə edin'
+            : 'Saytınız üçün QR kodu HD və Vektor formatlarda yaradın və fərdiləşdirin'}
         </p>
       </div>
 
@@ -746,7 +790,7 @@ export default function QRPage() {
             style={{
               flex: 1, minWidth: 110, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
               padding: '10px 16px', borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 600,
-              background: activeTab === id ? '#7C5CFC' : 'transparent',
+              background: activeTab === id ? '#00D37D' : 'transparent',
               color: activeTab === id ? '#fff' : '#8888A0', transition: 'all 0.15s',
             }}
           >
@@ -761,14 +805,14 @@ export default function QRPage() {
           <div className="dash-card" style={{ padding: 28 }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 24, alignItems: 'start' }}>
               <div>
-                <h2 style={{ fontSize: 18, fontWeight: 700, color: '#E8E8F0', marginBottom: 8 }}>Ümumi Restoran QR Kodu</h2>
+                <h2 style={{ fontSize: 18, fontWeight: 700, color: '#E8E8F0', marginBottom: 8 }}>Ümumi Sayt QR Kodu</h2>
                 <p style={{ fontSize: 13, color: '#8888A0', marginBottom: 16, lineHeight: 1.6 }}>
-                  Bu QR kodu restoranın əsas rəqəmsal menyu səhifəsinə yönləndirir. Giriş lövhələrinə, stendlərə və ya reklam materiallarına yerləşdirilə bilər.
+                  Bu QR kodu saytın əsas səhifəsinə yönləndirir. Giriş lövhələrinə, stendlərə və ya reklam materiallarına yerləşdirilə bilər.
                 </p>
                 {generalUrl && (
                   <div style={{ background: '#0F0F14', borderRadius: 10, padding: '10px 14px', marginBottom: 12 }}>
                     <p style={{ fontSize: 11, color: '#8888A0', marginBottom: 3 }}>🔗 QR URL:</p>
-                    <p style={{ fontSize: 12, color: '#7C5CFC', wordBreak: 'break-all' }}>{generalUrl}</p>
+                    <p style={{ fontSize: 12, color: '#00D37D', wordBreak: 'break-all' }}>{generalUrl}</p>
                   </div>
                 )}
                 {whatsapp && (
@@ -803,7 +847,7 @@ export default function QRPage() {
                 { step: '4', text: 'Masa nömrəli sifariş WhatsApp-a gedir' },
               ].map(({ step, text }) => (
                 <div key={step} style={{ background: '#0F0F14', borderRadius: 10, padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <div style={{ width: 28, height: 28, borderRadius: '50%', background: '#7C5CFC', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color: '#fff', flexShrink: 0 }}>{step}</div>
+                  <div style={{ width: 28, height: 28, borderRadius: '50%', background: '#00D37D', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color: '#fff', flexShrink: 0 }}>{step}</div>
                   <p style={{ fontSize: 12, color: '#E8E8F0' }}>{text}</p>
                 </div>
               ))}
@@ -820,7 +864,7 @@ export default function QRPage() {
               <div style={{ flex: 1 }}>
                 <h2 style={{ fontSize: 16, fontWeight: 700, color: '#E8E8F0' }}>Masa QR Kodları</h2>
                 <p style={{ fontSize: 13, color: '#8888A0', marginTop: 2 }}>
-                  Hər masa fərdi link alır: <code style={{ color: '#7C5CFC', fontSize: 11 }}>/site/{orgInfo?.slug}?table=01</code>
+                  Hər masa fərdi link alır: <code style={{ color: '#00D37D', fontSize: 11 }}>/site/{orgInfo?.slug}?table=01</code>
                 </p>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -846,7 +890,7 @@ export default function QRPage() {
               </button>
               <button
                 className="dash-btn-secondary"
-                style={{ display: 'flex', alignItems: 'center', gap: 8, borderColor: 'rgba(124,92,252,0.4)', color: '#A78BFA' }}
+                style={{ display: 'flex', alignItems: 'center', gap: 8, borderColor: 'rgba(0,211,125,0.4)', color: '#00D37D' }}
                 onClick={downloadAllSvg}
                 disabled={isExporting !== null}
               >
@@ -920,8 +964,8 @@ export default function QRPage() {
                       onClick={() => applyTemplate(key)}
                       style={{
                         padding: '10px 8px', borderRadius: 10,
-                        border: `2px solid ${design.template === key ? '#7C5CFC' : '#2A2A3A'}`,
-                        background: design.template === key ? 'rgba(124,92,252,0.1)' : '#0F0F14',
+                        border: `2px solid ${design.template === key ? '#00D37D' : '#2A2A3A'}`,
+                        background: design.template === key ? 'rgba(0,211,125,0.1)' : '#0F0F14',
                         cursor: 'pointer', transition: 'all 0.15s', textAlign: 'center',
                       }}
                     >
@@ -929,7 +973,7 @@ export default function QRPage() {
                         <div style={{ width: 16, height: 16, borderRadius: 3, background: tpl.fgColor }} />
                         <div style={{ width: 16, height: 16, borderRadius: 3, background: tpl.bgColor, border: '1px solid #2A2A3A' }} />
                       </div>
-                      <p style={{ fontSize: 11, fontWeight: 600, color: design.template === key ? '#9B7FFF' : '#E8E8F0' }}>{tpl.label}</p>
+                      <p style={{ fontSize: 11, fontWeight: 600, color: design.template === key ? '#00D37D' : '#E8E8F0' }}>{tpl.label}</p>
                       <p style={{ fontSize: 10, color: '#8888A0' }}>{tpl.desc}</p>
                     </button>
                   ))}
@@ -960,12 +1004,12 @@ export default function QRPage() {
                   <div>
                     <label className="dash-label">QR ölçüsü: {design.size}px</label>
                     <input type="range" min={160} max={400} step={10} value={design.size}
-                      onChange={e => setD('size', Number(e.target.value))} style={{ width: '100%', accentColor: '#7C5CFC' }} />
+                      onChange={e => setD('size', Number(e.target.value))} style={{ width: '100%', accentColor: '#00D37D' }} />
                   </div>
                   <div>
                     <label className="dash-label">Kənar boşluq: {design.margin}px</label>
                     <input type="range" min={4} max={40} step={2} value={design.margin}
-                      onChange={e => setD('margin', Number(e.target.value))} style={{ width: '100%', accentColor: '#7C5CFC' }} />
+                      onChange={e => setD('margin', Number(e.target.value))} style={{ width: '100%', accentColor: '#00D37D' }} />
                   </div>
                 </div>
               </div>
@@ -981,7 +1025,7 @@ export default function QRPage() {
                   <div>
                     <label className="dash-label">Loqo maksimum ölçüsü: {design.logoSize}px</label>
                     <input type="range" min={24} max={110} step={4} value={design.logoSize}
-                      onChange={e => setD('logoSize', Number(e.target.value))} style={{ width: '100%', accentColor: '#7C5CFC' }} />
+                      onChange={e => setD('logoSize', Number(e.target.value))} style={{ width: '100%', accentColor: '#00D37D' }} />
                     <p style={{ fontSize: 11, color: '#8888A0', marginTop: 4 }}>
                       ✓ Loqo təhrif olunmadan (dartılma və sıxılma olmadan) orijinal proporsiyasını tam saxlayır.
                     </p>
@@ -998,20 +1042,22 @@ export default function QRPage() {
                       type="checkbox"
                       checked={design.showRestaurantName}
                       onChange={e => setD('showRestaurantName', e.target.checked)}
-                      style={{ accentColor: '#7C5CFC', width: 16, height: 16 }}
+                      style={{ accentColor: '#00D37D', width: 16, height: 16 }}
                     />
-                    <span style={{ fontSize: 13, color: '#E8E8F0' }}>Restoran adını göstər ({orgInfo?.name || 'Restoran'})</span>
+                    <span style={{ fontSize: 13, color: '#E8E8F0' }}>Sayt adını göstər ({orgInfo?.name || 'Sayt'})</span>
                   </label>
 
-                  <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}>
-                    <input
-                      type="checkbox"
-                      checked={design.showTableNumber}
-                      onChange={e => setD('showTableNumber', e.target.checked)}
-                      style={{ accentColor: '#7C5CFC', width: 16, height: 16 }}
-                    />
-                    <span style={{ fontSize: 13, color: '#E8E8F0' }}>Masa nömrəsini göstər (məsələn: Masa 01)</span>
-                  </label>
+                  {isTableSupported && (
+                    <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}>
+                      <input
+                        type="checkbox"
+                        checked={design.showTableNumber}
+                        onChange={e => setD('showTableNumber', e.target.checked)}
+                        style={{ accentColor: '#00D37D', width: 16, height: 16 }}
+                      />
+                      <span style={{ fontSize: 13, color: '#E8E8F0' }}>Masa nömrəsini göstər (məsələn: Masa 01)</span>
+                    </label>
+                  )}
 
                   <div>
                     <label className="dash-label">Fərdi başlıq (əlavə şüar / başlıq)</label>
@@ -1019,10 +1065,10 @@ export default function QRPage() {
                       className="dash-input"
                       value={design.customTitle}
                       onChange={e => setD('customTitle', e.target.value)}
-                      placeholder="Məsələn: Xoş gəlmisiniz! və ya Menyumuz"
+                      placeholder="Məsələn: QR Kod Skanlayın"
                     />
                     <p style={{ fontSize: 11, color: '#8888A0', marginTop: 4 }}>
-                      Fərdi başlıq daxil edildikdə digər yazılar (restoran adı və masa nömrəsi) itmir, ardıcıl olaraq göstərilir.
+                      Fərdi başlıq daxil edildikdə digər yazılar (sayt adı və masa nömrəsi) itmir, ardıcıl olaraq göstərilir.
                     </p>
                   </div>
                 </div>
@@ -1034,31 +1080,33 @@ export default function QRPage() {
               <div className="dash-card" style={{ padding: 20 }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
                   <h3 style={{ fontSize: 13, fontWeight: 600, color: '#E8E8F0', display: 'flex', alignItems: 'center', gap: 6, margin: 0 }}>
-                    <Eye size={14} color="#7C5CFC" /> Canlı Önizləmə
+                    <Eye size={14} color="#00D37D" /> Canlı Önizləmə
                   </h3>
                   {/* Toggle Preview Mode */}
-                  <div style={{ display: 'flex', background: '#0F0F14', borderRadius: 6, padding: 2 }}>
-                    <button
-                      onClick={() => setPreviewMode('general')}
-                      style={{
-                        border: 'none', padding: '3px 8px', borderRadius: 4, fontSize: 10, fontWeight: 600, cursor: 'pointer',
-                        background: previewMode === 'general' ? '#7C5CFC' : 'transparent',
-                        color: previewMode === 'general' ? '#fff' : '#8888A0',
-                      }}
-                    >
-                      Ümumi
-                    </button>
-                    <button
-                      onClick={() => setPreviewMode('table')}
-                      style={{
-                        border: 'none', padding: '3px 8px', borderRadius: 4, fontSize: 10, fontWeight: 600, cursor: 'pointer',
-                        background: previewMode === 'table' ? '#7C5CFC' : 'transparent',
-                        color: previewMode === 'table' ? '#fff' : '#8888A0',
-                      }}
-                    >
-                      Masa 01
-                    </button>
-                  </div>
+                  {isTableSupported && (
+                    <div style={{ display: 'flex', background: '#0F0F14', borderRadius: 6, padding: 2 }}>
+                      <button
+                        onClick={() => setPreviewMode('general')}
+                        style={{
+                          border: 'none', padding: '3px 8px', borderRadius: 4, fontSize: 10, fontWeight: 600, cursor: 'pointer',
+                          background: previewMode === 'general' ? '#00D37D' : 'transparent',
+                          color: previewMode === 'general' ? '#fff' : '#8888A0',
+                        }}
+                      >
+                        Ümumi
+                      </button>
+                      <button
+                        onClick={() => setPreviewMode('table')}
+                        style={{
+                          border: 'none', padding: '3px 8px', borderRadius: 4, fontSize: 10, fontWeight: 600, cursor: 'pointer',
+                          background: previewMode === 'table' ? '#00D37D' : 'transparent',
+                          color: previewMode === 'table' ? '#fff' : '#8888A0',
+                        }}
+                      >
+                        Masa 01
+                      </button>
+                    </div>
+                  )}
                 </div>
 
                 {orgInfo && (
@@ -1067,7 +1115,7 @@ export default function QRPage() {
                     design={design}
                     label={previewMode === 'general' ? orgInfo.name : 'Masa 01'}
                     restaurantName={orgInfo.name}
-                    tableNumber={previewMode === 'table' ? '01' : undefined}
+                    tableNumber={isTableSupported && previewMode === 'table' ? '01' : undefined}
                   />
                 )}
 
@@ -1092,22 +1140,22 @@ export default function QRPage() {
 
             {/* General */}
             <ManageRow
-              icon={<Globe size={16} color="#7C5CFC" />}
-              iconBg="rgba(124,92,252,0.15)"
-              title="Ümumi Restoran QR"
+              icon={<Globe size={16} color="#00D37D" />}
+              iconBg="rgba(0,211,125,0.15)"
+              title="Ümumi Sayt QR"
               url={generalUrl}
               onView={() => setActiveTab('general')}
               onDownloadPNG={() => downloadHighResPNG({
                 url: generalUrl,
                 design,
                 restaurantName: orgInfo?.name,
-                filename: `${orgInfo?.name ?? 'restoran'}_QR`,
+                filename: `${orgInfo?.name ?? 'sayt'}_QR`,
               })}
               onDownloadSVG={() => downloadSVG({
                 url: generalUrl,
                 design,
                 restaurantName: orgInfo?.name,
-                filename: `${orgInfo?.name ?? 'restoran'}_QR`,
+                filename: `${orgInfo?.name ?? 'sayt'}_QR`,
               })}
             />
 
@@ -1153,6 +1201,39 @@ export default function QRPage() {
           </div>
         </motion.div>
       )}
+
+      {/* ── SITE QR (non-restaurant) ── */}
+      {activeTab === 'site' && (
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} style={{ display: 'grid', gap: 20 }}>
+          <div className="dash-card" style={{ padding: 28 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 24, alignItems: 'start' }}>
+              <div>
+                <h2 style={{ fontSize: 18, fontWeight: 700, color: '#E8E8F0', marginBottom: 8 }}>Sayt üçün QR Kod yarat</h2>
+                <p style={{ fontSize: 13, color: '#8888A0', marginBottom: 16, lineHeight: 1.6 }}>
+                  Bu QR kodu saytınızın əsas səhifəsinə yönləndirir. Vizit kartlarına, reklam materiallarına və ya bütün nəşr materiallarına əlavə edilə bilər.
+                </p>
+                {generalUrl && (
+                  <div style={{ background: '#0F0F14', borderRadius: 10, padding: '10px 14px', marginBottom: 12 }}>
+                    <p style={{ fontSize: 11, color: '#8888A0', marginBottom: 3 }}>🔗 Sayt URL:</p>
+                    <p style={{ fontSize: 12, color: '#00D37D', wordBreak: 'break-all' }}>{generalUrl}</p>
+                  </div>
+                )}
+              </div>
+              <div>
+                {generalUrl && orgInfo && (
+                  <QRCard
+                    url={generalUrl}
+                    design={design}
+                    label={orgInfo.name}
+                    restaurantName={undefined}
+                    tableNumber={undefined}
+                  />
+                )}
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
     </div>
   );
 }
@@ -1191,7 +1272,7 @@ function ManageRow({
       <button className="dash-btn-secondary" style={{ fontSize: 11, padding: '5px 10px', display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }} onClick={onDownloadPNG} title="Yüksək keyfiyyətli HD PNG">
         <Download size={12} /> PNG HD
       </button>
-      <button className="dash-btn-secondary" style={{ fontSize: 11, padding: '5px 10px', display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0, borderColor: 'rgba(124,92,252,0.4)', color: '#A78BFA' }} onClick={onDownloadSVG} title="Limitsiz Vektor SVG">
+      <button className="dash-btn-secondary" style={{ fontSize: 11, padding: '5px 10px', display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0, borderColor: 'rgba(0,211,125,0.4)', color: '#00D37D' }} onClick={onDownloadSVG} title="Limitsiz Vektor SVG">
         <Sparkles size={12} /> SVG
       </button>
     </div>

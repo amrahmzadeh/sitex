@@ -58,7 +58,7 @@ export default function DashboardPage() {
           Xoş gəldiniz! 👋
         </h1>
         <p style={{ color: '#8888A0', fontSize: 15 }}>
-          Müəssisələrinizin ümumi vəziyyətinə baxın
+          Saytlarınızın ümumi vəziyyətinə baxın
         </p>
       </div>
 
@@ -211,7 +211,7 @@ export default function DashboardPage() {
             ...(isSuperAdmin ? [{ href: '/dashboard/theme', icon: Globe, label: 'Tema dəyiş', color: '#22D3EE' }] : []),
             { href: '/dashboard/social', icon: Share2, label: 'Sosial Media', color: '#E1306C' },
             { href: '/dashboard/whatsapp', icon: ArrowRight, label: 'WhatsApp qur', color: '#34D399' },
-            { href: '/dashboard/new-organization', icon: Plus, label: 'Müəssisə yarat', color: '#FBBF24' },
+            { href: '/dashboard/new-organization', icon: Plus, label: 'Sayt yarat', color: '#FBBF24' },
           ]).map(({ href, icon: Icon, label, color }) => (
             <Link
               key={href}

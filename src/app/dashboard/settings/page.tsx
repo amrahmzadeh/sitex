@@ -201,7 +201,7 @@ export default function SettingsPage() {
         <h1 style={{ fontSize: 26, fontWeight: 700, color: '#E8E8F0', display: 'flex', alignItems: 'center', gap: 12 }}>
           <Settings size={28} color="#00D37D" /> Parametrlər
         </h1>
-        <p style={{ color: '#8888A0', fontSize: 14, marginTop: 4 }}>Profil və müəssisə parametrlərinizi idarə edin</p>
+        <p style={{ color: '#8888A0', fontSize: 14, marginTop: 4 }}>Profil və sayt parametrlərinizi idarə edin</p>
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
@@ -338,7 +338,7 @@ export default function SettingsPage() {
           <>
             {/* Logo */}
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="dash-card" style={{ padding: 24 }}>
-              <h2 style={{ fontSize: 16, fontWeight: 600, color: '#E8E8F0', marginBottom: 16 }}>Müəssisə Logosu</h2>
+              <h2 style={{ fontSize: 16, fontWeight: 600, color: '#E8E8F0', marginBottom: 16 }}>Sayt Logosu</h2>
               <div style={{ display: 'flex', alignItems: 'center', gap: 20, marginBottom: 16 }}>
                 <div style={{ width: 80, height: 80, borderRadius: 16, background: '#383334', overflow: 'hidden', flexShrink: 0, border: '1px solid #3A3A4A', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   {form.logo ? (
@@ -387,15 +387,15 @@ export default function SettingsPage() {
 
             {/* Basic Info */}
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="dash-card" style={{ padding: 24 }}>
-              <h2 style={{ fontSize: 16, fontWeight: 600, color: '#E8E8F0', marginBottom: 16 }}>Əsas Müəssisə Məlumatları</h2>
+              <h2 style={{ fontSize: 16, fontWeight: 600, color: '#E8E8F0', marginBottom: 16 }}>Əsas Sayt Məlumatları</h2>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                 <div>
-                  <label className="dash-label">Müəssisə adı *</label>
-                  <input className="dash-input" value={form.name} onChange={(e) => set('name', e.target.value)} placeholder="Restoranın adı" />
+                  <label className="dash-label">Sayt adı *</label>
+                  <input className="dash-input" value={form.name} onChange={(e) => set('name', e.target.value)} placeholder="Saytın adı" />
                 </div>
                 <div>
                   <label className="dash-label">Təsvir</label>
-                  <textarea className="dash-input" rows={3} value={form.description} onChange={(e) => set('description', e.target.value)} placeholder="Müəssisəniz haqqında..." style={{ resize: 'vertical' }} />
+                  <textarea className="dash-input" rows={3} value={form.description} onChange={(e) => set('description', e.target.value)} placeholder="Saytınız haqqında..." style={{ resize: 'vertical' }} />
                 </div>
               </div>
             </motion.div>
@@ -410,7 +410,7 @@ export default function SettingsPage() {
                 </div>
                 <div>
                   <label className="dash-label">E-poçt</label>
-                  <input className="dash-input" type="email" value={form.email} onChange={(e) => set('email', e.target.value)} placeholder="restoran@email.com" />
+                  <input className="dash-input" type="email" value={form.email} onChange={(e) => set('email', e.target.value)} placeholder="sayt@email.com" />
                 </div>
                 <div>
                   <label className="dash-label">Şəhər</label>
@@ -434,7 +434,7 @@ export default function SettingsPage() {
               style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '14px 32px' }}
             >
               {saving ? <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} /> : saved ? <Check size={16} /> : null}
-              {saved ? 'Saxlandı!' : 'Müəssisə dəyişikliklərini saxla'}
+              {saved ? 'Saxlandı!' : 'Sayt dəyişikliklərini saxla'}
             </button>
           </>
         )}

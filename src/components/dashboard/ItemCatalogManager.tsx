@@ -482,7 +482,7 @@ export default function ItemCatalogManager({ type }: ItemCatalogManagerProps) {
           </h1>
           <p style={{ color: '#8888A0', fontSize: 14, marginTop: 4 }}>
             {isServices
-              ? 'Müəssisənizin təklif etdiyi xidmətlər və kateqoriyalar'
+              ? 'Saytınızın təklif etdiyi xidmətlər və kateqoriyalar'
               : 'Satış və ya təqdimat üçün məhsullarınız'}
           </p>
         </div>

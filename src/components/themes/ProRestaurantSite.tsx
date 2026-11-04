@@ -6,7 +6,8 @@ import { parseSetItems, formatSetSummary } from '@/lib/set-dishes';
 import {
   Phone, MapPin, Clock, MessageCircle, X,
   ShoppingCart, Plus, Minus, Check, ArrowRight,
-  ExternalLink, Sparkles, Utensils, Award, ChefHat, Bike, Menu, Share2
+  ExternalLink, Sparkles, Utensils, Award, ChefHat, Bike, Menu, Share2,
+  Camera, Images as ImagesIcon
 } from 'lucide-react';
 import { ThemeConfig, resolveBg } from '@/lib/themes';
 import { formatPrice, formatWhatsAppUrl } from '@/lib/utils';
@@ -72,6 +73,7 @@ export interface SiteData {
   };
   socialLinks: Array<{ platform: string; url: string }>;
   socialFeedPosts?: Array<any>;
+  galleryItems?: Array<{ id?: string; url: string; title?: string | null }>;
   workingHours: Array<{ dayOfWeek: number; openTime?: string; closeTime?: string; isClosed: boolean }>;
   menuCategories: MenuCategory[];
 }
@@ -554,6 +556,7 @@ export default function ProRestaurantSite({
                   <a href="#menyu" style={{ color: '#9BA3AF', fontSize: 14, textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={(e) => (e.currentTarget.style.color = '#F7F8F9')} onMouseLeave={(e) => (e.currentTarget.style.color = '#9BA3AF')}>Menyu</a>
                 )}
                 <a href="#haqqimizda" style={{ color: '#9BA3AF', fontSize: 14, textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={(e) => (e.currentTarget.style.color = '#F7F8F9')} onMouseLeave={(e) => (e.currentTarget.style.color = '#9BA3AF')}>Haqqımızda</a>
+                <a href="#qalereya" style={{ color: '#9BA3AF', fontSize: 14, textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={(e) => (e.currentTarget.style.color = '#F7F8F9')} onMouseLeave={(e) => (e.currentTarget.style.color = '#9BA3AF')}>Qalareya</a>
                 <a href="#elaqe" style={{ color: '#9BA3AF', fontSize: 14, textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={(e) => (e.currentTarget.style.color = '#F7F8F9')} onMouseLeave={(e) => (e.currentTarget.style.color = '#9BA3AF')}>Əlaqə</a>
               </nav>
 
@@ -631,6 +634,7 @@ export default function ProRestaurantSite({
                 ...(isEnterprise ? [{ href: '#menyu', label: 'Xidmətlər', icon: <Utensils size={16} color={saffronGold} /> }] : []),
                 ...(isMenuOn || !isEnterprise ? [{ href: '#menyu', label: 'Menyu', icon: <Utensils size={16} color={saffronGold} /> }] : []),
                 { href: '#haqqimizda', label: 'Haqqımızda', icon: <Award size={16} color={saffronGold} /> },
+                { href: '#qalereya', label: 'Qalareya', icon: <Camera size={16} color={saffronGold} /> },
                 { href: '#elaqe', label: 'Əlaqə & İş Saatları', icon: <MapPin size={16} color={saffronGold} /> },
               ].map((link) => (
                 <a
@@ -1588,6 +1592,119 @@ export default function ProRestaurantSite({
           </div>
         </section>
 
+        {/* ===================== GALLERY SECTION ===================== */}
+        <section
+          id="qalereya"
+          className="pro-section-padding"
+          style={{
+            padding: '90px 0',
+            position: 'relative',
+            backgroundColor: '#0e1012',
+            borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+          }}
+        >
+          <div style={{ maxWidth: 1240, margin: '0 auto', padding: '0 24px' }}>
+            <div style={{ textAlign: 'center', maxWidth: 640, margin: '0 auto 48px' }}>
+              <div
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  backgroundColor: 'rgba(229, 169, 60, 0.1)',
+                  border: '1px solid rgba(229, 169, 60, 0.3)',
+                  padding: '6px 14px',
+                  borderRadius: 9999,
+                  marginBottom: 14,
+                }}
+              >
+                <Camera size={14} color={saffronGold} />
+                <span style={{ fontSize: 12, fontWeight: 700, color: saffronGold, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                  QALEREYA
+                </span>
+              </div>
+              <h2
+                style={{
+                  fontFamily: "'Playfair Display', serif",
+                  fontSize: 'clamp(28px, 4vw, 42px)',
+                  fontWeight: 700,
+                  color: '#F7F8F9',
+                  margin: '0 0 12px',
+                  letterSpacing: '-0.02em',
+                }}
+              >
+                Məkanımız və Təamlarımız
+              </h2>
+              <p style={{ color: '#9BA3AF', fontSize: 16, margin: 0, lineHeight: 1.6 }}>
+                Ləzzət və estetikanın bir araya gəldiyi anlardan foto görüntülər
+              </p>
+            </div>
+
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+                gap: 20,
+              }}
+            >
+              {(data.galleryItems && data.galleryItems.length > 0
+                ? data.galleryItems
+                : [
+                    { id: 'p1', url: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&q=80', title: 'Restoran Zalımız' },
+                    { id: 'p2', url: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=800&q=80', title: 'Xüsusi Təamlar' },
+                    { id: 'p3', url: 'https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?w=800&q=80', title: 'Masa Tərtibatı' },
+                    { id: 'p4', url: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&q=80', title: 'Gözəl Atmosfer' },
+                    { id: 'p5', url: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&q=80', title: 'Şefin Seçimləri' },
+                    { id: 'p6', url: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800&q=80', title: 'Qonaqpərvərlik' },
+                  ]
+              ).map((item: { id?: string; url: string; title?: string | null }, idx: number) => (
+                <div
+                  key={item.id || idx}
+                  style={{
+                    borderRadius: 20,
+                    overflow: 'hidden',
+                    aspectRatio: '4/3',
+                    position: 'relative',
+                    backgroundColor: '#16181b',
+                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
+                  }}
+                >
+                  <img
+                    src={item.url}
+                    alt={item.title || `Qalareya ${idx + 1}`}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                      transition: 'transform 0.4s ease',
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.05)')}
+                    onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+                  />
+                  {item.title && (
+                    <div
+                      style={{
+                        position: 'absolute',
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        padding: '24px 16px 12px',
+                        background: 'linear-gradient(transparent, rgba(14,16,18,0.9))',
+                        color: '#F7F8F9',
+                        fontSize: 14,
+                        fontWeight: 600,
+                        pointerEvents: 'none',
+                      }}
+                    >
+                      {item.title}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* ===================== CONTACT & HOURS SECTION ===================== */}
         <section
           id="elaqe"
@@ -2101,6 +2218,9 @@ export default function ProRestaurantSite({
               </a>
               <a href="#haqqimizda" style={{ color: '#9BA3AF', fontSize: 13, textDecoration: 'none' }}>
                 Haqqımızda
+              </a>
+              <a href="#qalereya" style={{ color: '#9BA3AF', fontSize: 13, textDecoration: 'none' }}>
+                Qalareya
               </a>
               <a href="#elaqe" style={{ color: '#9BA3AF', fontSize: 13, textDecoration: 'none' }}>
                 Əlaqə

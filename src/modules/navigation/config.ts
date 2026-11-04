@@ -8,6 +8,7 @@ import {
   Briefcase,
   Package,
   Image,
+  Images,
   MessageCircle,
   QrCode,
   BarChart3,
@@ -193,6 +194,7 @@ export const dashboardNavItems: NavItemConfig[] = [
   { id: 'website', href: '/dashboard/website', icon: Globe, label: 'Veb Saytım' },
   { id: 'theme', href: '/dashboard/theme', icon: Palette, label: 'Tema Redaktoru', adminOnly: true },
   { id: 'social', href: '/dashboard/social', icon: Share2, label: 'Sosial Media' },
+  { id: 'gallery', href: '/dashboard/gallery', icon: Images, label: 'Qalareya' },
   { id: 'splash', href: '/dashboard/splash', icon: Sparkles, label: 'Splash Screen', adminOnly: true },
   {
     id: 'menu',

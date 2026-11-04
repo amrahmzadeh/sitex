@@ -35,6 +35,14 @@ interface SiteData {
     sortOrder: number;
     isVisible: boolean;
   }>;
+  galleryItems?: Array<{
+    id: string;
+    url: string;
+    title?: string | null;
+    description?: string | null;
+    sortOrder: number;
+    isVisible: boolean;
+  }>;
   workingHours: Array<{ dayOfWeek: number; openTime?: string; closeTime?: string; isClosed: boolean }>;
   menuCategories: Array<{
     id: string; name: string; slug: string; isVisible: boolean;
@@ -55,6 +63,10 @@ async function getSiteData(slug: string): Promise<SiteData | null> {
         whatsappSettings: true,
         socialLinks: { orderBy: { sortOrder: 'asc' } },
         socialFeedPosts: {
+          where: { isVisible: true },
+          orderBy: { sortOrder: 'asc' },
+        },
+        galleryItems: {
           where: { isVisible: true },
           orderBy: { sortOrder: 'asc' },
         },
@@ -106,6 +118,7 @@ async function getSiteData(slug: string): Promise<SiteData | null> {
       whatsapp: org.whatsappSettings || undefined,
       socialLinks: org.socialLinks || [],
       socialFeedPosts: org.socialFeedPosts || [],
+      galleryItems: org.galleryItems || [],
       workingHours: org.workingHours || [],
       menuCategories: org.menuCategories || [],
     } as unknown as SiteData;

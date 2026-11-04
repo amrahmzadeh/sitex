@@ -19,6 +19,15 @@ import { parseSetItems, formatSetSummary } from '@/lib/set-dishes';
 import { SocialIconsGroup } from './SocialIcons';
 import SocialMediaFeed from './SocialMediaFeed';
 
+export interface GalleryItem {
+  id: string;
+  url: string;
+  title?: string | null;
+  description?: string | null;
+  sortOrder?: number;
+  isVisible?: boolean;
+}
+
 export interface MenuItem {
   id: string; name: string; slug: string; description?: string; price: number; discountPrice?: number;
   image?: string; video?: string; isFeatured: boolean; isNew: boolean; isPopular: boolean;
@@ -53,6 +62,7 @@ export interface SiteData {
   whatsapp?: { countryCode: string; phoneNumber: string; orderMessage: string; buttonText: string; isEnabled: boolean; };
   socialLinks: Array<{ platform: string; url: string }>;
   socialFeedPosts?: Array<any>;
+  galleryItems?: GalleryItem[];
   workingHours: Array<{ dayOfWeek: number; openTime?: string; closeTime?: string; isClosed: boolean }>;
   menuCategories: MenuCategory[];
 }
@@ -796,6 +806,7 @@ export default function RestaurantSite({ data, initialTable }: { data: SiteData;
     ...(isEnterprise ? [{ id: 'services', label: 'Xidmətlər' }] : []),
     ...(isMenuOn || !isEnterprise ? [{ id: 'menu', label: 'Menyu' }] : []),
     { id: 'about', label: 'Haqqımızda' },
+    { id: 'gallery', label: 'Qalareya' },
     { id: 'contact', label: 'Əlaqə' },
   ];
 
@@ -1518,6 +1529,91 @@ export default function RestaurantSite({ data, initialTable }: { data: SiteData;
                 {organization.description || `${organization.name} — keyfiyyətli yemək və mükəmməl xidmət ilə fərqlənən yerli restoranımız. Hər gün ən təzə məhsullardan hazırlanmış dadlı yeməklərimiz sizi gözləyir.`}
               </p>
             </motion.div>
+          </div>
+        </section>
+
+        {/* Gallery */}
+        <section id="gallery" className="theme-section-padding" style={{ padding: '80px 24px', background: `${theme.primaryColor}05` }}>
+          <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} style={{ textAlign: 'center', marginBottom: 48 }}>
+              <p style={{ color: theme.primaryColor, fontSize: 13, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 10 }}>
+                Fotolar & Vizual
+              </p>
+              <h2 style={{ fontFamily: theme.headingFont, fontSize: 'clamp(26px, 4vw, 42px)', fontWeight: 800, color: theme.textColor, margin: '0 0 12px' }}>
+                Qalareya
+              </h2>
+              <p style={{ fontSize: 'clamp(14px, 3.5vw, 16px)', color: `${theme.textColor}AA`, maxWidth: 540, margin: '0 auto' }}>
+                Məkanımızdan, xidmətimizdən və unudulmaz təəssüratlardan görüntülər
+              </p>
+            </motion.div>
+
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+                gap: 20,
+              }}
+            >
+              {(data.galleryItems && data.galleryItems.length > 0
+                ? data.galleryItems
+                : [
+                    { id: 'c1', url: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&q=80', title: 'Məkan və Rahatlıq' },
+                    { id: 'c2', url: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&q=80', title: 'Qonaq Masaları' },
+                    { id: 'c3', url: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=800&q=80', title: 'Kulinariya İnciləri' },
+                    { id: 'c4', url: 'https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?w=800&q=80', title: 'Xüsusi Tərtibat' },
+                    { id: 'c5', url: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&q=80', title: 'Dadlı Təamlar' },
+                    { id: 'c6', url: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80', title: 'Gözəl Atmosfer' },
+                  ]
+              ).map((item, idx) => (
+                <motion.div
+                  key={item.id || idx}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.3, delay: idx * 0.05 }}
+                  style={{
+                    position: 'relative',
+                    borderRadius: theme.borderRadius || 16,
+                    overflow: 'hidden',
+                    aspectRatio: '4/3',
+                    background: formBg,
+                    border: `1px solid ${theme.primaryColor}20`,
+                    boxShadow: `0 4px 20px ${theme.secondaryColor}15`,
+                  }}
+                >
+                  <img
+                    src={item.url}
+                    alt={item.title || `Qalareya ${idx + 1}`}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                      transition: 'transform 0.4s ease',
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.06)')}
+                    onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+                  />
+                  {item.title && (
+                    <div
+                      style={{
+                        position: 'absolute',
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        padding: '24px 16px 12px',
+                        background: 'linear-gradient(transparent, rgba(0,0,0,0.85))',
+                        color: '#ffffff',
+                        fontSize: 14,
+                        fontWeight: 600,
+                        pointerEvents: 'none',
+                      }}
+                    >
+                      {item.title}
+                    </div>
+                  )}
+                </motion.div>
+              ))}
+            </div>
           </div>
         </section>
 
