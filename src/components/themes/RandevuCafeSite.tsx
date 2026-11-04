@@ -737,22 +737,54 @@ function ReservationSection({ data, theme }: { data: SiteData; theme: ThemeConfi
   const heading = theme.headingFont || 'Playfair Display';
   const body = theme.bodyFont || 'Plus Jakarta Sans';
   const [form, setForm] = useState({ name: '', phone: '', date: '', time: '', guests: '2', notes: '' });
+  const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
   const badge = theme.reservationBadgeText || 'MASA REZERVASIYASI';
   const headline = theme.reservationHeadline || 'Masanızı İndi Ayırın';
   const subtitle = theme.reservationSubtitle || 'Rahat və sürətli rezervasiya sistemi ilə masanızı əvvəlcədən ayırın.';
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // WhatsApp redirect
-    if (data.whatsapp?.isEnabled && data.whatsapp.phoneNumber) {
-      const msg = `Rezervasiya tələbi:\nAd: ${form.name}\nTelefon: ${form.phone}\nTarix: ${form.date}\nSaat: ${form.time}\nQonaq sayı: ${form.guests}${form.notes ? `\nQeyd: ${form.notes}` : ''}`;
-      const url = formatWhatsAppUrl(data.whatsapp.countryCode, data.whatsapp.phoneNumber, msg);
-      window.open(url, '_blank');
+    if (!form.name || !form.phone) return;
+    setSubmitting(true);
+
+    try {
+      // Send reservation inquiry to dashboard Inquiries API
+      await fetch(`/api/site/${data.organization.slug}/contact`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fullName: form.name.trim(),
+          phone: form.phone.trim(),
+          subject: 'Masa Rezervasiyası',
+          service: `${form.guests} nəfər`,
+          message: `Tarix: ${form.date || 'Təyin edilməyib'} | Saat: ${form.time || 'Təyin edilməyib'} | Qonaq sayı: ${form.guests} nəfər${form.notes ? ` | Qeyd: ${form.notes}` : ''}`,
+          metadata: {
+            type: 'RESERVATION',
+            date: form.date,
+            time: form.time,
+            guests: form.guests,
+            notes: form.notes,
+          },
+        }),
+      });
+
+      // Optional WhatsApp redirect if enabled
+      if (data.whatsapp?.isEnabled && data.whatsapp.phoneNumber) {
+        const msg = `Rezervasiya tələbi:\nAd: ${form.name}\nTelefon: ${form.phone}\nTarix: ${form.date}\nSaat: ${form.time}\nQonaq sayı: ${form.guests}${form.notes ? `\nQeyd: ${form.notes}` : ''}`;
+        const url = formatWhatsAppUrl(data.whatsapp.countryCode, data.whatsapp.phoneNumber, msg);
+        window.open(url, '_blank');
+      }
+
+      setSubmitted(true);
+      setForm({ name: '', phone: '', date: '', time: '', guests: '2', notes: '' });
+      setTimeout(() => setSubmitted(false), 5000);
+    } catch (err) {
+      console.error('Reservation submit error:', err);
+    } finally {
+      setSubmitting(false);
     }
-    setSubmitted(true);
-    setTimeout(() => setSubmitted(false), 4000);
   };
 
   const inputStyle: React.CSSProperties = {
@@ -806,9 +838,10 @@ function ReservationSection({ data, theme }: { data: SiteData; theme: ThemeConfi
           </div>
           <button
             type="submit"
-            style={{ marginTop: 28, width: '100%', background: primary, color: '#fff', border: 'none', borderRadius: 100, padding: '16px', fontFamily: body, fontSize: 16, fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s', boxShadow: `0 6px 24px ${primary}40` }}
+            disabled={submitting}
+            style={{ marginTop: 28, width: '100%', background: primary, color: '#fff', border: 'none', borderRadius: 100, padding: '16px', fontFamily: body, fontSize: 16, fontWeight: 700, cursor: submitting ? 'not-allowed' : 'pointer', transition: 'all 0.2s', boxShadow: `0 6px 24px ${primary}40`, opacity: submitting ? 0.7 : 1 }}
           >
-            {submitted ? '✓ Rezervasiya talebi göndərildi!' : 'Masanı Ayır'}
+            {submitting ? 'Göndərilir...' : submitted ? '✓ Rezervasiya qəbul edildi!' : 'Masanı Ayır'}
           </button>
         </form>
       </div>

@@ -685,6 +685,182 @@ function HeaderMedia({ theme }: { theme: ThemeConfig }) {
   return null;
 }
 
+function RestaurantReservationSection({
+  organization,
+  theme,
+  whatsapp,
+  formBg,
+}: {
+  organization: SiteData['organization'];
+  theme: ThemeConfig;
+  whatsapp?: SiteData['whatsapp'];
+  formBg: string;
+}) {
+  const [form, setForm] = useState({ name: '', phone: '', date: '', time: '', guests: '2', notes: '' });
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.name || !form.phone) return;
+    setSubmitting(true);
+
+    try {
+      await fetch(`/api/site/${organization.slug}/contact`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fullName: form.name.trim(),
+          phone: form.phone.trim(),
+          subject: 'Masa Rezervasiyası',
+          service: `${form.guests} nəfər`,
+          message: `Tarix: ${form.date || 'Təyin edilməyib'} | Saat: ${form.time || 'Təyin edilməyib'} | Qonaq sayı: ${form.guests} nəfər${form.notes ? ` | Qeyd: ${form.notes}` : ''}`,
+          metadata: {
+            type: 'RESERVATION',
+            date: form.date,
+            time: form.time,
+            guests: form.guests,
+            notes: form.notes,
+          },
+        }),
+      });
+
+      if (whatsapp?.isEnabled && whatsapp.phoneNumber) {
+        const msg = `Rezervasiya tələbi:\nAd: ${form.name}\nTelefon: ${form.phone}\nTarix: ${form.date}\nSaat: ${form.time}\nQonaq sayı: ${form.guests}${form.notes ? `\nQeyd: ${form.notes}` : ''}`;
+        const url = formatWhatsAppUrl(whatsapp.countryCode, whatsapp.phoneNumber, msg);
+        window.open(url, '_blank');
+      }
+
+      setSubmitted(true);
+      setForm({ name: '', phone: '', date: '', time: '', guests: '2', notes: '' });
+      setTimeout(() => setSubmitted(false), 5000);
+    } catch (err) {
+      console.error('Reservation submit error:', err);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const inputStyle: React.CSSProperties = {
+    width: '100%',
+    padding: '12px 16px',
+    borderRadius: theme.borderRadius || 12,
+    border: `1px solid ${theme.primaryColor}30`,
+    background: 'rgba(255,255,255,0.04)',
+    color: theme.textColor,
+    fontSize: 14,
+    fontFamily: theme.bodyFont,
+    outline: 'none',
+    boxSizing: 'border-box',
+    transition: 'border-color 0.2s',
+  };
+
+  const labelStyle: React.CSSProperties = {
+    fontSize: 13,
+    fontWeight: 600,
+    color: `${theme.textColor}CC`,
+    marginBottom: 6,
+    display: 'block',
+    fontFamily: theme.bodyFont,
+  };
+
+  return (
+    <section
+      id="reservation"
+      className="theme-section-padding"
+      style={{
+        padding: '80px 24px',
+        background: `${theme.primaryColor}06`,
+        borderTop: `1px solid ${theme.primaryColor}15`,
+      }}
+    >
+      <div style={{ maxWidth: 840, margin: '0 auto' }}>
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} style={{ textAlign: 'center', marginBottom: 44 }}>
+          <p style={{ color: theme.primaryColor, fontSize: 13, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 10 }}>
+            Masa Rezervasiyası
+          </p>
+          <h2 style={{ fontFamily: theme.headingFont, fontSize: 'clamp(26px, 4vw, 42px)', fontWeight: 800, color: theme.textColor, margin: '0 0 12px' }}>
+            Masanızı Əvvəlcədən Ayırın
+          </h2>
+          <p style={{ fontSize: 'clamp(14px, 3.5vw, 16px)', color: `${theme.textColor}AA`, maxWidth: 540, margin: '0 auto' }}>
+            Rahat və sürətli rezervasiya sistemi ilə masanızı əvvəlcədən təmin edin
+          </p>
+        </motion.div>
+
+        <motion.form
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          onSubmit={handleSubmit}
+          style={{
+            background: formBg,
+            border: `1px solid ${theme.primaryColor}20`,
+            borderRadius: theme.borderRadius || 20,
+            padding: 'clamp(24px, 4vw, 40px)',
+            boxShadow: `0 8px 32px ${theme.secondaryColor}15`,
+          }}
+        >
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 20 }}>
+            <div>
+              <label style={labelStyle}>Ad, Soyad *</label>
+              <input required style={inputStyle} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Adınız və Soyadınız" />
+            </div>
+            <div>
+              <label style={labelStyle}>Telefon *</label>
+              <input required style={inputStyle} value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="+994 XX XXX XX XX" />
+            </div>
+            <div>
+              <label style={labelStyle}>Tarix *</label>
+              <input required type="date" style={inputStyle} value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} />
+            </div>
+            <div>
+              <label style={labelStyle}>Saat *</label>
+              <input required type="time" style={inputStyle} value={form.time} onChange={(e) => setForm({ ...form, time: e.target.value })} />
+            </div>
+            <div>
+              <label style={labelStyle}>Qonaq sayı</label>
+              <select style={inputStyle} value={form.guests} onChange={(e) => setForm({ ...form, guests: e.target.value })}>
+                {['1', '2', '3', '4', '5', '6', '7', '8', '10+'].map((n) => (
+                  <option key={n} value={n} style={{ background: theme.backgroundColor || '#1A1B1E', color: theme.textColor || '#fff' }}>
+                    {n} nəfər
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label style={labelStyle}>Qeyd (İxtiyari)</label>
+              <input style={inputStyle} value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} placeholder="Xüsusi istəklər" />
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            disabled={submitting}
+            style={{
+              marginTop: 28,
+              width: '100%',
+              background: theme.primaryColor,
+              color: '#fff',
+              border: 'none',
+              borderRadius: theme.borderRadius || 12,
+              padding: '16px',
+              fontFamily: theme.bodyFont,
+              fontSize: 16,
+              fontWeight: 700,
+              cursor: submitting ? 'not-allowed' : 'pointer',
+              transition: 'all 0.2s',
+              boxShadow: `0 6px 20px ${theme.primaryColor}40`,
+              opacity: submitting ? 0.7 : 1,
+            }}
+          >
+            {submitting ? 'Göndərilir...' : submitted ? '✓ Rezervasiya qəbul edildi!' : 'Masanı Ayır'}
+          </button>
+        </motion.form>
+      </div>
+    </section>
+  );
+}
+
 export default function RestaurantSite({ data, initialTable }: { data: SiteData; initialTable?: string }) {
   const rawTheme = (data.website.theme || {}) as Partial<ThemeConfig>;
   const baseTemplateKey = rawTheme.templateId && defaultThemes[rawTheme.templateId] ? rawTheme.templateId : 'elegant';
@@ -807,6 +983,7 @@ export default function RestaurantSite({ data, initialTable }: { data: SiteData;
     ...(isMenuOn || !isEnterprise ? [{ id: 'menu', label: 'Menyu' }] : []),
     { id: 'about', label: 'Haqqımızda' },
     { id: 'gallery', label: 'Qalareya' },
+    { id: 'reservation', label: 'Rezervasiya' },
     { id: 'contact', label: 'Əlaqə' },
   ];
 
@@ -1616,6 +1793,14 @@ export default function RestaurantSite({ data, initialTable }: { data: SiteData;
             </div>
           </div>
         </section>
+
+        {/* Reservation */}
+        <RestaurantReservationSection
+          organization={organization}
+          theme={theme}
+          whatsapp={whatsapp}
+          formBg={formBg}
+        />
 
         {/* Contact */}
         <section id="contact" className="theme-section-padding" style={{ padding: '80px 24px' }}>

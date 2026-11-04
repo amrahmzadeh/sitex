@@ -84,6 +84,200 @@ const DAY_NAMES = ['Bazar', 'Bazar ertəsi', 'Çərşənbə axşamı', 'Çərş�
 const FALLBACK_HERO_IMAGE = 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1200&q=80';
 const FALLBACK_DISH_IMAGE = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80';
 
+function ProReservationSection({
+  organization,
+  whatsapp,
+  saffronGold,
+  cardBackground,
+}: {
+  organization: SiteData['organization'];
+  whatsapp?: SiteData['whatsapp'];
+  saffronGold: string;
+  cardBackground: string;
+}) {
+  const [form, setForm] = useState({ name: '', phone: '', date: '', time: '', guests: '2', notes: '' });
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.name || !form.phone) return;
+    setSubmitting(true);
+
+    try {
+      await fetch(`/api/site/${organization.slug}/contact`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fullName: form.name.trim(),
+          phone: form.phone.trim(),
+          subject: 'Masa Rezervasiyası',
+          service: `${form.guests} nəfər`,
+          message: `Tarix: ${form.date || 'Təyin edilməyib'} | Saat: ${form.time || 'Təyin edilməyib'} | Qonaq sayı: ${form.guests} nəfər${form.notes ? ` | Qeyd: ${form.notes}` : ''}`,
+          metadata: {
+            type: 'RESERVATION',
+            date: form.date,
+            time: form.time,
+            guests: form.guests,
+            notes: form.notes,
+          },
+        }),
+      });
+
+      if (whatsapp?.isEnabled && whatsapp.phoneNumber) {
+        const msg = `Rezervasiya tələbi:\nAd: ${form.name}\nTelefon: ${form.phone}\nTarix: ${form.date}\nSaat: ${form.time}\nQonaq sayı: ${form.guests}${form.notes ? `\nQeyd: ${form.notes}` : ''}`;
+        const url = formatWhatsAppUrl(whatsapp.countryCode, whatsapp.phoneNumber, msg);
+        window.open(url, '_blank');
+      }
+
+      setSubmitted(true);
+      setForm({ name: '', phone: '', date: '', time: '', guests: '2', notes: '' });
+      setTimeout(() => setSubmitted(false), 5000);
+    } catch (err) {
+      console.error('Reservation error:', err);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const inputStyle: React.CSSProperties = {
+    width: '100%',
+    padding: '12px 16px',
+    borderRadius: 12,
+    border: '1px solid rgba(255, 255, 255, 0.12)',
+    backgroundColor: '#16181b',
+    color: '#F7F8F9',
+    fontSize: 14,
+    outline: 'none',
+    boxSizing: 'border-box',
+    transition: 'border-color 0.2s',
+  };
+
+  const labelStyle: React.CSSProperties = {
+    fontSize: 13,
+    fontWeight: 600,
+    color: '#B0B0B8',
+    marginBottom: 6,
+    display: 'block',
+  };
+
+  return (
+    <section
+      id="rezervasiya"
+      className="pro-section-padding"
+      style={{
+        padding: '90px 0',
+        position: 'relative',
+        backgroundColor: '#111315',
+        borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+      }}
+    >
+      <div style={{ maxWidth: 840, margin: '0 auto', padding: '0 24px' }}>
+        <div style={{ textAlign: 'center', marginBottom: 44 }}>
+          <div
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+              backgroundColor: 'rgba(229, 169, 60, 0.1)',
+              border: '1px solid rgba(229, 169, 60, 0.3)',
+              padding: '6px 14px',
+              borderRadius: 9999,
+              marginBottom: 14,
+            }}
+          >
+            <Clock size={14} color={saffronGold} />
+            <span style={{ fontSize: 12, fontWeight: 700, color: saffronGold, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+              MASA REZERVASIYASI
+            </span>
+          </div>
+          <h2
+            style={{
+              fontFamily: "'Playfair Display', serif",
+              fontSize: 'clamp(28px, 4vw, 42px)',
+              fontWeight: 700,
+              color: '#F7F8F9',
+              margin: '0 0 12px',
+            }}
+          >
+            Masanızı Əvvəlcədən Ayırın
+          </h2>
+          <p style={{ color: '#9BA3AF', fontSize: 16, margin: 0 }}>
+            Rahat və sürətli rezervasiya sistemi ilə masanızı əvvəlcədən təmin edin
+          </p>
+        </div>
+
+        <form
+          onSubmit={handleSubmit}
+          style={{
+            backgroundColor: `${cardBackground}E6`,
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            borderRadius: 24,
+            padding: 'clamp(24px, 4vw, 40px)',
+            boxShadow: '0 16px 40px rgba(0,0,0,0.4)',
+            backdropFilter: 'blur(12px)',
+          }}
+        >
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 20 }}>
+            <div>
+              <label style={labelStyle}>Ad, Soyad *</label>
+              <input required style={inputStyle} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Adınız və Soyadınız" />
+            </div>
+            <div>
+              <label style={labelStyle}>Telefon *</label>
+              <input required style={inputStyle} value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="+994 XX XXX XX XX" />
+            </div>
+            <div>
+              <label style={labelStyle}>Tarix *</label>
+              <input required type="date" style={inputStyle} value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} />
+            </div>
+            <div>
+              <label style={labelStyle}>Saat *</label>
+              <input required type="time" style={inputStyle} value={form.time} onChange={(e) => setForm({ ...form, time: e.target.value })} />
+            </div>
+            <div>
+              <label style={labelStyle}>Qonaq sayı</label>
+              <select style={inputStyle} value={form.guests} onChange={(e) => setForm({ ...form, guests: e.target.value })}>
+                {['1', '2', '3', '4', '5', '6', '7', '8', '10+'].map((n) => (
+                  <option key={n} value={n} style={{ background: '#16181b', color: '#F7F8F9' }}>
+                    {n} nəfər
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label style={labelStyle}>Qeyd (İxtiyari)</label>
+              <input style={inputStyle} value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} placeholder="Xüsusi tələblər və ya istəklər" />
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            disabled={submitting}
+            style={{
+              marginTop: 28,
+              width: '100%',
+              backgroundColor: saffronGold,
+              color: '#111315',
+              border: 'none',
+              borderRadius: 14,
+              padding: '16px',
+              fontSize: 16,
+              fontWeight: 700,
+              cursor: submitting ? 'not-allowed' : 'pointer',
+              transition: 'all 0.2s',
+              boxShadow: `0 6px 20px ${saffronGold}40`,
+              opacity: submitting ? 0.7 : 1,
+            }}
+          >
+            {submitting ? 'Göndərilir...' : submitted ? '✓ Rezervasiya qəbul edildi!' : 'Masanı Ayır'}
+          </button>
+        </form>
+      </div>
+    </section>
+  );
+}
+
 export default function ProRestaurantSite({
   data,
   theme,
@@ -557,6 +751,7 @@ export default function ProRestaurantSite({
                 )}
                 <a href="#haqqimizda" style={{ color: '#9BA3AF', fontSize: 14, textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={(e) => (e.currentTarget.style.color = '#F7F8F9')} onMouseLeave={(e) => (e.currentTarget.style.color = '#9BA3AF')}>Haqqımızda</a>
                 <a href="#qalereya" style={{ color: '#9BA3AF', fontSize: 14, textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={(e) => (e.currentTarget.style.color = '#F7F8F9')} onMouseLeave={(e) => (e.currentTarget.style.color = '#9BA3AF')}>Qalareya</a>
+                <a href="#rezervasiya" style={{ color: '#9BA3AF', fontSize: 14, textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={(e) => (e.currentTarget.style.color = '#F7F8F9')} onMouseLeave={(e) => (e.currentTarget.style.color = '#9BA3AF')}>Rezervasiya</a>
                 <a href="#elaqe" style={{ color: '#9BA3AF', fontSize: 14, textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={(e) => (e.currentTarget.style.color = '#F7F8F9')} onMouseLeave={(e) => (e.currentTarget.style.color = '#9BA3AF')}>Əlaqə</a>
               </nav>
 
@@ -635,6 +830,7 @@ export default function ProRestaurantSite({
                 ...(isMenuOn || !isEnterprise ? [{ href: '#menyu', label: 'Menyu', icon: <Utensils size={16} color={saffronGold} /> }] : []),
                 { href: '#haqqimizda', label: 'Haqqımızda', icon: <Award size={16} color={saffronGold} /> },
                 { href: '#qalereya', label: 'Qalareya', icon: <Camera size={16} color={saffronGold} /> },
+                { href: '#rezervasiya', label: 'Rezervasiya', icon: <Clock size={16} color={saffronGold} /> },
                 { href: '#elaqe', label: 'Əlaqə & İş Saatları', icon: <MapPin size={16} color={saffronGold} /> },
               ].map((link) => (
                 <a
@@ -1705,6 +1901,14 @@ export default function ProRestaurantSite({
           </div>
         </section>
 
+        {/* ===================== RESERVATION SECTION ===================== */}
+        <ProReservationSection
+          organization={organization}
+          whatsapp={whatsapp}
+          saffronGold={saffronGold}
+          cardBackground={cardBackground}
+        />
+
         {/* ===================== CONTACT & HOURS SECTION ===================== */}
         <section
           id="elaqe"
@@ -2221,6 +2425,9 @@ export default function ProRestaurantSite({
               </a>
               <a href="#qalereya" style={{ color: '#9BA3AF', fontSize: 13, textDecoration: 'none' }}>
                 Qalareya
+              </a>
+              <a href="#rezervasiya" style={{ color: '#9BA3AF', fontSize: 13, textDecoration: 'none' }}>
+                Rezervasiya
               </a>
               <a href="#elaqe" style={{ color: '#9BA3AF', fontSize: 13, textDecoration: 'none' }}>
                 Əlaqə
