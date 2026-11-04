@@ -35,12 +35,13 @@ function Header({ data, theme, activeSection }: { data: SiteData; theme: ThemeCo
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  const hasGallery = Boolean(data.galleryItems && data.galleryItems.length > 0);
   const navLinks = [
     { id: 'hero', label: 'Ana Səhifə' },
     { id: 'about', label: 'Haqqımızda' },
     { id: 'menu', label: 'Menyu' },
     { id: 'offers', label: 'Təkliflər' },
-    { id: 'gallery', label: 'Qalereya' },
+    ...(hasGallery ? [{ id: 'gallery', label: 'Qalereya' }] : []),
     { id: 'reservation', label: 'Rezervasiya' },
     { id: 'contact', label: 'Əlaqə' },
   ];
@@ -1051,9 +1052,10 @@ function WhatsAppFloat({ data, theme }: { data: SiteData; theme: ThemeConfig }) 
 export default function RandevuCafeSite({ data, theme }: { data: SiteData; theme: ThemeConfig }) {
   const [activeSection, setActiveSection] = useState('hero');
   const fontsUrl = getGoogleFontsUrl(theme);
+  const hasGallery = Boolean(data.galleryItems && data.galleryItems.length > 0);
 
   useEffect(() => {
-    const sections = ['hero', 'about', 'menu', 'offers', 'gallery', 'reservation', 'contact'];
+    const sections = ['hero', 'about', 'menu', 'offers', ...(hasGallery ? ['gallery'] : []), 'reservation', 'contact'];
     const observers = sections.map(id => {
       const el = document.getElementById(id);
       if (!el) return null;
@@ -1081,7 +1083,7 @@ export default function RandevuCafeSite({ data, theme }: { data: SiteData; theme
         <AboutSection data={data} theme={theme} />
         <MenuSection data={data} theme={theme} />
         <OffersSection theme={theme} />
-        <GallerySection theme={theme} items={data.galleryItems} />
+        {hasGallery && <GallerySection theme={theme} items={data.galleryItems} />}
         <ReservationSection data={data} theme={theme} />
         <ContactSection data={data} theme={theme} />
         <Footer data={data} theme={theme} />

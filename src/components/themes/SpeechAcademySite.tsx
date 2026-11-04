@@ -65,12 +65,14 @@ export default function SpeechAcademySite({ data, theme }: SpeechAcademySiteProp
   const copyrightText = theme.footerCopyrightText || `© ${new Date().getFullYear()} ${organization.name}. Bütün hüquqlar qorunur.`;
   const platformText = theme.footerPlatformText || 'Sayt SiteX platforması ilə yaradılıb';
 
+  const hasGallery = Boolean(data.galleryItems && data.galleryItems.length > 0);
+
   // Navigation Items (Menyu yerinə Xidmətlər)
   const navItems = [
     { href: '#hero', label: 'Ana səhifə' },
     { href: '#haqqimda', label: 'Haqqımda' },
     { href: '#xidmetler', label: 'Xidmətlər' },
-    { href: '#qalereya', label: 'Qalereya' },
+    ...(hasGallery ? [{ href: '#qalereya', label: 'Qalereya' }] : []),
     { href: '#elaqe', label: 'Əlaqə' },
   ];
 
@@ -1128,104 +1130,96 @@ export default function SpeechAcademySite({ data, theme }: SpeechAcademySiteProp
       )}
 
       {/* 4.5 QALEREYA SECTION */}
-      <section id="qalereya" style={{ padding: '90px 0', backgroundColor: '#ffffff' }}>
-        <div style={{ maxWidth: 1240, margin: '0 auto', padding: '0 24px' }}>
-          <div style={{ textAlign: 'center', maxWidth: 680, margin: '0 auto 56px auto' }}>
-            <span
-              style={{
-                fontFamily: bodyFont,
-                fontSize: 12,
-                fontWeight: 700,
-                color: primaryColor,
-                letterSpacing: '0.15em',
-                textTransform: 'uppercase',
-                display: 'inline-block',
-                marginBottom: 10,
-              }}
-            >
-              FOTO VƏ VİDEOLAR
-            </span>
-            <h2
-              style={{
-                fontFamily: headingFont,
-                fontSize: 'clamp(30px, 4.5vw, 44px)',
-                fontWeight: 600,
-                color: secondaryColor,
-                margin: '0 0 16px 0',
-              }}
-            >
-              Qalareya
-            </h2>
-            <p style={{ fontFamily: bodyFont, fontSize: 17, color: '#44474c', margin: 0 }}>
-              Təlimlərimizdən, çıxışlarımızdan və xüsusi anlarımızdan fotolar
-            </p>
-          </div>
-
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-              gap: 24,
-            }}
-          >
-            {(data.galleryItems && data.galleryItems.length > 0
-              ? data.galleryItems
-              : [
-                  { id: 'g1', url: 'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=800&q=80', title: 'İctimai Çıxış Təlimi' },
-                  { id: 'g2', url: 'https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=800&q=80', title: 'Korporativ Seminarlar' },
-                  { id: 'g3', url: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=800&q=80', title: 'Fərdi Diksiya Dərsləri' },
-                  { id: 'g4', url: 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=800&q=80', title: 'Səhnə Nitqi Praktikası' },
-                  { id: 'g5', url: 'https://images.unsplash.com/photo-1531497865144-0464ef8fb9a9?w=800&q=80', title: 'Ustad Dərsləri' },
-                  { id: 'g6', url: 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=800&q=80', title: 'Məzuniyyət və Sertifikatlar' },
-                ]
-            ).map((item, idx) => (
-              <div
-                key={item.id || idx}
+      {hasGallery && (
+        <section id="qalereya" style={{ padding: '90px 0', backgroundColor: '#ffffff' }}>
+          <div style={{ maxWidth: 1240, margin: '0 auto', padding: '0 24px' }}>
+            <div style={{ textAlign: 'center', maxWidth: 680, margin: '0 auto 56px auto' }}>
+              <span
                 style={{
-                  position: 'relative',
-                  borderRadius: 16,
-                  overflow: 'hidden',
-                  aspectRatio: '4/3',
-                  boxShadow: '0 8px 30px rgba(0,0,0,0.06)',
-                  backgroundColor: '#f1f1f4',
+                  fontFamily: bodyFont,
+                  fontSize: 12,
+                  fontWeight: 700,
+                  color: primaryColor,
+                  letterSpacing: '0.15em',
+                  textTransform: 'uppercase',
+                  display: 'inline-block',
+                  marginBottom: 10,
                 }}
               >
-                <img
-                  src={item.url}
-                  alt={item.title || `Qalareya ${idx + 1}`}
+                FOTO VƏ VİDEOLAR
+              </span>
+              <h2
+                style={{
+                  fontFamily: headingFont,
+                  fontSize: 'clamp(30px, 4.5vw, 44px)',
+                  fontWeight: 600,
+                  color: secondaryColor,
+                  margin: '0 0 16px 0',
+                }}
+              >
+                Qalareya
+              </h2>
+              <p style={{ fontFamily: bodyFont, fontSize: 17, color: '#44474c', margin: 0 }}>
+                Təlimlərimizdən, çıxışlarımızdan və xüsusi anlarımızdan fotolar
+              </p>
+            </div>
+
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+                gap: 24,
+              }}
+            >
+              {(data.galleryItems || []).map((item, idx) => (
+                <div
+                  key={item.id || idx}
                   style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                    transition: 'transform 0.4s ease',
+                    position: 'relative',
+                    borderRadius: 16,
+                    overflow: 'hidden',
+                    aspectRatio: '4/3',
+                    boxShadow: '0 8px 30px rgba(0,0,0,0.06)',
+                    backgroundColor: '#f1f1f4',
                   }}
-                  onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.05)')}
-                  onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
-                />
-                {item.title && (
-                  <div
+                >
+                  <img
+                    src={item.url}
+                    alt={item.title || `Qalareya ${idx + 1}`}
                     style={{
-                      position: 'absolute',
-                      bottom: 0,
-                      left: 0,
-                      right: 0,
-                      padding: '24px 16px 12px',
-                      background: 'linear-gradient(transparent, rgba(18,20,22,0.85))',
-                      color: '#ffffff',
-                      fontFamily: bodyFont,
-                      fontSize: 14,
-                      fontWeight: 600,
-                      pointerEvents: 'none',
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                      transition: 'transform 0.4s ease',
                     }}
-                  >
-                    {item.title}
-                  </div>
-                )}
-              </div>
-            ))}
+                    onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.05)')}
+                    onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+                  />
+                  {item.title && (
+                    <div
+                      style={{
+                        position: 'absolute',
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        padding: '24px 16px 12px',
+                        background: 'linear-gradient(transparent, rgba(18,20,22,0.85))',
+                        color: '#ffffff',
+                        fontFamily: bodyFont,
+                        fontSize: 14,
+                        fontWeight: 600,
+                        pointerEvents: 'none',
+                      }}
+                    >
+                      {item.title}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* 5. ƏLAQƏ SECTION */}
       <section
