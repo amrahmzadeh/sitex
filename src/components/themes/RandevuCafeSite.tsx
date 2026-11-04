@@ -461,7 +461,7 @@ function AboutSection({ data, theme }: { data: SiteData; theme: ThemeConfig }) {
             <img src={imgUrl} alt="Chef" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           </div>
           {/* Overlay badge */}
-          <div style={{ position: 'absolute', bottom: -20, right: -20, background: `linear-gradient(135deg, ${primary}, ${ACCENT})`, borderRadius: 20, padding: '20px 24px', boxShadow: `0 12px 40px ${primary}40`, maxWidth: 220 }}>
+          <div className="randevu-about-badge" style={{ position: 'absolute', bottom: -20, right: -20, background: `linear-gradient(135deg, ${primary}, ${ACCENT})`, borderRadius: 20, padding: '20px 24px', boxShadow: `0 12px 40px ${primary}40`, maxWidth: 220 }}>
             <span style={{ display: 'block', fontFamily: body, fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.7)', letterSpacing: '0.08em', marginBottom: 6 }}>{overlayTitle}</span>
             <span style={{ fontFamily: heading, fontSize: 15, fontWeight: 700, color: '#fff' }}>{overlayText}</span>
           </div>
@@ -491,6 +491,14 @@ function AboutSection({ data, theme }: { data: SiteData; theme: ThemeConfig }) {
       <style>{`
         @media (max-width: 768px) {
           #about > div { grid-template-columns: 1fr !important; gap: 40px !important; }
+          .randevu-about-badge {
+            right: 14px !important;
+            bottom: 14px !important;
+            padding: 14px 18px !important;
+            max-width: 200px !important;
+            border-radius: 16px !important;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.25) !important;
+          }
         }
       `}</style>
     </section>
