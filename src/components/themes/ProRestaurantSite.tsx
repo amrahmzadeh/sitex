@@ -16,6 +16,7 @@ import SplashScreen, { SplashConfig } from './SplashScreen';
 import FoodVideoPlayer from './FoodVideoPlayer';
 import { SocialIconsGroup } from './SocialIcons';
 import SocialMediaFeed from './SocialMediaFeed';
+import type { SiteData } from './RestaurantSite';
 
 export interface MenuItem {
   id: string;
@@ -44,39 +45,6 @@ export interface MenuCategory {
   menuItems: MenuItem[];
 }
 
-export interface SiteData {
-  organization: {
-    name: string;
-    slug: string;
-    logo?: string;
-    description?: string;
-    phone?: string;
-    email?: string;
-    address?: string;
-    city?: string;
-    mapUrl?: string;
-    currency: string;
-  };
-  website: {
-    theme: Record<string, unknown>;
-    seoTitle?: string;
-    seoDescription?: string;
-    splashEnabled?: boolean;
-    splashConfig?: SplashConfig;
-  };
-  whatsapp?: {
-    countryCode: string;
-    phoneNumber: string;
-    orderMessage: string;
-    buttonText: string;
-    isEnabled: boolean;
-  };
-  socialLinks: Array<{ platform: string; url: string }>;
-  socialFeedPosts?: Array<any>;
-  galleryItems?: Array<{ id?: string; url: string; title?: string | null }>;
-  workingHours: Array<{ dayOfWeek: number; openTime?: string; closeTime?: string; isClosed: boolean }>;
-  menuCategories: MenuCategory[];
-}
 
 const DAY_NAMES = ['Bazar', 'Bazar ertəsi', 'Çərşənbə axşamı', 'Çərşənbə', 'Cümə axşamı', 'Cümə', 'Şənbə'];
 
@@ -449,6 +417,10 @@ export default function ProRestaurantSite({
     website: data.website as any,
   });
   const hasGallery = Boolean(data.galleryItems && data.galleryItems.length > 0);
+  const _ms = (data.moduleSettings || {}) as Record<string, boolean>;
+  const showGallery = _ms.gallery !== false && hasGallery;
+  const showContact = _ms.contact !== false;
+  const showMenu = _ms.menu !== false;
 
   return (
     <>
@@ -751,10 +723,10 @@ export default function ProRestaurantSite({
                   <a href="#menyu" style={{ color: '#9BA3AF', fontSize: 14, textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={(e) => (e.currentTarget.style.color = '#F7F8F9')} onMouseLeave={(e) => (e.currentTarget.style.color = '#9BA3AF')}>Menyu</a>
                 )}
                 <a href="#haqqimizda" style={{ color: '#9BA3AF', fontSize: 14, textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={(e) => (e.currentTarget.style.color = '#F7F8F9')} onMouseLeave={(e) => (e.currentTarget.style.color = '#9BA3AF')}>Haqqımızda</a>
-                {hasGallery && (
+                {showGallery && (
                   <a href="#qalereya" style={{ color: '#9BA3AF', fontSize: 14, textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={(e) => (e.currentTarget.style.color = '#F7F8F9')} onMouseLeave={(e) => (e.currentTarget.style.color = '#9BA3AF')}>Qalareya</a>
                 )}
-                <a href="#rezervasiya" style={{ color: '#9BA3AF', fontSize: 14, textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={(e) => (e.currentTarget.style.color = '#F7F8F9')} onMouseLeave={(e) => (e.currentTarget.style.color = '#9BA3AF')}>Rezervasiya</a>
+                {showContact && <a href="#rezervasiya" style={{ color: '#9BA3AF', fontSize: 14, textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={(e) => (e.currentTarget.style.color = '#F7F8F9')} onMouseLeave={(e) => (e.currentTarget.style.color = '#9BA3AF')}>Rezervasiya</a>}
                 <a href="#elaqe" style={{ color: '#9BA3AF', fontSize: 14, textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={(e) => (e.currentTarget.style.color = '#F7F8F9')} onMouseLeave={(e) => (e.currentTarget.style.color = '#9BA3AF')}>Əlaqə</a>
               </nav>
 
@@ -829,11 +801,11 @@ export default function ProRestaurantSite({
             >
               {[
                 { href: '#hero', label: 'Ana Səhifə', icon: <Utensils size={16} color={saffronGold} /> },
-                ...(isEnterprise ? [{ href: '#menyu', label: 'Xidmətlər', icon: <Utensils size={16} color={saffronGold} /> }] : []),
-                ...(isMenuOn || !isEnterprise ? [{ href: '#menyu', label: 'Menyu', icon: <Utensils size={16} color={saffronGold} /> }] : []),
+                ...(isEnterprise && showMenu ? [{ href: '#menyu', label: 'Xidmətlər', icon: <Utensils size={16} color={saffronGold} /> }] : []),
+                ...((isMenuOn || !isEnterprise) && showMenu ? [{ href: '#menyu', label: 'Menyu', icon: <Utensils size={16} color={saffronGold} /> }] : []),
                 { href: '#haqqimizda', label: 'Haqqımızda', icon: <Award size={16} color={saffronGold} /> },
-                ...(hasGallery ? [{ href: '#qalereya', label: 'Qalareya', icon: <Camera size={16} color={saffronGold} /> }] : []),
-                { href: '#rezervasiya', label: 'Rezervasiya', icon: <Clock size={16} color={saffronGold} /> },
+                ...(showGallery ? [{ href: '#qalereya', label: 'Qalareya', icon: <Camera size={16} color={saffronGold} /> }] : []),
+                ...(showContact ? [{ href: '#rezervasiya', label: 'Rezervasiya', icon: <Clock size={16} color={saffronGold} /> }] : []),
                 { href: '#elaqe', label: 'Əlaqə & İş Saatları', icon: <MapPin size={16} color={saffronGold} /> },
               ].map((link) => (
                 <a
@@ -1792,7 +1764,7 @@ export default function ProRestaurantSite({
         </section>
 
         {/* ===================== GALLERY SECTION ===================== */}
-        {hasGallery && (
+        {showGallery && (
           <section
             id="qalereya"
             className="pro-section-padding"
@@ -1897,12 +1869,14 @@ export default function ProRestaurantSite({
         )}
 
         {/* ===================== RESERVATION SECTION ===================== */}
-        <ProReservationSection
-          organization={organization}
-          whatsapp={whatsapp}
-          saffronGold={saffronGold}
-          cardBackground={cardBackground}
-        />
+        {showContact && (
+          <ProReservationSection
+            organization={organization}
+            whatsapp={whatsapp}
+            saffronGold={saffronGold}
+            cardBackground={cardBackground}
+          />
+        )}
 
         {/* ===================== CONTACT & HOURS SECTION ===================== */}
         <section
@@ -2418,14 +2392,12 @@ export default function ProRestaurantSite({
               <a href="#haqqimizda" style={{ color: '#9BA3AF', fontSize: 13, textDecoration: 'none' }}>
                 Haqqımızda
               </a>
-              {hasGallery && (
+              {showGallery && (
                 <a href="#qalereya" style={{ color: '#9BA3AF', fontSize: 13, textDecoration: 'none' }}>
                   Qalareya
                 </a>
               )}
-              <a href="#rezervasiya" style={{ color: '#9BA3AF', fontSize: 13, textDecoration: 'none' }}>
-                Rezervasiya
-              </a>
+              {showContact && <a href="#rezervasiya" style={{ color: '#9BA3AF', fontSize: 13, textDecoration: 'none' }}>Rezervasiya</a>}
               <a href="#elaqe" style={{ color: '#9BA3AF', fontSize: 13, textDecoration: 'none' }}>
                 Əlaqə
               </a>

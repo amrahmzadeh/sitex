@@ -66,14 +66,17 @@ export default function SpeechAcademySite({ data, theme }: SpeechAcademySiteProp
   const platformText = theme.footerPlatformText || 'Sayt SiteX platforması ilə yaradılıb';
 
   const hasGallery = Boolean(data.galleryItems && data.galleryItems.length > 0);
+  const _ms = (data.moduleSettings || {}) as Record<string, boolean>;
+  const showGallery = _ms.gallery !== false && hasGallery;
+  const showContact = _ms.contact !== false;
 
   // Navigation Items (Menyu yerinə Xidmətlər)
   const navItems = [
     { href: '#hero', label: 'Ana səhifə' },
     { href: '#haqqimda', label: 'Haqqımda' },
     { href: '#xidmetler', label: 'Xidmətlər' },
-    ...(hasGallery ? [{ href: '#qalereya', label: 'Qalereya' }] : []),
-    { href: '#elaqe', label: 'Əlaqə' },
+    ...(showGallery ? [{ href: '#qalereya', label: 'Qalereya' }] : []),
+    ...(showContact ? [{ href: '#elaqe', label: 'Əlaqə' }] : []),
   ];
 
   // Real or Fallback Services
@@ -1130,7 +1133,7 @@ export default function SpeechAcademySite({ data, theme }: SpeechAcademySiteProp
       )}
 
       {/* 4.5 QALEREYA SECTION */}
-      {hasGallery && (
+      {showGallery && (
         <section id="qalereya" style={{ padding: '90px 0', backgroundColor: '#ffffff' }}>
           <div style={{ maxWidth: 1240, margin: '0 auto', padding: '0 24px' }}>
             <div style={{ textAlign: 'center', maxWidth: 680, margin: '0 auto 56px auto' }}>
@@ -1222,7 +1225,7 @@ export default function SpeechAcademySite({ data, theme }: SpeechAcademySiteProp
       )}
 
       {/* 5. ƏLAQƏ SECTION */}
-      <section
+      {showContact && <section
         id="elaqe"
         style={{
           padding: '90px 0',
@@ -1579,7 +1582,7 @@ export default function SpeechAcademySite({ data, theme }: SpeechAcademySiteProp
             </div>
           </div>
         </div>
-      </section>
+      </section>}
 
       {/* 6. FOOTER */}
       <footer

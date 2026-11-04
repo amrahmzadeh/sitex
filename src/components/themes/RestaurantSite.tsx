@@ -1003,14 +1003,18 @@ export default function RestaurantSite({ data, initialTable }: { data: SiteData;
   });
 
   const hasGallery = Boolean(data.galleryItems && data.galleryItems.length > 0);
+  const _ms = (data.moduleSettings || {}) as Record<string, boolean>;
+  const showMenu = _ms.menu !== false;
+  const showGallery = _ms.gallery !== false && hasGallery;
+  const showContact = _ms.contact !== false;
 
   const sections = [
     { id: 'home', label: 'Ana Səhifə' },
     ...(isEnterprise ? [{ id: 'services', label: 'Xidmətlər' }] : []),
-    ...(isMenuOn || !isEnterprise ? [{ id: 'menu', label: 'Menyu' }] : []),
+    ...((isMenuOn || !isEnterprise) && showMenu ? [{ id: 'menu', label: 'Menyu' }] : []),
     { id: 'about', label: 'Haqqımızda' },
-    ...(hasGallery ? [{ id: 'gallery', label: 'Qalareya' }] : []),
-    { id: 'reservation', label: 'Rezervasiya' },
+    ...(showGallery ? [{ id: 'gallery', label: 'Qalareya' }] : []),
+    ...(showContact ? [{ id: 'reservation', label: 'Rezervasiya' }] : []),
     { id: 'contact', label: 'Əlaqə' },
   ];
 
@@ -1737,7 +1741,7 @@ export default function RestaurantSite({ data, initialTable }: { data: SiteData;
         </section>
 
         {/* Gallery */}
-        {hasGallery && (
+        {showGallery && (
           <section id="gallery" className="theme-section-padding" style={{ padding: '80px 24px', background: `${theme.primaryColor}05` }}>
             <div style={{ maxWidth: 1200, margin: '0 auto' }}>
               <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} style={{ textAlign: 'center', marginBottom: 48 }}>
@@ -1814,12 +1818,12 @@ export default function RestaurantSite({ data, initialTable }: { data: SiteData;
         )}
 
         {/* Reservation */}
-        <RestaurantReservationSection
+        {showContact && <RestaurantReservationSection
           organization={organization}
           theme={theme}
           whatsapp={whatsapp}
           formBg={formBg}
-        />
+        />}
 
         {/* Contact */}
         <section id="contact" className="theme-section-padding" style={{ padding: '80px 24px' }}>
