@@ -424,6 +424,9 @@ export default function SettingsPage() {
               <div style={{ marginTop: 14 }}>
                 <label className="dash-label">Google Maps linki</label>
                 <input className="dash-input" value={form.mapUrl} onChange={(e) => set('mapUrl', e.target.value)} placeholder="https://maps.google.com/..." />
+                <p style={{ fontSize: 12, color: 'rgba(255, 255, 255, 0.45)', marginTop: 6, marginBottom: 0 }}>
+                  Google Maps linki, paylaşım linki (maps.app.goo.gl) və ya embed kodu daxil edə bilərsiniz. Saytda avtomatik xəritə kimi göstəriləcək.
+                </p>
               </div>
             </motion.div>
 

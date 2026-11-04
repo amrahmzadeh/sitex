@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
-import { Phone, MapPin, Clock, Instagram, Facebook, MessageCircle, Menu, X, Star, ChevronRight, Users, Coffee, Music, Award, ShoppingCart, Plus, Minus, Trash2, Check } from 'lucide-react';
+import { Phone, MapPin, Clock, Instagram, Facebook, MessageCircle, Menu, X, Star, ChevronRight, Users, Coffee, Music, Award, ShoppingCart, Plus, Minus, Trash2, Check, ExternalLink } from 'lucide-react';
 import { ThemeConfig, getGoogleFontsUrl } from '@/lib/themes';
 import { formatPrice, formatWhatsAppUrl } from '@/lib/utils';
+import { getGoogleMapsEmbedUrl } from '@/lib/maps';
 import type { SiteData, MenuItem, MenuCategory } from './RestaurantSite';
 
 const PRIMARY = '#004527';
@@ -1010,24 +1011,61 @@ function ContactSection({ data, theme }: { data: SiteData; theme: ThemeConfig })
           </div>
 
           {/* Map placeholder */}
-          <div style={{ borderRadius: 24, overflow: 'hidden', height: 400, background: `linear-gradient(135deg, ${primary}10, ${ACCENT}10)`, display: 'flex', alignItems: 'center', justifyContent: 'center', border: `1px solid ${primary}15` }}>
-            {organization.mapUrl ? (
-              <iframe
-                src={organization.mapUrl}
-                width="100%"
-                height="100%"
-                style={{ border: 0 }}
-                allowFullScreen
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-              />
-            ) : (
-              <div style={{ textAlign: 'center' }}>
-                <MapPin size={40} color={`${primary}60`} />
-                <p style={{ fontFamily: body, fontSize: 14, color: `${TEXT}66`, marginTop: 12 }}>Xəritə əlavə edilməyib</p>
+          {(() => {
+            const mapEmbedSrc = organization.mapEmbedUrl || getGoogleMapsEmbedUrl(organization.mapUrl, organization.address, organization.city, organization.name);
+            return (
+              <div style={{ borderRadius: 24, overflow: 'hidden', height: 400, background: `linear-gradient(135deg, ${primary}10, ${ACCENT}10)`, display: 'flex', alignItems: 'center', justifyContent: 'center', border: `1px solid ${primary}15`, position: 'relative' }}>
+                {mapEmbedSrc ? (
+                  <>
+                    <iframe
+                      src={mapEmbedSrc}
+                      width="100%"
+                      height="100%"
+                      style={{ border: 0 }}
+                      allowFullScreen
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                      title="Google Maps"
+                    />
+                    {organization.mapUrl && (
+                      <a
+                        href={organization.mapUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          position: 'absolute',
+                          bottom: 12,
+                          right: 12,
+                          background: 'rgba(255,255,255,0.95)',
+                          color: TEXT,
+                          padding: '6px 12px',
+                          borderRadius: 10,
+                          fontSize: 12,
+                          fontWeight: 600,
+                          fontFamily: body,
+                          textDecoration: 'none',
+                          boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 6,
+                          backdropFilter: 'blur(4px)',
+                          transition: 'all 0.2s',
+                        }}
+                      >
+                        <ExternalLink size={13} color={primary} />
+                        Xəritədə aç
+                      </a>
+                    )}
+                  </>
+                ) : (
+                  <div style={{ textAlign: 'center' }}>
+                    <MapPin size={40} color={`${primary}60`} />
+                    <p style={{ fontFamily: body, fontSize: 14, color: `${TEXT}66`, marginTop: 12 }}>Xəritə əlavə edilməyib</p>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
+            );
+          })()}
         </div>
       </div>
 

@@ -67,7 +67,7 @@ export interface SiteData {
   organization: {
     id?: string;
     name: string; slug: string; logo?: string; description?: string;
-    phone?: string; email?: string; address?: string; city?: string; mapUrl?: string; currency: string;
+    phone?: string; email?: string; address?: string; city?: string; mapUrl?: string; mapEmbedUrl?: string; currency: string;
     siteCategory?: string;
     siteSubcategory?: string;
   };

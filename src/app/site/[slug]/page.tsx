@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import RestaurantSite from '@/components/themes/RestaurantSite';
 import { SplashConfig } from '@/components/themes/SplashScreen';
 import { prisma } from '@/lib/db';
+import { resolveGoogleMapsEmbedUrl } from '@/lib/maps';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -10,7 +11,7 @@ export const revalidate = 0;
 interface SiteData {
   organization: {
     name: string; slug: string; logo?: string; description?: string;
-    phone?: string; email?: string; address?: string; city?: string; mapUrl?: string; currency: string;
+    phone?: string; email?: string; address?: string; city?: string; mapUrl?: string; mapEmbedUrl?: string; currency: string;
   };
   website: {
     theme: Record<string, unknown>; pages: unknown; seoTitle?: string; seoDescription?: string; ogImage?: string;
@@ -112,6 +113,13 @@ async function getSiteData(slug: string): Promise<SiteData | null> {
 
     if (!org || !org.website?.isPublished) return null;
 
+    const mapEmbedUrl = await resolveGoogleMapsEmbedUrl(
+      org.mapUrl,
+      org.address,
+      org.city,
+      org.name
+    );
+
     return {
       organization: {
         id: org.id,
@@ -124,6 +132,7 @@ async function getSiteData(slug: string): Promise<SiteData | null> {
         address: org.address || undefined,
         city: org.city || undefined,
         mapUrl: org.mapUrl || undefined,
+        mapEmbedUrl: mapEmbedUrl || undefined,
         currency: org.currency,
         siteCategory: org.siteCategory || undefined,
         siteSubcategory: org.siteSubcategory || undefined,
