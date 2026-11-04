@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Plus, Pencil, Package, Layers, Trash2, X, Loader2, UtensilsCrossed,
   Tag, DollarSign, Eye, EyeOff, Star, Flame, Sparkles, Upload, ChevronDown, Film, AlertCircle,
-  Check, Search,
+  Check, Search, FileJson, Download,
 } from 'lucide-react';
 import { isFoodCategory, isMenuActive } from '@/modules/navigation';
 import { parseSetItems, serializeSetItems, formatSetSummary, type SetItemEntry } from '@/lib/set-dishes';
@@ -64,6 +64,12 @@ export default function MenuPage() {
   const [customSetDishPortion, setCustomSetDishPortion] = useState('');
   const [customSetDishQty, setCustomSetDishQty] = useState(1);
   const [menuFilter, setMenuFilter] = useState<'all' | 'single' | 'sets'>('all');
+  const [showJsonModal, setShowJsonModal] = useState(false);
+  const [jsonText, setJsonText] = useState('');
+  const [jsonMode, setJsonMode] = useState<'append' | 'replace'>('append');
+  const [jsonImporting, setJsonImporting] = useState(false);
+  const [jsonError, setJsonError] = useState('');
+  const [jsonSuccess, setJsonSuccess] = useState('');
 
   useEffect(() => {
     if (!orgId) return;
@@ -328,6 +334,91 @@ export default function MenuPage() {
     if (heroDishId === id) setHeroDishId(null);
   };
 
+  const importJson = async () => {
+    if (!orgId || !jsonText.trim()) return;
+    setJsonError('');
+    setJsonSuccess('');
+    let parsed: any;
+    try {
+      parsed = JSON.parse(jsonText);
+    } catch {
+      setJsonError('JSON formatı yanlışdır. Zəhmət olmasa yoxlayın.');
+      return;
+    }
+    if (!parsed.categories || !Array.isArray(parsed.categories)) {
+      setJsonError('"categories" massivi tələb olunur.');
+      return;
+    }
+    setJsonImporting(true);
+    try {
+      const res = await fetch(`/api/organizations/${orgId}/menu/import`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...parsed, mode: jsonMode }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setJsonError(data.error || 'Xəta baş verdi');
+        return;
+      }
+      setJsonSuccess(`✅ ${data.createdCategories} kateqoriya, ${data.createdItems} yemək idxal edildi.`);
+      // Reload data
+      const [cats, its] = await Promise.all([
+        fetch(`/api/organizations/${orgId}/menu/categories`).then(r => r.json()),
+        fetch(`/api/organizations/${orgId}/menu/items`).then(r => r.json()),
+      ]);
+      setCategories(cats.categories || []);
+      setItems(its.items || []);
+      if (cats.categories?.[0]) setActiveCategory(cats.categories[0].id);
+      setJsonText('');
+    } catch (e: any) {
+      setJsonError(e?.message || 'Xəta baş verdi');
+    } finally {
+      setJsonImporting(false);
+    }
+  };
+
+  const JSON_EXAMPLE = JSON.stringify({
+    categories: [
+      {
+        name: 'Şorbalar',
+        description: 'İsti şorbalar',
+        isVisible: true,
+        items: [
+          {
+            name: 'Düşbərə',
+            description: 'Ənənəvi Azərbaycan şorbası',
+            price: 8.5,
+            discountPrice: null,
+            image: 'https://example.com/dushbara.jpg',
+            ingredients: 'Un, ət, soğan',
+            portionSize: '350ml',
+            allergens: 'Gluten',
+            prepTime: '15 dəq',
+            isFeatured: false,
+            isNew: true,
+            isPopular: false,
+            isVisible: true,
+          },
+        ],
+      },
+      {
+        name: 'Əsas Yemeklər',
+        isVisible: true,
+        items: [
+          {
+            name: 'Lülə Kabab',
+            price: 12,
+            discountPrice: 10,
+            isPopular: true,
+            isNew: false,
+            isVisible: true,
+          },
+        ],
+      },
+    ],
+  }, null, 2);
+
   const catItems = items.filter(i => i.categoryId === activeCategory);
   const currentHeroItem = items.find(i => i.id === heroDishId) || items.find(i => i.isFeatured) || null;
   const currentHeroCategory = currentHeroItem ? categories.find(c => c.id === currentHeroItem.categoryId) : null;
@@ -352,9 +443,18 @@ export default function MenuPage() {
           <h1 style={{ fontSize: 26, fontWeight: 700, color: '#E8E8F0' }}>Menyu</h1>
           <p style={{ color: '#8888A0', fontSize: 14 }}>{categories.length} kateqoriya · {items.length} yemək</p>
         </div>
-        <button onClick={() => openCatModal()} className="dash-btn-primary" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <Plus size={16} /> Kateqoriya əlavə et
-        </button>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button
+            onClick={() => { setShowJsonModal(true); setJsonError(''); setJsonSuccess(''); }}
+            className="dash-btn-secondary"
+            style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13 }}
+          >
+            <FileJson size={15} /> JSON idxal
+          </button>
+          <button onClick={() => openCatModal()} className="dash-btn-primary" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <Plus size={16} /> Kateqoriya əlavə et
+          </button>
+        </div>
       </div>
 
       {/* Günün Sevimli Təamı (Başlıq Kartı) Bloku */}
@@ -1404,6 +1504,135 @@ export default function MenuPage() {
                   style={{ fontSize: 13 }}
                 >
                   Bağla
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* JSON Import Modal */}
+      <AnimatePresence>
+        {showJsonModal && (
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}
+            onClick={() => setShowJsonModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              style={{ background: '#1A1A24', border: '1px solid #2A2A3A', borderRadius: 20, padding: 32, width: '100%', maxWidth: 680, maxHeight: '90vh', overflowY: 'auto' }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <FileJson size={22} color="#7C5CFC" />
+                  <h3 style={{ fontSize: 18, fontWeight: 700, color: '#E8E8F0' }}>JSON ilə Menyu İdxal</h3>
+                </div>
+                <button onClick={() => setShowJsonModal(false)} style={{ border: 'none', background: 'transparent', color: '#8888A0', cursor: 'pointer' }}><X size={20} /></button>
+              </div>
+
+              {/* JSON Format Info */}
+              <div style={{ background: 'rgba(124,92,252,0.08)', border: '1px solid rgba(124,92,252,0.25)', borderRadius: 12, padding: '14px 16px', marginBottom: 20 }}>
+                <p style={{ fontSize: 13, fontWeight: 600, color: '#A78BFA', marginBottom: 8 }}>📋 JSON Quruluş Nümunəsi:</p>
+                <pre style={{ fontSize: 11, color: '#9BA3AF', overflowX: 'auto', margin: 0, lineHeight: 1.6 }}>{JSON_EXAMPLE}</pre>
+              </div>
+
+              {/* Field Reference */}
+              <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid #2A2A3A', borderRadius: 10, padding: '12px 16px', marginBottom: 20 }}>
+                <p style={{ fontSize: 12, fontWeight: 600, color: '#8888A0', marginBottom: 8 }}>Sahə izahları (items içində):</p>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 20px', fontSize: 11, color: '#8888A0' }}>
+                  {[
+                    ['name *', 'Yemək adı (məcburidir)'],
+                    ['price', 'Qiymət (rekəm)'],
+                    ['discountPrice', 'Endirimli qiymət'],
+                    ['description', 'Təsvir'],
+                    ['image', 'Şəkil URL'],
+                    ['ingredients', 'Tərkib'],
+                    ['allergens', 'Allergen məlumatı'],
+                    ['portionSize', 'Porsiya ölçüsü'],
+                    ['prepTime', 'Hazırlanma vaxtı'],
+                    ['isNew', 'Yeni (true/false)'],
+                    ['isPopular', 'Populyar (true/false)'],
+                    ['isFeatured', 'Başlıq kartı (true/false)'],
+                    ['isVisible', 'Görünür (default: true)'],
+                  ].map(([k, v]) => (
+                    <div key={k} style={{ display: 'flex', gap: 6 }}>
+                      <code style={{ color: '#7C5CFC', fontWeight: 600 }}>{k}</code>
+                      <span>— {v}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Mode selector */}
+              <div style={{ marginBottom: 16 }}>
+                <label className="dash-label">İdxal rejimi</label>
+                <div style={{ display: 'flex', gap: 8, marginTop: 6 }}>
+                  <button
+                    type="button"
+                    onClick={() => setJsonMode('append')}
+                    style={{
+                      flex: 1, padding: '8px', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer',
+                      border: jsonMode === 'append' ? '1px solid #7C5CFC' : '1px solid #2A2A3A',
+                      background: jsonMode === 'append' ? 'rgba(124,92,252,0.2)' : 'rgba(255,255,255,0.02)',
+                      color: jsonMode === 'append' ? '#A78BFA' : '#8888A0',
+                    }}
+                  >
+                    ➕ Üstünə əlavə et
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setJsonMode('replace')}
+                    style={{
+                      flex: 1, padding: '8px', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer',
+                      border: jsonMode === 'replace' ? '1px solid #F87171' : '1px solid #2A2A3A',
+                      background: jsonMode === 'replace' ? 'rgba(248,113,113,0.1)' : 'rgba(255,255,255,0.02)',
+                      color: jsonMode === 'replace' ? '#F87171' : '#8888A0',
+                    }}
+                  >
+                    🔄 Mövcudu silib yenilə
+                  </button>
+                </div>
+                {jsonMode === 'replace' && (
+                  <p style={{ marginTop: 6, fontSize: 11, color: '#F87171' }}>⚠️ Bu rejim bütün mövcud kateqoriya və yeməkləri silir!</p>
+                )}
+              </div>
+
+              {/* JSON Textarea */}
+              <div style={{ marginBottom: 16 }}>
+                <label className="dash-label">JSON mətn</label>
+                <textarea
+                  className="dash-input"
+                  value={jsonText}
+                  onChange={(e) => { setJsonText(e.target.value); setJsonError(''); setJsonSuccess(''); }}
+                  placeholder={'{ "categories": [...] }'}
+                  rows={12}
+                  style={{ resize: 'vertical', fontFamily: 'monospace', fontSize: 12, marginTop: 6 }}
+                />
+              </div>
+
+              {jsonError && (
+                <div style={{ background: 'rgba(248,113,113,0.1)', border: '1px solid rgba(248,113,113,0.3)', borderRadius: 8, padding: '10px 14px', marginBottom: 14, fontSize: 13, color: '#F87171' }}>
+                  ❌ {jsonError}
+                </div>
+              )}
+              {jsonSuccess && (
+                <div style={{ background: 'rgba(52,211,153,0.1)', border: '1px solid rgba(52,211,153,0.3)', borderRadius: 8, padding: '10px 14px', marginBottom: 14, fontSize: 13, color: '#34D399' }}>
+                  {jsonSuccess}
+                </div>
+              )}
+
+              <div style={{ display: 'flex', gap: 12 }}>
+                <button onClick={() => setShowJsonModal(false)} className="dash-btn-secondary" style={{ flex: 1 }}>Ləğv et</button>
+                <button
+                  onClick={importJson}
+                  disabled={jsonImporting || !jsonText.trim()}
+                  className="dash-btn-primary"
+                  style={{ flex: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
+                >
+                  {jsonImporting ? <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} /> : <Download size={16} />}
+                  {jsonImporting ? 'İdxal edilir...' : 'İdxal et'}
                 </button>
               </div>
             </motion.div>
