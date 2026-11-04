@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
-import { Phone, MapPin, Clock, Instagram, Facebook, MessageCircle, Menu, X, Star, ChevronRight, Users, Coffee, Music, Award } from 'lucide-react';
+import { Phone, MapPin, Clock, Instagram, Facebook, MessageCircle, Menu, X, Star, ChevronRight, Users, Coffee, Music, Award, ShoppingCart, Plus, Minus, Trash2, Check } from 'lucide-react';
 import { ThemeConfig, getGoogleFontsUrl } from '@/lib/themes';
 import { formatPrice, formatWhatsAppUrl } from '@/lib/utils';
 import type { SiteData, MenuItem, MenuCategory } from './RestaurantSite';
@@ -445,7 +445,7 @@ function AboutSection({ data, theme }: { data: SiteData; theme: ThemeConfig }) {
 }
 
 // ─── Menu Section ────────────────────────────────────────────────────────────
-function MenuSection({ data, theme }: { data: SiteData; theme: ThemeConfig }) {
+function MenuSection({ data, theme, cart, onAddToCart, onOpenCart }: { data: SiteData; theme: ThemeConfig; cart: Record<string, { item: MenuItem; quantity: number }>; onAddToCart: (item: MenuItem) => void; onOpenCart: () => void; }) {
   const { organization, menuCategories } = data;
   const primary = theme.primaryColor || PRIMARY;
   const heading = theme.headingFont || 'Playfair Display';
@@ -496,7 +496,7 @@ function MenuSection({ data, theme }: { data: SiteData; theme: ThemeConfig }) {
         {items.length > 0 ? (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
             {items.map(item => (
-              <MenuCard key={item.id} item={item} theme={theme} currency={organization.currency} />
+              <MenuCard key={item.id} item={item} theme={theme} currency={organization.currency} data={data} cart={cart} onAddToCart={onAddToCart} onOpenCart={onOpenCart} />
             ))}
           </div>
         ) : (
@@ -518,11 +518,22 @@ function MenuSection({ data, theme }: { data: SiteData; theme: ThemeConfig }) {
   );
 }
 
-function MenuCard({ item, theme, currency }: { item: MenuItem; theme: ThemeConfig; currency: string }) {
+function MenuCard({ item, theme, currency, data, cart, onAddToCart, onOpenCart }: { item: MenuItem; theme: ThemeConfig; currency: string; data: SiteData; cart: Record<string, { item: MenuItem; quantity: number }>; onAddToCart: (item: MenuItem) => void; onOpenCart: () => void; }) {
   const primary = theme.primaryColor || PRIMARY;
   const heading = theme.headingFont || 'Playfair Display';
   const body = theme.bodyFont || 'Plus Jakarta Sans';
   const price = item.discountPrice || item.price;
+  const inCart = !!cart[item.id];
+  const qty = cart[item.id]?.quantity || 0;
+  const whatsapp = data.whatsapp;
+
+  const orderViaWhatsApp = () => {
+    if (!whatsapp?.phoneNumber) return;
+    const p = item.discountPrice || item.price;
+    const msg = `Salam! 1 ədəd *${item.name}* sifariş etmək istəyirəm.\nQiymət: ${p.toFixed(2)} ${data.organization.currency || 'AZN'}`;
+    const url = formatWhatsAppUrl(whatsapp.countryCode, whatsapp.phoneNumber, msg);
+    window.open(url, '_blank');
+  };
 
   return (
     <div style={{ background: '#fff', borderRadius: 20, overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,0.06)', border: `1px solid ${primary}08`, transition: 'transform 0.2s, box-shadow 0.2s' }}
@@ -546,13 +557,51 @@ function MenuCard({ item, theme, currency }: { item: MenuItem; theme: ThemeConfi
         {item.description && (
           <p style={{ fontFamily: body, fontSize: 13, color: `${TEXT}88`, lineHeight: 1.5, marginBottom: 12 }}>{item.description}</p>
         )}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
           <div>
             <span style={{ fontFamily: heading, fontWeight: 800, fontSize: 18, color: primary }}>{formatPrice(price, currency)}</span>
             {item.discountPrice && item.price > item.discountPrice && (
               <span style={{ fontFamily: body, fontSize: 13, color: `${TEXT}55`, textDecoration: 'line-through', marginLeft: 8 }}>{formatPrice(item.price, currency)}</span>
             )}
           </div>
+          {inCart && (
+            <span style={{ background: `${primary}15`, color: primary, borderRadius: 100, padding: '2px 10px', fontSize: 11, fontWeight: 700 }}>
+              {qty} ədəd
+            </span>
+          )}
+        </div>
+        {/* Action buttons */}
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button
+            onClick={() => { onAddToCart(item); onOpenCart(); }}
+            style={{
+              flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+              background: inCart ? primary : `${primary}12`,
+              color: inCart ? '#fff' : primary,
+              border: `1.5px solid ${primary}30`,
+              borderRadius: 10, padding: '9px 12px',
+              fontFamily: body, fontSize: 13, fontWeight: 700, cursor: 'pointer',
+              transition: 'all 0.2s',
+            }}
+          >
+            {inCart ? <Check size={15} /> : <ShoppingCart size={15} />}
+            {inCart ? 'Səbətə əlavə edildi' : 'Səbətə əlavə et'}
+          </button>
+          {whatsapp?.isEnabled && whatsapp.phoneNumber && (
+            <button
+              onClick={orderViaWhatsApp}
+              title="WhatsApp ilə sifariş et"
+              style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                background: '#25D36615', color: '#25D366',
+                border: '1.5px solid #25D36630',
+                borderRadius: 10, padding: '9px 12px',
+                cursor: 'pointer', transition: 'all 0.2s',
+              }}
+            >
+              <MessageCircle size={16} />
+            </button>
+          )}
         </div>
       </div>
     </div>
@@ -1048,11 +1097,170 @@ function WhatsAppFloat({ data, theme }: { data: SiteData; theme: ThemeConfig }) 
   );
 }
 
+// ─── Cart Drawer ─────────────────────────────────────────────────────────────
+function CartDrawer({
+  isOpen, onClose, cart, onUpdateQty, onRemove, onClear,
+  theme, whatsapp, currency, restaurantName,
+}: {
+  isOpen: boolean; onClose: () => void;
+  cart: Record<string, { item: MenuItem; quantity: number }>;
+  onUpdateQty: (id: string, qty: number) => void;
+  onRemove: (id: string) => void;
+  onClear: () => void;
+  theme: ThemeConfig; whatsapp: SiteData['whatsapp'];
+  currency: string; restaurantName: string;
+}) {
+  const primary = theme.primaryColor || PRIMARY;
+  const body = theme.bodyFont || 'Plus Jakarta Sans';
+  const heading = theme.headingFont || 'Playfair Display';
+  const [note, setNote] = useState('');
+  const entries = Object.values(cart);
+  const totalCount = entries.reduce((s, e) => s + e.quantity, 0);
+  const totalSum = entries.reduce((s, e) => s + (e.item.discountPrice || e.item.price) * e.quantity, 0);
+
+  const buildWhatsAppUrl = () => {
+    if (!whatsapp?.phoneNumber) return '#';
+    let text = `Salam! *${restaurantName}* üçün sifariş vermek isteyirem:\n\n🍽️ *SİFARİŞİM:*\n`;
+    entries.forEach((e, idx) => {
+      const p = e.item.discountPrice || e.item.price;
+      text += `${idx + 1}. *${e.item.name}* — ${e.quantity} ədəd x ${p.toFixed(2)} ${currency} = ${(p * e.quantity).toFixed(2)} ${currency}\n`;
+    });
+    text += `\n💰 *CƏMİ:* ${totalSum.toFixed(2)} ${currency}`;
+    if (note.trim()) text += `\n📝 *Qeyd:* ${note.trim()}`;
+    return formatWhatsAppUrl(whatsapp.countryCode, whatsapp.phoneNumber, text);
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div
+      style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 1100, display: 'flex', justifyContent: 'flex-end' }}
+      onClick={onClose}
+    >
+      <div
+        onClick={e => e.stopPropagation()}
+        style={{
+          background: '#fff', width: '100%', maxWidth: 420, height: '100%',
+          display: 'flex', flexDirection: 'column', boxShadow: '-8px 0 32px rgba(0,0,0,0.15)',
+        }}
+      >
+        <div style={{ padding: '20px 24px', borderBottom: `1px solid ${primary}20`, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <ShoppingCart size={22} color={primary} />
+            <h3 style={{ fontFamily: heading, fontSize: 20, fontWeight: 800, color: '#1a1a1a', margin: 0 }}>Səbətiniz</h3>
+            <span style={{ background: `${primary}20`, color: primary, fontSize: 12, fontWeight: 700, padding: '2px 8px', borderRadius: 100 }}>{totalCount}</span>
+          </div>
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+            {entries.length > 0 && (
+              <button onClick={onClear} style={{ border: 'none', background: 'transparent', color: '#F87171', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>Təmizlə</button>
+            )}
+            <button onClick={onClose} style={{ border: 'none', background: '#f0f0f0', borderRadius: '50%', width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+              <X size={16} color="#555" />
+            </button>
+          </div>
+        </div>
+
+        <div style={{ flex: 1, overflowY: 'auto', padding: 20, display: 'flex', flexDirection: 'column', gap: 12 }}>
+          {entries.length === 0 ? (
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 40, textAlign: 'center' }}>
+              <ShoppingCart size={48} style={{ display: 'block', marginBottom: 16, opacity: 0.2 }} color={primary} />
+              <p style={{ fontFamily: body, fontSize: 15, color: '#888', margin: 0 }}>Səbət boşdur</p>
+              <p style={{ fontFamily: body, fontSize: 13, color: '#aaa', marginTop: 6 }}>Menyudan məhsul seçin</p>
+            </div>
+          ) : (
+            entries.map(({ item, quantity }) => (
+              <div key={item.id} style={{ display: 'flex', gap: 12, padding: 12, background: '#f9f9f9', borderRadius: 12, alignItems: 'center' }}>
+                {item.image && <img src={item.image} alt={item.name} style={{ width: 52, height: 52, borderRadius: 8, objectFit: 'cover', flexShrink: 0 }} />}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ fontFamily: body, fontSize: 13, fontWeight: 700, color: '#1a1a1a', margin: '0 0 4px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.name}</p>
+                  <p style={{ fontFamily: body, fontSize: 12, color: primary, fontWeight: 700, margin: 0 }}>{((item.discountPrice || item.price) * quantity).toFixed(2)} {currency}</p>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
+                  <button onClick={() => onUpdateQty(item.id, quantity - 1)} style={{ width: 28, height: 28, border: `1px solid ${primary}30`, background: '#fff', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+                    <Minus size={12} color={primary} />
+                  </button>
+                  <span style={{ fontFamily: body, fontWeight: 700, fontSize: 14, minWidth: 20, textAlign: 'center' }}>{quantity}</span>
+                  <button onClick={() => onUpdateQty(item.id, quantity + 1)} style={{ width: 28, height: 28, border: 'none', background: primary, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+                    <Plus size={12} color="#fff" />
+                  </button>
+                  <button onClick={() => onRemove(item.id)} style={{ width: 28, height: 28, border: 'none', background: '#FEE2E2', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', marginLeft: 4 }}>
+                    <Trash2 size={12} color="#EF4444" />
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {entries.length > 0 && (
+          <div style={{ padding: '16px 20px', borderTop: `1px solid ${primary}15`, display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <textarea
+              value={note}
+              onChange={e => setNote(e.target.value)}
+              placeholder="Qeyd (isteɣe bağlı)..."
+              rows={2}
+              style={{ width: '100%', border: `1px solid ${primary}25`, borderRadius: 10, padding: '10px 12px', fontFamily: body, fontSize: 13, resize: 'none', outline: 'none', boxSizing: 'border-box' }}
+            />
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontFamily: body, fontSize: 14, color: '#555' }}>Cəmi</span>
+              <span style={{ fontFamily: heading, fontSize: 20, fontWeight: 800, color: primary }}>{totalSum.toFixed(2)} {currency}</span>
+            </div>
+            {whatsapp?.isEnabled && whatsapp.phoneNumber ? (
+              <a
+                href={buildWhatsAppUrl()}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                  background: '#25D366', color: '#fff',
+                  borderRadius: 12, padding: '14px', textDecoration: 'none',
+                  fontFamily: body, fontSize: 15, fontWeight: 700,
+                }}
+              >
+                <MessageCircle size={18} />
+                WhatsApp ilə sifariş et
+              </a>
+            ) : (
+              <div style={{ textAlign: 'center', fontFamily: body, fontSize: 13, color: '#aaa', padding: '8px' }}>
+                WhatsApp sifarisi aktiv deyil
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function RandevuCafeSite({ data, theme }: { data: SiteData; theme: ThemeConfig }) {
   const [activeSection, setActiveSection] = useState('hero');
+  const [cart, setCart] = useState<Record<string, { item: MenuItem; quantity: number }>>({});
+  const [isCartOpen, setIsCartOpen] = useState(false);
   const fontsUrl = getGoogleFontsUrl(theme);
   const hasGallery = Boolean(data.galleryItems && data.galleryItems.length > 0);
+
+  const addToCart = (item: MenuItem) => {
+    setCart(prev => {
+      const existing = prev[item.id];
+      return { ...prev, [item.id]: { item, quantity: (existing?.quantity || 0) + 1 } };
+    });
+  };
+
+  const updateCartQty = (id: string, qty: number) => {
+    if (qty <= 0) {
+      setCart(prev => { const n = { ...prev }; delete n[id]; return n; });
+    } else {
+      setCart(prev => ({ ...prev, [id]: { ...prev[id], quantity: qty } }));
+    }
+  };
+
+  const removeFromCart = (id: string) => {
+    setCart(prev => { const n = { ...prev }; delete n[id]; return n; });
+  };
+
+  const clearCart = () => setCart({});
+  const cartCount = Object.values(cart).reduce((s, e) => s + e.quantity, 0);
 
   useEffect(() => {
     const sections = ['hero', 'about', 'menu', 'offers', ...(hasGallery ? ['gallery'] : []), 'reservation', 'contact'];
@@ -1081,13 +1289,50 @@ export default function RandevuCafeSite({ data, theme }: { data: SiteData; theme
         <Header data={data} theme={theme} activeSection={activeSection} />
         <HeroSection data={data} theme={theme} />
         <AboutSection data={data} theme={theme} />
-        <MenuSection data={data} theme={theme} />
+        <MenuSection data={data} theme={theme} cart={cart} onAddToCart={addToCart} onOpenCart={() => setIsCartOpen(true)} />
         <OffersSection theme={theme} />
         {hasGallery && <GallerySection theme={theme} items={data.galleryItems} />}
         <ReservationSection data={data} theme={theme} />
         <ContactSection data={data} theme={theme} />
         <Footer data={data} theme={theme} />
         <WhatsAppFloat data={data} theme={theme} />
+        {/* Floating Cart Button */}
+        {cartCount > 0 && (
+          <button
+            onClick={() => setIsCartOpen(true)}
+            style={{
+              position: 'fixed', bottom: 90, right: 24, zIndex: 998,
+              background: theme.primaryColor || PRIMARY,
+              color: '#fff', border: 'none', borderRadius: '50%',
+              width: 56, height: 56, display: 'flex', alignItems: 'center', justifyContent: 'center',
+              cursor: 'pointer', boxShadow: `0 4px 20px ${(theme.primaryColor || PRIMARY)}60`,
+              transition: 'transform 0.2s',
+            }}
+            onMouseEnter={e => (e.currentTarget as HTMLElement).style.transform = 'scale(1.1)'}
+            onMouseLeave={e => (e.currentTarget as HTMLElement).style.transform = 'scale(1)'}
+          >
+            <ShoppingCart size={24} />
+            <span style={{
+              position: 'absolute', top: 2, right: 2,
+              background: '#EF4444', color: '#fff',
+              borderRadius: '50%', width: 20, height: 20,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 11, fontWeight: 800,
+            }}>{cartCount}</span>
+          </button>
+        )}
+        <CartDrawer
+          isOpen={isCartOpen}
+          onClose={() => setIsCartOpen(false)}
+          cart={cart}
+          onUpdateQty={updateCartQty}
+          onRemove={removeFromCart}
+          onClear={clearCart}
+          theme={theme}
+          whatsapp={data.whatsapp}
+          currency={data.organization.currency || 'AZN'}
+          restaurantName={data.organization.name}
+        />
       </div>
     </>
   );
