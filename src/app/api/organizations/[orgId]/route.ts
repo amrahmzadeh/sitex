@@ -36,6 +36,7 @@ export async function GET(
         whatsappSettings: true,
         socialLinks: { orderBy: { sortOrder: 'asc' } },
         galleryItems: { orderBy: { sortOrder: 'asc' } },
+        packages: { orderBy: { sortOrder: 'asc' } },
         workingHours: { orderBy: { dayOfWeek: 'asc' } },
         menuCategories: {
           orderBy: { sortOrder: 'asc' },

@@ -9,6 +9,7 @@ import {
   Package,
   Image,
   Images,
+  Layers,
   MessageCircle,
   QrCode,
   BarChart3,
@@ -195,6 +196,8 @@ export const dashboardNavItems: NavItemConfig[] = [
   { id: 'theme', href: '/dashboard/theme', icon: Palette, label: 'Tema Redaktoru', adminOnly: true },
   { id: 'social', href: '/dashboard/social', icon: Share2, label: 'Sosial Media' },
   { id: 'gallery', href: '/dashboard/gallery', icon: Images, label: 'Qalareya' },
+  { id: 'packages', href: '/dashboard/packages', icon: Package, label: 'Paketlər' },
+  { id: 'site-modules', href: '/dashboard/site-modules', icon: Layers, label: 'Sayt Modulları' },
   { id: 'splash', href: '/dashboard/splash', icon: Sparkles, label: 'Splash Screen', adminOnly: true },
   {
     id: 'menu',

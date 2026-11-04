@@ -28,6 +28,29 @@ export interface GalleryItem {
   isVisible?: boolean;
 }
 
+export interface PackageItem {
+  id: string;
+  name: string;
+  title?: string | null;
+  description?: string | null;
+  fullDescription?: string | null;
+  price?: number | null;
+  discountPrice?: number | null;
+  image?: string | null;
+  features?: string[];
+  tag?: string | null;
+  badgeText?: string | null;
+  isActive: boolean;
+  sortOrder: number;
+}
+
+export interface ModuleSettings {
+  menu?: boolean;
+  packages?: boolean;
+  gallery?: boolean;
+  contact?: boolean;
+}
+
 export interface MenuItem {
   id: string; name: string; slug: string; description?: string; price: number; discountPrice?: number;
   image?: string; video?: string; isFeatured: boolean; isNew: boolean; isPopular: boolean;
@@ -63,6 +86,8 @@ export interface SiteData {
   socialLinks: Array<{ platform: string; url: string }>;
   socialFeedPosts?: Array<any>;
   galleryItems?: GalleryItem[];
+  packages?: PackageItem[];
+  moduleSettings?: ModuleSettings;
   workingHours: Array<{ dayOfWeek: number; openTime?: string; closeTime?: string; isClosed: boolean }>;
   menuCategories: MenuCategory[];
 }

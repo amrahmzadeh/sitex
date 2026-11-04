@@ -35,14 +35,19 @@ function Header({ data, theme, activeSection }: { data: SiteData; theme: ThemeCo
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const hasGallery = Boolean(data.galleryItems && data.galleryItems.length > 0);
+  const moduleSettings = data.moduleSettings || {};
+  const showMenu = moduleSettings.menu !== false;
+  const showPackages = moduleSettings.packages !== false;
+  const showGallery = moduleSettings.gallery !== false && Boolean(data.galleryItems && data.galleryItems.length > 0);
+  const showContact = moduleSettings.contact !== false;
+
   const navLinks = [
     { id: 'hero', label: 'Ana Səhifə' },
     { id: 'about', label: 'Haqqımızda' },
-    { id: 'menu', label: 'Menyu' },
-    { id: 'offers', label: 'Təkliflər' },
-    ...(hasGallery ? [{ id: 'gallery', label: 'Qalereya' }] : []),
-    { id: 'reservation', label: 'Rezervasiya' },
+    ...(showMenu ? [{ id: 'menu', label: 'Menyu' }] : []),
+    ...(showPackages ? [{ id: 'offers', label: 'Təkliflər' }] : []),
+    ...(showGallery ? [{ id: 'gallery', label: 'Qalereya' }] : []),
+    ...(showContact ? [{ id: 'reservation', label: 'Rezervasiya' }] : []),
     { id: 'contact', label: 'Əlaqə' },
   ];
 
@@ -109,12 +114,14 @@ function Header({ data, theme, activeSection }: { data: SiteData; theme: ThemeCo
               <Phone size={14} /> {organization.phone}
             </a>
           )}
-          <button
-            onClick={() => scrollTo('reservation')}
-            style={{ background: primary, color: '#fff', border: 'none', borderRadius: 100, padding: '10px 20px', fontFamily: body, fontSize: 13, fontWeight: 700, cursor: 'pointer' }}
-          >
-            Rezervasiya
-          </button>
+          {showContact && (
+            <button
+              onClick={() => scrollTo('reservation')}
+              style={{ background: primary, color: '#fff', border: 'none', borderRadius: 100, padding: '10px 20px', fontFamily: body, fontSize: 13, fontWeight: 700, cursor: 'pointer' }}
+            >
+              Rezervasiya
+            </button>
+          )}
           <button
             onClick={() => setOpen(!open)}
             style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'none', color: TEXT }}
@@ -609,48 +616,80 @@ function MenuCard({ item, theme, currency, data, cart, onAddToCart, onOpenCart }
 }
 
 // ─── Special Offers Section ──────────────────────────────────────────────────
-function OffersSection({ theme }: { theme: ThemeConfig }) {
+function OffersSection({ data, theme }: { data?: SiteData; theme: ThemeConfig }) {
   const primary = theme.primaryColor || PRIMARY;
   const secondary = theme.secondaryColor || SECONDARY;
   const heading = theme.headingFont || 'Playfair Display';
   const body = theme.bodyFont || 'Plus Jakarta Sans';
+  const currency = data?.organization?.currency || 'AZN';
 
   const badge = theme.offersBadgeText || 'ÖZƏL FÜRSƏTLƏR';
-  const headline = theme.offersHeadline || 'Xüsusi Təkliflər';
-  const subtitle = theme.offersSubtitle || 'Eksklüziv dəyər paketləri ilə hər anınızı daha dadlı edin.';
+  const headline = theme.offersHeadline || 'Xüsusi Təkliflər və Paketlər';
+  const subtitle = theme.offersSubtitle || 'Eksklüziv dəyər paketləri ilə hər anınızı daha dadlı və sərfəli edin.';
 
-  const offers = [
-    {
-      tag: theme.offer1Tag || 'HƏFTƏ İÇİ',
-      time: theme.offer1Time || '12:00 - 15:00',
-      title: theme.offer1Title || 'Biznes Nahar',
-      desc: theme.offer1Desc || 'Günün şorbası, ləziz isti yemək, təzə mövsüm salatı və içki.',
-      price: theme.offer1Price || '12.00 ₼',
-      oldPrice: undefined as string | undefined,
-      label: undefined as string | undefined,
-      gradient: `linear-gradient(135deg, ${primary} 0%, #006040 100%)`,
-    },
-    {
-      tag: theme.offer2Tag || 'HƏFTƏSONU',
-      time: undefined,
-      title: theme.offer2Title || 'Ailəvi Paket',
-      desc: theme.offer2Desc || '4 nəfərlik zəngin süfrə: qarışıq kabab seti, çay və desert.',
-      price: theme.offer2Price || '55.00 ₼',
-      oldPrice: theme.offer2OldPrice,
-      label: theme.offer2Label || '4 Nəfərlik',
-      gradient: `linear-gradient(135deg, ${secondary} 0%, #7a1a1d 100%)`,
-    },
-    {
-      tag: theme.offer3Tag || 'TƏNTƏNƏLİ GÜNLƏR',
-      time: undefined,
-      title: theme.offer3Title || 'Ad Günü & Özəl Günlər',
-      desc: theme.offer3Desc || 'VIP Lounge otağı, tematik masa dekorasiyası, fotozona.',
-      price: undefined as string | undefined,
-      oldPrice: undefined,
-      label: theme.offer3Label || 'VIP Xidmət',
-      gradient: `linear-gradient(135deg, ${ACCENT} 0%, #4a3c00 100%)`,
-    },
+  const defaultGradients = [
+    `linear-gradient(135deg, ${primary} 0%, #006040 100%)`,
+    `linear-gradient(135deg, ${secondary} 0%, #7a1a1d 100%)`,
+    `linear-gradient(135deg, ${ACCENT} 0%, #4a3c00 100%)`,
   ];
+
+  const dbPackages = data?.packages && data.packages.length > 0 ? data.packages : null;
+
+  const offers = dbPackages
+    ? dbPackages.map((pkg, i) => {
+        const p = pkg.discountPrice ?? pkg.price;
+        const oldP = pkg.discountPrice && pkg.price ? pkg.price : undefined;
+        return {
+          tag: pkg.tag || 'XÜSUSİ TƏKLİF',
+          time: undefined as string | undefined,
+          title: pkg.title || pkg.name,
+          desc: pkg.description || '',
+          price: p !== null && p !== undefined ? formatPrice(p, currency) : undefined,
+          oldPrice: oldP !== null && oldP !== undefined ? formatPrice(oldP, currency) : undefined,
+          label: pkg.badgeText || undefined,
+          gradient: defaultGradients[i % defaultGradients.length],
+          image: pkg.image || undefined,
+          features: Array.isArray(pkg.features) ? pkg.features : [],
+        };
+      })
+    : [
+        {
+          tag: theme.offer1Tag || 'HƏFTƏ İÇİ',
+          time: theme.offer1Time || '12:00 - 15:00',
+          title: theme.offer1Title || 'Biznes Nahar',
+          desc: theme.offer1Desc || 'Günün şorbası, ləziz isti yemək, təzə mövsüm salatı və içki.',
+          price: theme.offer1Price || '12.00 ₼',
+          oldPrice: undefined as string | undefined,
+          label: undefined as string | undefined,
+          gradient: `linear-gradient(135deg, ${primary} 0%, #006040 100%)`,
+          image: undefined as string | undefined,
+          features: [] as string[],
+        },
+        {
+          tag: theme.offer2Tag || 'HƏFTƏSONU',
+          time: undefined,
+          title: theme.offer2Title || 'Ailəvi Paket',
+          desc: theme.offer2Desc || '4 nəfərlik zəngin süfrə: qarışıq kabab seti, çay və desert.',
+          price: theme.offer2Price || '55.00 ₼',
+          oldPrice: theme.offer2OldPrice,
+          label: theme.offer2Label || '4 Nəfərlik',
+          gradient: `linear-gradient(135deg, ${secondary} 0%, #7a1a1d 100%)`,
+          image: undefined as string | undefined,
+          features: [] as string[],
+        },
+        {
+          tag: theme.offer3Tag || 'TƏNTƏNƏLİ GÜNLƏR',
+          time: undefined,
+          title: theme.offer3Title || 'Ad Günü & Özəl Günlər',
+          desc: theme.offer3Desc || 'VIP Lounge otağı, tematik masa dekorasiyası, fotozona.',
+          price: undefined as string | undefined,
+          oldPrice: undefined,
+          label: theme.offer3Label || 'VIP Xidmət',
+          gradient: `linear-gradient(135deg, ${ACCENT} 0%, #4a3c00 100%)`,
+          image: undefined as string | undefined,
+          features: [] as string[],
+        },
+      ];
 
   return (
     <section id="offers" style={{ padding: '100px 20px', background: '#1a1c1a' }}>
@@ -661,12 +700,19 @@ function OffersSection({ theme }: { theme: ThemeConfig }) {
           <p style={{ fontFamily: body, fontSize: 16, color: 'rgba(255,255,255,0.6)', maxWidth: 560, margin: '0 auto' }}>{subtitle}</p>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 24 }}>
           {offers.map((offer, i) => (
             <div
               key={i}
               style={{ borderRadius: 24, overflow: 'hidden', background: offer.gradient, padding: '32px 28px', display: 'flex', flexDirection: 'column', gap: 16, position: 'relative' }}
             >
+              {offer.image && (
+                <img
+                  src={offer.image}
+                  alt={offer.title}
+                  style={{ width: '100%', height: 160, objectFit: 'cover', borderRadius: 16, marginBottom: 4 }}
+                />
+              )}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <span style={{ background: 'rgba(255,255,255,0.2)', color: '#fff', borderRadius: 8, padding: '4px 12px', fontFamily: body, fontSize: 11, fontWeight: 700, letterSpacing: '0.06em' }}>{offer.tag}</span>
                 {offer.label && (
@@ -679,33 +725,38 @@ function OffersSection({ theme }: { theme: ThemeConfig }) {
                 </div>
               )}
               <h3 style={{ fontFamily: heading, fontSize: 24, fontWeight: 800, color: '#fff', margin: 0 }}>{offer.title}</h3>
-              <p style={{ fontFamily: body, fontSize: 14, color: 'rgba(255,255,255,0.75)', lineHeight: 1.6, margin: 0 }}>{offer.desc}</p>
-              {(offer.price || offer.oldPrice) && (
-                <div style={{ marginTop: 'auto', paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.2)' }}>
+              {offer.desc && <p style={{ fontFamily: body, fontSize: 14, color: 'rgba(255,255,255,0.75)', lineHeight: 1.6, margin: 0 }}>{offer.desc}</p>}
+
+              {offer.features && offer.features.length > 0 && (
+                <ul style={{ margin: '8px 0 0', padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  {offer.features.map((feat, fIdx) => (
+                    <li key={fIdx} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'rgba(255,255,255,0.85)', fontFamily: body }}>
+                      <Check size={14} color="#34D399" style={{ flexShrink: 0 }} />
+                      <span>{feat}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              <div style={{ marginTop: 'auto', paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10 }}>
+                <div>
                   {offer.price && <span style={{ fontFamily: heading, fontWeight: 800, fontSize: 28, color: '#fff' }}>{offer.price}</span>}
                   {offer.oldPrice && <span style={{ fontFamily: body, fontSize: 15, color: 'rgba(255,255,255,0.5)', textDecoration: 'line-through', marginLeft: 10 }}>{offer.oldPrice}</span>}
                 </div>
-              )}
-              {!offer.price && (
-                <div style={{ marginTop: 'auto' }}>
-                  <button
-                    onClick={() => document.getElementById('reservation')?.scrollIntoView({ behavior: 'smooth' })}
-                    style={{ background: 'rgba(255,255,255,0.2)', color: '#fff', border: '1px solid rgba(255,255,255,0.3)', borderRadius: 100, padding: '10px 20px', fontFamily: body, fontSize: 13, fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6 }}
-                  >
-                    Rezervasiya Et <ChevronRight size={14} />
-                  </button>
-                </div>
-              )}
+                <button
+                  onClick={() => {
+                    const el = document.getElementById('reservation') || document.getElementById('contact');
+                    el?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  style={{ background: 'rgba(255,255,255,0.2)', color: '#fff', border: '1px solid rgba(255,255,255,0.3)', borderRadius: 100, padding: '10px 18px', fontFamily: body, fontSize: 13, fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6 }}
+                >
+                  Rezervasiya Et <ChevronRight size={14} />
+                </button>
+              </div>
             </div>
           ))}
         </div>
       </div>
-
-      <style>{`
-        @media (max-width: 768px) {
-          #offers .offers-grid { grid-template-columns: 1fr !important; }
-        }
-      `}</style>
     </section>
   );
 }
@@ -1035,11 +1086,18 @@ function Footer({ data, theme }: { data: SiteData; theme: ThemeConfig }) {
           {/* Nav links */}
           <div>
             <h4 style={{ fontFamily: heading, fontWeight: 700, fontSize: 15, color: '#fff', marginBottom: 16 }}>Keçidlər</h4>
-            {['Haqqımızda', 'Menyu', 'Rezervasiya', 'Əlaqə'].map(l => (
-              <div key={l} style={{ marginBottom: 10 }}>
+            {[
+              { id: 'about', label: 'Haqqımızda' },
+              ...(data.moduleSettings?.menu !== false ? [{ id: 'menu', label: 'Menyu' }] : []),
+              ...(data.moduleSettings?.packages !== false ? [{ id: 'offers', label: 'Təkliflər' }] : []),
+              ...(data.moduleSettings?.gallery !== false && Boolean(data.galleryItems && data.galleryItems.length > 0) ? [{ id: 'gallery', label: 'Qalereya' }] : []),
+              ...(data.moduleSettings?.contact !== false ? [{ id: 'reservation', label: 'Rezervasiya' }] : []),
+              { id: 'contact', label: 'Əlaqə' },
+            ].map(l => (
+              <div key={l.id} style={{ marginBottom: 10 }}>
                 <a href="#" style={{ fontFamily: body, fontSize: 14, color: 'rgba(255,255,255,0.55)', textDecoration: 'none' }}
-                  onClick={e => { e.preventDefault(); document.getElementById(l === 'Haqqımızda' ? 'about' : l === 'Menyu' ? 'menu' : l === 'Rezervasiya' ? 'reservation' : 'contact')?.scrollIntoView({ behavior: 'smooth' }); }}
-                >{l}</a>
+                  onClick={e => { e.preventDefault(); document.getElementById(l.id)?.scrollIntoView({ behavior: 'smooth' }); }}
+                >{l.label}</a>
               </div>
             ))}
           </div>
@@ -1238,7 +1296,11 @@ export default function RandevuCafeSite({ data, theme }: { data: SiteData; theme
   const [cart, setCart] = useState<Record<string, { item: MenuItem; quantity: number }>>({});
   const [isCartOpen, setIsCartOpen] = useState(false);
   const fontsUrl = getGoogleFontsUrl(theme);
-  const hasGallery = Boolean(data.galleryItems && data.galleryItems.length > 0);
+  const moduleSettings = data.moduleSettings || {};
+  const showMenu = moduleSettings.menu !== false;
+  const showPackages = moduleSettings.packages !== false;
+  const showGallery = moduleSettings.gallery !== false && Boolean(data.galleryItems && data.galleryItems.length > 0);
+  const showContact = moduleSettings.contact !== false;
 
   const addToCart = (item: MenuItem) => {
     setCart(prev => {
@@ -1263,7 +1325,7 @@ export default function RandevuCafeSite({ data, theme }: { data: SiteData; theme
   const cartCount = Object.values(cart).reduce((s, e) => s + e.quantity, 0);
 
   useEffect(() => {
-    const sections = ['hero', 'about', 'menu', 'offers', ...(hasGallery ? ['gallery'] : []), 'reservation', 'contact'];
+    const sections = ['hero', 'about', ...(showMenu ? ['menu'] : []), ...(showPackages ? ['offers'] : []), ...(showGallery ? ['gallery'] : []), ...(showContact ? ['reservation'] : []), 'contact'];
     const observers = sections.map(id => {
       const el = document.getElementById(id);
       if (!el) return null;
@@ -1289,10 +1351,10 @@ export default function RandevuCafeSite({ data, theme }: { data: SiteData; theme
         <Header data={data} theme={theme} activeSection={activeSection} />
         <HeroSection data={data} theme={theme} />
         <AboutSection data={data} theme={theme} />
-        <MenuSection data={data} theme={theme} cart={cart} onAddToCart={addToCart} onOpenCart={() => setIsCartOpen(true)} />
-        <OffersSection theme={theme} />
-        {hasGallery && <GallerySection theme={theme} items={data.galleryItems} />}
-        <ReservationSection data={data} theme={theme} />
+        {showMenu && <MenuSection data={data} theme={theme} cart={cart} onAddToCart={addToCart} onOpenCart={() => setIsCartOpen(true)} />}
+        {showPackages && <OffersSection data={data} theme={theme} />}
+        {showGallery && <GallerySection theme={theme} items={data.galleryItems} />}
+        {showContact && <ReservationSection data={data} theme={theme} />}
         <ContactSection data={data} theme={theme} />
         <Footer data={data} theme={theme} />
         <WhatsAppFloat data={data} theme={theme} />

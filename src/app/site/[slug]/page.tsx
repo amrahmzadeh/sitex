@@ -43,6 +43,27 @@ interface SiteData {
     sortOrder: number;
     isVisible: boolean;
   }>;
+  packages?: Array<{
+    id: string;
+    name: string;
+    title?: string | null;
+    description?: string | null;
+    fullDescription?: string | null;
+    price?: number | null;
+    discountPrice?: number | null;
+    image?: string | null;
+    features: string[];
+    tag?: string | null;
+    badgeText?: string | null;
+    isActive: boolean;
+    sortOrder: number;
+  }>;
+  moduleSettings?: {
+    menu?: boolean;
+    packages?: boolean;
+    gallery?: boolean;
+    contact?: boolean;
+  };
   workingHours: Array<{ dayOfWeek: number; openTime?: string; closeTime?: string; isClosed: boolean }>;
   menuCategories: Array<{
     id: string; name: string; slug: string; isVisible: boolean;
@@ -68,6 +89,10 @@ async function getSiteData(slug: string): Promise<SiteData | null> {
         },
         galleryItems: {
           where: { isVisible: true },
+          orderBy: { sortOrder: 'asc' },
+        },
+        packages: {
+          where: { isActive: true },
           orderBy: { sortOrder: 'asc' },
         },
         workingHours: { orderBy: { dayOfWeek: 'asc' } },
@@ -119,6 +144,8 @@ async function getSiteData(slug: string): Promise<SiteData | null> {
       socialLinks: org.socialLinks || [],
       socialFeedPosts: org.socialFeedPosts || [],
       galleryItems: org.galleryItems || [],
+      packages: org.packages || [],
+      moduleSettings: (org.website.moduleSettings as Record<string, boolean>) || {},
       workingHours: org.workingHours || [],
       menuCategories: org.menuCategories || [],
     } as unknown as SiteData;
