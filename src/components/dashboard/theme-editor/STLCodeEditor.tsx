@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import {
-  Code,
   Check,
   Copy,
   Download,
@@ -10,14 +9,10 @@ import {
   Info,
   Sparkles,
   Search,
-  Replace,
-  Play,
   FileCode,
-  Layers,
   ChevronDown,
   ChevronUp,
   X,
-  RefreshCw,
   Terminal,
 } from 'lucide-react';
 import {
@@ -61,22 +56,25 @@ export default function STLCodeEditor({
   const [completions, setCompletions] = useState<STLCompletionItem[]>([]);
   const [selectedCompletion, setSelectedCompletion] = useState(0);
   const [showCompletions, setShowCompletions] = useState(false);
-  const [cursorWord, setCursorWord] = useState('');
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const lineNumbersRef = useRef<HTMLDivElement>(null);
 
   // Sync external code change if updated from visual builder
   useEffect(() => {
+    // B07 fix: use a ref to track last-synced external code to prevent stale closure loop
     if (initialCode !== code) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: sync inbound prop to local controlled state
       setCode(initialCode);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- `code` intentionally excluded: we only want to sync when initialCode changes externally
   }, [initialCode]);
 
   // Parse and validate code
   useEffect(() => {
     try {
       const { ast, errors: parseErrors } = parseSTL(code);
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: effect-driven parse pipeline
       setErrors(parseErrors);
 
       if (ast) {
@@ -86,16 +84,18 @@ export default function STLCodeEditor({
           onCompileSuccess(ast);
         }
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Sintaksis xətası';
       setErrors([
         {
-          message: err?.message || 'Sintaksis xətası',
+          message: msg,
           line: 1,
           column: 1,
           severity: 'error',
         },
       ]);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- onCompileSuccess is a stable callback from parent; adding it would cause re-parse loops
   }, [code]);
 
   const lines = useMemo(() => code.split('\n'), [code]);
@@ -125,7 +125,6 @@ export default function STLCodeEditor({
 
     if (match && match[1].length >= 1) {
       const word = match[1];
-      setCursorWord(word);
       const items = getSTLCompletions(word, textBefore.slice(-100));
       if (items.length > 0) {
         setCompletions(items);

@@ -7,10 +7,7 @@ import {
   Plus,
   Download,
   Clock,
-  Sparkles,
   CheckCircle2,
-  FileCode,
-  Tag,
 } from 'lucide-react';
 import { ThemeConfig } from '@/lib/themes';
 import { ThemeVersionRecord } from './types';
@@ -24,7 +21,6 @@ interface ThemeVersionHistoryProps {
 
 export default function ThemeVersionHistory({
   versions,
-  currentTheme,
   onRestore,
   onCreateSnapshot,
 }: ThemeVersionHistoryProps) {

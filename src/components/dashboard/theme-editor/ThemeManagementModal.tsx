@@ -7,14 +7,11 @@ import {
   Download,
   Copy,
   Check,
-  FileCode,
   Sparkles,
-  Layers,
   AlertTriangle,
-  FolderPlus,
 } from 'lucide-react';
 import { ThemeConfig, defaultThemes } from '@/lib/themes';
-import { parseSTL, compileSTL, convertSTLToThemeConfig, themeConfigToSTL } from '@/modules/stl';
+import { parseSTL, convertSTLToThemeConfig, themeConfigToSTL } from '@/modules/stl';
 
 export type ModalType = 'create' | 'duplicate' | 'rename' | 'import' | 'export' | null;
 
@@ -37,8 +34,7 @@ export default function ThemeManagementModal({
   onRenameTheme,
   onImportTheme,
 }: ThemeManagementModalProps) {
-  if (!type) return null;
-
+  // B01 fix: hooks must be called unconditionally before any early return
   // Create & Duplicate state
   const [themeName, setThemeName] = useState(
     type === 'duplicate' ? `${currentTheme.name} (Kopya)` : type === 'rename' ? currentTheme.name : ''
@@ -55,6 +51,8 @@ export default function ThemeManagementModal({
   // Export state
   const [copiedStl, setCopiedStl] = useState(false);
   const [copiedJson, setCopiedJson] = useState(false);
+
+  if (!type) return null;
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -104,8 +102,9 @@ export default function ThemeManagementModal({
       const importedConfig = convertSTLToThemeConfig(ast, currentTheme);
       onImportTheme(importedConfig, importFileContent);
       onClose();
-    } catch (err: any) {
-      setImportError(err?.message || 'Fayl emal edilərkən xəta baş verdi');
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Fayl emal edilərkən xəta baş verdi';
+      setImportError(msg);
     }
   };
 

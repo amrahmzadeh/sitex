@@ -1,5 +1,4 @@
 import { ThemeConfig } from '@/lib/themes';
-import { STLThemeNode, STLError } from '@/modules/stl';
 
 export type ThemeEditorTab =
   | 'builder'

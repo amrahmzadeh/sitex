@@ -9,15 +9,11 @@ import {
   ZoomOut,
   Maximize2,
   Minimize2,
-  RefreshCw,
-  ExternalLink,
   MousePointer,
-  Sparkles,
-  Check,
 } from 'lucide-react';
 import { ThemeConfig } from '@/lib/themes';
 import RestaurantSite, { SiteData } from '@/components/themes/RestaurantSite';
-import { isEnterpriseServiceCategory, isMenuActive } from '@/modules/navigation';
+import { isEnterpriseServiceCategory, isMenuActive, SiteContext } from '@/modules/navigation';
 import { ViewportMode, ComponentTarget } from './types';
 
 interface LivePreviewEngineProps {
@@ -33,15 +29,13 @@ interface LivePreviewEngineProps {
 export default function LivePreviewEngine({
   theme,
   siteData,
-  slug,
   viewport,
   onViewportChange,
-  selectedComponent,
   onSelectComponent,
 }: LivePreviewEngineProps) {
   const [scale, setScale] = useState<number>(100);
   const [inspectMode, setInspectMode] = useState<boolean>(false);
-  const [activePage, setActivePage] = useState<'home' | 'menu' | 'about' | 'contact'>('home');
+  const [activePage, setActivePage] = useState<'home' | 'menu' | 'about' | 'contact' | 'services'>('home');
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
 
   const effectiveSiteData = React.useMemo(() => {
@@ -77,7 +71,7 @@ export default function LivePreviewEngine({
         id: siteData?.organization?.id,
         category: siteData?.organization?.siteCategory,
         subcategory: siteData?.organization?.siteSubcategory,
-        website: siteData?.website as any,
+        website: siteData?.website as unknown as SiteContext['website'],
       });
 
     const pages = [{ id: 'home', label: 'Ana Səhifə' }];
@@ -205,7 +199,7 @@ export default function LivePreviewEngine({
             <button
               key={pg.id}
               type="button"
-              onClick={() => setActivePage(pg.id as any)}
+              onClick={() => setActivePage(pg.id as 'home' | 'menu' | 'about' | 'contact' | 'services')}
               style={{
                 padding: '4px 8px',
                 borderRadius: 5,

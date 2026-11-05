@@ -3,23 +3,10 @@
 import React, { useState } from 'react';
 import {
   Palette,
-  Type,
   Layout,
   Layers,
-  Sparkles,
-  Sliders,
-  RotateCcw,
   Undo2,
   Redo2,
-  ChevronRight,
-  Maximize2,
-  Eye,
-  Check,
-  Shield,
-  Square,
-  Circle,
-  HelpCircle,
-  MessageCircle,
 } from 'lucide-react';
 import { ThemeConfig, BRAND_FONTS } from '@/lib/themes';
 import { ComponentTarget } from './types';
@@ -347,6 +334,7 @@ export default function VisualThemeBuilder({
                     <span style={{ fontSize: 11, color: '#8888A0', fontFamily: 'monospace' }}>{item.val}</span>
                     <input
                       type="color"
+                      aria-label={item.label}
                       value={sanitizeColor(item.val)}
                       onChange={(e) => updateProp(item.key as keyof ThemeConfig, e.target.value)}
                       style={{
@@ -503,7 +491,7 @@ export default function VisualThemeBuilder({
                     <button
                       key={h.id}
                       type="button"
-                      onClick={() => updateProp('headerStyle', h.id as any)}
+                      onClick={() => updateProp('headerStyle', h.id as 'transparent' | 'solid' | 'glass')}
                       style={{
                         padding: '8px 6px',
                         background: theme.headerStyle === h.id ? 'rgba(0,211,125,0.2)' : '#131520',
@@ -597,6 +585,7 @@ export default function VisualThemeBuilder({
                       <span style={{ fontSize: 11, color: '#8888A0' }}>Başlanğıc (From):</span>
                       <input
                         type="color"
+                        aria-label="Qradiyent Başlanğıc Rəngi"
                         value={sanitizeColor(theme.siteGradientFrom || '#1A1A2E')}
                         onChange={(e) => updateProp('siteGradientFrom', e.target.value)}
                         style={{ width: 28, height: 28, borderRadius: 6, border: 'none', cursor: 'pointer' }}
@@ -606,6 +595,7 @@ export default function VisualThemeBuilder({
                       <span style={{ fontSize: 11, color: '#8888A0' }}>Son (To):</span>
                       <input
                         type="color"
+                        aria-label="Qradiyent Son Rəngi"
                         value={sanitizeColor(theme.siteGradientTo || '#121416')}
                         onChange={(e) => updateProp('siteGradientTo', e.target.value)}
                         style={{ width: 28, height: 28, borderRadius: 6, border: 'none', cursor: 'pointer' }}
@@ -617,6 +607,7 @@ export default function VisualThemeBuilder({
                     <span style={{ fontSize: 11, color: '#8888A0' }}>Fon Rəngi:</span>
                     <input
                       type="color"
+                      aria-label="Sayt Fon Rəngi"
                       value={sanitizeColor(theme.siteBgColor || theme.backgroundColor || '#FFFFFF')}
                       onChange={(e) => {
                         updateProp('siteBgColor', e.target.value);
@@ -646,7 +637,7 @@ export default function VisualThemeBuilder({
                     <button
                       key={f.id}
                       type="button"
-                      onClick={() => updateProp('footerStyle', f.id as any)}
+                      onClick={() => updateProp('footerStyle', f.id as 'dark' | 'light' | 'accent')}
                       style={{
                         padding: '8px 6px',
                         background: theme.footerStyle === f.id ? 'rgba(56,189,248,0.2)' : '#131520',
@@ -710,7 +701,7 @@ export default function VisualThemeBuilder({
                     <button
                       key={b.id}
                       type="button"
-                      onClick={() => updateProp('buttonStyle', b.id as any)}
+                      onClick={() => updateProp('buttonStyle', b.id as 'solid' | 'outline' | 'ghost')}
                       style={{
                         padding: '8px 4px',
                         background: theme.buttonStyle === b.id ? 'rgba(0,211,125,0.2)' : '#131520',
@@ -783,7 +774,7 @@ export default function VisualThemeBuilder({
                     <button
                       key={c.id}
                       type="button"
-                      onClick={() => updateProp('cardStyle', c.id as any)}
+                      onClick={() => updateProp('cardStyle', c.id as 'elevated' | 'flat' | 'bordered')}
                       style={{
                         padding: '8px 4px',
                         background: theme.cardStyle === c.id ? 'rgba(124,92,252,0.2)' : '#131520',
@@ -813,6 +804,7 @@ export default function VisualThemeBuilder({
                   <label style={{ fontSize: 12, color: '#C8CAD8' }}>WhatsApp Düymə Rəngi</label>
                   <input
                     type="color"
+                    aria-label="WhatsApp Düymə Rəngi"
                     value={sanitizeColor(theme.whatsappColor || '#25D366')}
                     onChange={(e) => updateProp('whatsappColor', e.target.value)}
                     style={{ width: 28, height: 28, borderRadius: 6, border: 'none', cursor: 'pointer' }}

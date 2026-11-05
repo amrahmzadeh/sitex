@@ -3,14 +3,9 @@
 import React, { useState } from 'react';
 import {
   Settings,
-  RotateCcw,
-  Tag,
-  Shield,
   AlertTriangle,
-  Check,
-  Sparkles,
 } from 'lucide-react';
-import { ThemeConfig, defaultThemes } from '@/lib/themes';
+import { ThemeConfig } from '@/lib/themes';
 
 interface ThemeSettingsPanelProps {
   theme: ThemeConfig;

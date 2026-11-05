@@ -7,9 +7,8 @@ import {
   Trash2,
   Copy,
   Check,
-  ExternalLink,
   Loader2,
-  Sparkles,
+  AlertTriangle,
 } from 'lucide-react';
 import { ThemeConfig } from '@/lib/themes';
 
@@ -34,6 +33,7 @@ export default function ThemeAssetsManager({
 }: ThemeAssetsManagerProps) {
   const [uploadingKey, setUploadingKey] = useState<string | null>(null);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [activeSlotKey, setActiveSlotKey] = useState<keyof ThemeConfig | null>(null);
 
@@ -99,6 +99,7 @@ export default function ThemeAssetsManager({
   ];
 
   const handleTriggerUpload = (slotKey: keyof ThemeConfig) => {
+    setUploadError(null);
     setActiveSlotKey(slotKey);
     fileInputRef.current?.click();
   };
@@ -108,6 +109,7 @@ export default function ThemeAssetsManager({
     if (!file || !activeSlotKey || !orgId) return;
 
     setUploadingKey(activeSlotKey as string);
+    setUploadError(null);
     try {
       const fd = new FormData();
       fd.append('file', file);
@@ -115,6 +117,10 @@ export default function ThemeAssetsManager({
         method: 'POST',
         body: fd,
       });
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || 'Şəkil yüklənmədi. Yenidən cəhd edin.');
+      }
       const data = await res.json();
       if (data.url) {
         onChange({
@@ -122,8 +128,10 @@ export default function ThemeAssetsManager({
           [activeSlotKey]: data.url,
         });
       }
-    } catch (err) {
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Şəkil yüklənərkən xəta baş verdi';
       console.error('Şəkil yüklənərkən xəta:', err);
+      setUploadError(msg);
     } finally {
       setUploadingKey(null);
       setActiveSlotKey(null);
@@ -174,6 +182,43 @@ export default function ThemeAssetsManager({
           Temanızın tərtibatında istifadə olunan qrafik aktivləri yükləyin, əvəzləyin və idarə edin.
         </p>
       </div>
+
+      {uploadError && (
+        <div
+          role="alert"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 10,
+            padding: '10px 14px',
+            borderRadius: 8,
+            background: 'rgba(239,68,68,0.12)',
+            border: '1px solid #EF4444',
+            color: '#FCA5A5',
+            fontSize: 13,
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <AlertTriangle size={16} color="#EF4444" style={{ flexShrink: 0 }} />
+            <span>{uploadError}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setUploadError(null)}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              color: '#FCA5A5',
+              cursor: 'pointer',
+              fontSize: 16,
+              lineHeight: 1,
+            }}
+          >
+            ×
+          </button>
+        </div>
+      )}
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 16 }}>
         {assetSlots.map((slot) => {

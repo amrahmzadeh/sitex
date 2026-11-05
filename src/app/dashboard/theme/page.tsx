@@ -3,7 +3,6 @@
 import { useEffect, useState, useMemo, useRef } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
 import {
   Loader2,
   Save,
@@ -15,7 +14,6 @@ import {
   Layers,
   Monitor,
   Smartphone,
-  Tablet,
   Sparkles,
   Clock,
   Utensils,
@@ -25,26 +23,23 @@ import {
   CheckCircle2,
   Sliders,
   ExternalLink,
-  RotateCcw,
   Code,
   History,
   Plus,
-  FolderPlus,
   Download,
   Upload,
   Copy,
   Settings as SettingsIcon,
   Image as ImageIcon,
 } from 'lucide-react';
-import { defaultThemes, ThemeConfig, resolveBg, BRAND_FONTS } from '@/lib/themes';
-import RestaurantSite, { SiteData } from '@/components/themes/RestaurantSite';
+import { defaultThemes, ThemeConfig, BRAND_FONTS } from '@/lib/themes';
+import RestaurantSite, { SiteData, GalleryItem, MenuCategory } from '@/components/themes/RestaurantSite';
 import ThemeLibrary from '@/components/dashboard/ThemeLibrary';
 import {
   ThemeEditorTab,
   ViewportMode,
   ComponentTarget,
   ThemeVersionRecord,
-  CustomThemeRecord,
   STLCodeEditor,
   VisualThemeBuilder,
   LivePreviewEngine,
@@ -53,17 +48,37 @@ import {
   ThemeManagementModal,
   ThemeSettingsPanel,
 } from '@/components/dashboard/theme-editor';
-import { themeConfigToSTL, convertSTLToThemeConfig, parseSTL, compileSTL } from '@/modules/stl';
+import { themeConfigToSTL, convertSTLToThemeConfig } from '@/modules/stl';
 
 function useCurrentOrg() {
   const [orgId, setOrgId] = useState<string | null>(null);
   useEffect(() => {
     const saved = localStorage.getItem('currentOrgId');
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: sync from storage before async fetch
     if (saved) { setOrgId(saved); return; }
     fetch('/api/organizations').then(r => r.json()).then(d => {
       if (d.organizations?.[0]) { setOrgId(d.organizations[0].id); localStorage.setItem('currentOrgId', d.organizations[0].id); }
     });
   }, []);
+
+  // B09 fix: react to org switches made in DashboardShell
+  useEffect(() => {
+    const handleOrgUpdated = (e: Event) => {
+      const id = (e as CustomEvent<{ id: string }>).detail?.id;
+      if (id) setOrgId(id);
+    };
+    const handleStorage = () => {
+      const id = localStorage.getItem('currentOrgId');
+      if (id) setOrgId(id);
+    };
+    window.addEventListener('org-updated', handleOrgUpdated);
+    window.addEventListener('storage', handleStorage);
+    return () => {
+      window.removeEventListener('org-updated', handleOrgUpdated);
+      window.removeEventListener('storage', handleStorage);
+    };
+  }, []);
+
   return orgId;
 }
 
@@ -257,12 +272,14 @@ function ImageUploadField({
   placeholder?: string;
 }) {
   const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !orgId) return;
     setUploading(true);
+    setUploadError(null);
     try {
       const fd = new FormData();
       fd.append('file', file);
@@ -270,14 +287,20 @@ function ImageUploadField({
         method: 'POST',
         body: fd,
       });
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || 'Şəkil yüklənmədi');
+      }
       const data = await res.json();
       if (data.url) {
         onChange(data.url);
       }
-    } catch (err) {
+    } catch (err: unknown) {
       console.error(err);
+      setUploadError(err instanceof Error ? err.message : 'Yükləmə xətası');
     } finally {
       setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
 
@@ -344,6 +367,11 @@ function ImageUploadField({
           <span style={{ fontSize: 11, color: '#8888A0', wordBreak: 'break-all' }}>{value}</span>
         </div>
       )}
+      {uploadError && (
+        <div style={{ marginTop: 4, fontSize: 11, color: '#F87171' }}>
+          {uploadError}
+        </div>
+      )}
     </div>
   );
 }
@@ -379,13 +407,25 @@ export default function ThemePage() {
   const [slug, setSlug] = useState('');
   const [orgLogo, setOrgLogo] = useState('');
   const [orgName, setOrgName] = useState('');
-  const [orgData, setOrgData] = useState<any>(null);
+  // B04 fix: narrow orgData type (Prisma Organization shape, partial)
+  type OrgData = {
+    name?: string; slug?: string; logo?: string; description?: string;
+    phone?: string; email?: string; address?: string; city?: string;
+    mapUrl?: string; currency?: string; siteCategory?: string; siteSubcategory?: string;
+    website?: { draftTheme?: Partial<ThemeConfig>; pagesConfig?: unknown; theme?: unknown };
+    whatsappSettings?: { countryCode: string; phoneNumber: string; orderMessage: string; buttonText: string; isEnabled: boolean };
+    socialLinks?: Array<{ platform: string; url: string }>;
+    workingHours?: Array<{ dayOfWeek: number; openTime: string; closeTime: string; isClosed: boolean }>;
+    galleryItems?: GalleryItem[]; menuCategories?: MenuCategory[];
+  };
+  const [orgData, setOrgData] = useState<OrgData | null>(null);
   const [previewDevice, setPreviewDevice] = useState<'desktop' | 'mobile'>('desktop');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [publishing, setPublishing] = useState(false);
   const [saved, setSaved] = useState(false);
   const [published, setPublished] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!orgId) return;
@@ -414,6 +454,18 @@ export default function ThemePage() {
       .finally(() => setLoading(false));
   }, [orgId]);
 
+  // B23 fix: warn user about unsaved changes on page unload
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (historyIdx > 0) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [historyIdx]);
+
   // Load versions from localStorage
   useEffect(() => {
     if (!orgId) return;
@@ -421,16 +473,18 @@ export default function ThemePage() {
     const stored = localStorage.getItem(key);
     if (stored) {
       try {
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: initial version load from localStorage
         setVersions(JSON.parse(stored));
       } catch {
         setVersions([]);
       }
     } else {
+      const now = Date.now();
       const initialVer: ThemeVersionRecord = {
-        id: 'ver_init_' + Date.now(),
+        id: 'ver_init_' + now,
         version: '1.0',
         title: 'İlkin Tema Versiyası',
-        timestamp: Date.now(),
+        timestamp: now,
         author: 'SiteX Sistemi',
         trigger: 'auto',
         theme: defaultThemes.elegant,
@@ -477,12 +531,14 @@ export default function ThemePage() {
   ) => {
     const t = customTheme || theme;
     const currentList = versions;
+    // eslint-disable-next-line react-hooks/purity -- Date.now() is in an event callback, not in render
+    const now = Date.now();
     const newVer: ThemeVersionRecord = {
-      id: 'ver_' + Date.now(),
+      id: 'ver_' + now,
       version: `${currentList.length + 1}.0`,
       title,
       note,
-      timestamp: Date.now(),
+      timestamp: now,
       author: orgName || 'SiteX User',
       trigger,
       theme: t,
@@ -495,30 +551,49 @@ export default function ThemePage() {
     }
   };
 
-  const saveDraft = async () => {
-    if (!orgId) return;
+  const saveDraft = async (): Promise<boolean> => {
+    if (!orgId) return false;
     setSaving(true);
+    setSaveError(null);
     try {
-      await fetch(`/api/organizations/${orgId}/theme`, {
+      const res = await fetch(`/api/organizations/${orgId}/theme`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ theme }),
       });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setSaveError(data.error || `Saxlama xətası (${res.status})`);
+        return false;
+      }
       setSaved(true);
       recordVersion('Qaralama Saxlandı', 'İstifadəçi tərəfindən saxlanıldı', 'manual');
       setTimeout(() => setSaved(false), 3000);
+      return true;
+    } catch {
+      setSaveError('Şəbəkə xətası baş verdi');
+      return false;
     } finally { setSaving(false); }
   };
 
   const publish = async () => {
     if (!orgId) return;
     setPublishing(true);
+    setSaveError(null);
     try {
-      await saveDraft();
-      await fetch(`/api/organizations/${orgId}/publish`, { method: 'POST' });
+      const ok = await saveDraft();
+      if (!ok) return; // B03 fix: abort publish if save failed
+      const res = await fetch(`/api/organizations/${orgId}/publish`, { method: 'POST' });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setSaveError(data.error || `Yayınlama xətası (${res.status})`);
+        return;
+      }
       setPublished(true);
       recordVersion('Saytda Yayınlandı', 'Canlı saytda aktiv edildi', 'publish');
       setTimeout(() => setPublished(false), 3000);
+    } catch {
+      setSaveError('Şəbəkə xətası baş verdi');
     } finally { setPublishing(false); }
   };
 
@@ -552,6 +627,7 @@ export default function ThemePage() {
 
   const handleCreateTheme = (name: string, description: string, baseId?: string) => {
     const base = (baseId && defaultThemes[baseId]) ? defaultThemes[baseId] : defaultThemes.modern;
+    // eslint-disable-next-line react-hooks/purity -- Date.now() used in event handler, not render path
     const newId = 'custom-' + Date.now();
     const created: ThemeConfig = {
       ...base,
@@ -566,6 +642,7 @@ export default function ThemePage() {
   };
 
   const handleDuplicateTheme = (name: string) => {
+    // eslint-disable-next-line react-hooks/purity -- Date.now() used in event handler, not render path
     const newId = 'copy-' + Date.now();
     const duplicated: ThemeConfig = {
       ...theme,
@@ -616,7 +693,7 @@ export default function ThemePage() {
 
   const previewSiteData = useMemo<SiteData>(() => {
     const rawCategories = orgData?.menuCategories || [];
-    const validCategories = rawCategories.filter((c: any) => c.menuItems && c.menuItems.length > 0);
+    const validCategories = rawCategories.filter((c) => Array.isArray(c.menuItems) && c.menuItems.length > 0);
 
     const categories = validCategories.length > 0 ? validCategories : [
       {
@@ -737,7 +814,7 @@ export default function ThemePage() {
       menuCategories: categories,
       galleryItems: orgData?.galleryItems || [],
     };
-  }, [orgData, orgName, slug, orgLogo, theme, previewTheme, effectiveTheme, isProActive]);
+  }, [orgData, orgName, slug, orgLogo, effectiveTheme, isProActive]);
 
   if (sessionStatus === 'loading' || loading) {
     return <div style={{ display: 'grid', gap: 16 }}>{[...Array(5)].map((_, i) => <div key={i} className="skeleton" style={{ height: 60, borderRadius: 12 }} />)}</div>;
@@ -961,7 +1038,7 @@ export default function ThemePage() {
               <button
                 key={tabItem.id}
                 type="button"
-                onClick={() => setActiveTab(tabItem.id as any)}
+                onClick={() => setActiveTab(tabItem.id as ThemeEditorTab)}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -1004,6 +1081,34 @@ export default function ThemePage() {
           >
             <CheckCircle2 size={18} />
             <span>{toastMessage}</span>
+          </div>
+        )}
+
+        {/* Xəta Bildirişi Toast (B02/B03 fix) */}
+        {saveError && (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: 10,
+              padding: '12px 18px',
+              borderRadius: 10,
+              background: 'rgba(239, 68, 68, 0.12)',
+              border: '1.5px solid #EF4444',
+              color: '#F87171',
+              fontSize: 13,
+              fontWeight: 600,
+              boxShadow: '0 4px 16px rgba(239, 68, 68, 0.15)',
+            }}
+          >
+            <span>⚠ {saveError}</span>
+            <button
+              type="button"
+              onClick={() => setSaveError(null)}
+              style={{ background: 'none', border: 'none', color: '#F87171', cursor: 'pointer', padding: 0, fontSize: 16, lineHeight: 1 }}
+              aria-label="Xəta bildirişini bağla"
+            >×</button>
           </div>
         )}
       </div>
@@ -2624,7 +2729,7 @@ export default function ThemePage() {
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: '#FFFFFF' }}>
               <Eye size={16} color="#C4B5FD" />
               <span>
-                <strong>"{previewTheme.name}"</strong> canlı önizlənilir
+                <strong>&ldquo;{previewTheme.name}&rdquo;</strong> canlı önizlənilir
               </span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
