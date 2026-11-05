@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
+import { computeWorkingStatus, DEFAULT_OFF_HOURS_MESSAGE } from '@/lib/working-hours';
 
 export async function POST(
   req: Request,
@@ -9,11 +10,31 @@ export async function POST(
     const { slug } = await params;
     const org = await prisma.organization.findUnique({
       where: { slug },
-      select: { id: true, name: true, slug: true },
+      include: {
+        workingHours: { orderBy: { dayOfWeek: 'asc' } },
+        workingHoursSettings: true,
+      },
     });
 
     if (!org) {
       return NextResponse.json({ error: 'Müəssisə tapılmadı' }, { status: 404 });
+    }
+
+    // Backend check: Pause orders outside working hours
+    if (org.workingHoursSettings?.pauseOrdersOutsideHours) {
+      const status = computeWorkingStatus(
+        org.workingHours,
+        org.workingHoursSettings.timezone || 'Asia/Baku',
+        new Date()
+      );
+      if (!status.isOpen) {
+        const next = status.nextOpenTime ? ` Növbəti açılış: ${status.nextOpenTime}` : '';
+        const msg = (org.workingHoursSettings.offHoursMessage || DEFAULT_OFF_HOURS_MESSAGE) + next;
+        return NextResponse.json(
+          { error: msg, code: 'OFF_HOURS', nextOpenTime: status.nextOpenTime },
+          { status: 403 }
+        );
+      }
     }
 
     const body = await req.json().catch(() => null);

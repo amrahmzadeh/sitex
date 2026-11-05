@@ -16,6 +16,8 @@ import SplashScreen, { SplashConfig } from './SplashScreen';
 import FoodVideoPlayer from './FoodVideoPlayer';
 import { SocialIconsGroup } from './SocialIcons';
 import SocialMediaFeed from './SocialMediaFeed';
+import { useWorkingHours } from '@/hooks/useWorkingHours';
+import { OffHoursNotice } from '@/components/common/OffHoursNotice';
 import type { SiteData } from './RestaurantSite';
 
 export interface MenuItem {
@@ -57,11 +59,15 @@ function ProReservationSection({
   whatsapp,
   saffronGold,
   cardBackground,
+  isOrdersPaused,
+  offHoursNotice,
 }: {
   organization: SiteData['organization'];
   whatsapp?: SiteData['whatsapp'];
   saffronGold: string;
   cardBackground: string;
+  isOrdersPaused?: boolean;
+  offHoursNotice?: string;
 }) {
   const [form, setForm] = useState({ name: '', phone: '', date: '', time: '', guests: '2', notes: '' });
   const [submitting, setSubmitting] = useState(false);
@@ -305,6 +311,7 @@ export default function ProRestaurantSite({
   };
 
   const addToCart = (item: MenuItem, qty: number = 1) => {
+    if (isOrdersPaused) return;
     const existing = cart[item.id];
     const newQty = (existing?.quantity || 0) + qty;
     const nextCart = { ...cart, [item.id]: { item, quantity: newQty } };
@@ -353,22 +360,13 @@ export default function ProRestaurantSite({
     return menuCategories[0]?.menuItems[0] || null;
   }, [menuCategories, theme.heroDishId]);
 
-  // Real-time open status
-  const isOpenNow = useMemo(() => {
-    if (!workingHours || workingHours.length === 0) return true;
-    const now = new Date();
-    const day = now.getDay();
-    const todaySchedule = workingHours.find(w => w.dayOfWeek === day);
-    if (!todaySchedule || todaySchedule.isClosed) return false;
-    if (!todaySchedule.openTime || !todaySchedule.closeTime) return true;
-
-    const currentMinutes = now.getHours() * 60 + now.getMinutes();
-    const [oh, om] = todaySchedule.openTime.split(':').map(Number);
-    const [ch, cm] = todaySchedule.closeTime.split(':').map(Number);
-    const openMin = oh * 60 + om;
-    const closeMin = ch * 60 + cm;
-    return currentMinutes >= openMin && currentMinutes <= closeMin;
-  }, [workingHours]);
+  // Real-time open & order status via central hook
+  const workingStatus = useWorkingHours({
+    workingHours,
+    settings: data.workingHoursSettings,
+  });
+  const isOpenNow = workingStatus.isOpen;
+  const isOrdersPaused = workingStatus.isOrdersPaused;
 
   const defaultWaUrl = whatsapp?.phoneNumber
     ? formatWhatsAppUrl(
@@ -1523,27 +1521,32 @@ export default function ProRestaurantSite({
 
                       <button
                         type="button"
+                        disabled={isOrdersPaused}
                         aria-label="Səbətə əlavə et"
+                        title={isOrdersPaused ? (workingStatus.noticeMessage || 'Qeyri-iş saatıdır. Sifariş qəbul edilmir.') : 'Səbətə əlavə et'}
                         onClick={() => addToCart(item, 1)}
                         style={{
                           width: 38,
                           height: 38,
                           borderRadius: '50%',
-                          backgroundColor: saffronGold,
-                          color: '#111315',
+                          backgroundColor: isOrdersPaused ? '#383334' : saffronGold,
+                          color: isOrdersPaused ? '#8888A0' : '#111315',
                           border: 'none',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          cursor: 'pointer',
-                          boxShadow: `0 3px 10px ${saffronGold}40`,
+                          cursor: isOrdersPaused ? 'not-allowed' : 'pointer',
+                          opacity: isOrdersPaused ? 0.65 : 1,
+                          boxShadow: isOrdersPaused ? 'none' : `0 3px 10px ${saffronGold}40`,
                           transition: 'transform 0.15s, background-color 0.15s',
                         }}
                         onMouseEnter={(e) => {
+                          if (isOrdersPaused) return;
                           e.currentTarget.style.transform = 'scale(1.08)';
                           e.currentTarget.style.backgroundColor = amberTone;
                         }}
                         onMouseLeave={(e) => {
+                          if (isOrdersPaused) return;
                           e.currentTarget.style.transform = 'scale(1)';
                           e.currentTarget.style.backgroundColor = saffronGold;
                         }}
@@ -2312,7 +2315,7 @@ export default function ProRestaurantSite({
                               color: isToday ? saffronGold : '#F7F8F9',
                             }}
                           >
-                            {sched.openTime || '09:00'} — {sched.closeTime || '22:00'}
+                            {sched.openTime || '09:00'} — {sched.closeTime || '22:00'}{sched.breakStart && sched.breakEnd ? ` (Fasilə: ${sched.breakStart}-${sched.breakEnd})` : ''}
                           </span>
                         ) : (
                           <span
@@ -2774,11 +2777,17 @@ export default function ProRestaurantSite({
                       </span>
                     </div>
 
+                    {isOrdersPaused && (
+                      <OffHoursNotice message={workingStatus.noticeMessage} variant="inline" style={{ marginBottom: 12 }} />
+                    )}
                     <button
                       type="button"
+                      disabled={isOrdersPaused}
                       onClick={checkoutViaWhatsapp}
                       style={{
-                        backgroundColor: waColor,
+                        backgroundColor: isOrdersPaused ? '#383334' : waColor,
+                        cursor: isOrdersPaused ? 'not-allowed' : 'pointer',
+                        opacity: isOrdersPaused ? 0.65 : 1,
                         color: '#fff',
                         padding: '14px',
                         borderRadius: 9999,
@@ -2789,7 +2798,6 @@ export default function ProRestaurantSite({
                         alignItems: 'center',
                         justifyContent: 'center',
                         gap: 8,
-                        cursor: 'pointer',
                         boxShadow: '0 4px 16px rgba(37, 211, 102, 0.35)',
                       }}
                     >
@@ -3028,6 +3036,7 @@ export default function ProRestaurantSite({
                     <div style={{ marginTop: 20, display: 'flex', gap: 12 }}>
                       <button
                         type="button"
+                        disabled={isOrdersPaused}
                         onClick={() => {
                           addToCart(selectedItem, 1);
                           setSelectedItem(null);
@@ -3035,8 +3044,8 @@ export default function ProRestaurantSite({
                         }}
                         style={{
                           flex: 1,
-                          backgroundColor: saffronGold,
-                          color: '#111315',
+                          backgroundColor: isOrdersPaused ? '#383334' : saffronGold,
+                          color: isOrdersPaused ? '#8888A0' : '#111315',
                           padding: '12px',
                           borderRadius: 9999,
                           border: 'none',
@@ -3046,11 +3055,12 @@ export default function ProRestaurantSite({
                           alignItems: 'center',
                           justifyContent: 'center',
                           gap: 8,
-                          cursor: 'pointer',
+                          cursor: isOrdersPaused ? 'not-allowed' : 'pointer',
+                          opacity: isOrdersPaused ? 0.65 : 1,
                         }}
                       >
-                        <ShoppingCart size={18} />
-                        <span>Səbətə əlavə et</span>
+                        {isOrdersPaused ? <Clock size={18} /> : <ShoppingCart size={18} />}
+                        <span>{isOrdersPaused ? 'Sifariş qəbul edilmir' : 'Səbətə əlavə et'}</span>
                       </button>
                     </div>
                   </div>

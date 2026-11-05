@@ -91,12 +91,14 @@ model Organization {
   mediaAssets      MediaAsset[]
   whatsappSettings WhatsAppSettings?
   socialLinks      SocialLink[]
+  workingHoursSettings WorkingHoursSettings?
   workingHours     WorkingHours[]
   qrSettings       QRSettings?
   socialFeedPosts  SocialFeedPost[]
   galleryItems     GalleryItem[]
   packages         Package[]
   contactSubmissions ContactSubmission[]
+  siteContents     SiteContent[]
 }
 
 // ==================== QR SETTINGS ====================
@@ -255,6 +257,18 @@ model SocialLink {
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 }
 
+model WorkingHoursSettings {
+  id                      String       @id @default(cuid())
+  organizationId          String       @unique
+  timezone                String       @default("Asia/Baku")
+  pauseOrdersOutsideHours Boolean      @default(false)
+  offHoursMessage         String?      @db.Text
+  createdAt               DateTime     @default(now())
+  updatedAt               DateTime     @updatedAt
+
+  organization            Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+}
+
 model WorkingHours {
   id             String       @id @default(cuid())
   organizationId String
@@ -262,6 +276,8 @@ model WorkingHours {
   openTime       String?      // "09:00"
   closeTime      String?      // "22:00"
   isClosed       Boolean      @default(false)
+  breakStart     String?
+  breakEnd       String?
 
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
@@ -395,6 +411,42 @@ model GalleryItem {
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   @@index([organizationId, sortOrder])
+}
+
+// ==================== SITE CONTENT (Saytı Redaktə et modulu) ====================
+
+// Hər saytın blok məzmunu: hero, about, contact, menyu başlığı, qalareya, rezervasiya.
+// draftContent → istifadəçi redaktə edir; publishedContent → canlı saytda göstərilir.
+// version → hər yayımda artır (history üçün).
+model SiteContent {
+  id               String       @id @default(cuid())
+  organizationId   String
+  pageKey          String       // "hero" | "about" | "contact" | "menu" | "gallery" | "reservation"
+  blockKey         String       // "hero.main" | "about.story" vb.
+  draftContent     Json         @default("{}")   // ContentDoc { fields, visible, sortOrder }
+  publishedContent Json         @default("{}")
+  version          Int          @default(1)
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  organization     Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, pageKey, blockKey])
+  @@index([organizationId])
+}
+
+// Versiya tarixçəsi — "Default-a qaytar" üçün snapshot saxlanır.
+model SiteContentHistory {
+  id             String   @id @default(cuid())
+  organizationId String
+  pageKey        String
+  blockKey       String
+  content        Json     // ContentDoc snapshot
+  version        Int
+  createdBy      String?
+  createdAt      DateTime @default(now())
+
+  @@index([organizationId, pageKey, blockKey, createdAt])
 }
 
 // ==================== PACKAGES ====================

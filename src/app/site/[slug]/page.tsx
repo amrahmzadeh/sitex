@@ -66,7 +66,8 @@ interface SiteData {
     gallery?: boolean;
     contact?: boolean;
   };
-  workingHours: Array<{ dayOfWeek: number; openTime?: string; closeTime?: string; isClosed: boolean }>;
+  workingHours: Array<{ dayOfWeek: number; openTime?: string; closeTime?: string; isClosed: boolean; breakStart?: string | null; breakEnd?: string | null }>;
+  workingHoursSettings?: { timezone?: string; pauseOrdersOutsideHours?: boolean; offHoursMessage?: string | null } | null;
   menuCategories: Array<{
     id: string; name: string; slug: string; isVisible: boolean;
     menuItems: Array<{
@@ -98,6 +99,7 @@ const getSiteData = cache(async (slug: string): Promise<SiteData | null> => {
           orderBy: { sortOrder: 'asc' },
         },
         workingHours: { orderBy: { dayOfWeek: 'asc' } },
+        workingHoursSettings: true,
         menuCategories: {
           where: { isVisible: true },
           orderBy: { sortOrder: 'asc' },
@@ -157,6 +159,7 @@ const getSiteData = cache(async (slug: string): Promise<SiteData | null> => {
       packages: org.packages || [],
       moduleSettings: (org.website.moduleSettings as Record<string, boolean>) || {},
       workingHours: org.workingHours || [],
+      workingHoursSettings: org.workingHoursSettings || null,
       menuCategories: org.menuCategories || [],
     } as unknown as SiteData;
   } catch (e) {

@@ -18,6 +18,8 @@ import FoodVideoPlayer from './FoodVideoPlayer';
 import { parseSetItems, formatSetSummary } from '@/lib/set-dishes';
 import { SocialIconsGroup } from './SocialIcons';
 import SocialMediaFeed from './SocialMediaFeed';
+import { useWorkingHours } from '@/hooks/useWorkingHours';
+import { OffHoursNotice } from '@/components/common/OffHoursNotice';
 
 export interface GalleryItem {
   id: string;
@@ -88,13 +90,33 @@ export interface SiteData {
   galleryItems?: GalleryItem[];
   packages?: PackageItem[];
   moduleSettings?: ModuleSettings;
-  workingHours: Array<{ dayOfWeek: number; openTime?: string; closeTime?: string; isClosed: boolean }>;
+  workingHours: Array<{ dayOfWeek: number; openTime?: string; closeTime?: string; isClosed: boolean; breakStart?: string | null; breakEnd?: string | null }>;
+  workingHoursSettings?: { timezone?: string; pauseOrdersOutsideHours?: boolean; offHoursMessage?: string | null } | null;
   menuCategories: MenuCategory[];
 }
 
 const DAY_NAMES = ['Bazar', 'Bazar ertəsi', 'Çərşənbə axşamı', 'Çərşənbə', 'Cümə axşamı', 'Cümə', 'Şənbə'];
 
-function WhatsAppButton({ theme, whatsapp, item, table }: { theme: ThemeConfig; whatsapp: SiteData['whatsapp']; item?: MenuItem; table?: string | null }) {
+function WhatsAppButton({ theme, whatsapp, item, table, isOrdersPaused, offHoursNotice }: { theme: ThemeConfig; whatsapp: SiteData['whatsapp']; item?: MenuItem; table?: string | null; isOrdersPaused?: boolean; offHoursNotice?: string }) {
+  if (!whatsapp?.isEnabled || !whatsapp.phoneNumber) return null;
+  if (isOrdersPaused) {
+    return (
+      <button
+        disabled
+        title={offHoursNotice || 'Hazırda qeyri-iş saatıdır. Sifarişlər dayandırılıb.'}
+        style={{
+          display: 'inline-flex', alignItems: 'center', gap: 8,
+          padding: item ? '10px 20px' : '14px 28px',
+          background: '#383334', color: '#8888A0', borderRadius: theme.borderRadius,
+          fontWeight: 700, fontSize: item ? 14 : 16,
+          cursor: 'not-allowed', border: 'none', opacity: 0.65,
+        }}
+      >
+        <Clock size={item ? 16 : 20} />
+        <span>{item ? 'Qeyri-iş saatı' : 'Sifariş qəbul edilmir'}</span>
+      </button>
+    );
+  }
   if (!whatsapp?.isEnabled || !whatsapp.phoneNumber) return null;
 
   const baseMsg = item
@@ -137,6 +159,8 @@ function ItemModal({
   onClose,
   onAddToCart,
   table,
+  isOrdersPaused,
+  offHoursNotice,
 }: {
   item: MenuItem;
   theme: ThemeConfig;
@@ -145,6 +169,8 @@ function ItemModal({
   onClose: () => void;
   onAddToCart: (item: MenuItem, qty: number) => void;
   table?: string | null;
+  isOrdersPaused?: boolean;
+  offHoursNotice?: string;
 }) {
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
@@ -301,35 +327,45 @@ function ItemModal({
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             <button
               type="button"
+              disabled={isOrdersPaused}
               onClick={handleAdd}
               style={{
                 width: '100%', padding: '14px 20px', borderRadius: theme.borderRadius,
-                background: added ? '#34D399' : theme.primaryColor, color: '#fff',
-                border: 'none', fontWeight: 700, fontSize: 16, cursor: 'pointer',
+                background: isOrdersPaused ? '#383334' : (added ? '#34D399' : theme.primaryColor),
+                color: isOrdersPaused ? '#8888A0' : '#fff',
+                border: 'none', fontWeight: 700, fontSize: 16,
+                cursor: isOrdersPaused ? 'not-allowed' : 'pointer',
+                opacity: isOrdersPaused ? 0.65 : 1,
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
-                boxShadow: `0 4px 16px ${theme.primaryColor}40`, transition: 'all 0.2s',
+                boxShadow: isOrdersPaused ? 'none' : `0 4px 16px ${theme.primaryColor}40`, transition: 'all 0.2s',
               }}
             >
-              {added ? <Check size={20} /> : <ShoppingCart size={20} />}
-              {added ? 'Səbətə əlavə edildi!' : `Səbətə əlavə et (${formatPrice(totalPrice, currency)})`}
+              {isOrdersPaused ? <Clock size={20} /> : (added ? <Check size={20} /> : <ShoppingCart size={20} />)}
+              {isOrdersPaused ? 'Sifariş qəbul edilmir' : (added ? 'Səbətə əlavə edildi!' : `Səbətə əlavə et (${formatPrice(totalPrice, currency)})`)}
             </button>
 
             {singleWhatsAppUrl && (
-              <a
-                href={singleWhatsAppUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  width: '100%', padding: '14px 20px', borderRadius: theme.borderRadius,
-                  background: theme.whatsappColor || '#25D366', color: theme.whatsappIconColor || '#FFFFFF', textDecoration: 'none',
-                  fontWeight: 700, fontSize: 16, display: 'flex', alignItems: 'center',
-                  justifyContent: 'center', gap: 10, boxShadow: `0 4px 16px ${(theme.whatsappColor || '#25D366')}59`,
-                  boxSizing: 'border-box',
-                }}
-              >
-                <MessageCircle size={20} color={theme.whatsappIconColor || '#FFFFFF'} />
-                WhatsApp ilə tək sifariş et
-              </a>
+              isOrdersPaused ? (
+                <div style={{ textAlign: 'center', fontSize: 12, color: '#F87171', padding: '6px' }}>
+                  ⏳ Hazırda qeyri-iş saatıdır. Sifariş qəbul edilmir.
+                </div>
+              ) : (
+                <a
+                  href={singleWhatsAppUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    width: '100%', padding: '14px 20px', borderRadius: theme.borderRadius,
+                    background: theme.whatsappColor || '#25D366', color: theme.whatsappIconColor || '#FFFFFF', textDecoration: 'none',
+                    fontWeight: 700, fontSize: 16, display: 'flex', alignItems: 'center',
+                    justifyContent: 'center', gap: 10, boxShadow: `0 4px 16px ${(theme.whatsappColor || '#25D366')}59`,
+                    boxSizing: 'border-box',
+                  }}
+                >
+                  <MessageCircle size={20} color={theme.whatsappIconColor || '#FFFFFF'} />
+                  WhatsApp ilə tək sifariş et
+                </a>
+              )
             )}
           </div>
         </div>
@@ -340,6 +376,8 @@ function ItemModal({
 }
 
 function CartDrawer({
+  isOrdersPaused,
+  offHoursNotice,
   isOpen,
   onClose,
   cart,
@@ -352,6 +390,8 @@ function CartDrawer({
   restaurantName,
   table,
 }: {
+  isOrdersPaused?: boolean;
+  offHoursNotice?: string;
   isOpen: boolean;
   onClose: () => void;
   cart: Record<string, { item: MenuItem; quantity: number }>;
@@ -593,10 +633,27 @@ function CartDrawer({
                 </div>
 
                 {whatsapp?.isEnabled && whatsapp.phoneNumber ? (
-                  <a
-                    href={buildWhatsAppUrl()}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  isOrdersPaused ? (
+                    <div>
+                      <OffHoursNotice message={offHoursNotice || 'Qeyri-iş saatıdır. Sifarişlər dayandırılıb.'} variant="inline" style={{ marginBottom: 12 }} />
+                      <button
+                        disabled
+                        style={{
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+                          width: '100%', padding: '14px', borderRadius: theme.borderRadius,
+                          background: '#383334', color: '#8888A0', fontWeight: 700, fontSize: 16,
+                          cursor: 'not-allowed', border: 'none', opacity: 0.65,
+                        }}
+                      >
+                        <Clock size={20} />
+                        <span>Sifariş qəbul edilmir</span>
+                      </button>
+                    </div>
+                  ) : (
+                    <a
+                      href={buildWhatsAppUrl()}
+                      target="_blank"
+                      rel="noopener noreferrer"
                     style={{
                       display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
                       width: '100%', padding: '14px 20px', borderRadius: theme.borderRadius,
@@ -608,11 +665,12 @@ function CartDrawer({
                     <MessageCircle size={20} color={theme.whatsappIconColor || '#FFFFFF'} />
                     WhatsApp ilə sifariş et
                   </a>
-                ) : (
-                  <div style={{ padding: 12, textAlign: 'center', color: '#F87171', fontSize: 13 }}>
-                    WhatsApp nömrəsi aktiv deyil
-                  </div>
-                )}
+                )
+              ) : (
+                <div style={{ padding: 12, textAlign: 'center', color: '#F87171', fontSize: 13 }}>
+                  WhatsApp nömrəsi aktiv deyil
+                </div>
+              )}
               </div>
             )}
           </motion.div>
@@ -715,11 +773,15 @@ function RestaurantReservationSection({
   theme,
   whatsapp,
   formBg,
+  isOrdersPaused,
+  offHoursNotice,
 }: {
   organization: SiteData['organization'];
   theme: ThemeConfig;
   whatsapp?: SiteData['whatsapp'];
   formBg: string;
+  isOrdersPaused?: boolean;
+  offHoursNotice?: string;
 }) {
   const [form, setForm] = useState({ name: '', phone: '', date: '', time: '', guests: '2', notes: '' });
   const [submitting, setSubmitting] = useState(false);
@@ -728,6 +790,7 @@ function RestaurantReservationSection({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name || !form.phone) return;
+    if (isOrdersPaused) return;
     setSubmitting(true);
 
     try {
@@ -938,6 +1001,10 @@ export default function RestaurantSite({ data, initialTable }: { data: SiteData;
     return <ProRestaurantSite data={data} theme={theme} table={table} />;
   }
   const { organization, whatsapp, socialLinks, workingHours, menuCategories } = data;
+  const { isOrdersPaused, noticeMessage: offHoursNotice } = useWorkingHours({
+    workingHours: data.workingHours,
+    settings: data.workingHoursSettings,
+  });
   const [activeCategory, setActiveCategory] = useState(menuCategories[0]?.id || '');
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -953,6 +1020,7 @@ export default function RestaurantSite({ data, initialTable }: { data: SiteData;
   }, [organization.slug]);
 
   const addToCart = (item: MenuItem, qty: number = 1) => {
+    if (isOrdersPaused) return;
     setCart(prev => {
       const existing = prev[item.id];
       const newQty = (existing?.quantity || 0) + qty;
@@ -1579,18 +1647,23 @@ export default function RestaurantSite({ data, initialTable }: { data: SiteData;
                         )}
                         <button
                           type="button"
+                          disabled={isOrdersPaused}
                           onClick={(e) => {
                             e.stopPropagation();
                             addToCart(item, 1);
                           }}
                           style={{
-                            border: 'none', background: theme.primaryColor, color: '#fff',
+                            border: 'none',
+                            background: isOrdersPaused ? '#383334' : theme.primaryColor,
+                            color: isOrdersPaused ? '#8888A0' : '#fff',
                             borderRadius: '50%', width: 34, height: 34, display: 'flex',
-                            alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
-                            boxShadow: `0 2px 8px ${theme.primaryColor}40`, flexShrink: 0,
+                            alignItems: 'center', justifyContent: 'center',
+                            cursor: isOrdersPaused ? 'not-allowed' : 'pointer',
+                            opacity: isOrdersPaused ? 0.65 : 1,
+                            boxShadow: isOrdersPaused ? 'none' : `0 2px 8px ${theme.primaryColor}40`, flexShrink: 0,
                             transition: 'all 0.15s',
                           }}
-                          title="Səbətə əlavə et"
+                          title={isOrdersPaused ? (offHoursNotice || 'Qeyri-iş saatıdır. Sifariş qəbul edilmir.') : 'Səbətə əlavə et'}
                         >
                           <Plus size={18} />
                         </button>
@@ -1699,18 +1772,23 @@ export default function RestaurantSite({ data, initialTable }: { data: SiteData;
                         </div>
                         <button
                           type="button"
+                          disabled={isOrdersPaused}
                           onClick={(e) => {
                             e.stopPropagation();
                             addToCart(item, 1);
                           }}
                           style={{
-                            border: 'none', background: theme.primaryColor, color: '#fff',
+                            border: 'none',
+                            background: isOrdersPaused ? '#383334' : theme.primaryColor,
+                            color: isOrdersPaused ? '#8888A0' : '#fff',
                             borderRadius: '50%', width: 30, height: 30, display: 'flex',
-                            alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
-                            boxShadow: `0 2px 8px ${theme.primaryColor}40`, flexShrink: 0,
+                            alignItems: 'center', justifyContent: 'center',
+                            cursor: isOrdersPaused ? 'not-allowed' : 'pointer',
+                            opacity: isOrdersPaused ? 0.65 : 1,
+                            boxShadow: isOrdersPaused ? 'none' : `0 2px 8px ${theme.primaryColor}40`, flexShrink: 0,
                             transition: 'all 0.15s',
                           }}
-                          title="Səbətə əlavə et"
+                          title={isOrdersPaused ? (offHoursNotice || 'Qeyri-iş saatıdır. Sifariş qəbul edilmir.') : 'Səbətə əlavə et'}
                         >
                           <Plus size={16} />
                         </button>
@@ -1823,6 +1901,7 @@ export default function RestaurantSite({ data, initialTable }: { data: SiteData;
           theme={theme}
           whatsapp={whatsapp}
           formBg={formBg}
+          isOrdersPaused={isOrdersPaused}
         />}
 
         {/* Contact */}
@@ -1971,7 +2050,7 @@ export default function RestaurantSite({ data, initialTable }: { data: SiteData;
                     <div key={wh.dayOfWeek} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: `1px solid ${theme.primaryColor}10`, fontSize: 13 }}>
                       <span style={{ color: `${theme.textColor}CC` }}>{DAY_NAMES[wh.dayOfWeek]}</span>
                       <span style={{ fontWeight: 600, color: wh.isClosed ? '#F87171' : theme.primaryColor }}>
-                        {wh.isClosed ? 'Bağlı' : `${wh.openTime} — ${wh.closeTime}`}
+                        {wh.isClosed ? 'Bağlı' : `${wh.openTime} — ${wh.closeTime}${wh.breakStart && wh.breakEnd ? ` (Fasilə: ${wh.breakStart}-${wh.breakEnd})` : ''}`}
                       </span>
                     </div>
                   ))}
@@ -2026,6 +2105,8 @@ export default function RestaurantSite({ data, initialTable }: { data: SiteData;
               onClose={() => setSelectedItem(null)}
               onAddToCart={addToCart}
               table={table}
+              isOrdersPaused={isOrdersPaused}
+              offHoursNotice={offHoursNotice}
             />
           )}
         </AnimatePresence>
@@ -2043,6 +2124,8 @@ export default function RestaurantSite({ data, initialTable }: { data: SiteData;
           currency={organization.currency}
           restaurantName={organization.name}
           table={table}
+          isOrdersPaused={isOrdersPaused}
+          offHoursNotice={offHoursNotice}
         />
 
         {/* Floating Cart Button */}

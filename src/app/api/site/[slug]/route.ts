@@ -15,6 +15,7 @@ export async function GET(
         whatsappSettings: true,
         socialLinks: { orderBy: { sortOrder: 'asc' } },
         workingHours: { orderBy: { dayOfWeek: 'asc' } },
+        workingHoursSettings: true,
         socialFeedPosts: {
           where: { isVisible: true },
           orderBy: { sortOrder: 'asc' },
@@ -63,6 +64,7 @@ export async function GET(
       socialLinks: organization.socialLinks,
       socialFeedPosts: organization.socialFeedPosts,
       workingHours: organization.workingHours,
+      workingHoursSettings: organization.workingHoursSettings,
       menuCategories: organization.menuCategories,
     });
   } catch (error) {

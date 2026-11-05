@@ -17,6 +17,8 @@ import {
   Download,
   Settings,
   Inbox,
+  Clock,
+  PenLine,
 } from 'lucide-react';
 import { NavItemConfig, SiteContext } from './types';
 
@@ -193,6 +195,7 @@ export const isProductsActive = (site: SiteContext | null): boolean => {
 export const dashboardNavItems: NavItemConfig[] = [
   { id: 'dashboard', href: '/dashboard', icon: LayoutDashboard, label: 'Ana Səhifə' },
   { id: 'website', href: '/dashboard/website', icon: Globe, label: 'Veb Saytım' },
+  { id: 'site-editor', href: '/dashboard/site-editor', icon: PenLine, label: 'Saytı Redaktə et' },
   { id: 'theme', href: '/dashboard/theme', icon: Palette, label: 'Tema Redaktoru', adminOnly: true },
   { id: 'social', href: '/dashboard/social', icon: Share2, label: 'Sosial Media' },
   { id: 'gallery', href: '/dashboard/gallery', icon: Images, label: 'Qalareya' },
@@ -251,6 +254,7 @@ export const dashboardNavItems: NavItemConfig[] = [
   { id: 'inquiries', href: '/dashboard/inquiries', icon: Inbox, label: 'Müraciətlər' },
   { id: 'media', href: '/dashboard/media', icon: Image, label: 'Media Kitabxanası' },
   { id: 'whatsapp', href: '/dashboard/whatsapp', icon: MessageCircle, label: 'Sifariş Ayarları' },
+  { id: 'working-hours', href: '/dashboard/working-hours', icon: Clock, label: 'İş Saatları' },
   { id: 'qr', href: '/dashboard/qr', icon: QrCode, label: 'QR Yaradıcı' },
   { id: 'analytics', href: '/dashboard/analytics', icon: BarChart3, label: 'Analitika' },
   { id: 'billing', href: '/dashboard/billing', icon: CreditCard, label: 'Abunəlik' },

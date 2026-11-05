@@ -7,6 +7,8 @@ import { formatPrice, formatWhatsAppUrl } from '@/lib/utils';
 import { getGoogleMapsEmbedUrl } from '@/lib/maps';
 import type { SiteData, MenuItem, MenuCategory } from './RestaurantSite';
 import SplashScreen from './SplashScreen';
+import { useWorkingHours } from '@/hooks/useWorkingHours';
+import { OffHoursNotice } from '@/components/common/OffHoursNotice';
 
 const PRIMARY = '#004527';
 const SECONDARY = '#a93539';
@@ -506,7 +508,7 @@ function AboutSection({ data, theme }: { data: SiteData; theme: ThemeConfig }) {
 }
 
 // ─── Menu Section ────────────────────────────────────────────────────────────
-function MenuSection({ data, theme, cart, onAddToCart, onOpenCart }: { data: SiteData; theme: ThemeConfig; cart: Record<string, { item: MenuItem; quantity: number }>; onAddToCart: (item: MenuItem) => void; onOpenCart: () => void; }) {
+function MenuSection({ data, theme, cart, onAddToCart, onOpenCart, isOrdersPaused, offHoursNotice }: { data: SiteData; theme: ThemeConfig; cart: Record<string, { item: MenuItem; quantity: number }>; onAddToCart: (item: MenuItem) => void; onOpenCart: () => void; isOrdersPaused?: boolean; offHoursNotice?: string; }) {
   const { organization, menuCategories } = data;
   const primary = theme.primaryColor || PRIMARY;
   const heading = theme.headingFont || 'Playfair Display';
@@ -558,7 +560,7 @@ function MenuSection({ data, theme, cart, onAddToCart, onOpenCart }: { data: Sit
         {items.length > 0 ? (
           <div className="randevu-menu-grid">
             {items.map(item => (
-              <MenuCard key={item.id} item={item} theme={theme} currency={organization.currency} data={data} cart={cart} onAddToCart={onAddToCart} onOpenCart={onOpenCart} />
+              <MenuCard key={item.id} item={item} theme={theme} currency={organization.currency} data={data} cart={cart} onAddToCart={onAddToCart} onOpenCart={onOpenCart} isOrdersPaused={isOrdersPaused} offHoursNotice={offHoursNotice} />
             ))}
           </div>
         ) : (
@@ -616,7 +618,7 @@ function MenuSection({ data, theme, cart, onAddToCart, onOpenCart }: { data: Sit
   );
 }
 
-function MenuCard({ item, theme, currency, data, cart, onAddToCart, onOpenCart }: { item: MenuItem; theme: ThemeConfig; currency: string; data: SiteData; cart: Record<string, { item: MenuItem; quantity: number }>; onAddToCart: (item: MenuItem) => void; onOpenCart: () => void; }) {
+function MenuCard({ item, theme, currency, data, cart, onAddToCart, onOpenCart, isOrdersPaused, offHoursNotice }: { item: MenuItem; theme: ThemeConfig; currency: string; data: SiteData; cart: Record<string, { item: MenuItem; quantity: number }>; onAddToCart: (item: MenuItem) => void; onOpenCart: () => void; isOrdersPaused?: boolean; offHoursNotice?: string; }) {
   const primary = theme.primaryColor || PRIMARY;
   const heading = theme.headingFont || 'Playfair Display';
   const body = theme.bodyFont || 'Plus Jakarta Sans';
@@ -671,30 +673,38 @@ function MenuCard({ item, theme, currency, data, cart, onAddToCart, onOpenCart }
         {/* Action buttons */}
         <div style={{ display: 'flex', gap: 8 }}>
           <button
+            disabled={isOrdersPaused}
             onClick={() => { onAddToCart(item); onOpenCart(); }}
+            title={isOrdersPaused ? (offHoursNotice || 'Qeyri-iş saatıdır. Sifariş qəbul edilmir.') : undefined}
             style={{
               flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-              background: inCart ? primary : `${primary}12`,
-              color: inCart ? '#fff' : primary,
-              border: `1.5px solid ${primary}30`,
+              background: isOrdersPaused ? '#38333420' : (inCart ? primary : `${primary}12`),
+              color: isOrdersPaused ? '#8888A0' : (inCart ? '#fff' : primary),
+              border: `1.5px solid ${isOrdersPaused ? '#38333440' : `${primary}30`}`,
               borderRadius: 10, padding: '9px 12px',
-              fontFamily: body, fontSize: 13, fontWeight: 700, cursor: 'pointer',
+              fontFamily: body, fontSize: 13, fontWeight: 700,
+              cursor: isOrdersPaused ? 'not-allowed' : 'pointer',
+              opacity: isOrdersPaused ? 0.65 : 1,
               transition: 'all 0.2s',
             }}
           >
-            {inCart ? <Check size={15} /> : <ShoppingCart size={15} />}
-            {inCart ? 'Səbətə əlavə edildi' : 'Səbətə əlavə et'}
+            {isOrdersPaused ? <Clock size={15} /> : (inCart ? <Check size={15} /> : <ShoppingCart size={15} />)}
+            {isOrdersPaused ? 'Sifariş qəbul edilmir' : (inCart ? 'Səbətə əlavə edildi' : 'Səbətə əlavə et')}
           </button>
           {whatsapp?.isEnabled && whatsapp.phoneNumber && (
             <button
               onClick={orderViaWhatsApp}
-              title="WhatsApp ilə sifariş et"
+              disabled={isOrdersPaused}
+              title={isOrdersPaused ? (offHoursNotice || 'Qeyri-iş saatıdır') : 'WhatsApp ilə sifariş et'}
               style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                background: '#25D36615', color: '#25D366',
-                border: '1.5px solid #25D36630',
+                background: isOrdersPaused ? '#38333420' : '#25D36615',
+                color: isOrdersPaused ? '#8888A0' : '#25D366',
+                border: `1.5px solid ${isOrdersPaused ? '#38333450' : '#25D36630'}`,
                 borderRadius: 10, padding: '9px 12px',
-                cursor: 'pointer', transition: 'all 0.2s',
+                cursor: isOrdersPaused ? 'not-allowed' : 'pointer',
+                opacity: isOrdersPaused ? 0.6 : 1,
+                transition: 'all 0.2s',
               }}
             >
               <MessageCircle size={16} />
@@ -932,7 +942,7 @@ function GallerySection({ theme, items }: { theme: ThemeConfig; items?: Array<{ 
 }
 
 // ─── Reservation Section ─────────────────────────────────────────────────────
-function ReservationSection({ data, theme }: { data: SiteData; theme: ThemeConfig }) {
+function ReservationSection({ data, theme, isOrdersPaused, offHoursNotice }: { data: SiteData; theme: ThemeConfig; isOrdersPaused?: boolean; offHoursNotice?: string }) {
   const primary = theme.primaryColor || PRIMARY;
   const heading = theme.headingFont || 'Playfair Display';
   const body = theme.bodyFont || 'Plus Jakarta Sans';
@@ -1107,7 +1117,7 @@ function ContactSection({ data, theme }: { data: SiteData; theme: ThemeConfig })
                 {workingHours.map(wh => (
                   <div key={wh.dayOfWeek} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: `1px solid ${primary}08`, fontFamily: body, fontSize: 13 }}>
                     <span style={{ color: `${TEXT}CC` }}>{DAY_NAMES[wh.dayOfWeek]}</span>
-                    <span style={{ fontWeight: 700, color: wh.isClosed ? '#e74c3c' : primary }}>{wh.isClosed ? 'Bağlı' : `${wh.openTime} – ${wh.closeTime}`}</span>
+                    <span style={{ fontWeight: 700, color: wh.isClosed ? '#e74c3c' : primary }}>{wh.isClosed ? 'Bağlı' : `${wh.openTime} – ${wh.closeTime}${wh.breakStart && wh.breakEnd ? ` (Fasilə: ${wh.breakStart}-${wh.breakEnd})` : ''}`}</span>
                   </div>
                 ))}
               </div>
@@ -1308,6 +1318,7 @@ function WhatsAppFloat({ data, theme }: { data: SiteData; theme: ThemeConfig }) 
 function CartDrawer({
   isOpen, onClose, cart, onUpdateQty, onRemove, onClear,
   theme, whatsapp, currency, restaurantName,
+  isOrdersPaused, offHoursNotice,
 }: {
   isOpen: boolean; onClose: () => void;
   cart: Record<string, { item: MenuItem; quantity: number }>;
@@ -1316,6 +1327,8 @@ function CartDrawer({
   onClear: () => void;
   theme: ThemeConfig; whatsapp: SiteData['whatsapp'];
   currency: string; restaurantName: string;
+  isOrdersPaused?: boolean;
+  offHoursNotice?: string;
 }) {
   const primary = theme.primaryColor || PRIMARY;
   const body = theme.bodyFont || 'Plus Jakarta Sans';
@@ -1413,6 +1426,23 @@ function CartDrawer({
               <span style={{ fontFamily: heading, fontSize: 20, fontWeight: 800, color: primary }}>{totalSum.toFixed(2)} {currency}</span>
             </div>
             {whatsapp?.isEnabled && whatsapp.phoneNumber ? (
+              isOrdersPaused ? (
+                <div>
+                  <OffHoursNotice message={offHoursNotice || 'Qeyri-iş saatıdır. Sifarişlər dayandırılıb.'} variant="inline" style={{ marginBottom: 12 }} />
+                  <button
+                    disabled
+                    style={{
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%',
+                      background: '#383334', color: '#8888A0',
+                      borderRadius: 12, padding: '14px', border: 'none',
+                      fontFamily: body, fontSize: 15, fontWeight: 700, cursor: 'not-allowed', opacity: 0.65,
+                    }}
+                  >
+                    <Clock size={18} />
+                    Sifariş qəbul edilmir
+                  </button>
+                </div>
+              ) : (
               <a
                 href={buildWhatsAppUrl()}
                 target="_blank"
@@ -1427,6 +1457,7 @@ function CartDrawer({
                 <MessageCircle size={18} />
                 WhatsApp ilə sifariş et
               </a>
+              )
             ) : (
               <div style={{ textAlign: 'center', fontFamily: body, fontSize: 13, color: '#aaa', padding: '8px' }}>
                 WhatsApp sifarisi aktiv deyil
@@ -1441,6 +1472,11 @@ function CartDrawer({
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function RandevuCafeSite({ data, theme }: { data: SiteData; theme: ThemeConfig }) {
+  const workingStatus = useWorkingHours({
+    workingHours: data.workingHours,
+    settings: data.workingHoursSettings,
+  });
+  const isOrdersPaused = workingStatus.isOrdersPaused;
   const [activeSection, setActiveSection] = useState('hero');
   const [cart, setCart] = useState<Record<string, { item: MenuItem; quantity: number }>>({});
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -1452,6 +1488,7 @@ export default function RandevuCafeSite({ data, theme }: { data: SiteData; theme
   const showContact = moduleSettings.contact !== false;
 
   const addToCart = (item: MenuItem) => {
+    if (isOrdersPaused) return;
     setCart(prev => {
       const existing = prev[item.id];
       return { ...prev, [item.id]: { item, quantity: (existing?.quantity || 0) + 1 } };
@@ -1505,10 +1542,10 @@ export default function RandevuCafeSite({ data, theme }: { data: SiteData; theme
         <Header data={data} theme={theme} activeSection={activeSection} />
         <HeroSection data={data} theme={theme} />
         <AboutSection data={data} theme={theme} />
-        {showMenu && <MenuSection data={data} theme={theme} cart={cart} onAddToCart={addToCart} onOpenCart={() => setIsCartOpen(true)} />}
+        {showMenu && <MenuSection data={data} theme={theme} cart={cart} onAddToCart={addToCart} onOpenCart={() => setIsCartOpen(true)} isOrdersPaused={isOrdersPaused} offHoursNotice={workingStatus.noticeMessage} />}
         {showPackages && <OffersSection data={data} theme={theme} />}
         {showGallery && <GallerySection theme={theme} items={data.galleryItems} />}
-        {showContact && <ReservationSection data={data} theme={theme} />}
+        {showContact && <ReservationSection data={data} theme={theme} isOrdersPaused={isOrdersPaused} offHoursNotice={workingStatus.noticeMessage} />}
         <ContactSection data={data} theme={theme} />
         <Footer data={data} theme={theme} />
         <WhatsAppFloat data={data} theme={theme} />
