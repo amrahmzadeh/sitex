@@ -503,14 +503,110 @@ body {
 
 /* Prevent horizontal overflow globally */
 .dash-main {
-  word-break: break-word;
-  overflow-wrap: break-word;
+  overflow-wrap: anywhere;
 }
 
 /* Table scroll wrapper */
 .dash-table-scroll {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+}
+
+/* ==================== MENU & CATALOG RESPONSIVE ==================== */
+.dash-menu-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.dash-menu-item-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px;
+}
+
+.dash-menu-item-top {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+  min-width: 0;
+}
+
+.dash-menu-item-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .dash-menu-layout {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  .dash-menu-categories {
+    display: flex !important;
+    flex-direction: row !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    gap: 8px !important;
+    padding: 8px !important;
+    scrollbar-width: none;
+  }
+
+  .dash-menu-categories::-webkit-scrollbar {
+    display: none;
+  }
+
+  .dash-menu-category-item {
+    border-bottom: none !important;
+    border: 1px solid #2A2A3A !important;
+    border-radius: 10px !important;
+    padding: 6px 12px !important;
+    flex-shrink: 0 !important;
+  }
+
+  .dash-menu-item-card {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+    padding: 14px !important;
+  }
+
+  .dash-menu-item-top {
+    width: 100% !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+  }
+
+  .dash-menu-item-actions {
+    width: 100% !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    justify-content: flex-start !important;
+  }
+
+  .dash-menu-item-actions button {
+    flex: 1 1 auto !important;
+    justify-content: center !important;
+    padding: 8px 12px !important;
+    font-size: 13px !important;
+    min-height: 36px !important;
+  }
+
+  .dash-menu-item-actions button:last-child {
+    flex: 0 0 38px !important;
+    width: 38px !important;
+    padding: 8px !important;
+  }
 }
 
 /* ==================== BREAKPOINTS ==================== */
@@ -613,19 +709,7 @@ body {
   }
 }
 
-/* ==================== MENU PAGE LAYOUT ==================== */
-/* Menu page category sidebar + items grid */
-.dash-menu-layout {
-  display: grid;
-  grid-template-columns: 260px 1fr;
-  gap: 24px;
-  align-items: start;
-}
-
 @media (max-width: 768px) {
-  .dash-menu-layout {
-    grid-template-columns: 1fr !important;
-  }
   .dash-qr-design-grid {
     grid-template-columns: 1fr !important;
   }

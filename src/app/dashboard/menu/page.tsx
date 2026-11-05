@@ -474,7 +474,7 @@ export default function MenuPage() {
           boxShadow: '0 4px 20px rgba(0,0,0,0.25)',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14, minWidth: 260, flex: 1 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14, minWidth: 0, flex: 1 }}>
           {currentHeroItem?.image ? (
             <img
               src={currentHeroItem.image}
@@ -541,10 +541,10 @@ export default function MenuPage() {
         </div>
       </div>
 
-      <div className="dash-menu-layout" style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: 24, alignItems: 'start' }}>
+      <div className="dash-menu-layout">
         {/* Categories sidebar */}
         <div>
-          <div className="dash-card" style={{ overflow: 'hidden' }}>
+          <div className="dash-card dash-menu-categories" style={{ overflow: 'hidden' }}>
             {categories.length === 0 ? (
               <div style={{ padding: 24, textAlign: 'center', color: '#8888A0', fontSize: 14 }}>
                 <UtensilsCrossed size={32} style={{ margin: '0 auto 12px', opacity: 0.3 }} />
@@ -555,6 +555,7 @@ export default function MenuPage() {
                 <div
                   key={cat.id}
                   onClick={() => setActiveCategory(cat.id)}
+                  className="dash-menu-category-item"
                   style={{
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                     padding: '12px 16px', cursor: 'pointer', borderBottom: '1px solid #2A2A3A',
@@ -661,51 +662,52 @@ export default function MenuPage() {
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95 }}
-                        className="dash-card"
-                        style={{ display: 'flex', gap: 16, padding: 16, alignItems: 'center' }}
+                        className="dash-card dash-menu-item-card"
                       >
-                        {item.image ? (
-                          <img src={item.image} alt={item.name} style={{ width: 64, height: 64, borderRadius: 10, objectFit: 'cover', flexShrink: 0 }} />
-                        ) : (
-                          <div style={{ width: 64, height: 64, borderRadius: 10, background: '#2A2A3A', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                            <UtensilsCrossed size={24} color="#444" />
-                          </div>
-                        )}
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 4 }}>
-                            <span style={{ fontSize: 15, fontWeight: 600, color: '#E8E8F0' }}>{item.name}</span>
-                            {item.isSet && (
-                              <span style={{ background: 'rgba(245,158,11,0.2)', color: '#FCD34D', border: '1px solid rgba(245,158,11,0.4)', fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 100, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                                🍱 YEMƏK SETİ
-                              </span>
-                            )}
-                            {(item.id === currentHeroItem?.id || item.isFeatured) && (
-                              <span style={{ background: 'linear-gradient(135deg, rgba(245,158,11,0.25), rgba(229,169,60,0.35))', color: '#FBBF24', border: '1px solid rgba(251,191,36,0.5)', fontSize: 10, fontWeight: 700, padding: '1px 8px', borderRadius: 100, display: 'inline-flex', alignItems: 'center', gap: 3 }}>
-                                <Star size={10} fill="#FBBF24" /> Başlıq Kartı
-                              </span>
-                            )}
-                            {item.isNew && <span style={{ background: 'rgba(52,211,153,0.15)', color: '#34D399', fontSize: 10, padding: '1px 6px', borderRadius: 100 }}>Yeni</span>}
-                            {item.isPopular && <span style={{ background: 'rgba(248,113,113,0.15)', color: '#F87171', fontSize: 10, padding: '1px 6px', borderRadius: 100 }}>Populyar</span>}
-                            {item.video && <span style={{ background: 'rgba(255,159,28,0.18)', color: '#FF9F1C', fontSize: 10, padding: '1px 6px', borderRadius: 100, display: 'inline-flex', alignItems: 'center', gap: 3 }}>🎬 Video</span>}
-                          </div>
-                          {item.description && <p style={{ fontSize: 12, color: '#8888A0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.description}</p>}
-                          {item.isSet && item.setItems && (
-                            <div style={{ marginTop: 4, fontSize: 11, color: '#FCD34D', background: 'rgba(245,158,11,0.08)', padding: '2px 8px', borderRadius: 6, display: 'inline-block' }}>
-                              <span style={{ fontWeight: 600 }}>Tərkib:</span> {formatSetSummary(item.setItems)}
+                        <div className="dash-menu-item-top">
+                          {item.image ? (
+                            <img src={item.image} alt={item.name} style={{ width: 64, height: 64, borderRadius: 10, objectFit: 'cover', flexShrink: 0 }} />
+                          ) : (
+                            <div style={{ width: 64, height: 64, borderRadius: 10, background: '#2A2A3A', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                              <UtensilsCrossed size={24} color="#444" />
                             </div>
                           )}
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 4 }}>
-                            {item.discountPrice ? (
-                              <>
-                                <span style={{ fontSize: 14, fontWeight: 700, color: '#34D399' }}>{item.discountPrice.toFixed(2)} {currency}</span>
-                                <span style={{ fontSize: 12, color: '#8888A0', textDecoration: 'line-through' }}>{item.price.toFixed(2)} {currency}</span>
-                              </>
-                            ) : (
-                              <span style={{ fontSize: 14, fontWeight: 700, color: '#7C5CFC' }}>{item.price.toFixed(2)} {currency}</span>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 4 }}>
+                              <span style={{ fontSize: 15, fontWeight: 600, color: '#E8E8F0' }}>{item.name}</span>
+                              {item.isSet && (
+                                <span style={{ background: 'rgba(245,158,11,0.2)', color: '#FCD34D', border: '1px solid rgba(245,158,11,0.4)', fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 100, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                                  🍱 YEMƏK SETİ
+                                </span>
+                              )}
+                              {(item.id === currentHeroItem?.id || item.isFeatured) && (
+                                <span style={{ background: 'linear-gradient(135deg, rgba(245,158,11,0.25), rgba(229,169,60,0.35))', color: '#FBBF24', border: '1px solid rgba(251,191,36,0.5)', fontSize: 10, fontWeight: 700, padding: '1px 8px', borderRadius: 100, display: 'inline-flex', alignItems: 'center', gap: 3 }}>
+                                  <Star size={10} fill="#FBBF24" /> Başlıq Kartı
+                                </span>
+                              )}
+                              {item.isNew && <span style={{ background: 'rgba(52,211,153,0.15)', color: '#34D399', fontSize: 10, padding: '1px 6px', borderRadius: 100 }}>Yeni</span>}
+                              {item.isPopular && <span style={{ background: 'rgba(248,113,113,0.15)', color: '#F87171', fontSize: 10, padding: '1px 6px', borderRadius: 100 }}>Populyar</span>}
+                              {item.video && <span style={{ background: 'rgba(255,159,28,0.18)', color: '#FF9F1C', fontSize: 10, padding: '1px 6px', borderRadius: 100, display: 'inline-flex', alignItems: 'center', gap: 3 }}>🎬 Video</span>}
+                            </div>
+                            {item.description && <p style={{ fontSize: 12, color: '#8888A0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.description}</p>}
+                            {item.isSet && item.setItems && (
+                              <div style={{ marginTop: 4, fontSize: 11, color: '#FCD34D', background: 'rgba(245,158,11,0.08)', padding: '2px 8px', borderRadius: 6, display: 'inline-block' }}>
+                                <span style={{ fontWeight: 600 }}>Tərkib:</span> {formatSetSummary(item.setItems)}
+                              </div>
                             )}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 4 }}>
+                              {item.discountPrice ? (
+                                <>
+                                  <span style={{ fontSize: 14, fontWeight: 700, color: '#34D399' }}>{item.discountPrice.toFixed(2)} {currency}</span>
+                                  <span style={{ fontSize: 12, color: '#8888A0', textDecoration: 'line-through' }}>{item.price.toFixed(2)} {currency}</span>
+                                </>
+                              ) : (
+                                <span style={{ fontSize: 14, fontWeight: 700, color: '#7C5CFC' }}>{item.price.toFixed(2)} {currency}</span>
+                              )}
+                            </div>
                           </div>
                         </div>
-                        <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
+                        <div className="dash-menu-item-actions">
                           {item.id === currentHeroItem?.id || item.isFeatured ? (
                             <button
                               type="button"

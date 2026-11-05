@@ -363,128 +363,126 @@ export default function PackagesPage() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.96 }}
-                    className="dash-card"
+                    className="dash-card dash-menu-item-card"
                     style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 16,
-                      padding: 16,
                       border: pkg.isActive ? '1px solid rgba(255,255,255,0.06)' : '1px dashed rgba(255,255,255,0.04)',
                       opacity: pkg.isActive ? 1 : 0.6,
                       transition: 'all 0.2s',
                     }}
                   >
-                    {/* Sort buttons */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                      <button
-                        onClick={() => handleMoveOrder(index, 'up')}
-                        disabled={index === 0}
-                        style={{
-                          border: 'none',
-                          background: 'rgba(255,255,255,0.04)',
-                          color: index === 0 ? '#444' : '#8888A0',
-                          cursor: index === 0 ? 'default' : 'pointer',
-                          padding: 4,
-                          borderRadius: 6,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                        }}
-                      >
-                        <ArrowUp size={14} />
-                      </button>
-                      <button
-                        onClick={() => handleMoveOrder(index, 'down')}
-                        disabled={index === packages.length - 1}
-                        style={{
-                          border: 'none',
-                          background: 'rgba(255,255,255,0.04)',
-                          color: index === packages.length - 1 ? '#444' : '#8888A0',
-                          cursor: index === packages.length - 1 ? 'default' : 'pointer',
-                          padding: 4,
-                          borderRadius: 6,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                        }}
-                      >
-                        <ArrowDown size={14} />
-                      </button>
-                    </div>
-
-                    {/* Image / Thumbnail */}
-                    {pkg.image ? (
-                      <img
-                        src={pkg.image}
-                        alt={pkg.name}
-                        style={{ width: 72, height: 72, borderRadius: 10, objectFit: 'cover', flexShrink: 0 }}
-                        onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-                      />
-                    ) : (
-                      <div style={{ width: 72, height: 72, borderRadius: 10, background: 'rgba(245, 158, 11, 0.12)', border: '1px solid rgba(245, 158, 11, 0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                        <Package size={28} color="#F59E0B" />
-                      </div>
-                    )}
-
-                    {/* Content */}
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 4 }}>
-                        <h4 style={{ fontSize: 16, fontWeight: 700, color: '#F7F8F9', margin: 0 }}>
-                          {pkg.title || pkg.name}
-                        </h4>
-                        {pkg.tag && (
-                          <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', background: 'rgba(245, 158, 11, 0.15)', color: '#F59E0B', border: '1px solid rgba(245, 158, 11, 0.3)', padding: '2px 8px', borderRadius: 100 }}>
-                            {pkg.tag}
-                          </span>
-                        )}
-                        {pkg.badgeText && (
-                          <span style={{ fontSize: 10, fontWeight: 600, background: 'rgba(124, 92, 252, 0.15)', color: '#A78BFA', border: '1px solid rgba(124, 92, 252, 0.3)', padding: '2px 8px', borderRadius: 100 }}>
-                            {pkg.badgeText}
-                          </span>
-                        )}
-                        {!pkg.isActive && (
-                          <span style={{ fontSize: 10, fontWeight: 600, background: 'rgba(248, 113, 113, 0.15)', color: '#F87171', padding: '2px 6px', borderRadius: 6 }}>
-                            Deaktiv
-                          </span>
-                        )}
+                    <div className="dash-menu-item-top">
+                      {/* Sort buttons */}
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                        <button
+                          onClick={() => handleMoveOrder(index, 'up')}
+                          disabled={index === 0}
+                          style={{
+                            border: 'none',
+                            background: 'rgba(255,255,255,0.04)',
+                            color: index === 0 ? '#444' : '#8888A0',
+                            cursor: index === 0 ? 'default' : 'pointer',
+                            padding: 4,
+                            borderRadius: 6,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                        >
+                          <ArrowUp size={14} />
+                        </button>
+                        <button
+                          onClick={() => handleMoveOrder(index, 'down')}
+                          disabled={index === packages.length - 1}
+                          style={{
+                            border: 'none',
+                            background: 'rgba(255,255,255,0.04)',
+                            color: index === packages.length - 1 ? '#444' : '#8888A0',
+                            cursor: index === packages.length - 1 ? 'default' : 'pointer',
+                            padding: 4,
+                            borderRadius: 6,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                        >
+                          <ArrowDown size={14} />
+                        </button>
                       </div>
 
-                      {pkg.description && (
-                        <p style={{ fontSize: 13, color: '#8888A0', margin: '0 0 6px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                          {pkg.description}
-                        </p>
+                      {/* Image / Thumbnail */}
+                      {pkg.image ? (
+                        <img
+                          src={pkg.image}
+                          alt={pkg.name}
+                          style={{ width: 72, height: 72, borderRadius: 10, objectFit: 'cover', flexShrink: 0 }}
+                          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                        />
+                      ) : (
+                        <div style={{ width: 72, height: 72, borderRadius: 10, background: 'rgba(245, 158, 11, 0.12)', border: '1px solid rgba(245, 158, 11, 0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <Package size={28} color="#F59E0B" />
+                        </div>
                       )}
 
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-                        {price !== null && price !== undefined ? (
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                            {discountPrice !== null && discountPrice !== undefined && discountPrice < price ? (
-                              <>
-                                <span style={{ fontSize: 15, fontWeight: 700, color: '#34D399' }}>
-                                  {discountPrice.toFixed(2)} {currency}
-                                </span>
-                                <span style={{ fontSize: 12, color: '#8888A0', textDecoration: 'line-through' }}>
+                      {/* Content */}
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 4 }}>
+                          <h4 style={{ fontSize: 16, fontWeight: 700, color: '#F7F8F9', margin: 0 }}>
+                            {pkg.title || pkg.name}
+                          </h4>
+                          {pkg.tag && (
+                            <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', background: 'rgba(245, 158, 11, 0.15)', color: '#F59E0B', border: '1px solid rgba(245, 158, 11, 0.3)', padding: '2px 8px', borderRadius: 100 }}>
+                              {pkg.tag}
+                            </span>
+                          )}
+                          {pkg.badgeText && (
+                            <span style={{ fontSize: 10, fontWeight: 600, background: 'rgba(124, 92, 252, 0.15)', color: '#A78BFA', border: '1px solid rgba(124, 92, 252, 0.3)', padding: '2px 8px', borderRadius: 100 }}>
+                              {pkg.badgeText}
+                            </span>
+                          )}
+                          {!pkg.isActive && (
+                            <span style={{ fontSize: 10, fontWeight: 600, background: 'rgba(248, 113, 113, 0.15)', color: '#F87171', padding: '2px 6px', borderRadius: 6 }}>
+                              Deaktiv
+                            </span>
+                          )}
+                        </div>
+
+                        {pkg.description && (
+                          <p style={{ fontSize: 13, color: '#8888A0', margin: '0 0 6px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            {pkg.description}
+                          </p>
+                        )}
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+                          {price !== null && price !== undefined ? (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                              {discountPrice !== null && discountPrice !== undefined && discountPrice < price ? (
+                                <>
+                                  <span style={{ fontSize: 15, fontWeight: 700, color: '#34D399' }}>
+                                    {discountPrice.toFixed(2)} {currency}
+                                  </span>
+                                  <span style={{ fontSize: 12, color: '#8888A0', textDecoration: 'line-through' }}>
+                                    {price.toFixed(2)} {currency}
+                                  </span>
+                                </>
+                              ) : (
+                                <span style={{ fontSize: 15, fontWeight: 700, color: '#F59E0B' }}>
                                   {price.toFixed(2)} {currency}
                                 </span>
-                              </>
-                            ) : (
-                              <span style={{ fontSize: 15, fontWeight: 700, color: '#F59E0B' }}>
-                                {price.toFixed(2)} {currency}
-                              </span>
-                            )}
-                          </div>
-                        ) : null}
+                              )}
+                            </div>
+                          ) : null}
 
-                        {Array.isArray(pkg.features) && pkg.features.length > 0 && (
-                          <span style={{ fontSize: 12, color: '#9BA3AF' }}>
-                            • {pkg.features.length} xidmət / üstünlük
-                          </span>
-                        )}
+                          {Array.isArray(pkg.features) && pkg.features.length > 0 && (
+                            <span style={{ fontSize: 12, color: '#9BA3AF' }}>
+                              • {pkg.features.length} xidmət / üstünlük
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
 
                     {/* Actions */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+                    <div className="dash-menu-item-actions">
                       <button
                         onClick={() => handleToggleActive(pkg)}
                         title={pkg.isActive ? 'Deaktiv et' : 'Aktiv et'}
