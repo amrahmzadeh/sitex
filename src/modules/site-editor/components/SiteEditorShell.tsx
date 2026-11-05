@@ -73,6 +73,7 @@ export default function SiteEditorShell({ orgId, slug }: SiteEditorShellProps) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [showPreview, setShowPreview] = useState(false);
   const [previewDevice, setPreviewDevice] = useState<PreviewDevice>('mobile');
+  const [previewKey, setPreviewKey] = useState<number>(() => Date.now());
 
   const pages = getPages();
 
@@ -145,6 +146,7 @@ export default function SiteEditorShell({ orgId, slug }: SiteEditorShellProps) {
       if (!res.ok) { setError(data.error || 'Saxlama xətası'); return; }
       setContentMap(JSON.parse(JSON.stringify(draftMap)));
       setIsDirty(false);
+      setPreviewKey(Date.now());
       if (!silent) { setSaved(true); setTimeout(() => setSaved(false), 2500); }
     } catch {
       if (!silent) setError('Saxlama zamanı xəta baş verdi');
@@ -161,6 +163,7 @@ export default function SiteEditorShell({ orgId, slug }: SiteEditorShellProps) {
       const res = await fetch(`/api/organizations/${orgId}/site-content/publish`, { method: 'POST' });
       if (!res.ok) { const d = await res.json(); setError(d.error || 'Yayım xətası'); return; }
       setPublished(true);
+      setPreviewKey(Date.now());
       setTimeout(() => setPublished(false), 3000);
     } catch {
       setError('Yayım zamanı xəta baş verdi');
@@ -447,7 +450,11 @@ export default function SiteEditorShell({ orgId, slug }: SiteEditorShellProps) {
         <div className="topbar-actions">
           <button
             type="button"
-            onClick={() => {
+            onClick={async () => {
+              if (isDirty) {
+                await saveDraft(true);
+              }
+              setPreviewKey(Date.now());
               if (isMobile) {
                 setMobileTab(mobileTab === 'preview' ? 'edit' : 'preview');
               } else {
@@ -670,7 +677,7 @@ export default function SiteEditorShell({ orgId, slug }: SiteEditorShellProps) {
             <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', background: '#0a0a0e', overflow: 'hidden', padding: previewDevice === 'desktop' ? 0 : 12 }}>
               <div style={{ width: getPreviewWidth(), height: '100%', maxHeight: '100%', transition: 'all 0.25s ease', boxShadow: previewDevice !== 'desktop' ? '0 10px 30px rgba(0,0,0,0.8)' : 'none', borderRadius: previewDevice !== 'desktop' ? 12 : 0, overflow: 'hidden', border: previewDevice !== 'desktop' ? `1px solid ${C.border}` : 'none' }}>
                 <iframe
-                  src={`/site/${slug}?preview=1&t=${Date.now()}`}
+                  src={`/site/${slug}?preview=1&t=${previewKey}`}
                   style={{ width: '100%', height: '100%', border: 'none', background: '#fff' }}
                   title="Sayt önizləməsi"
                 />
@@ -683,7 +690,7 @@ export default function SiteEditorShell({ orgId, slug }: SiteEditorShellProps) {
         {isMobile && mobileTab === 'preview' && (
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100%', background: '#000' }}>
             <iframe
-              src={`/site/${slug}?preview=1&t=${Date.now()}`}
+              src={`/site/${slug}?preview=1&t=${previewKey}`}
               style={{ flex: 1, width: '100%', height: '100%', border: 'none' }}
               title="Sayt mobil önizləməsi"
             />

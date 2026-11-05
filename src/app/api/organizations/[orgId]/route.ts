@@ -38,6 +38,7 @@ export async function GET(
         galleryItems: { orderBy: { sortOrder: 'asc' } },
         packages: { orderBy: { sortOrder: 'asc' } },
         workingHours: { orderBy: { dayOfWeek: 'asc' } },
+        siteContents: true,
         menuCategories: {
           orderBy: { sortOrder: 'asc' },
           include: {

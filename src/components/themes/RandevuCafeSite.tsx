@@ -193,6 +193,8 @@ function Header({ data, theme, activeSection }: { data: SiteData; theme: ThemeCo
 // ─── Hero Section ────────────────────────────────────────────────────────────
 function HeroSection({ data, theme }: { data: SiteData; theme: ThemeConfig }) {
   const { organization, menuCategories } = data;
+  const content = getResolvedSiteContent(data.siteContent, organization);
+  if (!content.hero.visible) return null;
   const primary = theme.primaryColor || PRIMARY;
   const secondary = theme.secondaryColor || SECONDARY;
   const heading = theme.headingFont || 'Playfair Display';
@@ -239,12 +241,12 @@ function HeroSection({ data, theme }: { data: SiteData; theme: ThemeConfig }) {
   const dishCount = heroDishes.length;
 
   const badge = theme.heroBadgeText || 'AİLƏVİ VƏ PREMIUM LOUNGE TƏCRÜBƏSİ';
-  const headline = theme.heroHeadline || organization.name;
-  const sub = theme.heroSubheadline || organization.description || 'Ləziz təamlar, xüsusi qəhvə çeşidləri və isti ailəvi ab-hava.';
+  const headline = content.hero.title || theme.heroHeadline || organization.name;
+  const sub = content.hero.subtitle || theme.heroSubheadline || organization.description || 'Ləziz təamlar, xüsusi qəhvə çeşidləri və isti ailəvi ab-hava.';
   const feat1 = theme.heroFeature1 || 'Ailəvi Mühit';
   const feat2 = theme.heroFeature2 || 'Zəngin Menyu';
   const feat3 = theme.heroFeature3 || 'Canlı Musiqi';
-  const cta1 = theme.heroCta1 || 'Menyu ilə Tanışlıq';
+  const cta1 = content.hero.cta?.label || theme.heroCta1 || 'Menyu ilə Tanışlıq';
   const cta2 = theme.heroCta2 || 'Rezervasiya Et';
   const rating = theme.heroRatingScore || '4.9';
   const ratingLabel = theme.heroRatingLabel || 'Xoşbəxt Qonaqlar';
@@ -435,25 +437,30 @@ function HeroSection({ data, theme }: { data: SiteData; theme: ThemeConfig }) {
 // ─── About Section ───────────────────────────────────────────────────────────
 function AboutSection({ data, theme }: { data: SiteData; theme: ThemeConfig }) {
   const { organization } = data;
+  const content = getResolvedSiteContent(data.siteContent, organization);
+  if (!content.about.visible) return null;
+
   const primary = theme.primaryColor || PRIMARY;
   const secondary = theme.secondaryColor || SECONDARY;
   const heading = theme.headingFont || 'Playfair Display';
   const body = theme.bodyFont || 'Plus Jakarta Sans';
 
   const badge = theme.aboutBadgeText || 'BİZİM HEKAYƏMİZ';
-  const headline = theme.aboutHeadline || `${organization.name} Haqqında`;
-  const body1 = theme.aboutBody1 || organization.description || 'Ailəniz və dostlarınızla rahat, lüks və səmimi bir mühitdə xoş xatirələr yaratmağınız üçün qurulmuşdur.';
-  const body2 = theme.aboutBody2 || '';
-  const imgUrl = theme.aboutImageUrl || ABOUT_IMG;
+  const headline = content.about.title || theme.aboutHeadline || `${organization.name} Haqqında`;
+  const body1 = content.about.body || theme.aboutBody1 || organization.description || 'Ailəniz və dostlarınızla rahat, lüks və səmimi bir mühitdə xoş xatirələr yaratmağınız üçün qurulmuşdur.';
+  const body2 = content.about.body ? '' : (theme.aboutBody2 || '');
+  const imgUrl = content.about.image || theme.aboutImageUrl || ABOUT_IMG;
   const overlayTitle = theme.aboutBadgeOverlayTitle || 'MƏTBƏX SƏNƏTİ';
   const overlayText = theme.aboutBadgeOverlayText || 'Yalnız təbii nemətlər';
 
-  const stats = [
-    { value: theme.aboutStat1Value || '100+', label: theme.aboutStat1Label || 'Ləziz Təam' },
-    { value: theme.aboutStat2Value || '50+', label: theme.aboutStat2Label || 'İsti & Soyuq İçki' },
-    { value: theme.aboutStat3Value || '100%', label: theme.aboutStat3Label || 'Razı Qonaqlar' },
-    { value: theme.aboutStat4Value || '7/24', label: theme.aboutStat4Label || 'Səmimi Qonaqpərvərlik' },
-  ];
+  const stats = (content.about.stats && content.about.stats.length > 0)
+    ? content.about.stats
+    : [
+        { value: theme.aboutStat1Value || '100+', label: theme.aboutStat1Label || 'Ləziz Təam' },
+        { value: theme.aboutStat2Value || '50+', label: theme.aboutStat2Label || 'İsti & Soyuq İçki' },
+        { value: theme.aboutStat3Value || '100%', label: theme.aboutStat3Label || 'Razı Qonaqlar' },
+        { value: theme.aboutStat4Value || '7/24', label: theme.aboutStat4Label || 'Səmimi Qonaqpərvərlik' },
+      ];
 
   return (
     <section id="about" style={{ padding: '100px 20px', background: '#fff' }}>
@@ -476,7 +483,14 @@ function AboutSection({ data, theme }: { data: SiteData; theme: ThemeConfig }) {
             {badge}
           </span>
           <h2 style={{ fontFamily: heading, fontSize: 'clamp(28px, 4vw, 40px)', fontWeight: 800, color: TEXT, lineHeight: 1.2, marginBottom: 20 }}>{headline}</h2>
-          <p style={{ fontFamily: body, fontSize: 16, color: `${TEXT}AA`, lineHeight: 1.75, marginBottom: 16 }}>{body1}</p>
+          {body1.includes('<') ? (
+            <div
+              style={{ fontFamily: body, fontSize: 16, color: `${TEXT}AA`, lineHeight: 1.75, marginBottom: 16 }}
+              dangerouslySetInnerHTML={{ __html: body1 }}
+            />
+          ) : (
+            <p style={{ fontFamily: body, fontSize: 16, color: `${TEXT}AA`, lineHeight: 1.75, marginBottom: 16, whiteSpace: 'pre-line' }}>{body1}</p>
+          )}
           {body2 && <p style={{ fontFamily: body, fontSize: 16, color: `${TEXT}AA`, lineHeight: 1.75, marginBottom: 36 }}>{body2}</p>}
 
           {/* Stats grid */}
@@ -511,6 +525,9 @@ function AboutSection({ data, theme }: { data: SiteData; theme: ThemeConfig }) {
 // ─── Menu Section ────────────────────────────────────────────────────────────
 function MenuSection({ data, theme, cart, onAddToCart, onOpenCart, isOrdersPaused, offHoursNotice }: { data: SiteData; theme: ThemeConfig; cart: Record<string, { item: MenuItem; quantity: number }>; onAddToCart: (item: MenuItem) => void; onOpenCart: () => void; isOrdersPaused?: boolean; offHoursNotice?: string; }) {
   const { organization, menuCategories } = data;
+  const content = getResolvedSiteContent(data.siteContent, organization);
+  if (!content.menu.visible) return null;
+
   const primary = theme.primaryColor || PRIMARY;
   const heading = theme.headingFont || 'Playfair Display';
   const body = theme.bodyFont || 'Plus Jakarta Sans';
@@ -521,8 +538,8 @@ function MenuSection({ data, theme, cart, onAddToCart, onOpenCart, isOrdersPause
   const items = activeCategory?.menuItems || [];
 
   const badge = theme.menuBadgeText || 'QASTRO-TƏCRÜBƏ';
-  const headline = theme.menuHeadline || 'Ləziz Menyumuz';
-  const subtitle = theme.menuSubtitle || 'Hər biri təravətli yerli inqrediyentlərlə hazırlanan kulinariya şah əsərləri.';
+  const headline = content.menu.title || theme.menuHeadline || 'Ləziz Menyumuz';
+  const subtitle = content.menu.subtitle || theme.menuSubtitle || 'Hər biri təravətli yerli inqrediyentlərlə hazırlanan kulinariya şah əsərləri.';
 
   return (
     <section id="menu" style={{ padding: '100px 20px', background: BG }}>
@@ -872,7 +889,10 @@ function OffersSection({ data, theme }: { data?: SiteData; theme: ThemeConfig })
 }
 
 // ─── Gallery Section ─────────────────────────────────────────────────────────
-function GallerySection({ theme, items }: { theme: ThemeConfig; items?: Array<{ id?: string; url: string; title?: string | null }> }) {
+function GallerySection({ data, theme, items }: { data?: SiteData; theme: ThemeConfig; items?: Array<{ id?: string; url: string; title?: string | null }> }) {
+  const content = data ? getResolvedSiteContent(data.siteContent, data.organization) : null;
+  if (content && !content.gallery.visible) return null;
+
   const primary = theme.primaryColor || PRIMARY;
   const heading = theme.headingFont || 'Playfair Display';
   const body = theme.bodyFont || 'Plus Jakarta Sans';
@@ -887,13 +907,16 @@ function GallerySection({ theme, items }: { theme: ThemeConfig; items?: Array<{ 
   ];
 
   const displayList = items && items.length > 0 ? items : defaultImages;
+  const galleryTitle = content?.gallery.title || 'Məkanımızdan Görüntülər';
+  const gallerySubtitle = content?.gallery.subtitle || '';
 
   return (
     <section id="gallery" style={{ padding: '100px 20px', background: '#fff' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: 48 }}>
           <span style={{ display: 'inline-block', background: `${primary}10`, color: primary, border: `1px solid ${primary}20`, borderRadius: 100, padding: '5px 14px', fontFamily: body, fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', marginBottom: 16 }}>QALEREYA</span>
-          <h2 style={{ fontFamily: heading, fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: 800, color: TEXT }}>Məkanımızdan Görüntülər</h2>
+          <h2 style={{ fontFamily: heading, fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: 800, color: TEXT }}>{galleryTitle}</h2>
+          {gallerySubtitle && <p style={{ fontFamily: body, fontSize: 16, color: `${TEXT}AA`, maxWidth: 540, margin: '12px auto 0' }}>{gallerySubtitle}</p>}
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20 }}>
           {displayList.map((item, i) => (
@@ -944,6 +967,10 @@ function GallerySection({ theme, items }: { theme: ThemeConfig; items?: Array<{ 
 
 // ─── Reservation Section ─────────────────────────────────────────────────────
 function ReservationSection({ data, theme, isOrdersPaused, offHoursNotice }: { data: SiteData; theme: ThemeConfig; isOrdersPaused?: boolean; offHoursNotice?: string }) {
+  const { organization } = data;
+  const content = getResolvedSiteContent(data.siteContent, organization);
+  if (!content.reservation.visible) return null;
+
   const primary = theme.primaryColor || PRIMARY;
   const heading = theme.headingFont || 'Playfair Display';
   const body = theme.bodyFont || 'Plus Jakarta Sans';
@@ -952,8 +979,8 @@ function ReservationSection({ data, theme, isOrdersPaused, offHoursNotice }: { d
   const [submitted, setSubmitted] = useState(false);
 
   const badge = theme.reservationBadgeText || 'MASA REZERVASIYASI';
-  const headline = theme.reservationHeadline || 'Masanızı İndi Ayırın';
-  const subtitle = theme.reservationSubtitle || 'Rahat və sürətli rezervasiya sistemi ilə masanızı əvvəlcədən ayırın.';
+  const headline = content.reservation.title || theme.reservationHeadline || 'Masanızı İndi Ayırın';
+  const subtitle = content.reservation.subtitle || theme.reservationSubtitle || 'Rahat və sürətli rezervasiya sistemi ilə masanızı əvvəlcədən ayırın.';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -1075,17 +1102,20 @@ function ReservationSection({ data, theme, isOrdersPaused, offHoursNotice }: { d
 // ─── Contact Section ─────────────────────────────────────────────────────────
 function ContactSection({ data, theme }: { data: SiteData; theme: ThemeConfig }) {
   const { organization, workingHours } = data;
+  const content = getResolvedSiteContent(data.siteContent, organization);
+  if (!content.contact.visible) return null;
+
   const primary = theme.primaryColor || PRIMARY;
   const heading = theme.headingFont || 'Playfair Display';
   const body = theme.bodyFont || 'Plus Jakarta Sans';
 
   const badge = theme.contactBadgeText || 'BİZİ ZİYARƏT EDİN';
-  const headline = theme.contactHeadline || 'Ünvan və Əlaqə';
-  const subtitle = theme.contactSubtitle || 'Məkanımızda sizi gözləyirik.';
+  const headline = content.contact.title || theme.contactHeadline || 'Ünvan və Əlaqə';
+  const subtitle = content.contact.subtitle || theme.contactSubtitle || 'Məkanımızda sizi gözləyirik.';
 
   const infoCards = [
-    { icon: <MapPin size={22} color={primary} />, label: 'Ünvan', value: organization.address || 'Ünvan göstərilməyib' },
-    { icon: <Phone size={22} color={primary} />, label: 'Telefon', value: organization.phone || '' },
+    { icon: <MapPin size={22} color={primary} />, label: 'Ünvan', value: content.contact.address || organization.address || 'Ünvan göstərilməyib' },
+    { icon: <Phone size={22} color={primary} />, label: 'Telefon', value: content.contact.phone || organization.phone || '' },
     { icon: <Clock size={22} color={primary} />, label: 'İş saatları', value: theme.workingHoursSubtitle || 'Həftəlik iş qrafiki' },
   ].filter(c => c.value);
 
@@ -1127,7 +1157,7 @@ function ContactSection({ data, theme }: { data: SiteData; theme: ThemeConfig })
 
           {/* Map placeholder */}
           {(() => {
-            const mapEmbedSrc = organization.mapEmbedUrl || getGoogleMapsEmbedUrl(organization.mapUrl, organization.address, organization.city, organization.name);
+            const mapEmbedSrc = content.contact.mapUrl || organization.mapEmbedUrl || getGoogleMapsEmbedUrl(organization.mapUrl, content.contact.address || organization.address, organization.city, organization.name);
             return (
               <div style={{ borderRadius: 24, overflow: 'hidden', height: 400, background: `linear-gradient(135deg, ${primary}10, ${ACCENT}10)`, display: 'flex', alignItems: 'center', justifyContent: 'center', border: `1px solid ${primary}15`, position: 'relative' }}>
                 {mapEmbedSrc ? (
@@ -1545,7 +1575,7 @@ export default function RandevuCafeSite({ data, theme }: { data: SiteData; theme
         <AboutSection data={data} theme={theme} />
         {showMenu && <MenuSection data={data} theme={theme} cart={cart} onAddToCart={addToCart} onOpenCart={() => setIsCartOpen(true)} isOrdersPaused={isOrdersPaused} offHoursNotice={workingStatus.noticeMessage} />}
         {showPackages && <OffersSection data={data} theme={theme} />}
-        {showGallery && <GallerySection theme={theme} items={data.galleryItems} />}
+        {showGallery && <GallerySection data={data} theme={theme} items={data.galleryItems} />}
         {showContact && <ReservationSection data={data} theme={theme} isOrdersPaused={isOrdersPaused} offHoursNotice={workingStatus.noticeMessage} />}
         <ContactSection data={data} theme={theme} />
         <Footer data={data} theme={theme} />

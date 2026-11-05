@@ -1540,16 +1540,16 @@ export default function RestaurantSite({ data, initialTable }: { data: SiteData;
               transition={{ delay: 0.2 }}
               style={{ fontFamily: theme.brandFont || theme.headingFont, fontSize: 'clamp(28px, 6vw, 64px)', fontWeight: 900, color: '#fff', marginTop: 0, marginBottom: 16, lineHeight: 1.15, wordBreak: 'break-word' }}
             >
-              {organization.name}
+              {content.hero.title || organization.name}
             </motion.h1>
-            {organization.description && (
+            {(content.hero.subtitle || organization.description) && (
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
                 style={{ fontSize: 'clamp(14px, 3.5vw, 18px)', color: 'rgba(255,255,255,0.88)', marginBottom: 32, lineHeight: 1.7, fontFamily: theme.bodyFont, maxWidth: 640 }}
               >
-                {organization.description}
+                {content.hero.subtitle || organization.description}
               </motion.p>
             )}
             <motion.div
@@ -1812,11 +1812,18 @@ export default function RestaurantSite({ data, initialTable }: { data: SiteData;
                 Biz kimik?
               </p>
               <h2 style={{ fontFamily: theme.headingFont, fontSize: 'clamp(26px, 4vw, 42px)', fontWeight: 800, color: theme.textColor, marginBottom: 20 }}>
-                Haqqımızda
+                {content.about.title || 'Haqqımızda'}
               </h2>
-              <p style={{ fontSize: 'clamp(14px, 3.5vw, 17px)', color: `${theme.textColor}CC`, lineHeight: 1.8 }}>
-                {organization.description || `${organization.name} — keyfiyyətli yemək və mükəmməl xidmət ilə fərqlənən yerli restoranımız. Hər gün ən təzə məhsullardan hazırlanmış dadlı yeməklərimiz sizi gözləyir.`}
-              </p>
+              {(content.about.body && content.about.body.includes('<')) ? (
+                <div
+                  style={{ fontSize: 'clamp(14px, 3.5vw, 17px)', color: `${theme.textColor}CC`, lineHeight: 1.8 }}
+                  dangerouslySetInnerHTML={{ __html: content.about.body }}
+                />
+              ) : (
+                <p style={{ fontSize: 'clamp(14px, 3.5vw, 17px)', color: `${theme.textColor}CC`, lineHeight: 1.8, whiteSpace: 'pre-line' }}>
+                  {content.about.body || organization.description || `${organization.name} — keyfiyyətli yemək və mükəmməl xidmət ilə fərqlənən yerli restoranımız. Hər gün ən təzə məhsullardan hazırlanmış dadlı yeməklərimiz sizi gözləyir.`}
+                </p>
+              )}
             </motion.div>
           </div>
         </section>

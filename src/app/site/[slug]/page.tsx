@@ -130,12 +130,17 @@ const getSiteData = cache(async (slug: string, isPreview: boolean = false): Prom
       org.name
     );
 
+    const isNotEmptyObj = (val: any) =>
+      val && typeof val === 'object' && Object.keys(val).length > 0;
+
     const siteContentMap: Record<string, Record<string, any>> = {};
     for (const sc of (org as any).siteContents || []) {
       if (!siteContentMap[sc.pageKey]) siteContentMap[sc.pageKey] = {};
+      const draft = isNotEmptyObj(sc.draftContent) ? sc.draftContent : null;
+      const pub = isNotEmptyObj(sc.publishedContent) ? sc.publishedContent : null;
       const doc = isPreview
-        ? ((sc.draftContent as any) || (sc.publishedContent as any) || {})
-        : ((sc.publishedContent as any) || (sc.draftContent as any) || {});
+        ? (draft || pub || {})
+        : (pub || draft || {});
       siteContentMap[sc.pageKey][sc.blockKey] = doc;
     }
 

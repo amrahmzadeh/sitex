@@ -100,6 +100,10 @@ export default function DashboardShell({ children }: { children: React.ReactNode
   const switchOrg = (org: Organization) => {
     setCurrentOrg(org);
     localStorage.setItem('currentOrgId', org.id);
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('org-updated', { detail: { id: org.id } }));
+      window.dispatchEvent(new Event('storage'));
+    }
   };
 
   const isActive = (href: string) =>

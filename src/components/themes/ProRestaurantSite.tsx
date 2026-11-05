@@ -975,7 +975,7 @@ export default function ProRestaurantSite({
                     margin: 0,
                   }}
                 >
-                  {organization.name}
+                  {content.hero.title || organization.name}
                 </h1>
 
                 {/* Description */}
@@ -989,7 +989,8 @@ export default function ProRestaurantSite({
                     margin: 0,
                   }}
                 >
-                  {organization.description ||
+                  {content.hero.subtitle ||
+                    organization.description ||
                     `${organization.name} — ənənəvi dadı və keyfiyyəti bir araya gətirən street food məkanıdır. Ləzzətli yeməklərimizlə sizə unudulmaz dad təcrübəsi təqdim edirik.`}
                 </p>
 
@@ -1626,21 +1627,36 @@ export default function ProRestaurantSite({
                       lineHeight: 1.2,
                     }}
                   >
-                    Haqqımızda
+                    {content.about.title || 'Haqqımızda'}
                   </h2>
 
-                  <p
-                    className="pro-about-desc"
-                    style={{
-                      fontSize: 16,
-                      lineHeight: '28px',
-                      color: '#9BA3AF',
-                      margin: 0,
-                    }}
-                  >
-                    {organization.description ||
-                      `${organization.name} — ənənəvi dadı və keyfiyyəti bir araya gətirən street food məkanıdır. Ləzzətli yeməklərimiz və xüsusi reseptlərimizlə sizə unudulmaz dad təcrübəsi təqdim edirik.`}
-                  </p>
+                  {(content.about.body && content.about.body.includes('<')) ? (
+                    <div
+                      className="pro-about-desc"
+                      style={{
+                        fontSize: 16,
+                        lineHeight: '28px',
+                        color: '#9BA3AF',
+                        margin: 0,
+                      }}
+                      dangerouslySetInnerHTML={{ __html: content.about.body }}
+                    />
+                  ) : (
+                    <p
+                      className="pro-about-desc"
+                      style={{
+                        fontSize: 16,
+                        lineHeight: '28px',
+                        color: '#9BA3AF',
+                        margin: 0,
+                        whiteSpace: 'pre-line',
+                      }}
+                    >
+                      {content.about.body ||
+                        organization.description ||
+                        `${organization.name} — ənənəvi dadı və keyfiyyəti bir araya gətirən street food məkanıdır. Ləzzətli yeməklərimiz və xüsusi reseptlərimizlə sizə unudulmaz dad təcrübəsi təqdim edirik.`}
+                    </p>
+                  )}
 
                   <div
                     style={{
@@ -1721,7 +1737,7 @@ export default function ProRestaurantSite({
                     }}
                   >
                     <img
-                      src={theme.aboutImageUrl || theme.backgroundImageUrl || theme.headerImageUrl || FALLBACK_HERO_IMAGE}
+                      src={content.about.image || theme.aboutImageUrl || theme.backgroundImageUrl || theme.headerImageUrl || FALLBACK_HERO_IMAGE}
                       alt={organization.name}
                       onError={(e) => {
                         const target = e.currentTarget as HTMLImageElement;

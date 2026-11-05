@@ -16,6 +16,7 @@ export async function GET(
         socialLinks: { orderBy: { sortOrder: 'asc' } },
         workingHours: { orderBy: { dayOfWeek: 'asc' } },
         workingHoursSettings: true,
+        siteContents: true,
         socialFeedPosts: {
           where: { isVisible: true },
           orderBy: { sortOrder: 'asc' },
@@ -66,6 +67,16 @@ export async function GET(
       workingHours: organization.workingHours,
       workingHoursSettings: organization.workingHoursSettings,
       menuCategories: organization.menuCategories,
+      siteContent: (() => {
+        const map: Record<string, Record<string, any>> = {};
+        for (const sc of (organization as any).siteContents || []) {
+          if (!map[sc.pageKey]) map[sc.pageKey] = {};
+          const pub = sc.publishedContent && typeof sc.publishedContent === 'object' && Object.keys(sc.publishedContent).length > 0 ? sc.publishedContent : null;
+          const draft = sc.draftContent && typeof sc.draftContent === 'object' && Object.keys(sc.draftContent).length > 0 ? sc.draftContent : null;
+          map[sc.pageKey][sc.blockKey] = pub || draft || {};
+        }
+        return map;
+      })(),
     });
   } catch (error) {
     console.error('Public site error:', error);

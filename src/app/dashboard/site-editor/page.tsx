@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import dynamic from 'next/dynamic';
 import { Loader2, PenLine } from 'lucide-react';
@@ -20,9 +20,22 @@ const SiteEditorShell = dynamic(
 
 function useCurrentOrg() {
   const [org, setOrg] = useState<{ id: string; slug: string } | null>(null);
-  useEffect(() => {
-    const id = localStorage.getItem('currentOrgId');
-    if (!id) return;
+
+  const loadOrg = useCallback((targetId?: string | null) => {
+    const id = targetId || (typeof window !== 'undefined' ? localStorage.getItem('currentOrgId') : null);
+    if (!id) {
+      fetch('/api/organizations')
+        .then((r) => r.json())
+        .then((d) => {
+          if (d.organizations?.length) {
+            const first = d.organizations[0];
+            setOrg({ id: first.id, slug: first.slug });
+            localStorage.setItem('currentOrgId', first.id);
+          }
+        })
+        .catch(() => {});
+      return;
+    }
     fetch(`/api/organizations/${id}`)
       .then((r) => r.json())
       .then((d) => {
@@ -32,6 +45,20 @@ function useCurrentOrg() {
       })
       .catch(() => {});
   }, []);
+
+  useEffect(() => {
+    loadOrg();
+    const handleOrgChange = (e?: any) => {
+      loadOrg(e?.detail?.id);
+    };
+    window.addEventListener('org-updated', handleOrgChange);
+    window.addEventListener('storage', handleOrgChange);
+    return () => {
+      window.removeEventListener('org-updated', handleOrgChange);
+      window.removeEventListener('storage', handleOrgChange);
+    };
+  }, [loadOrg]);
+
   return org;
 }
 
@@ -39,7 +66,7 @@ export default function SiteEditorPage() {
   const { status } = useSession();
   const org = useCurrentOrg();
 
-  if (status === 'loading' || !org) {
+  if (status === 'loading') {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', minHeight: 300, gap: 12, color: '#8888A0' }}>
         <Loader2 size={22} style={{ animation: 'spin 1s linear infinite' }} />
@@ -59,7 +86,7 @@ export default function SiteEditorPage() {
 
   return (
     <div style={{ width: '100%', height: '100%', flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-      <SiteEditorShell orgId={org.id} slug={org.slug} />
+      <SiteEditorShell key={org.id} orgId={org.id} slug={org.slug} />
     </div>
   );
 }
