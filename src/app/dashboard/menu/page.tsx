@@ -541,7 +541,7 @@ export default function MenuPage() {
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: 24, alignItems: 'start' }}>
+      <div className="dash-menu-layout" style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: 24, alignItems: 'start' }}>
         {/* Categories sidebar */}
         <div>
           <div className="dash-card" style={{ overflow: 'hidden' }}>

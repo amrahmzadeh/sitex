@@ -426,3 +426,253 @@ body {
   }
 }
 
+
+/* ==================== DASHBOARD RESPONSIVE ==================== */
+
+/* Navbar top bar for mobile */
+.dash-topbar {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: #171717;
+  border-bottom: 1px solid #383334;
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  flex-shrink: 0;
+}
+
+.dash-hamburger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: transparent;
+  color: #F5F5F7;
+  cursor: pointer;
+  border-radius: 8px;
+  padding: 0;
+}
+
+.dash-hamburger:hover {
+  background: #2E292A;
+}
+
+/* Mobile overlay */
+.dash-mobile-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 40;
+  display: none;
+}
+
+/* Mobile sidebar */
+.dash-mobile-sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 280px;
+  z-index: 50;
+  display: none;
+  background: #171717;
+  border-right: 1px solid #383334;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Main content wrapper */
+.dash-content-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+}
+
+/* Page content area */
+.dash-main {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Prevent horizontal overflow globally */
+.dash-main {
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Table scroll wrapper */
+.dash-table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ==================== BREAKPOINTS ==================== */
+
+/* Tablet and below (≤1023px): hide desktop sidebar, show topbar */
+@media (max-width: 1023px) {
+  .dash-sidebar-desktop {
+    display: none !important;
+  }
+
+  .dash-topbar {
+    display: flex;
+  }
+
+  .dash-mobile-sidebar.is-open {
+    display: flex;
+  }
+
+  .dash-mobile-overlay.is-open {
+    display: block;
+  }
+
+  .dash-main {
+    padding: 20px 16px !important;
+  }
+}
+
+/* Small tablet (≤768px) */
+@media (max-width: 768px) {
+  .dash-main {
+    padding: 16px 14px !important;
+  }
+
+  /* Cards stack vertically */
+  .dash-card {
+    border-radius: 12px;
+  }
+
+  /* Org card flex wrap fix */
+  .dash-org-card-inner {
+    flex-direction: column !important;
+  }
+
+  .dash-org-actions {
+    flex-direction: row !important;
+    flex-wrap: wrap;
+    min-width: unset !important;
+    width: 100%;
+  }
+
+  .dash-org-actions a,
+  .dash-org-actions button {
+    flex: 1;
+    min-width: 120px;
+    text-align: center;
+  }
+}
+
+/* Mobile (≤480px) */
+@media (max-width: 480px) {
+  .dash-main {
+    padding: 12px !important;
+  }
+
+  /* Quick links single column */
+  .dash-quick-links {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  /* Headings scale */
+  h1 {
+    font-size: 22px !important;
+  }
+
+  /* Org card stats wrap */
+  .dash-org-stats {
+    gap: 16px !important;
+  }
+}
+
+/* Small mobile (≤375px) */
+@media (max-width: 375px) {
+  .dash-mobile-sidebar {
+    width: 260px;
+  }
+
+  .dash-quick-links {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Wide screen (≥1920px) */
+@media (min-width: 1920px) {
+  .dash-main {
+    padding: 36px !important;
+  }
+}
+
+/* ==================== MENU PAGE LAYOUT ==================== */
+/* Menu page category sidebar + items grid */
+.dash-menu-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+@media (max-width: 768px) {
+  .dash-menu-layout {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* ==================== FORM GRID 2-COL ==================== */
+/* Settings page and similar 2-column form grids */
+.dash-form-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+@media (max-width: 600px) {
+  .dash-form-grid-2 {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Settings inline 2-col grids via style override */
+  [style*="gridTemplateColumns: '1fr 1fr'"] {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* ==================== OVERFLOW FIXES ==================== */
+/* Fix max-width: 100% breaking certain image components */
+.dash-main img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Modal padding on mobile */
+@media (max-width: 480px) {
+  [style*="position: 'fixed'"][style*="inset: 0"] > div,
+  [style*="position: fixed"][style*="inset: 0"] > div {
+    padding: 12px !important;
+    border-radius: 16px !important;
+  }
+
+  /* Modals full width on small screens */
+  [style*="maxWidth: 440"],
+  [style*="maxWidth: 560"],
+  [style*="max-width: 440px"],
+  [style*="max-width: 560px"] {
+    max-width: calc(100vw - 32px) !important;
+  }
+}
+
+/* Filter pill scroll on mobile */
+@media (max-width: 600px) {
+  .dash-main [style*="display: 'flex'"][style*="gap: 8"] {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap;
+    padding-bottom: 4px;
+  }
+}

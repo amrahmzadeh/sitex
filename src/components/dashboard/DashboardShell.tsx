@@ -10,7 +10,7 @@ import {
   UtensilsCrossed, Image, MessageCircle, Settings,
   LogOut, ChevronRight, Menu, Building2,
   BarChart3, CreditCard, ExternalLink, Sparkles, QrCode,
-  Share2, Shield, Download,
+  Share2, Shield, Download, X,
 } from 'lucide-react';
 import { dashboardNavItems, isNavItemVisible } from '@/modules/navigation';
 
@@ -79,6 +79,23 @@ export default function DashboardShell({ children }: { children: React.ReactNode
       window.removeEventListener('storage', handleOrgUpdate);
     };
   }, []);
+
+  // Close sidebar on route change
+  useEffect(() => {
+    setSidebarOpen(false);
+  }, [pathname]);
+
+  // Prevent body scroll when mobile sidebar is open
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      document.body.style.overflow = sidebarOpen ? 'hidden' : '';
+    }
+    return () => {
+      if (typeof document !== 'undefined') {
+        document.body.style.overflow = '';
+      }
+    };
+  }, [sidebarOpen]);
 
   const switchOrg = (org: Organization) => {
     setCurrentOrg(org);
@@ -207,7 +224,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
           </a>
         )}
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-          <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'linear-gradient(135deg, #00D37D, #008f53)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 700, color: '#121212' }}>
+          <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'linear-gradient(135deg, #00D37D, #008f53)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 700, color: '#121212', flexShrink: 0 }}>
             {session?.user?.name?.[0]?.toUpperCase() || 'U'}
           </div>
           <div style={{ minWidth: 0 }}>
@@ -242,41 +259,56 @@ export default function DashboardShell({ children }: { children: React.ReactNode
     <div style={{ display: 'flex', height: '100vh', overflow: 'hidden', background: '#0F0F14' }}>
       {/* Desktop Sidebar */}
       <aside
-        className="dash-sidebar"
+        className="dash-sidebar dash-sidebar-desktop"
         style={{ width: 260, flexShrink: 0, display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}
       >
         <SidebarContent />
       </aside>
 
+      {/* Mobile Overlay */}
+      <div
+        className={`dash-mobile-overlay${sidebarOpen ? ' is-open' : ''}`}
+        onClick={() => setSidebarOpen(false)}
+      />
+
       {/* Mobile Sidebar */}
       <AnimatePresence>
         {sidebarOpen && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              onClick={() => setSidebarOpen(false)}
-              style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 40, display: 'none' }}
-            />
-            <motion.aside
-              initial={{ x: -260 }} animate={{ x: 0 }} exit={{ x: -260 }}
-              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="dash-sidebar"
-              style={{ position: 'fixed', left: 0, top: 0, bottom: 0, width: 260, zIndex: 50, display: 'none' }}
-            >
-              <SidebarContent />
-            </motion.aside>
-          </>
+          <motion.aside
+            initial={{ x: -280 }}
+            animate={{ x: 0 }}
+            exit={{ x: -280 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            className="dash-sidebar dash-mobile-sidebar is-open"
+            style={{ display: 'flex' }}
+          >
+            <SidebarContent />
+          </motion.aside>
         )}
       </AnimatePresence>
 
-      {/* Main */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      {/* Main Content Area */}
+      <div className="dash-content-wrapper">
+        {/* Mobile Top Bar */}
+        <div className="dash-topbar">
+          <button
+            className="dash-hamburger"
+            onClick={() => setSidebarOpen(true)}
+            aria-label="Menyu aç"
+          >
+            <Menu size={22} />
+          </button>
+          <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+            <img src="/logo.png" alt="SiteX" style={{ height: 28, width: 'auto', objectFit: 'contain' }} />
+          </Link>
+          <div style={{ width: 36 }} />
+        </div>
+
         {/* Page Content */}
         <main
           className="dash-main"
           style={{ flex: 1, overflowY: 'auto', padding: 28 }}
         >
-          {/* Pass current org context via a context/prop */}
           {orgs.length === 0 && pathname !== '/dashboard/new-organization' ? (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: 16, textAlign: 'center' }}>
               <Building2 size={48} color="#383334" />
