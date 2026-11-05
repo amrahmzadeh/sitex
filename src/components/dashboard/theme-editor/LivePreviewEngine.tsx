@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import {
   Monitor,
   Tablet,
@@ -34,9 +34,39 @@ export default function LivePreviewEngine({
   onSelectComponent,
 }: LivePreviewEngineProps) {
   const [scale, setScale] = useState<number>(100);
+  const [autoFit, setAutoFit] = useState<boolean>(true);
+  const [availableWidth, setAvailableWidth] = useState<number>(800);
+  const viewportRef = useRef<HTMLDivElement>(null);
   const [inspectMode, setInspectMode] = useState<boolean>(false);
   const [activePage, setActivePage] = useState<'home' | 'menu' | 'about' | 'contact' | 'services'>('home');
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
+
+  useEffect(() => {
+    const el = viewportRef.current;
+    if (!el) return;
+    const updateSize = () => {
+      if (el) {
+        setAvailableWidth(el.clientWidth);
+      }
+    };
+    updateSize();
+    const observer = new ResizeObserver(updateSize);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  const targetWidth =
+    viewport === 'mobile' ? 375 : viewport === 'tablet' ? 768 : 1200;
+
+  const autoScale = useMemo(() => {
+    if (!availableWidth || availableWidth <= 0) return 1;
+    const padding = viewport === 'desktop' ? 16 : 32;
+    const fit = (availableWidth - padding) / targetWidth;
+    return Math.min(1, Math.max(0.35, parseFloat(fit.toFixed(2))));
+  }, [availableWidth, targetWidth, viewport]);
+
+  const effectiveScale = autoFit ? autoScale : scale / 100;
+  const displayPercent = Math.round(effectiveScale * 100);
 
   const effectiveSiteData = React.useMemo(() => {
     if (!siteData) return null;
@@ -87,10 +117,6 @@ export default function LivePreviewEngine({
     pages.push({ id: 'contact', label: 'Əlaqə' });
     return pages;
   }, [theme, siteData]);
-
-  // Viewport widths
-  const containerWidth =
-    viewport === 'mobile' ? '375px' : viewport === 'tablet' ? '768px' : '100%';
 
   return (
     <div
@@ -239,20 +265,50 @@ export default function LivePreviewEngine({
             {inspectMode ? 'Müfəttiş Aktiv' : 'Müfəttiş'}
           </button>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 4, background: '#1F2230', padding: 2, borderRadius: 6 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 3, background: '#1F2230', padding: 2, borderRadius: 6 }}>
             <button
               type="button"
-              onClick={() => setScale((s) => Math.max(50, s - 10))}
+              onClick={() => {
+                setAutoFit(false);
+                setScale((s) => Math.max(30, s - 10));
+              }}
+              title="Kiçilt (-10%)"
               style={{ padding: '3px 6px', border: 'none', background: 'transparent', color: '#8888A0', cursor: 'pointer' }}
             >
               <ZoomOut size={12} />
             </button>
-            <span style={{ fontSize: 11, color: '#FFFFFF', minWidth: 32, textAlign: 'center', fontFamily: 'monospace' }}>
-              {scale}%
-            </span>
             <button
               type="button"
-              onClick={() => setScale((s) => Math.min(120, s + 10))}
+              onClick={() => {
+                if (autoFit) {
+                  setAutoFit(false);
+                  setScale(100);
+                } else {
+                  setAutoFit(true);
+                }
+              }}
+              title={autoFit ? '100% miqyasa keç' : 'Ekrana uyğunlaşdır (Auto-fit)'}
+              style={{
+                fontSize: 11,
+                color: autoFit ? '#00D37D' : '#FFFFFF',
+                background: autoFit ? 'rgba(0,211,125,0.15)' : 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+                padding: '2px 6px',
+                borderRadius: 4,
+                fontFamily: 'monospace',
+                fontWeight: 600,
+              }}
+            >
+              {autoFit ? `Uyğun (${displayPercent}%)` : `${displayPercent}%`}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setAutoFit(false);
+                setScale((s) => Math.min(150, s + 10));
+              }}
+              title="Böyüt (+10%)"
               style={{ padding: '3px 6px', border: 'none', background: 'transparent', color: '#8888A0', cursor: 'pointer' }}
             >
               <ZoomIn size={12} />
@@ -279,6 +335,10 @@ export default function LivePreviewEngine({
 
       {/* Scoped Preview Containment Styles */}
       <style>{`
+        .sitex-preview-canvas {
+          container-type: inline-size;
+          container-name: sitexpreview;
+        }
         .sitex-preview-canvas header,
         .sitex-preview-canvas [data-theme-header] {
           position: relative !important;
@@ -289,9 +349,25 @@ export default function LivePreviewEngine({
           max-width: 100% !important;
           z-index: 10 !important;
         }
-        .sitex-preview-canvas {
-          contain: layout paint;
-          transform: translateZ(0);
+        .sitex-preview-canvas header button,
+        .sitex-preview-canvas header a,
+        .sitex-preview-canvas nav button,
+        .sitex-preview-canvas nav a {
+          white-space: nowrap !important;
+          word-break: keep-all !important;
+        }
+        @container sitexpreview (max-width: 900px) {
+          .randevu-desktop-nav,
+          .theme-desktop-nav {
+            display: none !important;
+          }
+          .randevu-phone-link {
+            display: none !important;
+          }
+          .randevu-mobile-menu-btn,
+          .theme-mobile-nav-btn {
+            display: flex !important;
+          }
         }
         .sitex-preview-canvas .restaurant-site-container,
         .sitex-preview-canvas .pro-restaurant-site,
@@ -305,87 +381,112 @@ export default function LivePreviewEngine({
 
       {/* Canvas Viewport Frame */}
       <div
+        ref={viewportRef}
         style={{
           flex: 1,
           overflow: 'auto',
           display: 'flex',
           justifyContent: 'center',
-          alignItems: viewport === 'desktop' ? 'flex-start' : 'center',
-          padding: viewport === 'desktop' ? 0 : 24,
+          alignItems: 'flex-start',
+          padding: viewport === 'mobile' ? '24px 16px' : '16px 12px',
           background: '#0B0D13',
         }}
       >
         <div
-          className="sitex-preview-canvas"
           style={{
-            width: containerWidth,
-            maxWidth: '100%',
-            height: viewport === 'desktop' ? '100%' : '844px',
-            transform: scale !== 100 ? `scale(${scale / 100})` : 'translateZ(0)',
-            transformOrigin: 'top center',
-            transition: 'width 0.25s ease',
-            borderRadius: viewport === 'mobile' ? 36 : viewport === 'tablet' ? 24 : 0,
-            border:
-              viewport !== 'desktop'
-                ? '8px solid #232738'
-                : '1px solid #282A3A',
-            boxShadow:
-              viewport !== 'desktop'
-                ? '0 25px 60px -15px rgba(0,0,0,0.7), 0 0 0 1px #383D55'
-                : 'none',
-            overflow: 'hidden',
+            width: Math.round(targetWidth * effectiveScale),
+            height:
+              viewport === 'mobile'
+                ? Math.round(844 * effectiveScale)
+                : viewport === 'tablet'
+                ? Math.round(1024 * effectiveScale)
+                : '100%',
+            minHeight:
+              viewport === 'desktop'
+                ? '100%'
+                : undefined,
+            flexShrink: 0,
             position: 'relative',
-            isolation: 'isolate',
-            contain: 'paint layout',
-            background: theme.backgroundColor || '#FFFFFF',
+            display: 'flex',
+            justifyContent: 'center',
           }}
         >
-          {/* Mobile phone camera notch */}
-          {viewport === 'mobile' && (
-            <div
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: '50%',
-                transform: 'translateX(-50%)',
-                width: 120,
-                height: 20,
-                background: '#232738',
-                borderRadius: '0 0 14px 14px',
-                zIndex: 100,
-              }}
-            />
-          )}
-
-          {/* Site Rendering */}
           <div
             className="sitex-preview-canvas"
             style={{
-              width: '100%',
-              height: '100%',
-              overflowY: 'auto',
+              width: `${targetWidth}px`,
+              height:
+                viewport === 'mobile'
+                  ? '844px'
+                  : viewport === 'tablet'
+                  ? '1024px'
+                  : `${Math.round(100 / effectiveScale)}%`,
+              minHeight:
+                viewport === 'desktop'
+                  ? `${Math.round(100 / effectiveScale)}%`
+                  : undefined,
+              transform: `scale(${effectiveScale})`,
+              transformOrigin: 'top left',
+              transition: 'width 0.2s ease',
+              borderRadius: viewport === 'mobile' ? 36 : viewport === 'tablet' ? 24 : 8,
+              border:
+                viewport !== 'desktop'
+                  ? '8px solid #232738'
+                  : '1px solid #282A3A',
+              boxShadow:
+                viewport !== 'desktop'
+                  ? '0 25px 60px -15px rgba(0,0,0,0.7), 0 0 0 1px #383D55'
+                  : '0 10px 30px rgba(0,0,0,0.3)',
+              overflow: 'hidden',
               position: 'relative',
-              transform: 'translateZ(0)',
-              isolation: 'isolate',
-              contain: 'paint layout',
-            }}
-            onClick={(e) => {
-              if (inspectMode && onSelectComponent) {
-                const target = (e.target as HTMLElement).closest('[data-component-type]');
-                if (target) {
-                  const compType = target.getAttribute('data-component-type') as ComponentTarget;
-                  if (compType) onSelectComponent(compType);
-                }
-              }
+              background: theme.backgroundColor || '#FFFFFF',
             }}
           >
-            {effectiveSiteData ? (
-              <RestaurantSite data={effectiveSiteData} />
-            ) : (
-              <div style={{ padding: 40, textAlign: 'center', color: '#8888A0' }}>
-                <p>Sayt məlumatları yüklənir...</p>
-              </div>
+            {/* Mobile phone camera notch */}
+            {viewport === 'mobile' && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  width: 120,
+                  height: 20,
+                  background: '#232738',
+                  borderRadius: '0 0 14px 14px',
+                  zIndex: 100,
+                }}
+              />
             )}
+
+            {/* Site Rendering */}
+            <div
+              style={{
+                width: '100%',
+                height: '100%',
+                overflowY: 'auto',
+                position: 'relative',
+                transform: 'translateZ(0)',
+                isolation: 'isolate',
+              }}
+              onClick={(e) => {
+                if (inspectMode && onSelectComponent) {
+                  const target = (e.target as HTMLElement).closest('[data-component-type]');
+                  if (target) {
+                    const compType = target.getAttribute('data-component-type') as ComponentTarget;
+                    if (compType) onSelectComponent(compType);
+                  }
+                }
+              }}
+            >
+              {effectiveSiteData ? (
+                <RestaurantSite data={effectiveSiteData} />
+              ) : (
+                <div style={{ padding: 40, textAlign: 'center', color: '#8888A0' }}>
+                  <p>Sayt məlumatları yüklənir...</p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>

@@ -78,7 +78,7 @@ function Header({ data, theme, activeSection }: { data: SiteData; theme: ThemeCo
     >
       <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 72 }}>
         {/* Logo */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
           {organization.logo ? (
             <img src={organization.logo} alt={organization.name} style={{ height: 44, width: 44, objectFit: 'contain', borderRadius: 10 }} />
           ) : (
@@ -90,7 +90,7 @@ function Header({ data, theme, activeSection }: { data: SiteData; theme: ThemeCo
         </div>
 
         {/* Desktop Nav */}
-        <nav style={{ display: 'flex', gap: 4, alignItems: 'center' }} className="randevu-desktop-nav">
+        <nav style={{ display: 'flex', gap: 4, alignItems: 'center', flexShrink: 0 }} className="randevu-desktop-nav">
           {navLinks.map(link => (
             <button
               key={link.id}
@@ -102,6 +102,8 @@ function Header({ data, theme, activeSection }: { data: SiteData; theme: ThemeCo
                 padding: '6px 12px', borderRadius: 8,
                 transition: 'all 0.2s',
                 borderBottom: activeSection === link.id ? `2px solid ${primary}` : '2px solid transparent',
+                whiteSpace: 'nowrap',
+                flexShrink: 0,
               }}
             >
               {link.label}
@@ -109,7 +111,7 @@ function Header({ data, theme, activeSection }: { data: SiteData; theme: ThemeCo
           ))}
         </nav>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
           {organization.phone && (
             <a
               href={`tel:${organization.phone}`}
@@ -167,7 +169,7 @@ function Header({ data, theme, activeSection }: { data: SiteData; theme: ThemeCo
       )}
 
       <style>{`
-        @media (max-width: 860px) {
+        @media (max-width: 960px) {
           .randevu-desktop-nav { display: none !important; }
           .randevu-phone-link { display: none !important; }
           .randevu-mobile-menu-btn { display: flex !important; }

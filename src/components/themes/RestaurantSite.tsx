@@ -1328,6 +1328,7 @@ export default function RestaurantSite({ data, initialTable }: { data: SiteData;
                       border: 'none', background: 'transparent', color: `${theme.textColor}CC`,
                       fontFamily: theme.bodyFont, fontSize: 14, fontWeight: 500, cursor: 'pointer',
                       padding: '8px 16px', borderRadius: 8, transition: 'all 0.15s',
+                      whiteSpace: 'nowrap', flexShrink: 0,
                     }}
                     onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = `${theme.primaryColor}15`; (e.currentTarget as HTMLElement).style.color = theme.primaryColor; }}
                     onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; (e.currentTarget as HTMLElement).style.color = `${theme.textColor}CC`; }}
