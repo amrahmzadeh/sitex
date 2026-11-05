@@ -10,6 +10,8 @@ import {
   Maximize2,
   Minimize2,
   MousePointer,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from 'lucide-react';
 import { ThemeConfig } from '@/lib/themes';
 import RestaurantSite, { SiteData } from '@/components/themes/RestaurantSite';
@@ -24,6 +26,8 @@ interface LivePreviewEngineProps {
   onViewportChange: (vp: ViewportMode) => void;
   selectedComponent?: ComponentTarget;
   onSelectComponent?: (comp: ComponentTarget) => void;
+  isSidebarCollapsed?: boolean;
+  onToggleSidebar?: () => void;
 }
 
 export default function LivePreviewEngine({
@@ -32,10 +36,13 @@ export default function LivePreviewEngine({
   viewport,
   onViewportChange,
   onSelectComponent,
+  isSidebarCollapsed,
+  onToggleSidebar,
 }: LivePreviewEngineProps) {
   const [scale, setScale] = useState<number>(100);
   const [autoFit, setAutoFit] = useState<boolean>(true);
-  const [availableWidth, setAvailableWidth] = useState<number>(800);
+  const [desktopPreset, setDesktopPreset] = useState<'fluid' | '1200' | '1440'>('fluid');
+  const [availableWidth, setAvailableWidth] = useState<number>(1200);
   const viewportRef = useRef<HTMLDivElement>(null);
   const [inspectMode, setInspectMode] = useState<boolean>(false);
   const [activePage, setActivePage] = useState<'home' | 'menu' | 'about' | 'contact' | 'services'>('home');
@@ -55,18 +62,33 @@ export default function LivePreviewEngine({
     return () => observer.disconnect();
   }, []);
 
-  const targetWidth =
-    viewport === 'mobile' ? 375 : viewport === 'tablet' ? 768 : 1200;
+  const isDesktopFluid = viewport === 'desktop' && desktopPreset === 'fluid';
+
+  const targetWidth = useMemo(() => {
+    if (viewport === 'mobile') return 375;
+    if (viewport === 'tablet') return 768;
+    if (desktopPreset === '1440') return 1440;
+    if (desktopPreset === '1200') return 1200;
+    return availableWidth > 0 ? availableWidth : 1200;
+  }, [viewport, desktopPreset, availableWidth]);
 
   const autoScale = useMemo(() => {
+    if (isDesktopFluid) return 1;
     if (!availableWidth || availableWidth <= 0) return 1;
     const padding = viewport === 'desktop' ? 16 : 32;
-    const fit = (availableWidth - padding) / targetWidth;
+    const maxAvailable = availableWidth - padding;
+    if (maxAvailable >= targetWidth) return 1;
+    const fit = maxAvailable / targetWidth;
     return Math.min(1, Math.max(0.35, parseFloat(fit.toFixed(2))));
-  }, [availableWidth, targetWidth, viewport]);
+  }, [availableWidth, targetWidth, viewport, isDesktopFluid]);
 
-  const effectiveScale = autoFit ? autoScale : scale / 100;
-  const displayPercent = Math.round(effectiveScale * 100);
+  const effectiveScale = isDesktopFluid
+    ? (autoFit ? 1 : scale / 100)
+    : (autoFit ? autoScale : scale / 100);
+
+  const displayPercent = isDesktopFluid && autoFit
+    ? 100
+    : Math.round(effectiveScale * 100);
 
   const effectiveSiteData = React.useMemo(() => {
     if (!siteData) return null;
@@ -149,78 +171,183 @@ export default function LivePreviewEngine({
           gap: 8,
         }}
       >
-        {/* Device Switcher */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 4, background: '#10121C', padding: 3, borderRadius: 8 }}>
-          <button
-            type="button"
-            onClick={() => onViewportChange('desktop')}
-            title="Masaüstü (100%)"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 4,
-              padding: '5px 10px',
-              borderRadius: 6,
-              border: 'none',
-              background: viewport === 'desktop' ? '#00D37D' : 'transparent',
-              color: viewport === 'desktop' ? '#000000' : '#8888A0',
-              fontWeight: viewport === 'desktop' ? 700 : 500,
-              fontSize: 12,
-              cursor: 'pointer',
-              transition: 'all 0.15s',
-            }}
-          >
-            <Monitor size={14} />
-            Masaüstü
-          </button>
-          <button
-            type="button"
-            onClick={() => onViewportChange('tablet')}
-            title="Planşet (768px)"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 4,
-              padding: '5px 10px',
-              borderRadius: 6,
-              border: 'none',
-              background: viewport === 'tablet' ? '#00D37D' : 'transparent',
-              color: viewport === 'tablet' ? '#000000' : '#8888A0',
-              fontWeight: viewport === 'tablet' ? 700 : 500,
-              fontSize: 12,
-              cursor: 'pointer',
-              transition: 'all 0.15s',
-            }}
-          >
-            <Tablet size={14} />
-            Planşet
-          </button>
-          <button
-            type="button"
-            onClick={() => onViewportChange('mobile')}
-            title="Mobil (375px)"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 4,
-              padding: '5px 10px',
-              borderRadius: 6,
-              border: 'none',
-              background: viewport === 'mobile' ? '#00D37D' : 'transparent',
-              color: viewport === 'mobile' ? '#000000' : '#8888A0',
-              fontWeight: viewport === 'mobile' ? 700 : 500,
-              fontSize: 12,
-              cursor: 'pointer',
-              transition: 'all 0.15s',
-            }}
-          >
-            <Smartphone size={14} />
-            Mobil
-          </button>
+        {/* Left Side: Sidebar Toggle & Device Switcher */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+          {onToggleSidebar && (
+            <button
+              type="button"
+              onClick={onToggleSidebar}
+              title={isSidebarCollapsed ? 'Redaktoru Aç' : 'Tam Ekran Önizləmə (Redaktoru Gizlə)'}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 5,
+                padding: '5px 9px',
+                borderRadius: 6,
+                border: isSidebarCollapsed ? '1px solid #00D37D' : '1px solid #323548',
+                background: isSidebarCollapsed ? 'rgba(0,211,125,0.15)' : '#1F2230',
+                color: isSidebarCollapsed ? '#00D37D' : '#8888A0',
+                fontSize: 11,
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'all 0.15s',
+              }}
+            >
+              {isSidebarCollapsed ? <PanelLeftOpen size={13} /> : <PanelLeftClose size={13} />}
+              <span>{isSidebarCollapsed ? 'Redaktor' : 'Geniş'}</span>
+            </button>
+          )}
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4, background: '#10121C', padding: 3, borderRadius: 8 }}>
+            <button
+              type="button"
+              onClick={() => {
+                onViewportChange('desktop');
+                setDesktopPreset('fluid');
+                setAutoFit(true);
+                setScale(100);
+              }}
+              title="Masaüstü (Tam Responsive)"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 4,
+                padding: '5px 10px',
+                borderRadius: 6,
+                border: 'none',
+                background: viewport === 'desktop' ? '#00D37D' : 'transparent',
+                color: viewport === 'desktop' ? '#000000' : '#8888A0',
+                fontWeight: viewport === 'desktop' ? 700 : 500,
+                fontSize: 12,
+                cursor: 'pointer',
+                transition: 'all 0.15s',
+              }}
+            >
+              <Monitor size={14} />
+              Masaüstü
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                onViewportChange('tablet');
+                setAutoFit(true);
+              }}
+              title="Planşet (768px)"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 4,
+                padding: '5px 10px',
+                borderRadius: 6,
+                border: 'none',
+                background: viewport === 'tablet' ? '#00D37D' : 'transparent',
+                color: viewport === 'tablet' ? '#000000' : '#8888A0',
+                fontWeight: viewport === 'tablet' ? 700 : 500,
+                fontSize: 12,
+                cursor: 'pointer',
+                transition: 'all 0.15s',
+              }}
+            >
+              <Tablet size={14} />
+              Planşet
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                onViewportChange('mobile');
+                setAutoFit(true);
+              }}
+              title="Mobil (375px)"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 4,
+                padding: '5px 10px',
+                borderRadius: 6,
+                border: 'none',
+                background: viewport === 'mobile' ? '#00D37D' : 'transparent',
+                color: viewport === 'mobile' ? '#000000' : '#8888A0',
+                fontWeight: viewport === 'mobile' ? 700 : 500,
+                fontSize: 12,
+                cursor: 'pointer',
+                transition: 'all 0.15s',
+              }}
+            >
+              <Smartphone size={14} />
+              Mobil
+            </button>
+          </div>
+
+          {/* Desktop Responsive Presets (Fluid vs Fixed) */}
+          {viewport === 'desktop' && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 2, background: '#10121C', padding: 2, borderRadius: 6 }}>
+              <button
+                type="button"
+                onClick={() => {
+                  setDesktopPreset('fluid');
+                  setAutoFit(true);
+                  setScale(100);
+                }}
+                title="Tam Genişlik (Responsive)"
+                style={{
+                  padding: '3px 7px',
+                  borderRadius: 4,
+                  border: 'none',
+                  background: desktopPreset === 'fluid' ? '#25293A' : 'transparent',
+                  color: desktopPreset === 'fluid' ? '#00D37D' : '#8888A0',
+                  fontSize: 10,
+                  fontWeight: desktopPreset === 'fluid' ? 700 : 500,
+                  cursor: 'pointer',
+                }}
+              >
+                100%
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setDesktopPreset('1200');
+                  setAutoFit(true);
+                }}
+                title="1200px Standart Ekran"
+                style={{
+                  padding: '3px 7px',
+                  borderRadius: 4,
+                  border: 'none',
+                  background: desktopPreset === '1200' ? '#25293A' : 'transparent',
+                  color: desktopPreset === '1200' ? '#00D37D' : '#8888A0',
+                  fontSize: 10,
+                  fontWeight: desktopPreset === '1200' ? 700 : 500,
+                  cursor: 'pointer',
+                }}
+              >
+                1200px
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setDesktopPreset('1440');
+                  setAutoFit(true);
+                }}
+                title="1440px Geniş Ekran"
+                style={{
+                  padding: '3px 7px',
+                  borderRadius: 4,
+                  border: 'none',
+                  background: desktopPreset === '1440' ? '#25293A' : 'transparent',
+                  color: desktopPreset === '1440' ? '#00D37D' : '#8888A0',
+                  fontSize: 10,
+                  fontWeight: desktopPreset === '1440' ? 700 : 500,
+                  cursor: 'pointer',
+                }}
+              >
+                1440px
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Page Switcher */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexWrap: 'wrap' }}>
           {previewPages.map((pg) => (
             <button
               key={pg.id}
@@ -262,7 +389,7 @@ export default function LivePreviewEngine({
             }}
           >
             <MousePointer size={12} />
-            {inspectMode ? 'Müfəttiş Aktiv' : 'Müfəttiş'}
+            {inspectMode ? 'Müfəttiş' : 'Müfəttiş'}
           </button>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 3, background: '#1F2230', padding: 2, borderRadius: 6 }}>
@@ -285,6 +412,9 @@ export default function LivePreviewEngine({
                   setScale(100);
                 } else {
                   setAutoFit(true);
+                  if (viewport === 'desktop') {
+                    setDesktopPreset('fluid');
+                  }
                 }
               }}
               title={autoFit ? '100% miqyasa keç' : 'Ekrana uyğunlaşdır (Auto-fit)'}
@@ -300,7 +430,11 @@ export default function LivePreviewEngine({
                 fontWeight: 600,
               }}
             >
-              {autoFit ? `Uyğun (${displayPercent}%)` : `${displayPercent}%`}
+              {isDesktopFluid && autoFit
+                ? `100% (${availableWidth}px)`
+                : autoFit
+                ? `Uyğun (${displayPercent}%)`
+                : `${displayPercent}%`}
             </button>
             <button
               type="button"
@@ -356,6 +490,14 @@ export default function LivePreviewEngine({
           white-space: nowrap !important;
           word-break: keep-all !important;
         }
+        .sitex-preview-canvas h1,
+        .sitex-preview-canvas h2,
+        .sitex-preview-canvas h3,
+        .sitex-preview-canvas h4,
+        .sitex-preview-canvas p {
+          overflow-wrap: break-word !important;
+          word-break: normal !important;
+        }
         @container sitexpreview (max-width: 900px) {
           .randevu-desktop-nav,
           .theme-desktop-nav {
@@ -388,54 +530,77 @@ export default function LivePreviewEngine({
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'flex-start',
-          padding: viewport === 'mobile' ? '24px 16px' : '16px 12px',
+          padding:
+            isDesktopFluid && effectiveScale === 1
+              ? 0
+              : viewport === 'mobile'
+              ? '24px 16px'
+              : '16px 12px',
           background: '#0B0D13',
         }}
       >
         <div
           style={{
-            width: Math.round(targetWidth * effectiveScale),
+            width:
+              isDesktopFluid && effectiveScale === 1
+                ? '100%'
+                : Math.round(targetWidth * effectiveScale),
             height:
               viewport === 'mobile'
                 ? Math.round(844 * effectiveScale)
                 : viewport === 'tablet'
                 ? Math.round(1024 * effectiveScale)
                 : '100%',
-            minHeight:
-              viewport === 'desktop'
-                ? '100%'
-                : undefined,
+            minHeight: viewport === 'desktop' ? '100%' : undefined,
             flexShrink: 0,
             position: 'relative',
             display: 'flex',
             justifyContent: 'center',
+            alignItems: 'flex-start',
+            margin: '0 auto',
           }}
         >
           <div
             className="sitex-preview-canvas"
             style={{
-              width: `${targetWidth}px`,
+              width: isDesktopFluid && effectiveScale === 1 ? '100%' : `${targetWidth}px`,
+              maxWidth: isDesktopFluid ? '100%' : undefined,
               height:
                 viewport === 'mobile'
                   ? '844px'
                   : viewport === 'tablet'
                   ? '1024px'
+                  : effectiveScale === 1
+                  ? '100%'
                   : `${Math.round(100 / effectiveScale)}%`,
               minHeight:
                 viewport === 'desktop'
-                  ? `${Math.round(100 / effectiveScale)}%`
+                  ? effectiveScale === 1
+                    ? '100%'
+                    : `${Math.round(100 / effectiveScale)}%`
                   : undefined,
-              transform: `scale(${effectiveScale})`,
-              transformOrigin: 'top left',
-              transition: 'width 0.2s ease',
-              borderRadius: viewport === 'mobile' ? 36 : viewport === 'tablet' ? 24 : 8,
+              transform: effectiveScale === 1 ? 'none' : `scale(${effectiveScale})`,
+              transformOrigin: 'top center',
+              transition: 'width 0.2s ease, transform 0.2s ease',
+              borderRadius:
+                viewport === 'mobile'
+                  ? 36
+                  : viewport === 'tablet'
+                  ? 24
+                  : isDesktopFluid && effectiveScale === 1
+                  ? 0
+                  : 8,
               border:
                 viewport !== 'desktop'
                   ? '8px solid #232738'
+                  : isDesktopFluid && effectiveScale === 1
+                  ? 'none'
                   : '1px solid #282A3A',
               boxShadow:
                 viewport !== 'desktop'
                   ? '0 25px 60px -15px rgba(0,0,0,0.7), 0 0 0 1px #383D55'
+                  : isDesktopFluid && effectiveScale === 1
+                  ? 'none'
                   : '0 10px 30px rgba(0,0,0,0.3)',
               overflow: 'hidden',
               position: 'relative',

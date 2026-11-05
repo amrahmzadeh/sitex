@@ -392,6 +392,7 @@ export default function ThemePage() {
   const [stlCode, setStlCode] = useState<string>(() => themeConfigToSTL(defaultThemes.elegant));
   const [activeTab, setActiveTab] = useState<ThemeEditorTab | 'customizer'>('builder');
   const [viewport, setViewport] = useState<ViewportMode>('desktop');
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean>(false);
   const [selectedComponent, setSelectedComponent] = useState<ComponentTarget>('all');
   const [modalType, setModalType] = useState<'create' | 'duplicate' | 'rename' | 'import' | 'export' | null>(null);
 
@@ -1119,23 +1120,26 @@ export default function ThemePage() {
           className="theme-workspace-grid"
           style={{
             display: 'grid',
-            gridTemplateColumns: 'minmax(340px, 420px) 1fr',
+            gridTemplateColumns: isSidebarCollapsed ? '1fr' : 'minmax(340px, 420px) 1fr',
             gap: 20,
             alignItems: 'start',
             height: 'calc(100vh - 200px)',
             minHeight: 700,
+            transition: 'grid-template-columns 0.2s ease',
           }}
         >
-          <VisualThemeBuilder
-            theme={theme}
-            onChange={pushThemeChange}
-            onUndo={handleUndo}
-            onRedo={handleRedo}
-            canUndo={historyIdx > 0}
-            canRedo={historyIdx < history.length - 1}
-            selectedComponent={selectedComponent}
-            onSelectComponent={setSelectedComponent}
-          />
+          {!isSidebarCollapsed && (
+            <VisualThemeBuilder
+              theme={theme}
+              onChange={pushThemeChange}
+              onUndo={handleUndo}
+              onRedo={handleRedo}
+              canUndo={historyIdx > 0}
+              canRedo={historyIdx < history.length - 1}
+              selectedComponent={selectedComponent}
+              onSelectComponent={setSelectedComponent}
+            />
+          )}
           <LivePreviewEngine
             theme={theme}
             siteData={previewSiteData}
@@ -1144,6 +1148,8 @@ export default function ThemePage() {
             onViewportChange={setViewport}
             selectedComponent={selectedComponent}
             onSelectComponent={setSelectedComponent}
+            isSidebarCollapsed={isSidebarCollapsed}
+            onToggleSidebar={() => setIsSidebarCollapsed((prev) => !prev)}
           />
         </div>
       )}
@@ -1154,25 +1160,28 @@ export default function ThemePage() {
           className="theme-workspace-grid"
           style={{
             display: 'grid',
-            gridTemplateColumns: 'minmax(480px, 1.2fr) minmax(360px, 1fr)',
+            gridTemplateColumns: isSidebarCollapsed ? '1fr' : 'minmax(480px, 1.2fr) minmax(360px, 1fr)',
             gap: 20,
             alignItems: 'start',
             height: 'calc(100vh - 200px)',
             minHeight: 700,
+            transition: 'grid-template-columns 0.2s ease',
           }}
         >
-          <STLCodeEditor
-            initialCode={stlCode}
-            onCodeChange={setStlCode}
-            onCompileSuccess={(ast) => {
-              try {
-                const converted = convertSTLToThemeConfig(ast, theme);
-                setTheme(converted);
-              } catch {
-                // ignore
-              }
-            }}
-          />
+          {!isSidebarCollapsed && (
+            <STLCodeEditor
+              initialCode={stlCode}
+              onCodeChange={setStlCode}
+              onCompileSuccess={(ast) => {
+                try {
+                  const converted = convertSTLToThemeConfig(ast, theme);
+                  setTheme(converted);
+                } catch {
+                  // ignore
+                }
+              }}
+            />
+          )}
           <LivePreviewEngine
             theme={theme}
             siteData={previewSiteData}
@@ -1181,6 +1190,8 @@ export default function ThemePage() {
             onViewportChange={setViewport}
             selectedComponent={selectedComponent}
             onSelectComponent={setSelectedComponent}
+            isSidebarCollapsed={isSidebarCollapsed}
+            onToggleSidebar={() => setIsSidebarCollapsed((prev) => !prev)}
           />
         </div>
       )}
