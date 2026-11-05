@@ -458,44 +458,29 @@ export default function MenuPage() {
       </div>
 
       {/* Günün Sevimli Təamı (Başlıq Kartı) Bloku */}
-      <div
-        className="dash-card"
-        style={{
-          padding: '16px 20px',
-          marginBottom: 24,
-          border: '1.5px solid rgba(245, 158, 11, 0.45)',
-          background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(20, 22, 26, 0.95) 100%)',
-          borderRadius: 14,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: 16,
-          flexWrap: 'wrap',
-          boxShadow: '0 4px 20px rgba(0,0,0,0.25)',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14, minWidth: 0, flex: 1 }}>
+      <div className="dash-card dash-hero-dish-card">
+        <div className="dash-hero-dish-info">
           {currentHeroItem?.image ? (
             <img
               src={currentHeroItem.image}
               alt={currentHeroItem.name}
-              style={{ width: 60, height: 60, borderRadius: 10, objectFit: 'cover', border: '1px solid rgba(245, 158, 11, 0.4)', flexShrink: 0 }}
+              className="dash-hero-dish-img"
             />
           ) : (
-            <div style={{ width: 60, height: 60, borderRadius: 10, background: 'rgba(245, 158, 11, 0.15)', border: '1px solid rgba(245, 158, 11, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <div className="dash-hero-dish-icon">
               <Sparkles size={24} color="#FBBF24" />
             </div>
           )}
-          <div style={{ minWidth: 0 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-              <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: '#FBBF24', background: 'rgba(251, 191, 36, 0.15)', padding: '2px 8px', borderRadius: 100, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+          <div className="dash-hero-dish-text">
+            <div className="dash-hero-dish-badge-row">
+              <span className="dash-hero-dish-badge">
                 <Star size={11} fill="#FBBF24" /> Günün Sevimli Təamı (Başlıq Kartı)
               </span>
               {currentHeroCategory && (
                 <span style={{ fontSize: 12, color: '#8888A0' }}>· {currentHeroCategory.name}</span>
               )}
             </div>
-            <h3 style={{ margin: '4px 0 0', fontSize: 16, fontWeight: 700, color: '#F7F8F9', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            <h3 style={{ margin: '4px 0 0', fontSize: 16, fontWeight: 700, color: '#F7F8F9', overflowWrap: 'break-word' }}>
               {currentHeroItem ? currentHeroItem.name : 'Təyin edilməyib'}
             </h3>
             <p style={{ margin: '2px 0 0', fontSize: 12, color: '#9BA3AF' }}>
@@ -506,7 +491,7 @@ export default function MenuPage() {
           </div>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div className="dash-hero-dish-actions">
           <button
             type="button"
             onClick={() => setShowHeroPickerModal(true)}
@@ -514,6 +499,7 @@ export default function MenuPage() {
             style={{
               display: 'inline-flex',
               alignItems: 'center',
+              justifyContent: 'center',
               gap: 6,
               padding: '8px 14px',
               fontSize: 13,
@@ -521,6 +507,7 @@ export default function MenuPage() {
               borderColor: '#D97706',
               color: '#000',
               fontWeight: 600,
+              whiteSpace: 'nowrap',
             }}
           >
             <Sparkles size={14} />
@@ -532,7 +519,7 @@ export default function MenuPage() {
               onClick={() => setAsHeroDish(null)}
               disabled={settingHero === 'clear'}
               className="dash-btn-secondary"
-              style={{ padding: '8px 12px', fontSize: 13, color: '#8888A0' }}
+              style={{ padding: '8px 12px', fontSize: 13, color: '#8888A0', whiteSpace: 'nowrap' }}
               title="Günün təamı seçimini sıfırla"
             >
               {settingHero === 'clear' ? <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} /> : 'Sıfırla'}
@@ -690,11 +677,11 @@ export default function MenuPage() {
                               {item.video && <span style={{ background: 'rgba(255,159,28,0.18)', color: '#FF9F1C', fontSize: 10, padding: '1px 6px', borderRadius: 100, display: 'inline-flex', alignItems: 'center', gap: 3 }}>🎬 Video</span>}
                             </div>
                             {item.description && <p style={{ fontSize: 12, color: '#8888A0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.description}</p>}
-                            {item.isSet && item.setItems && (
-                              <div style={{ marginTop: 4, fontSize: 11, color: '#FCD34D', background: 'rgba(245,158,11,0.08)', padding: '2px 8px', borderRadius: 6, display: 'inline-block' }}>
+                            {item.isSet && item.setItems && formatSetSummary(item.setItems) ? (
+                              <div style={{ marginTop: 4, fontSize: 11, color: '#FCD34D', background: 'rgba(245,158,11,0.08)', padding: '4px 8px', borderRadius: 6, display: 'inline-block' }}>
                                 <span style={{ fontWeight: 600 }}>Tərkib:</span> {formatSetSummary(item.setItems)}
                               </div>
-                            )}
+                            ) : null}
                             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 4 }}>
                               {item.discountPrice ? (
                                 <>
@@ -713,21 +700,10 @@ export default function MenuPage() {
                               type="button"
                               disabled
                               title="Günün Sevimli Təamı kimi seçilib"
-                              style={{
-                                border: '1px solid rgba(251,191,36,0.5)',
-                                background: 'rgba(251,191,36,0.15)',
-                                color: '#FBBF24',
-                                padding: '6px 10px',
-                                borderRadius: 8,
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: 4,
-                                fontSize: 12,
-                                fontWeight: 600,
-                                cursor: 'default',
-                              }}
+                              className="dash-action-btn dash-action-hero-active"
                             >
-                              <Check size={13} /> Günün Təamı
+                              <Check size={14} />
+                              <span>Günün Təamı</span>
                             </button>
                           ) : (
                             <button
@@ -735,37 +711,29 @@ export default function MenuPage() {
                               onClick={() => setAsHeroDish(item.id)}
                               disabled={settingHero === item.id}
                               title="Bu yeməyi saytın başlıq kartında Günün Sevimli Təamı et"
-                              style={{
-                                border: '1px solid rgba(251,191,36,0.3)',
-                                background: 'rgba(251,191,36,0.05)',
-                                color: '#FBBF24',
-                                cursor: 'pointer',
-                                padding: '6px 10px',
-                                borderRadius: 8,
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: 4,
-                                fontSize: 12,
-                                fontWeight: 500,
-                              }}
+                              className="dash-action-btn dash-action-hero"
                             >
                               {settingHero === item.id ? (
-                                <Loader2 size={13} style={{ animation: 'spin 1s linear infinite' }} />
+                                <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} />
                               ) : (
-                                <Star size={13} />
+                                <Star size={14} />
                               )}
-                              Günün Təamı et
+                              <span>Günün Təamı et</span>
                             </button>
                           )}
                           <button
+                            type="button"
                             onClick={() => openItemModal(item)}
-                            style={{ border: '1px solid #2A2A3A', background: 'transparent', color: '#8888A0', cursor: 'pointer', padding: '6px 10px', borderRadius: 8, display: 'flex', alignItems: 'center', gap: 4, fontSize: 13 }}
+                            className="dash-action-btn dash-action-edit"
                           >
-                            <Pencil size={14} /> Düzəlt
+                            <Pencil size={14} />
+                            <span>Düzəlt</span>
                           </button>
                           <button
+                            type="button"
                             onClick={() => deleteItem(item.id, item.categoryId)}
-                            style={{ border: '1px solid rgba(248,113,113,0.3)', background: 'transparent', color: '#F87171', cursor: 'pointer', padding: '6px 10px', borderRadius: 8 }}
+                            className="dash-action-btn dash-action-delete"
+                            title="Yeməyi sil"
                           >
                             <Trash2 size={14} />
                           </button>

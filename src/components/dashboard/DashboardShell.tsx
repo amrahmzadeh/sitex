@@ -256,11 +256,11 @@ export default function DashboardShell({ children }: { children: React.ReactNode
   }
 
   return (
-    <div style={{ display: 'flex', height: '100vh', overflow: 'hidden', background: '#0F0F14' }}>
+    <div style={{ display: 'flex', height: '100dvh', overflow: 'hidden', background: '#0F0F14' }}>
       {/* Desktop Sidebar */}
       <aside
         className="dash-sidebar dash-sidebar-desktop"
-        style={{ width: 260, flexShrink: 0, flexDirection: 'column', height: '100vh', overflow: 'hidden' }}
+        style={{ width: 260, flexShrink: 0, flexDirection: 'column', height: '100dvh', overflow: 'hidden' }}
       >
         <SidebarContent />
       </aside>
