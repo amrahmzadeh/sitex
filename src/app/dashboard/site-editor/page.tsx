@@ -5,15 +5,17 @@ import { useSession } from 'next-auth/react';
 import dynamic from 'next/dynamic';
 import { Loader2, PenLine } from 'lucide-react';
 
-// SiteEditorShell client-side dinamik import (ağır bileşen)
 const SiteEditorShell = dynamic(
   () => import('@/modules/site-editor/components/SiteEditorShell'),
-  { ssr: false, loading: () => (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh', gap: 12, color: '#8888A0' }}>
-      <Loader2 size={22} style={{ animation: 'spin 1s linear infinite' }} />
-      Redaktor yüklənir...
-    </div>
-  )}
+  {
+    ssr: false,
+    loading: () => (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh', gap: 12, color: '#8888A0' }}>
+        <Loader2 size={22} style={{ animation: 'spin 1s linear infinite' }} />
+        Redaktor yüklənir...
+      </div>
+    ),
+  }
 );
 
 function useCurrentOrg() {
@@ -48,7 +50,7 @@ export default function SiteEditorPage() {
 
   if (!org) {
     return (
-      <div style={{ textAlign: 'center', marginTop: 80, color: '#8888A0' }}>
+      <div style={{ textAlign: 'center', marginTop: 80, color: '#8888A0', padding: 20 }}>
         <PenLine size={40} style={{ marginBottom: 12, opacity: 0.4 }} />
         <p>Sayt tapılmadı. Zəhmət olmasa bir sayt yaradın.</p>
       </div>
@@ -56,9 +58,36 @@ export default function SiteEditorPage() {
   }
 
   return (
-    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', margin: '-28px' }}>
+    <div className="site-editor-page-wrapper">
+      <style jsx global>{`
+        .site-editor-page-wrapper {
+          position: relative;
+          display: flex;
+          flex-direction: column;
+          height: calc(100dvh - 56px);
+          margin: -28px;
+          overflow: hidden;
+        }
+        @media (max-width: 1024px) {
+          .site-editor-page-wrapper {
+            margin: -20px -16px;
+            height: calc(100dvh - 60px);
+          }
+        }
+        @media (max-width: 768px) {
+          .site-editor-page-wrapper {
+            margin: -16px -14px;
+            height: calc(100dvh - 56px);
+          }
+        }
+        @media (max-width: 480px) {
+          .site-editor-page-wrapper {
+            margin: -12px;
+            height: calc(100dvh - 52px);
+          }
+        }
+      `}</style>
       <SiteEditorShell orgId={org.id} slug={org.slug} />
     </div>
   );
 }
-

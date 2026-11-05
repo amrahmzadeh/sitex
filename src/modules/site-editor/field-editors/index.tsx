@@ -27,10 +27,11 @@ const inputStyle: React.CSSProperties = {
   border: `1px solid ${C.border}`,
   borderRadius: 8,
   color: C.text,
-  fontSize: 14,
-  padding: '9px 12px',
+  fontSize: 15,
+  padding: '10px 12px',
   outline: 'none',
   boxSizing: 'border-box',
+  minHeight: 42,
 };
 
 const labelStyle: React.CSSProperties = {
