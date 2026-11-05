@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Head from 'next/head';
 import { Phone, MapPin, Clock, Instagram, Facebook, MessageCircle, Menu, X, Star, ChevronRight, Users, Coffee, Music, Award, ShoppingCart, Plus, Minus, Trash2, Check, ExternalLink } from 'lucide-react';
 import { ThemeConfig, getGoogleFontsUrl } from '@/lib/themes';
 import { formatPrice, formatWhatsAppUrl } from '@/lib/utils';
@@ -1498,11 +1497,9 @@ export default function RandevuCafeSite({ data, theme }: { data: SiteData; theme
         />
       )}
 
-      <Head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href={fontsUrl} rel="stylesheet" />
-      </Head>
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      <link href={fontsUrl} rel="stylesheet" />
 
       <div style={{ background: theme.siteBgColor || BG, minHeight: '100vh' }}>
         <Header data={data} theme={theme} activeSection={activeSection} />

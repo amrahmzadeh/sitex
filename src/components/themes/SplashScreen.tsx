@@ -44,7 +44,12 @@ function getEmbedUrl(url: string, muted: boolean, loop: boolean): string | null 
 }
 
 export default function SplashScreen({ config, siteSlug }: SplashScreenProps) {
-  const parsedConfig: SplashConfig = typeof config === 'string' ? JSON.parse(config) : (config || {});
+  let parsedConfig: SplashConfig = {};
+  try {
+    parsedConfig = typeof config === 'string' ? JSON.parse(config) : (config || {});
+  } catch {
+    parsedConfig = {};
+  }
 
   const {
     type = 'video',
@@ -221,7 +226,8 @@ export default function SplashScreen({ config, siteSlug }: SplashScreenProps) {
                   if (el && el.style.display !== 'none') {
                     el.style.transition = 'opacity 0.4s ease';
                     el.style.opacity = '0';
-                    setTimeout(function(){ if (el) el.remove(); document.body.style.overflow = ''; }, 400);
+                    el.style.pointerEvents = 'none';
+                    setTimeout(function(){ if (el) { el.style.display = 'none'; } document.body.style.overflow = ''; }, 400);
                   }
                 }, ${(duration && duration > 0 ? duration + 1.5 : 6) * 1000});
               })()`,

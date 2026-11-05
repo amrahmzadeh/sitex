@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import RestaurantSite from '@/components/themes/RestaurantSite';
@@ -76,7 +77,7 @@ interface SiteData {
   }>;
 }
 
-async function getSiteData(slug: string): Promise<SiteData | null> {
+const getSiteData = cache(async (slug: string): Promise<SiteData | null> => {
   try {
     const org = await prisma.organization.findUnique({
       where: { slug },
@@ -162,7 +163,7 @@ async function getSiteData(slug: string): Promise<SiteData | null> {
     console.error('getSiteData error:', e);
     return null;
   }
-}
+});
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
