@@ -7,6 +7,7 @@ import { ThemeConfig, getGoogleFontsUrl } from '@/lib/themes';
 import { formatPrice, formatWhatsAppUrl } from '@/lib/utils';
 import { getGoogleMapsEmbedUrl } from '@/lib/maps';
 import type { SiteData, MenuItem, MenuCategory } from './RestaurantSite';
+import SplashScreen from './SplashScreen';
 
 const PRIMARY = '#004527';
 const SECONDARY = '#a93539';
@@ -1490,6 +1491,13 @@ export default function RandevuCafeSite({ data, theme }: { data: SiteData; theme
 
   return (
     <>
+      {data.website?.splashEnabled && data.website?.splashConfig && (
+        <SplashScreen
+          config={data.website.splashConfig}
+          siteSlug={data.organization.slug}
+        />
+      )}
+
       <Head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
