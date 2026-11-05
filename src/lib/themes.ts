@@ -495,7 +495,7 @@ export const defaultThemes: Record<string, ThemeConfig> = {
     aboutBadgeRight: 'Canlı Musiqi',
     footerCopyrightText: '© 2025 Randevu Cafe & Family Lounge. Bütün hüquqlar qorunur.',
     footerPlatformText: 'Sayt SiteX platforması ilə yaradılıb',
-    footerTagline: 'Ailəniz və doğmalarınız üçün Bakının ən sevimli qastronomik məkanı.',
+    footerTagline: 'Ailəniz və doğmalarınız üçün ən sevimli qastronomik məkan.',
   },
 };
 

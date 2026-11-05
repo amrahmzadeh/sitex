@@ -662,6 +662,29 @@ export default function VisualThemeBuilder({
                     </button>
                   ))}
                 </div>
+
+                <div style={{ marginTop: 12 }}>
+                  <label style={{ fontSize: 12, color: '#C8CAD8', display: 'block', marginBottom: 6 }}>Footer Şüarı (Loqo altı)</label>
+                  <textarea
+                    rows={2}
+                    value={theme.footerTagline || ''}
+                    onChange={(e) => updateProp('footerTagline', e.target.value)}
+                    placeholder="Loqo altındakı qısa şüar..."
+                    style={{
+                      width: '100%',
+                      background: '#131520',
+                      border: '1px solid #33374D',
+                      borderRadius: 6,
+                      padding: '8px 10px',
+                      color: '#F7F8F9',
+                      fontSize: 12,
+                      fontFamily: 'inherit',
+                      resize: 'vertical',
+                      outline: 'none',
+                      boxSizing: 'border-box',
+                    }}
+                  />
+                </div>
               </div>
             </div>
           </>

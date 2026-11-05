@@ -189,7 +189,7 @@ export default function RandevuCafeModules({ theme, onChange }: RandevuCafeModul
 
       {/* Footer Module */}
       <CollapsiblePanel title="🦶 Footer Bölməsi">
-        <Field label="TAGLİNE" value={theme.footerTagline} onChange={v => set('footerTagline', v)} type="textarea" placeholder="Ailəniz üçün Bakının ən sevimli məkanı." />
+        <Field label="TAGLİNE" value={theme.footerTagline} onChange={v => set('footerTagline', v)} type="textarea" placeholder="Ailəniz üçün ən sevimli məkan." />
         <Field label="COPYRİGHT MƏTNİ" value={theme.footerCopyrightText} onChange={v => set('footerCopyrightText', v)} placeholder="© 2025 Randevu Cafe..." />
         <Field label="PLATFORMA MƏTNİ" value={theme.footerPlatformText} onChange={v => set('footerPlatformText', v)} placeholder="Sayt SiteX platforması ilə..." />
       </CollapsiblePanel>

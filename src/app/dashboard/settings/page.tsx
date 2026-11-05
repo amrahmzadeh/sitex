@@ -23,7 +23,7 @@ export default function SettingsPage() {
   const orgId = useCurrentOrg();
 
   // Business form state
-  const [form, setForm] = useState({ name: '', description: '', phone: '', email: '', address: '', city: '', mapUrl: '', logo: '' });
+  const [form, setForm] = useState({ name: '', description: '', footerTagline: '', phone: '', email: '', address: '', city: '', mapUrl: '', logo: '' });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -48,7 +48,22 @@ export default function SettingsPage() {
   useEffect(() => {
     if (!orgId) return;
     fetch(`/api/organizations/${orgId}`).then(r => r.json()).then(d => {
-      if (d.organization) setForm({ name: d.organization.name, description: d.organization.description || '', phone: d.organization.phone || '', email: d.organization.email || '', address: d.organization.address || '', city: d.organization.city || '', mapUrl: d.organization.mapUrl || '', logo: d.organization.logo || '' });
+      if (d.organization) {
+        const theme = (d.organization.website?.publishedTheme as any) || (d.organization.website?.draftTheme as any) || {};
+        const rawTagline = (theme.footerTagline || '').trim();
+        const defaultBakı = 'Ailəniz və doğmalarınız üçün Bakının ən sevimli qastronomik məkanı.';
+        setForm({
+          name: d.organization.name,
+          description: d.organization.description || '',
+          footerTagline: rawTagline === defaultBakı ? '' : rawTagline,
+          phone: d.organization.phone || '',
+          email: d.organization.email || '',
+          address: d.organization.address || '',
+          city: d.organization.city || '',
+          mapUrl: d.organization.mapUrl || '',
+          logo: d.organization.logo || '',
+        });
+      }
     }).finally(() => setLoading(false));
   }, [orgId]);
 
@@ -169,6 +184,7 @@ export default function SettingsPage() {
       const payload = {
         name: form.name.trim(),
         description: form.description ? form.description.trim() : null,
+        footerTagline: form.footerTagline !== undefined ? form.footerTagline.trim() : undefined,
         phone: form.phone ? form.phone.trim() : null,
         email: form.email ? form.email.trim() : null,
         address: form.address ? form.address.trim() : null,
@@ -394,8 +410,22 @@ export default function SettingsPage() {
                   <input className="dash-input" value={form.name} onChange={(e) => set('name', e.target.value)} placeholder="Saytın adı" />
                 </div>
                 <div>
-                  <label className="dash-label">Təsvir</label>
+                  <label className="dash-label">Təsvir (Haqqında)</label>
                   <textarea className="dash-input" rows={3} value={form.description} onChange={(e) => set('description', e.target.value)} placeholder="Saytınız haqqında..." style={{ resize: 'vertical' }} />
+                </div>
+                <div>
+                  <label className="dash-label">Footer Şüarı / Loqo altı qısa mətn</label>
+                  <textarea
+                    className="dash-input"
+                    rows={2}
+                    value={form.footerTagline}
+                    onChange={(e) => set('footerTagline', e.target.value)}
+                    placeholder={form.description ? `Boş buraxıldıqda: "${form.description.slice(0, 50)}..." göstərilir` : 'Loqo altındakı qısa şüar və ya mətn'}
+                    style={{ resize: 'vertical' }}
+                  />
+                  <p style={{ fontSize: 12, color: 'rgba(255, 255, 255, 0.45)', marginTop: 4, marginBottom: 0 }}>
+                    Saytın alt hissəsində (Footer) loqonun altında görünən qısa şüar. Boş buraxsanız, yuxarıdakı təsvir göstəriləcək.
+                  </p>
                 </div>
               </div>
             </motion.div>

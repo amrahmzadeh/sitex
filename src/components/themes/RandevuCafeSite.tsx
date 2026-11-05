@@ -1195,7 +1195,11 @@ function Footer({ data, theme }: { data: SiteData; theme: ThemeConfig }) {
   const body = theme.bodyFont || 'Plus Jakarta Sans';
   const copyright = theme.footerCopyrightText || `© ${new Date().getFullYear()} ${organization.name}. Bütün hüquqlar qorunur.`;
   const platform = theme.footerPlatformText || 'Sayt SiteX platforması ilə yaradılıb';
-  const tagline = theme.footerTagline || organization.description || '';
+  const defaultBakıTagline = 'Ailəniz və doğmalarınız üçün Bakının ən sevimli qastronomik məkanı.';
+  const rawTagline = (theme.footerTagline || '').trim();
+  const tagline = (rawTagline && rawTagline !== defaultBakıTagline)
+    ? rawTagline
+    : (organization.description || rawTagline || '');
 
   return (
     <footer style={{ background: footerBg, padding: '60px 20px 32px' }}>

@@ -75,7 +75,8 @@ export async function PATCH(
     }
 
     const body = await req.json();
-    const result = organizationSchema.partial().safeParse(body);
+    const { footerTagline, ...orgFields } = body;
+    const result = organizationSchema.partial().safeParse(orgFields);
 
     if (!result.success) {
       return NextResponse.json(
@@ -87,7 +88,24 @@ export async function PATCH(
     const organization = await prisma.organization.update({
       where: { id: orgId },
       data: result.data,
+      include: { website: true },
     });
+
+    if (footerTagline !== undefined) {
+      const website = organization.website;
+      if (website) {
+        const draft = ((website.draftTheme as any) || {});
+        const published = ((website.publishedTheme as any) || {});
+        const updatedTagline = typeof footerTagline === 'string' ? footerTagline.trim() : '';
+        await prisma.website.update({
+          where: { organizationId: orgId },
+          data: {
+            draftTheme: { ...draft, footerTagline: updatedTagline },
+            publishedTheme: { ...published, footerTagline: updatedTagline },
+          },
+        });
+      }
+    }
 
     return NextResponse.json({ organization });
   } catch (error: any) {

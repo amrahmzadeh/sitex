@@ -2578,6 +2578,17 @@ export default function ThemePage() {
               />
             </div>
             <div>
+              <label className="dash-label">Footer Şüarı / Qısa Mətn (Loqo altı)</label>
+              <textarea
+                className="dash-input"
+                rows={2}
+                placeholder="Ailəniz və doğmalarınız üçün ən sevimli məkan..."
+                value={theme.footerTagline ?? ''}
+                onChange={(e) => setTheme(p => ({ ...p, footerTagline: e.target.value }))}
+                style={{ resize: 'vertical' }}
+              />
+            </div>
+            <div>
               <label className="dash-label">Platforma / Yaradıcı Qeydi</label>
               <input
                 className="dash-input"
