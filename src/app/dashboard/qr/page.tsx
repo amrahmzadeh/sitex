@@ -951,7 +951,7 @@ export default function QRPage() {
       {/* ── DESIGN ── */}
       {activeTab === 'design' && (
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 20, alignItems: 'start' }}>
+          <div className="dash-qr-design-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 20, alignItems: 'start' }}>
             {/* Controls */}
             <div style={{ display: 'grid', gap: 16 }}>
               {/* Templates */}

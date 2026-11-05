@@ -260,7 +260,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
       {/* Desktop Sidebar */}
       <aside
         className="dash-sidebar dash-sidebar-desktop"
-        style={{ width: 260, flexShrink: 0, display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}
+        style={{ width: 260, flexShrink: 0, flexDirection: 'column', height: '100vh', overflow: 'hidden' }}
       >
         <SidebarContent />
       </aside>

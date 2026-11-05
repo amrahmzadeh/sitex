@@ -515,6 +515,10 @@ body {
 
 /* ==================== BREAKPOINTS ==================== */
 
+.dash-sidebar-desktop {
+  display: flex;
+}
+
 /* Tablet and below (≤1023px): hide desktop sidebar, show topbar */
 @media (max-width: 1023px) {
   .dash-sidebar-desktop {
@@ -620,6 +624,9 @@ body {
 
 @media (max-width: 768px) {
   .dash-menu-layout {
+    grid-template-columns: 1fr !important;
+  }
+  .dash-qr-design-grid {
     grid-template-columns: 1fr !important;
   }
 }

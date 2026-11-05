@@ -757,6 +757,8 @@ export default function ThemePage() {
         @media (max-width: 1080px) {
           .theme-workspace-grid {
             grid-template-columns: 1fr !important;
+            height: auto !important;
+            min-height: unset !important;
           }
         }
         .sitex-preview-canvas header,
