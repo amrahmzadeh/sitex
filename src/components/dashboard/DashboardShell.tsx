@@ -246,6 +246,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
   );
 
   const isBuilder = pathname === '/dashboard/builder' || pathname?.startsWith('/dashboard/builder');
+  const isSiteEditor = pathname === '/dashboard/site-editor' || pathname?.startsWith('/dashboard/site-editor');
 
   if (isBuilder) {
     return (
@@ -306,8 +307,14 @@ export default function DashboardShell({ children }: { children: React.ReactNode
 
         {/* Page Content */}
         <main
-          className="dash-main"
-          style={{ flex: 1, overflowY: 'auto', padding: 28 }}
+          className={`dash-main ${isSiteEditor ? 'dash-main-no-padding' : ''}`}
+          style={{
+            flex: 1,
+            overflowY: isSiteEditor ? 'hidden' : 'auto',
+            padding: isSiteEditor ? 0 : 28,
+            display: isSiteEditor ? 'flex' : 'block',
+            flexDirection: isSiteEditor ? 'column' : undefined,
+          }}
         >
           {orgs.length === 0 && pathname !== '/dashboard/new-organization' ? (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: 16, textAlign: 'center' }}>

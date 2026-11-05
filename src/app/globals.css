@@ -494,6 +494,11 @@ body {
   min-width: 0;
 }
 
+.dash-main.dash-main-no-padding {
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+
 /* Page content area */
 .dash-main {
   flex: 1;

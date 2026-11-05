@@ -10,7 +10,7 @@ const SiteEditorShell = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh', gap: 12, color: '#8888A0' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', minHeight: 300, gap: 12, color: '#8888A0' }}>
         <Loader2 size={22} style={{ animation: 'spin 1s linear infinite' }} />
         Redaktor yüklənir...
       </div>
@@ -41,7 +41,7 @@ export default function SiteEditorPage() {
 
   if (status === 'loading' || !org) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh', gap: 12, color: '#8888A0' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', minHeight: 300, gap: 12, color: '#8888A0' }}>
         <Loader2 size={22} style={{ animation: 'spin 1s linear infinite' }} />
         Yüklənir...
       </div>
@@ -50,43 +50,15 @@ export default function SiteEditorPage() {
 
   if (!org) {
     return (
-      <div style={{ textAlign: 'center', marginTop: 80, color: '#8888A0', padding: 20 }}>
-        <PenLine size={40} style={{ marginBottom: 12, opacity: 0.4 }} />
+      <div style={{ textAlign: 'center', padding: '80px 20px', color: '#8888A0' }}>
+        <PenLine size={40} style={{ margin: '0 auto 12px', opacity: 0.4 }} />
         <p>Sayt tapılmadı. Zəhmət olmasa bir sayt yaradın.</p>
       </div>
     );
   }
 
   return (
-    <div className="site-editor-page-wrapper">
-      <style jsx global>{`
-        .site-editor-page-wrapper {
-          position: relative;
-          display: flex;
-          flex-direction: column;
-          height: calc(100dvh - 56px);
-          margin: -28px;
-          overflow: hidden;
-        }
-        @media (max-width: 1024px) {
-          .site-editor-page-wrapper {
-            margin: -20px -16px;
-            height: calc(100dvh - 60px);
-          }
-        }
-        @media (max-width: 768px) {
-          .site-editor-page-wrapper {
-            margin: -16px -14px;
-            height: calc(100dvh - 56px);
-          }
-        }
-        @media (max-width: 480px) {
-          .site-editor-page-wrapper {
-            margin: -12px;
-            height: calc(100dvh - 52px);
-          }
-        }
-      `}</style>
+    <div style={{ width: '100%', height: '100%', flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
       <SiteEditorShell orgId={org.id} slug={org.slug} />
     </div>
   );
