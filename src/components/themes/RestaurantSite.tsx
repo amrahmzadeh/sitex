@@ -19,6 +19,7 @@ import { parseSetItems, formatSetSummary } from '@/lib/set-dishes';
 import { SocialIconsGroup } from './SocialIcons';
 import SocialMediaFeed from './SocialMediaFeed';
 import { useWorkingHours } from '@/hooks/useWorkingHours';
+import { getResolvedSiteContent } from '@/lib/site-content-resolver';
 import { OffHoursNotice } from '@/components/common/OffHoursNotice';
 
 export interface GalleryItem {
@@ -93,6 +94,7 @@ export interface SiteData {
   workingHours: Array<{ dayOfWeek: number; openTime?: string; closeTime?: string; isClosed: boolean; breakStart?: string | null; breakEnd?: string | null }>;
   workingHoursSettings?: { timezone?: string; pauseOrdersOutsideHours?: boolean; offHoursMessage?: string | null } | null;
   menuCategories: MenuCategory[];
+  siteContent?: Record<string, Record<string, any>>;
 }
 
 const DAY_NAMES = ['Bazar', 'Bazar ertəsi', 'Çərşənbə axşamı', 'Çərşənbə', 'Cümə axşamı', 'Cümə', 'Şənbə'];
@@ -1001,6 +1003,7 @@ export default function RestaurantSite({ data, initialTable }: { data: SiteData;
     return <ProRestaurantSite data={data} theme={theme} table={table} />;
   }
   const { organization, whatsapp, socialLinks, workingHours, menuCategories } = data;
+  const content = getResolvedSiteContent(data.siteContent, organization);
   const { isOrdersPaused, noticeMessage: offHoursNotice } = useWorkingHours({
     workingHours: data.workingHours,
     settings: data.workingHoursSettings,

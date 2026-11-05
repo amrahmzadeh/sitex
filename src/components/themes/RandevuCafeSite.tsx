@@ -8,6 +8,7 @@ import { getGoogleMapsEmbedUrl } from '@/lib/maps';
 import type { SiteData, MenuItem, MenuCategory } from './RestaurantSite';
 import SplashScreen from './SplashScreen';
 import { useWorkingHours } from '@/hooks/useWorkingHours';
+import { getResolvedSiteContent } from '@/lib/site-content-resolver';
 import { OffHoursNotice } from '@/components/common/OffHoursNotice';
 
 const PRIMARY = '#004527';

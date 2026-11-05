@@ -17,6 +17,7 @@ import FoodVideoPlayer from './FoodVideoPlayer';
 import { SocialIconsGroup } from './SocialIcons';
 import SocialMediaFeed from './SocialMediaFeed';
 import { useWorkingHours } from '@/hooks/useWorkingHours';
+import { getResolvedSiteContent } from '@/lib/site-content-resolver';
 import { OffHoursNotice } from '@/components/common/OffHoursNotice';
 import type { SiteData } from './RestaurantSite';
 
@@ -262,6 +263,7 @@ export default function ProRestaurantSite({
   table?: string | null;
 }) {
   const { organization, whatsapp, socialLinks, workingHours, menuCategories } = data;
+  const content = getResolvedSiteContent(data.siteContent, organization);
   const currency = organization.currency || 'AZN';
 
   const [activeCategory, setActiveCategory] = useState<string>(menuCategories[0]?.id || 'all');

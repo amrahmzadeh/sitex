@@ -13,10 +13,15 @@ interface SiteData {
   organization: {
     name: string; slug: string; logo?: string; description?: string;
     phone?: string; email?: string; address?: string; city?: string; mapUrl?: string; mapEmbedUrl?: string; currency: string;
+    siteCategory?: string;
+    siteSubcategory?: string;
   };
   website: {
     theme: Record<string, unknown>; pages: unknown; seoTitle?: string; seoDescription?: string; ogImage?: string;
     splashEnabled?: boolean; splashConfig?: SplashConfig;
+    draftTheme?: unknown;
+    publishedTheme?: unknown;
+    pagesConfig?: unknown;
   };
   whatsapp?: {
     countryCode: string; phoneNumber: string; orderMessage: string; buttonText: string; isEnabled: boolean;
@@ -66,6 +71,7 @@ interface SiteData {
     gallery?: boolean;
     contact?: boolean;
   };
+  siteContent?: Record<string, Record<string, any>>;
   workingHours: Array<{ dayOfWeek: number; openTime?: string; closeTime?: string; isClosed: boolean; breakStart?: string | null; breakEnd?: string | null }>;
   workingHoursSettings?: { timezone?: string; pauseOrdersOutsideHours?: boolean; offHoursMessage?: string | null } | null;
   menuCategories: Array<{
@@ -78,7 +84,7 @@ interface SiteData {
   }>;
 }
 
-const getSiteData = cache(async (slug: string): Promise<SiteData | null> => {
+const getSiteData = cache(async (slug: string, isPreview: boolean = false): Promise<SiteData | null> => {
   try {
     const org = await prisma.organization.findUnique({
       where: { slug },
@@ -100,6 +106,7 @@ const getSiteData = cache(async (slug: string): Promise<SiteData | null> => {
         },
         workingHours: { orderBy: { dayOfWeek: 'asc' } },
         workingHoursSettings: true,
+        siteContents: true,
         menuCategories: {
           where: { isVisible: true },
           orderBy: { sortOrder: 'asc' },
@@ -114,7 +121,7 @@ const getSiteData = cache(async (slug: string): Promise<SiteData | null> => {
       },
     });
 
-    if (!org || !org.website?.isPublished) return null;
+    if (!org || !org.website || (!org.website.isPublished && !isPreview)) return null;
 
     const mapEmbedUrl = await resolveGoogleMapsEmbedUrl(
       org.mapUrl,
@@ -122,6 +129,21 @@ const getSiteData = cache(async (slug: string): Promise<SiteData | null> => {
       org.city,
       org.name
     );
+
+    const siteContentMap: Record<string, Record<string, any>> = {};
+    for (const sc of (org as any).siteContents || []) {
+      if (!siteContentMap[sc.pageKey]) siteContentMap[sc.pageKey] = {};
+      const doc = isPreview
+        ? ((sc.draftContent as any) || (sc.publishedContent as any) || {})
+        : ((sc.publishedContent as any) || (sc.draftContent as any) || {});
+      siteContentMap[sc.pageKey][sc.blockKey] = doc;
+    }
+
+    const resolvedTheme = isPreview
+      ? (((org.website.draftTheme as Record<string, unknown>) && Object.keys((org.website.draftTheme as any) || {}).length > 0)
+          ? (org.website.draftTheme as Record<string, unknown>)
+          : (org.website.publishedTheme as Record<string, unknown>) || {})
+      : ((org.website.publishedTheme as Record<string, unknown>) || {});
 
     return {
       organization: {
@@ -141,7 +163,7 @@ const getSiteData = cache(async (slug: string): Promise<SiteData | null> => {
         siteSubcategory: org.siteSubcategory || undefined,
       },
       website: {
-        theme: (org.website.publishedTheme as Record<string, unknown>) || {},
+        theme: resolvedTheme,
         pages: org.website.publishedPages,
         pagesConfig: org.website.pagesConfig,
         draftTheme: org.website.draftTheme,
@@ -161,6 +183,7 @@ const getSiteData = cache(async (slug: string): Promise<SiteData | null> => {
       workingHours: org.workingHours || [],
       workingHoursSettings: org.workingHoursSettings || null,
       menuCategories: org.menuCategories || [],
+      siteContent: siteContentMap,
     } as unknown as SiteData;
   } catch (e) {
     console.error('getSiteData error:', e);
@@ -170,7 +193,7 @@ const getSiteData = cache(async (slug: string): Promise<SiteData | null> => {
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const data = await getSiteData(slug);
+  const data = await getSiteData(slug, false);
   if (!data) return { title: 'Sayt tapılmadı' };
 
   return {
@@ -198,7 +221,8 @@ export default async function SitePage({
     ? (rawTable.toLowerCase().startsWith('masa') ? rawTable : `Masa ${rawTable}`)
     : undefined;
 
-  const data = await getSiteData(slug);
+  const isPreview = sp.preview === '1' || sp.preview === 'true';
+  const data = await getSiteData(slug, isPreview);
   if (!data) notFound();
 
   return <RestaurantSite data={data} initialTable={initialTable} />;
