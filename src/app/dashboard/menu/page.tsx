@@ -437,13 +437,13 @@ export default function MenuPage() {
   );
 
   return (
-    <div style={{ maxWidth: 1100 }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 28, flexWrap: 'wrap', gap: 12 }}>
+    <div style={{ maxWidth: 1100, width: '100%', minWidth: 0, boxSizing: 'border-box' }}>
+      <div className="dash-menu-page-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 28, flexWrap: 'wrap', gap: 12 }}>
         <div>
           <h1 style={{ fontSize: 26, fontWeight: 700, color: '#E8E8F0' }}>Menyu</h1>
           <p style={{ color: '#8888A0', fontSize: 14 }}>{categories.length} kateqoriya · {items.length} yemək</p>
         </div>
-        <div style={{ display: 'flex', gap: 8 }}>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           <button
             onClick={() => { setShowJsonModal(true); setJsonError(''); setJsonSuccess(''); }}
             className="dash-btn-secondary"
@@ -530,8 +530,8 @@ export default function MenuPage() {
 
       <div className="dash-menu-layout">
         {/* Categories sidebar */}
-        <div>
-          <div className="dash-card dash-menu-categories" style={{ overflow: 'hidden' }}>
+        <div style={{ minWidth: 0, width: '100%' }}>
+          <div className="dash-card dash-menu-categories">
             {categories.length === 0 ? (
               <div style={{ padding: 24, textAlign: 'center', color: '#8888A0', fontSize: 14 }}>
                 <UtensilsCrossed size={32} style={{ margin: '0 auto 12px', opacity: 0.3 }} />
@@ -569,14 +569,14 @@ export default function MenuPage() {
         </div>
 
         {/* Items */}
-        <div>
+        <div style={{ minWidth: 0, width: '100%' }}>
           {activeCategory ? (
             <>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-                <h2 style={{ fontSize: 16, fontWeight: 600, color: '#E8E8F0' }}>
+              <div className="dash-menu-items-header">
+                <h2 className="dash-menu-items-header-title" style={{ fontSize: 16, fontWeight: 600, color: '#E8E8F0' }}>
                   {categories.find(c => c.id === activeCategory)?.name} — {catItems.length} yemək
                 </h2>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                <div className="dash-menu-items-header-actions" style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                   <button
                     onClick={() => openItemModal(undefined, true)}
                     className="dash-btn-secondary"
@@ -600,7 +600,7 @@ export default function MenuPage() {
 
               {/* Filter pills: Hamısı / Tək Yeməklər / Setlər */}
               {catItems.length > 0 && (
-                <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+                <div className="dash-menu-filter-pills">
                   {[
                     { id: 'all', label: `Hamısı (${catItems.length})` },
                     { id: 'single', label: `Tək Yeməklər (${catItems.filter(i => !i.isSet).length})` },
@@ -619,6 +619,7 @@ export default function MenuPage() {
                         background: menuFilter === tab.id ? 'rgba(124, 92, 252, 0.2)' : 'rgba(255,255,255,0.02)',
                         color: menuFilter === tab.id ? '#A78BFA' : '#8888A0',
                         cursor: 'pointer',
+                        whiteSpace: 'nowrap',
                       }}
                     >
                       {tab.label}
@@ -653,28 +654,28 @@ export default function MenuPage() {
                       >
                         <div className="dash-menu-item-top">
                           {item.image ? (
-                            <img src={item.image} alt={item.name} style={{ width: 64, height: 64, borderRadius: 10, objectFit: 'cover', flexShrink: 0 }} />
+                            <img src={item.image} alt={item.name} className="dash-menu-item-img" style={{ width: 64, height: 64, borderRadius: 10, objectFit: 'cover', flexShrink: 0 }} />
                           ) : (
-                            <div style={{ width: 64, height: 64, borderRadius: 10, background: '#2A2A3A', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                            <div className="dash-menu-item-img-placeholder" style={{ width: 64, height: 64, borderRadius: 10, background: '#2A2A3A', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                               <UtensilsCrossed size={24} color="#444" />
                             </div>
                           )}
                           <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 4 }}>
-                              <span style={{ fontSize: 15, fontWeight: 600, color: '#E8E8F0' }}>{item.name}</span>
+                            <div className="dash-menu-item-badge-row" style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', marginBottom: 4 }}>
+                              <span style={{ fontSize: 15, fontWeight: 600, color: '#E8E8F0', wordBreak: 'break-word', lineHeight: 1.3 }}>{item.name}</span>
                               {item.isSet && (
-                                <span style={{ background: 'rgba(245,158,11,0.2)', color: '#FCD34D', border: '1px solid rgba(245,158,11,0.4)', fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 100, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                                <span style={{ background: 'rgba(245,158,11,0.2)', color: '#FCD34D', border: '1px solid rgba(245,158,11,0.4)', fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 100, display: 'inline-flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap', flexShrink: 0 }}>
                                   🍱 YEMƏK SETİ
                                 </span>
                               )}
                               {(item.id === currentHeroItem?.id || item.isFeatured) && (
-                                <span style={{ background: 'linear-gradient(135deg, rgba(245,158,11,0.25), rgba(229,169,60,0.35))', color: '#FBBF24', border: '1px solid rgba(251,191,36,0.5)', fontSize: 10, fontWeight: 700, padding: '1px 8px', borderRadius: 100, display: 'inline-flex', alignItems: 'center', gap: 3 }}>
+                                <span style={{ background: 'linear-gradient(135deg, rgba(245,158,11,0.25), rgba(229,169,60,0.35))', color: '#FBBF24', border: '1px solid rgba(251,191,36,0.5)', fontSize: 10, fontWeight: 700, padding: '1px 8px', borderRadius: 100, display: 'inline-flex', alignItems: 'center', gap: 3, whiteSpace: 'nowrap', flexShrink: 0 }}>
                                   <Star size={10} fill="#FBBF24" /> Başlıq Kartı
                                 </span>
                               )}
-                              {item.isNew && <span style={{ background: 'rgba(52,211,153,0.15)', color: '#34D399', fontSize: 10, padding: '1px 6px', borderRadius: 100 }}>Yeni</span>}
-                              {item.isPopular && <span style={{ background: 'rgba(248,113,113,0.15)', color: '#F87171', fontSize: 10, padding: '1px 6px', borderRadius: 100 }}>Populyar</span>}
-                              {item.video && <span style={{ background: 'rgba(255,159,28,0.18)', color: '#FF9F1C', fontSize: 10, padding: '1px 6px', borderRadius: 100, display: 'inline-flex', alignItems: 'center', gap: 3 }}>🎬 Video</span>}
+                              {item.isNew && <span style={{ background: 'rgba(52,211,153,0.15)', color: '#34D399', fontSize: 10, padding: '1px 6px', borderRadius: 100, whiteSpace: 'nowrap', flexShrink: 0 }}>Yeni</span>}
+                              {item.isPopular && <span style={{ background: 'rgba(248,113,113,0.15)', color: '#F87171', fontSize: 10, padding: '1px 6px', borderRadius: 100, whiteSpace: 'nowrap', flexShrink: 0 }}>Populyar</span>}
+                              {item.video && <span style={{ background: 'rgba(255,159,28,0.18)', color: '#FF9F1C', fontSize: 10, padding: '1px 6px', borderRadius: 100, display: 'inline-flex', alignItems: 'center', gap: 3, whiteSpace: 'nowrap', flexShrink: 0 }}>🎬 Video</span>}
                             </div>
                             {item.description && <p style={{ fontSize: 12, color: '#8888A0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.description}</p>}
                             {item.isSet && item.setItems && formatSetSummary(item.setItems) ? (
@@ -763,6 +764,7 @@ export default function MenuPage() {
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
+              className="dash-cat-modal-inner"
               style={{ background: '#1A1A24', border: '1px solid #2A2A3A', borderRadius: 20, padding: 32, width: '100%', maxWidth: 440 }}
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
@@ -806,6 +808,7 @@ export default function MenuPage() {
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
+              className="dash-item-modal-inner"
               style={{ background: '#1A1A24', border: '1px solid #2A2A3A', borderRadius: 20, padding: 32, width: '100%', maxWidth: 560, maxHeight: '90vh', overflowY: 'auto' }}
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>

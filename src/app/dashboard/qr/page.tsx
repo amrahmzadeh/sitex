@@ -488,8 +488,8 @@ function QRCard({
   };
 
   return (
-    <div className="dash-card" style={{ padding: 16, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
-      <div style={{ background: design.bgColor, borderRadius: 10, padding: 8, border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+    <div className="dash-card" style={{ padding: 16, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, maxWidth: '100%', width: '100%', boxSizing: 'border-box' }}>
+      <div style={{ background: design.bgColor, borderRadius: 10, padding: 8, border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', maxWidth: '100%', boxSizing: 'border-box', overflow: 'hidden' }}>
         <QRCanvas
           url={url}
           design={design}
@@ -802,36 +802,38 @@ export default function QRPage() {
       {/* ── GENERAL ── */}
       {activeTab === 'general' && (
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} style={{ display: 'grid', gap: 20 }}>
-          <div className="dash-card" style={{ padding: 28 }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 24, alignItems: 'start' }}>
-              <div>
+          <div className="dash-card dash-qr-card">
+            <div className="dash-qr-split">
+              <div style={{ minWidth: 0, width: '100%' }}>
                 <h2 style={{ fontSize: 18, fontWeight: 700, color: '#E8E8F0', marginBottom: 8 }}>Ümumi Sayt QR Kodu</h2>
                 <p style={{ fontSize: 13, color: '#8888A0', marginBottom: 16, lineHeight: 1.6 }}>
                   Bu QR kodu saytın əsas səhifəsinə yönləndirir. Giriş lövhələrinə, stendlərə və ya reklam materiallarına yerləşdirilə bilər.
                 </p>
                 {generalUrl && (
-                  <div style={{ background: '#0F0F14', borderRadius: 10, padding: '10px 14px', marginBottom: 12 }}>
+                  <div style={{ background: '#0F0F14', borderRadius: 10, padding: '10px 14px', marginBottom: 12, wordBreak: 'break-all' }}>
                     <p style={{ fontSize: 11, color: '#8888A0', marginBottom: 3 }}>🔗 QR URL:</p>
                     <p style={{ fontSize: 12, color: '#00D37D', wordBreak: 'break-all' }}>{generalUrl}</p>
                   </div>
                 )}
                 {whatsapp && (
-                  <div style={{ background: 'rgba(52,211,153,0.08)', border: '1px solid rgba(52,211,153,0.2)', borderRadius: 10, padding: '10px 14px' }}>
-                    <p style={{ fontSize: 12, color: '#34D399' }}>
+                  <div style={{ background: 'rgba(52,211,153,0.08)', border: '1px solid rgba(52,211,153,0.2)', borderRadius: 10, padding: '10px 14px', wordBreak: 'break-word' }}>
+                    <p style={{ fontSize: 12, color: '#34D399', lineHeight: 1.5 }}>
                       📱 WhatsApp: <strong>{whatsapp.countryCode}{whatsapp.phoneNumber}</strong> — sifarişlər birbaşa bu nömrəyə ötürülür
                     </p>
                   </div>
                 )}
               </div>
-              <div>
+              <div className="dash-qr-preview-wrapper">
                 {generalUrl && orgInfo && (
-                  <QRCard
-                    url={generalUrl}
-                    design={design}
-                    label={orgInfo.name}
-                    restaurantName={orgInfo.name}
-                    tableNumber={undefined}
-                  />
+                  <div style={{ width: '100%', maxWidth: 300 }}>
+                    <QRCard
+                      url={generalUrl}
+                      design={design}
+                      label={orgInfo.name}
+                      restaurantName={orgInfo.name}
+                      tableNumber={undefined}
+                    />
+                  </div>
                 )}
               </div>
             </div>
@@ -859,11 +861,11 @@ export default function QRPage() {
       {/* ── TABLES ── */}
       {activeTab === 'tables' && (
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} style={{ display: 'grid', gap: 20 }}>
-          <div className="dash-card" style={{ padding: 24 }}>
+          <div className="dash-card dash-qr-card">
             <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 20, flexWrap: 'wrap' }}>
-              <div style={{ flex: 1 }}>
+              <div style={{ flex: '1 1 200px', minWidth: 0 }}>
                 <h2 style={{ fontSize: 16, fontWeight: 700, color: '#E8E8F0' }}>Masa QR Kodları</h2>
-                <p style={{ fontSize: 13, color: '#8888A0', marginTop: 2 }}>
+                <p style={{ fontSize: 13, color: '#8888A0', marginTop: 2, wordBreak: 'break-all' }}>
                   Hər masa fərdi link alır: <code style={{ color: '#00D37D', fontSize: 11 }}>/site/{orgInfo?.slug}?table=01</code>
                 </p>
               </div>
@@ -881,7 +883,7 @@ export default function QRPage() {
             <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
               <button
                 className="dash-btn-primary"
-                style={{ display: 'flex', alignItems: 'center', gap: 8 }}
+                style={{ display: 'flex', alignItems: 'center', gap: 8, flex: '1 1 auto', justifyContent: 'center' }}
                 onClick={downloadAllPng}
                 disabled={isExporting !== null}
               >
@@ -890,7 +892,7 @@ export default function QRPage() {
               </button>
               <button
                 className="dash-btn-secondary"
-                style={{ display: 'flex', alignItems: 'center', gap: 8, borderColor: 'rgba(0,211,125,0.4)', color: '#00D37D' }}
+                style={{ display: 'flex', alignItems: 'center', gap: 8, borderColor: 'rgba(0,211,125,0.4)', color: '#00D37D', flex: '1 1 auto', justifyContent: 'center' }}
                 onClick={downloadAllSvg}
                 disabled={isExporting !== null}
               >
@@ -899,7 +901,7 @@ export default function QRPage() {
               </button>
               <button
                 className="dash-btn-secondary"
-                style={{ display: 'flex', alignItems: 'center', gap: 8 }}
+                style={{ display: 'flex', alignItems: 'center', gap: 8, flex: '1 1 auto', justifyContent: 'center' }}
                 onClick={downloadPdfAll}
                 disabled={isExporting !== null}
               >
@@ -908,7 +910,7 @@ export default function QRPage() {
               </button>
               <button
                 className="dash-btn-secondary"
-                style={{ display: 'flex', alignItems: 'center', gap: 8 }}
+                style={{ display: 'flex', alignItems: 'center', gap: 8, flex: '1 1 auto', justifyContent: 'center' }}
                 onClick={printAll}
                 disabled={isExporting !== null}
               >
@@ -917,7 +919,7 @@ export default function QRPage() {
               </button>
               <button
                 className="dash-btn-secondary"
-                style={{ display: 'flex', alignItems: 'center', gap: 8 }}
+                style={{ display: 'flex', alignItems: 'center', gap: 8, flex: '1 1 auto', justifyContent: 'center' }}
                 onClick={save}
               >
                 <Settings2 size={16} /> Masa sayını saxla
@@ -925,7 +927,7 @@ export default function QRPage() {
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 14 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 14 }}>
             {Array.from({ length: tableCount }, (_, i) => {
               const num = String(i + 1).padStart(2, '0');
               return (
@@ -955,9 +957,9 @@ export default function QRPage() {
             {/* Controls */}
             <div style={{ display: 'grid', gap: 16 }}>
               {/* Templates */}
-              <div className="dash-card" style={{ padding: 20 }}>
+              <div className="dash-card dash-qr-card">
                 <h3 style={{ fontSize: 14, fontWeight: 600, color: '#E8E8F0', marginBottom: 14 }}>🎨 Hazır Dizayn Şablonları</h3>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(95px, 1fr))', gap: 8 }}>
                   {Object.entries(TEMPLATES).map(([key, tpl]) => (
                     <button
                       key={key}
@@ -981,16 +983,16 @@ export default function QRPage() {
               </div>
 
               {/* Colors */}
-              <div className="dash-card" style={{ padding: 20 }}>
+              <div className="dash-card dash-qr-card">
                 <h3 style={{ fontSize: 14, fontWeight: 600, color: '#E8E8F0', marginBottom: 14 }}>Rənglər</h3>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: 16 }}>
                   {([['fgColor', 'QR kodu rəngi'], ['bgColor', 'Fon rəngi']] as [keyof QRDesign, string][]).map(([k, lbl]) => (
                     <div key={k}>
                       <label className="dash-label">{lbl}</label>
                       <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                         <input type="color" value={design[k] as string} onChange={e => setD(k, e.target.value)}
-                          style={{ width: 40, height: 36, border: 'none', borderRadius: 8, cursor: 'pointer', padding: 0, background: 'none' }} />
-                        <input className="dash-input" value={design[k] as string} onChange={e => setD(k, e.target.value)} style={{ flex: 1, fontFamily: 'monospace' }} />
+                          style={{ width: 40, height: 36, border: 'none', borderRadius: 8, cursor: 'pointer', padding: 0, background: 'none', flexShrink: 0 }} />
+                        <input className="dash-input" value={design[k] as string} onChange={e => setD(k, e.target.value)} style={{ flex: 1, fontFamily: 'monospace', minWidth: 0 }} />
                       </div>
                     </div>
                   ))}
@@ -998,9 +1000,9 @@ export default function QRPage() {
               </div>
 
               {/* Size & Margin */}
-              <div className="dash-card" style={{ padding: 20 }}>
+              <div className="dash-card dash-qr-card">
                 <h3 style={{ fontSize: 14, fontWeight: 600, color: '#E8E8F0', marginBottom: 14 }}>Ölçü və Kənarlar</h3>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: 16 }}>
                   <div>
                     <label className="dash-label">QR ölçüsü: {design.size}px</label>
                     <input type="range" min={160} max={400} step={10} value={design.size}
@@ -1015,7 +1017,7 @@ export default function QRPage() {
               </div>
 
               {/* Logo with strict aspect ratio */}
-              <div className="dash-card" style={{ padding: 20 }}>
+              <div className="dash-card dash-qr-card">
                 <h3 style={{ fontSize: 14, fontWeight: 600, color: '#E8E8F0', marginBottom: 14 }}>QR Mərkəzi Loqo</h3>
                 <div>
                   <label className="dash-label">Loqo URL</label>
@@ -1034,7 +1036,7 @@ export default function QRPage() {
               </div>
 
               {/* Labels & Titles (Fix for Problem 4) */}
-              <div className="dash-card" style={{ padding: 20 }}>
+              <div className="dash-card dash-qr-card">
                 <h3 style={{ fontSize: 14, fontWeight: 600, color: '#E8E8F0', marginBottom: 14 }}>Mətn və Başlıqlar</h3>
                 <div style={{ display: 'grid', gap: 12 }}>
                   <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}>
@@ -1135,7 +1137,7 @@ export default function QRPage() {
       {/* ── MANAGE ── */}
       {activeTab === 'manage' && (
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} style={{ display: 'grid', gap: 16 }}>
-          <div className="dash-card" style={{ padding: 24 }}>
+          <div className="dash-card dash-qr-card">
             <h2 style={{ fontSize: 16, fontWeight: 700, color: '#E8E8F0', marginBottom: 20 }}>QR Kodların Siyahısı</h2>
 
             {/* General */}
@@ -1189,12 +1191,12 @@ export default function QRPage() {
             })}
           </div>
 
-          <div className="dash-card" style={{ padding: 20 }}>
+          <div className="dash-card dash-qr-card">
             <h3 style={{ fontSize: 14, fontWeight: 600, color: '#E8E8F0', marginBottom: 8 }}>Ayarları Saxla</h3>
-            <p style={{ fontSize: 13, color: '#8888A0', marginBottom: 14 }}>
+            <p style={{ fontSize: 13, color: '#8888A0', marginBottom: 14, wordBreak: 'break-word' }}>
               Masa sayı ({tableCount}) və tənzimlənmiş dizayn parametrlərini yadda saxlayın.
             </p>
-            <button onClick={save} disabled={saving} className="dash-btn-primary" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <button onClick={save} disabled={saving} className="dash-btn-primary" style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', maxWidth: 240, justifyContent: 'center' }}>
               {saving ? <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} /> : saved ? <Check size={16} /> : <Settings2 size={16} />}
               {saved ? 'Yadda saxlandı!' : 'Ayarları saxla'}
             </button>
@@ -1205,29 +1207,31 @@ export default function QRPage() {
       {/* ── SITE QR (non-restaurant) ── */}
       {activeTab === 'site' && (
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} style={{ display: 'grid', gap: 20 }}>
-          <div className="dash-card" style={{ padding: 28 }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 24, alignItems: 'start' }}>
-              <div>
+          <div className="dash-card dash-qr-card">
+            <div className="dash-qr-split">
+              <div style={{ minWidth: 0, width: '100%' }}>
                 <h2 style={{ fontSize: 18, fontWeight: 700, color: '#E8E8F0', marginBottom: 8 }}>Sayt üçün QR Kod yarat</h2>
                 <p style={{ fontSize: 13, color: '#8888A0', marginBottom: 16, lineHeight: 1.6 }}>
                   Bu QR kodu saytınızın əsas səhifəsinə yönləndirir. Vizit kartlarına, reklam materiallarına və ya bütün nəşr materiallarına əlavə edilə bilər.
                 </p>
                 {generalUrl && (
-                  <div style={{ background: '#0F0F14', borderRadius: 10, padding: '10px 14px', marginBottom: 12 }}>
+                  <div style={{ background: '#0F0F14', borderRadius: 10, padding: '10px 14px', marginBottom: 12, wordBreak: 'break-all' }}>
                     <p style={{ fontSize: 11, color: '#8888A0', marginBottom: 3 }}>🔗 Sayt URL:</p>
                     <p style={{ fontSize: 12, color: '#00D37D', wordBreak: 'break-all' }}>{generalUrl}</p>
                   </div>
                 )}
               </div>
-              <div>
+              <div className="dash-qr-preview-wrapper">
                 {generalUrl && orgInfo && (
-                  <QRCard
-                    url={generalUrl}
-                    design={design}
-                    label={orgInfo.name}
-                    restaurantName={undefined}
-                    tableNumber={undefined}
-                  />
+                  <div style={{ width: '100%', maxWidth: 300 }}>
+                    <QRCard
+                      url={generalUrl}
+                      design={design}
+                      label={orgInfo.name}
+                      restaurantName={undefined}
+                      tableNumber={undefined}
+                    />
+                  </div>
                 )}
               </div>
             </div>
@@ -1257,24 +1261,29 @@ function ManageRow({
   onDownloadSVG: () => void;
 }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 0', borderBottom: '1px solid #2A2A3A' }}>
-      <div style={{ width: 36, height: 36, borderRadius: 8, background: iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-        {icon}
+    <div className="dash-manage-row">
+      <div className="dash-manage-row-main">
+        <div style={{ width: 36, height: 36, borderRadius: 8, background: iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          {icon}
+        </div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <p style={{ fontSize: 13, fontWeight: 600, color: '#E8E8F0' }}>{title}</p>
+          <p style={{ fontSize: 11, color: '#8888A0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{url}</p>
+        </div>
+        <span style={{ fontSize: 11, padding: '3px 10px', borderRadius: 100, background: 'rgba(52,211,153,0.15)', color: '#34D399', flexShrink: 0 }}>Aktiv</span>
       </div>
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <p style={{ fontSize: 13, fontWeight: 600, color: '#E8E8F0' }}>{title}</p>
-        <p style={{ fontSize: 11, color: '#8888A0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{url}</p>
+
+      <div className="dash-manage-row-actions">
+        <button className="dash-btn-secondary" style={{ fontSize: 11, padding: '6px 10px', display: 'flex', alignItems: 'center', gap: 4 }} onClick={onView}>
+          <Eye size={12} /> Bax
+        </button>
+        <button className="dash-btn-secondary" style={{ fontSize: 11, padding: '6px 10px', display: 'flex', alignItems: 'center', gap: 4 }} onClick={onDownloadPNG} title="Yüksək keyfiyyətli HD PNG">
+          <Download size={12} /> PNG HD
+        </button>
+        <button className="dash-btn-secondary" style={{ fontSize: 11, padding: '6px 10px', display: 'flex', alignItems: 'center', gap: 4, borderColor: 'rgba(0,211,125,0.4)', color: '#00D37D' }} onClick={onDownloadSVG} title="Limitsiz Vektor SVG">
+          <Sparkles size={12} /> SVG
+        </button>
       </div>
-      <span style={{ fontSize: 11, padding: '3px 10px', borderRadius: 100, background: 'rgba(52,211,153,0.15)', color: '#34D399', flexShrink: 0 }}>Aktiv</span>
-      <button className="dash-btn-secondary" style={{ fontSize: 11, padding: '5px 10px', display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }} onClick={onView}>
-        <Eye size={12} /> Bax
-      </button>
-      <button className="dash-btn-secondary" style={{ fontSize: 11, padding: '5px 10px', display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }} onClick={onDownloadPNG} title="Yüksək keyfiyyətli HD PNG">
-        <Download size={12} /> PNG HD
-      </button>
-      <button className="dash-btn-secondary" style={{ fontSize: 11, padding: '5px 10px', display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0, borderColor: 'rgba(0,211,125,0.4)', color: '#00D37D' }} onClick={onDownloadSVG} title="Limitsiz Vektor SVG">
-        <Sparkles size={12} /> SVG
-      </button>
     </div>
   );
 }

@@ -515,9 +515,19 @@ body {
 /* ==================== MENU & CATALOG RESPONSIVE ==================== */
 .dash-menu-layout {
   display: grid;
-  grid-template-columns: 260px 1fr;
+  grid-template-columns: 260px minmax(0, 1fr);
   gap: 24px;
   align-items: start;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.dash-menu-layout > div {
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* Hero dish card */
@@ -708,8 +718,11 @@ body {
   }
 
   .dash-menu-layout {
-    grid-template-columns: 1fr !important;
+    grid-template-columns: minmax(0, 1fr) !important;
     gap: 16px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
   }
 
   .dash-menu-categories {
@@ -718,21 +731,35 @@ body {
     overflow-x: auto !important;
     -webkit-overflow-scrolling: touch;
     gap: 8px !important;
-    padding: 8px !important;
-    scrollbar-width: none;
+    padding: 10px 8px !important;
+    scrollbar-width: thin !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+    scroll-snap-type: x mandatory;
   }
 
   .dash-menu-categories::-webkit-scrollbar {
-    display: none;
+    height: 4px !important;
+    display: block !important;
+  }
+
+  .dash-menu-categories::-webkit-scrollbar-thumb {
+    background: #383334 !important;
+    border-radius: 4px !important;
   }
 
   .dash-menu-category-item {
     border-bottom: none !important;
     border: 1px solid #2A2A3A !important;
     border-radius: 10px !important;
-    padding: 6px 12px !important;
-    flex-shrink: 0 !important;
+    padding: 8px 12px !important;
+    flex: 0 0 auto !important;
     white-space: nowrap !important;
+    scroll-snap-align: start;
+    min-width: 120px !important;
+    box-sizing: border-box !important;
   }
 
   .dash-menu-item-card {
@@ -740,35 +767,64 @@ body {
     align-items: stretch !important;
     gap: 12px !important;
     padding: 14px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
   }
 
   .dash-menu-item-top {
     width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
     align-items: flex-start !important;
     gap: 12px !important;
   }
 
   .dash-menu-item-actions {
     width: 100% !important;
-    display: flex !important;
-    flex-wrap: wrap !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr 40px !important;
     gap: 8px !important;
     padding-top: 10px !important;
     border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
-    justify-content: flex-start !important;
+    align-items: center !important;
+    box-sizing: border-box !important;
   }
 
   .dash-action-btn {
-    flex: 1 1 auto !important;
     min-height: 38px !important;
-    padding: 8px 10px !important;
-    font-size: 13px !important;
+    padding: 8px 8px !important;
+    font-size: 12px !important;
+    width: 100% !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
   }
 
   .dash-action-delete {
-    flex: 0 0 38px !important;
-    width: 38px !important;
-    padding: 8px !important;
+    width: 40px !important;
+    height: 38px !important;
+    padding: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .dash-menu-item-actions {
+    grid-template-columns: 1fr 40px !important;
+  }
+
+  .dash-action-hero,
+  .dash-action-hero-active {
+    grid-column: 1 / -1 !important;
   }
 }
 
@@ -878,6 +934,113 @@ body {
   }
 }
 
+/* ==================== QR PAGE RESPONSIVE ==================== */
+.dash-qr-split {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  min-width: 0;
+}
+
+@media (min-width: 860px) {
+  .dash-qr-split {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: start;
+    gap: 28px;
+  }
+}
+
+.dash-qr-card {
+  padding: 16px !important;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+@media (min-width: 640px) {
+  .dash-qr-card {
+    padding: 24px !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .dash-qr-card {
+    padding: 28px !important;
+  }
+}
+
+.dash-qr-preview-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+}
+
+@media (min-width: 860px) {
+  .dash-qr-preview-wrapper {
+    display: block;
+    width: auto;
+  }
+}
+
+/* Manage Tab Rows */
+.dash-manage-row {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid #2A2A3A;
+  min-width: 0;
+  width: 100%;
+}
+
+.dash-manage-row-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  width: 100%;
+}
+
+.dash-manage-row-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.dash-manage-row-actions > button {
+  flex: 1 1 80px;
+  justify-content: center;
+}
+
+@media (min-width: 768px) {
+  .dash-manage-row {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+  }
+
+  .dash-manage-row-main {
+    flex: 1;
+  }
+
+  .dash-manage-row-actions {
+    width: auto;
+    flex-wrap: nowrap;
+    margin-left: auto;
+  }
+
+  .dash-manage-row-actions > button {
+    flex: initial;
+  }
+}
+
 /* ==================== FORM GRID 2-COL ==================== */
 /* Settings page and similar 2-column form grids */
 .dash-form-grid-2 {
@@ -930,3 +1093,280 @@ body {
     padding-bottom: 4px;
   }
 }
+
+/* ==================== MENU PAGE RESPONSIVE ==================== */
+
+/* Filter pills: horizontal scroll strip on mobile */
+.dash-menu-filter-pills {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  /* allow wrapping on tablet+ */
+  flex-wrap: wrap;
+}
+
+.dash-menu-filter-pills::-webkit-scrollbar {
+  display: none;
+}
+
+.dash-menu-filter-pills button {
+  flex-shrink: 0;
+  min-height: 36px;
+  touch-action: manipulation;
+}
+
+@media (max-width: 600px) {
+  .dash-menu-filter-pills {
+    flex-wrap: nowrap;
+  }
+}
+
+/* Item section header: title + action buttons */
+.dash-menu-items-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.dash-menu-items-header h2 {
+  min-width: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #E8E8F0;
+  /* allow wrapping of long category name */
+  word-break: break-word;
+}
+
+.dash-menu-items-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+
+@media (max-width: 480px) {
+  .dash-menu-items-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .dash-menu-items-header-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+    gap: 8px;
+  }
+
+  .dash-menu-items-header-actions button {
+    width: 100%;
+    justify-content: center;
+    min-height: 42px;
+    font-size: 13px;
+    padding: 8px 10px;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 380px) {
+  .dash-menu-items-header-actions {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Badge/tag row inside menu item card: wrap & prevent overflow */
+.dash-menu-item-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+  min-width: 0;
+}
+
+.dash-menu-item-badge-row span {
+  /* each badge shrinks but never hides */
+  flex-shrink: 1;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Item name: truncate gracefully */
+.dash-menu-item-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #E8E8F0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* Price row */
+.dash-menu-item-price-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+  min-width: 0;
+}
+
+/* Category item in horizontal scroll: prevent shrink issues */
+@media (max-width: 768px) {
+  .dash-menu-category-item {
+    min-width: max-content;
+  }
+
+  /* Page-level header (Menyu title + JSON/Kategori buttons) */
+  .dash-menu-page-header {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  .dash-menu-page-header > div:last-child {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+  }
+
+  .dash-menu-page-header > div:last-child button {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+}
+
+/* Modal responsive on small screens */
+@media (max-width: 540px) {
+  .dash-item-modal-inner,
+  .dash-cat-modal-inner {
+    border-radius: 16px !important;
+    padding: 20px !important;
+    max-height: 92vh !important;
+  }
+
+  /* Modal overlays: reduce padding so inner modal fills viewport width better */
+  .dash-item-modal-inner,
+  .dash-cat-modal-inner {
+    max-width: calc(100vw - 24px) !important;
+  }
+}
+
+/* Prevent body horizontal scroll globally */
+body {
+  overflow-x: hidden;
+}
+
+/* Ensure all dash-main children don't overflow */
+.dash-main > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* Fix: menu item image — fixed px sizes cause layout shift on mobile */
+@media (max-width: 480px) {
+  .dash-menu-item-img {
+    width: 56px !important;
+    height: 56px !important;
+  }
+
+  .dash-menu-item-img-placeholder {
+    width: 56px !important;
+    height: 56px !important;
+  }
+}
+
+/* ==================== PACKAGES / SERVICES / PRODUCTS PAGE ==================== */
+.dash-pkg-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+@media (max-width: 480px) {
+  .dash-pkg-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==================== ANALYTICS PAGE ==================== */
+.dash-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+@media (max-width: 480px) {
+  .dash-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 320px) {
+  .dash-stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==================== GALLERY / MEDIA PAGE ==================== */
+.dash-media-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+@media (max-width: 480px) {
+  .dash-media-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ==================== INQUIRIES / TABLE VIEW ==================== */
+.dash-table-container {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 12px;
+}
+
+/* ==================== QR PAGE ==================== */
+@media (max-width: 600px) {
+  .dash-qr-preview-box {
+    max-width: 100% !important;
+  }
+}
+
+/* ==================== SETTINGS PAGE ==================== */
+@media (max-width: 600px) {
+  /* 2-col inline grid override */
+  div[style*="grid-template-columns"][style*="1fr 1fr"] {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* ==================== GLOBAL OVERFLOW GUARD ==================== */
+/* Any fixed-width element inside dash-main must not exceed viewport */
+.dash-main * {
+  box-sizing: border-box;
+}
+
+/* Images in cards should never overflow */
+.dash-card img {
+  max-width: 100%;
+}
+
+/* Ensure all flex containers have min-width: 0 to allow shrinking */
+.dash-menu-item-top > div,
+.dash-hero-dish-info > div {
+  min-width: 0;
+}
+
