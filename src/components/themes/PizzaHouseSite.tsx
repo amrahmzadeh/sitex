@@ -485,9 +485,17 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
 .pizza-house-root .static { position: static !important; }
 .pizza-house-root .inset-0 { inset: 0 !important; top: 0 !important; right: 0 !important; bottom: 0 !important; left: 0 !important; }
 .pizza-house-root .top-0 { top: 0 !important; }
+.pizza-house-root .top-2 { top: 0.5rem !important; }
+.pizza-house-root .top-3 { top: 0.75rem !important; }
 .pizza-house-root .right-0 { right: 0 !important; }
+.pizza-house-root .right-2 { right: 0.5rem !important; }
+.pizza-house-root .right-3 { right: 0.75rem !important; }
 .pizza-house-root .bottom-0 { bottom: 0 !important; }
+.pizza-house-root .bottom-2 { bottom: 0.5rem !important; }
+.pizza-house-root .bottom-3 { bottom: 0.75rem !important; }
 .pizza-house-root .left-0 { left: 0 !important; }
+.pizza-house-root .left-2 { left: 0.5rem !important; }
+.pizza-house-root .left-3 { left: 0.75rem !important; }
 .pizza-house-root .z-10 { z-index: 10 !important; }
 .pizza-house-root .z-20 { z-index: 20 !important; }
 .pizza-house-root .z-40 { z-index: 40 !important; }
@@ -750,6 +758,7 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
   .pizza-house-root .sm\\:justify-start { justify-content: flex-start !important; }
   .pizza-house-root .sm\\:justify-center { justify-content: center !important; }
   .pizza-house-root .sm\\:top-4 { top: 1rem !important; }
+  .pizza-house-root .sm\\:top-10 { top: 2.5rem !important; }
   .pizza-house-root .sm\\:-left-6 { left: -1.5rem !important; }
   .pizza-house-root .sm\\:-right-6 { right: -1.5rem !important; }
   .pizza-house-root .sm\\:-bottom-4 { bottom: -1rem !important; }
@@ -2138,20 +2147,20 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
 
                   {/* Floating Badge 1: Rating */}
                   <div
-                    className="absolute -top-3 -left-3 sm:top-4 sm:-left-6 px-4 py-2.5 rounded-2xl shadow-xl flex items-center gap-2.5 animate-bounce border border-[#f0eded] z-20"
+                    className="absolute top-2 left-2 sm:top-4 sm:-left-6 px-2.5 py-1.5 sm:px-4 sm:py-2.5 rounded-xl sm:rounded-2xl shadow-xl flex items-center gap-2 sm:gap-2.5 animate-bounce border border-[#f0eded] z-20"
                     style={{ animationDuration: '4s', backgroundColor: '#ffffff' }}
                   >
                     <div
-                      className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
+                      className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl flex items-center justify-center shrink-0"
                       style={{ backgroundColor: '#ffdea0', color: '#261a00' }}
                     >
-                      <Star size={18} className="fill-[#261a00] text-[#261a00]" />
+                      <Star size={16} className="fill-[#261a00] text-[#261a00]" />
                     </div>
                     <div>
-                      <p className="font-headline-sm text-sm sm:text-base font-bold leading-tight text-[#1c1b1b]">
+                      <p className="font-headline-sm text-xs sm:text-base font-bold leading-tight text-[#1c1b1b]">
                         {theme.heroRatingScore || '4.9'}
                       </p>
-                      <p className="font-label-sm text-xs text-[#5b403f]">
+                      <p className="font-label-sm text-[10px] sm:text-xs text-[#5b403f]">
                         {theme.heroRatingLabel || 'Reytinq (2.4k+)'}
                       </p>
                     </div>
@@ -2159,20 +2168,20 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
 
                   {/* Floating Badge 2: 100% Mozzarella */}
                   <div
-                    className="absolute -bottom-4 -left-2 sm:bottom-6 sm:-left-4 px-4 py-2.5 rounded-2xl shadow-xl flex items-center gap-2.5 border border-[#f0eded] z-20"
+                    className="absolute bottom-2 left-2 sm:bottom-6 sm:-left-4 px-2.5 py-1.5 sm:px-4 sm:py-2.5 rounded-xl sm:rounded-2xl shadow-xl flex items-center gap-2 sm:gap-2.5 border border-[#f0eded] z-20"
                     style={{ backgroundColor: '#ffffff' }}
                   >
                     <div
-                      className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
+                      className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl flex items-center justify-center shrink-0"
                       style={{ backgroundColor: '#ffdad9', color: '#b20028' }}
                     >
-                      <Flame size={18} className="fill-[#b20028] text-[#b20028]" />
+                      <Flame size={16} className="fill-[#b20028] text-[#b20028]" />
                     </div>
                     <div>
-                      <p className="font-headline-sm text-sm sm:text-base font-bold leading-tight text-[#1c1b1b]">
+                      <p className="font-headline-sm text-xs sm:text-base font-bold leading-tight text-[#1c1b1b]">
                         {theme.heroBadgeFeature1 || '100% Təbii'}
                       </p>
-                      <p className="font-label-sm text-xs text-[#5b403f]">
+                      <p className="font-label-sm text-[10px] sm:text-xs text-[#5b403f]">
                         {theme.heroBadgeFeature1Desc || 'Pendir & Xəmir'}
                       </p>
                     </div>
@@ -2180,20 +2189,20 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
 
                   {/* Floating Badge 3: Fast baking */}
                   <div
-                    className="absolute -top-3 -right-2 sm:top-10 sm:-right-6 px-4 py-2.5 rounded-2xl shadow-xl flex items-center gap-2.5 border border-[#f0eded] z-20"
+                    className="absolute top-2 right-2 sm:top-10 sm:-right-6 px-2.5 py-1.5 sm:px-4 sm:py-2.5 rounded-xl sm:rounded-2xl shadow-xl flex items-center gap-2 sm:gap-2.5 border border-[#f0eded] z-20"
                     style={{ backgroundColor: '#ffffff' }}
                   >
                     <div
-                      className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
+                      className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl flex items-center justify-center shrink-0"
                       style={{ backgroundColor: '#ffdcc3', color: '#914d00' }}
                     >
-                      <Clock size={18} className="text-[#914d00]" />
+                      <Clock size={16} className="text-[#914d00]" />
                     </div>
                     <div>
-                      <p className="font-headline-sm text-sm sm:text-base font-bold leading-tight text-[#1c1b1b]">
+                      <p className="font-headline-sm text-xs sm:text-base font-bold leading-tight text-[#1c1b1b]">
                         {theme.heroBadgeFeature2 || '15 Dəqiqəyə'}
                       </p>
-                      <p className="font-label-sm text-xs text-[#5b403f]">
+                      <p className="font-label-sm text-[10px] sm:text-xs text-[#5b403f]">
                         {theme.heroBadgeFeature2Desc || 'Süfrənizdə hazır'}
                       </p>
                     </div>
