@@ -422,8 +422,169 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
 .pizza-house-root .gap-3 { gap: 0.75rem !important; }
 .pizza-house-root .gap-4 { gap: 1rem !important; }
 .pizza-house-root .gap-6 { gap: 1.5rem !important; }
+.pizza-house-root .gap-7 { gap: 1.75rem !important; }
 .pizza-house-root .gap-8 { gap: 2rem !important; }
+.pizza-house-root .gap-10 { gap: 2.5rem !important; }
 .pizza-house-root .gap-12 { gap: 3rem !important; }
+.pizza-house-root .gap-16 { gap: 4rem !important; }
+
+/* Heights & Widths */
+.pizza-house-root .h-4 { height: 1rem !important; }
+.pizza-house-root .h-5 { height: 1.25rem !important; }
+.pizza-house-root .h-6 { height: 1.5rem !important; }
+.pizza-house-root .h-8 { height: 2rem !important; }
+.pizza-house-root .h-9 { height: 2.25rem !important; }
+.pizza-house-root .h-10 { height: 2.5rem !important; }
+.pizza-house-root .h-12 { height: 3rem !important; }
+.pizza-house-root .h-14 { height: 3.5rem !important; }
+.pizza-house-root .h-16 { height: 4rem !important; }
+.pizza-house-root .h-20 { height: 5rem !important; }
+.pizza-house-root .h-24 { height: 6rem !important; }
+.pizza-house-root .h-28 { height: 7rem !important; }
+.pizza-house-root .h-32 { height: 8rem !important; }
+.pizza-house-root .h-40 { height: 10rem !important; }
+.pizza-house-root .h-44 { height: 11rem !important; }
+.pizza-house-root .h-48 { height: 12rem !important; }
+.pizza-house-root .h-52 { height: 13rem !important; }
+.pizza-house-root .h-56 { height: 14rem !important; }
+.pizza-house-root .h-64 { height: 16rem !important; }
+.pizza-house-root .h-72 { height: 18rem !important; }
+.pizza-house-root .h-80 { height: 20rem !important; }
+.pizza-house-root .h-96 { height: 24rem !important; }
+
+.pizza-house-root .w-4 { width: 1rem !important; }
+.pizza-house-root .w-5 { width: 1.25rem !important; }
+.pizza-house-root .w-6 { width: 1.5rem !important; }
+.pizza-house-root .w-8 { width: 2rem !important; }
+.pizza-house-root .w-9 { width: 2.25rem !important; }
+.pizza-house-root .w-10 { width: 2.5rem !important; }
+.pizza-house-root .w-12 { width: 3rem !important; }
+.pizza-house-root .w-14 { width: 3.5rem !important; }
+.pizza-house-root .w-16 { width: 4rem !important; }
+.pizza-house-root .w-20 { width: 5rem !important; }
+.pizza-house-root .w-24 { width: 6rem !important; }
+.pizza-house-root .w-28 { width: 7rem !important; }
+.pizza-house-root .w-32 { width: 8rem !important; }
+.pizza-house-root .w-48 { width: 12rem !important; }
+.pizza-house-root .w-64 { width: 16rem !important; }
+.pizza-house-root .w-72 { width: 18rem !important; }
+.pizza-house-root .w-80 { width: 20rem !important; }
+.pizza-house-root .w-96 { width: 24rem !important; }
+
+/* Margins */
+.pizza-house-root .m-0 { margin: 0 !important; }
+.pizza-house-root .m-auto { margin: auto !important; }
+.pizza-house-root .mx-auto { margin-left: auto !important; margin-right: auto !important; }
+.pizza-house-root .my-auto { margin-top: auto !important; margin-bottom: auto !important; }
+
+.pizza-house-root .mt-0 { margin-top: 0 !important; }
+.pizza-house-root .mt-0\\.5 { margin-top: 0.125rem !important; }
+.pizza-house-root .mt-1 { margin-top: 0.25rem !important; }
+.pizza-house-root .mt-1\\.5 { margin-top: 0.375rem !important; }
+.pizza-house-root .mt-2 { margin-top: 0.5rem !important; }
+.pizza-house-root .mt-2\\.5 { margin-top: 0.625rem !important; }
+.pizza-house-root .mt-3 { margin-top: 0.75rem !important; }
+.pizza-house-root .mt-4 { margin-top: 1rem !important; }
+.pizza-house-root .mt-5 { margin-top: 1.25rem !important; }
+.pizza-house-root .mt-6 { margin-top: 1.5rem !important; }
+.pizza-house-root .mt-8 { margin-top: 2rem !important; }
+.pizza-house-root .mt-10 { margin-top: 2.5rem !important; }
+.pizza-house-root .mt-12 { margin-top: 3rem !important; }
+
+.pizza-house-root .mb-0 { margin-bottom: 0 !important; }
+.pizza-house-root .mb-0\\.5 { margin-bottom: 0.125rem !important; }
+.pizza-house-root .mb-1 { margin-bottom: 0.25rem !important; }
+.pizza-house-root .mb-1\\.5 { margin-bottom: 0.375rem !important; }
+.pizza-house-root .mb-2 { margin-bottom: 0.5rem !important; }
+.pizza-house-root .mb-2\\.5 { margin-bottom: 0.625rem !important; }
+.pizza-house-root .mb-3 { margin-bottom: 0.75rem !important; }
+.pizza-house-root .mb-4 { margin-bottom: 1rem !important; }
+.pizza-house-root .mb-5 { margin-bottom: 1.25rem !important; }
+.pizza-house-root .mb-6 { margin-bottom: 1.5rem !important; }
+.pizza-house-root .mb-8 { margin-bottom: 2rem !important; }
+.pizza-house-root .mb-10 { margin-bottom: 2.5rem !important; }
+.pizza-house-root .mb-12 { margin-bottom: 3rem !important; }
+.pizza-house-root .mb-16 { margin-bottom: 4rem !important; }
+
+.pizza-house-root .my-1 { margin-top: 0.25rem !important; margin-bottom: 0.25rem !important; }
+.pizza-house-root .my-2 { margin-top: 0.5rem !important; margin-bottom: 0.5rem !important; }
+.pizza-house-root .my-3 { margin-top: 0.75rem !important; margin-bottom: 0.75rem !important; }
+.pizza-house-root .my-4 { margin-top: 1rem !important; margin-bottom: 1rem !important; }
+.pizza-house-root .my-6 { margin-top: 1.5rem !important; margin-bottom: 1.5rem !important; }
+.pizza-house-root .my-8 { margin-top: 2rem !important; margin-bottom: 2rem !important; }
+.pizza-house-root .my-10 { margin-top: 2.5rem !important; margin-bottom: 2.5rem !important; }
+.pizza-house-root .my-12 { margin-top: 3rem !important; margin-bottom: 3rem !important; }
+
+/* Paddings */
+.pizza-house-root .p-0 { padding: 0 !important; }
+.pizza-house-root .p-1 { padding: 0.25rem !important; }
+.pizza-house-root .p-1\\.5 { padding: 0.375rem !important; }
+.pizza-house-root .p-2 { padding: 0.5rem !important; }
+.pizza-house-root .p-2\\.5 { padding: 0.625rem !important; }
+.pizza-house-root .p-3 { padding: 0.75rem !important; }
+.pizza-house-root .p-3\\.5 { padding: 0.875rem !important; }
+.pizza-house-root .p-4 { padding: 1rem !important; }
+.pizza-house-root .p-5 { padding: 1.25rem !important; }
+.pizza-house-root .p-6 { padding: 1.5rem !important; }
+.pizza-house-root .p-8 { padding: 2rem !important; }
+.pizza-house-root .p-10 { padding: 2.5rem !important; }
+.pizza-house-root .p-12 { padding: 3rem !important; }
+
+.pizza-house-root .px-1 { padding-left: 0.25rem !important; padding-right: 0.25rem !important; }
+.pizza-house-root .px-2 { padding-left: 0.5rem !important; padding-right: 0.5rem !important; }
+.pizza-house-root .px-2\\.5 { padding-left: 0.625rem !important; padding-right: 0.625rem !important; }
+.pizza-house-root .px-3 { padding-left: 0.75rem !important; padding-right: 0.75rem !important; }
+.pizza-house-root .px-3\\.5 { padding-left: 0.875rem !important; padding-right: 0.875rem !important; }
+.pizza-house-root .px-4 { padding-left: 1rem !important; padding-right: 1rem !important; }
+.pizza-house-root .px-5 { padding-left: 1.25rem !important; padding-right: 1.25rem !important; }
+.pizza-house-root .px-6 { padding-left: 1.5rem !important; padding-right: 1.5rem !important; }
+.pizza-house-root .px-8 { padding-left: 2rem !important; padding-right: 2rem !important; }
+.pizza-house-root .px-12 { padding-left: 3rem !important; padding-right: 3rem !important; }
+
+.pizza-house-root .py-0\\.5 { padding-top: 0.125rem !important; padding-bottom: 0.125rem !important; }
+.pizza-house-root .py-1 { padding-top: 0.25rem !important; padding-bottom: 0.25rem !important; }
+.pizza-house-root .py-1\\.5 { padding-top: 0.375rem !important; padding-bottom: 0.375rem !important; }
+.pizza-house-root .py-2 { padding-top: 0.5rem !important; padding-bottom: 0.5rem !important; }
+.pizza-house-root .py-2\\.5 { padding-top: 0.625rem !important; padding-bottom: 0.625rem !important; }
+.pizza-house-root .py-3 { padding-top: 0.75rem !important; padding-bottom: 0.75rem !important; }
+.pizza-house-root .py-3\\.5 { padding-top: 0.875rem !important; padding-bottom: 0.875rem !important; }
+.pizza-house-root .py-4 { padding-top: 1rem !important; padding-bottom: 1rem !important; }
+.pizza-house-root .py-5 { padding-top: 1.25rem !important; padding-bottom: 1.25rem !important; }
+.pizza-house-root .py-6 { padding-top: 1.5rem !important; padding-bottom: 1.5rem !important; }
+.pizza-house-root .py-8 { padding-top: 2rem !important; padding-bottom: 2rem !important; }
+.pizza-house-root .py-10 { padding-top: 2.5rem !important; padding-bottom: 2.5rem !important; }
+.pizza-house-root .py-12 { padding-top: 3rem !important; padding-bottom: 3rem !important; }
+.pizza-house-root .py-16 { padding-top: 4rem !important; padding-bottom: 4rem !important; }
+.pizza-house-root .py-20 { padding-top: 5rem !important; padding-bottom: 5rem !important; }
+.pizza-house-root .py-24 { padding-top: 6rem !important; padding-bottom: 6rem !important; }
+
+.pizza-house-root .pt-0 { padding-top: 0 !important; }
+.pizza-house-root .pt-1 { padding-top: 0.25rem !important; }
+.pizza-house-root .pt-2 { padding-top: 0.5rem !important; }
+.pizza-house-root .pt-3 { padding-top: 0.75rem !important; }
+.pizza-house-root .pt-4 { padding-top: 1rem !important; }
+.pizza-house-root .pt-6 { padding-top: 1.5rem !important; }
+.pizza-house-root .pt-8 { padding-top: 2rem !important; }
+.pizza-house-root .pt-10 { padding-top: 2.5rem !important; }
+.pizza-house-root .pt-12 { padding-top: 3rem !important; }
+.pizza-house-root .pt-16 { padding-top: 4rem !important; }
+.pizza-house-root .pt-20 { padding-top: 5rem !important; }
+.pizza-house-root .pt-24 { padding-top: 6rem !important; }
+.pizza-house-root .pt-28 { padding-top: 7rem !important; }
+
+.pizza-house-root .pb-0 { padding-bottom: 0 !important; }
+.pizza-house-root .pb-1 { padding-bottom: 0.25rem !important; }
+.pizza-house-root .pb-2 { padding-bottom: 0.5rem !important; }
+.pizza-house-root .pb-3 { padding-bottom: 0.75rem !important; }
+.pizza-house-root .pb-4 { padding-bottom: 1rem !important; }
+.pizza-house-root .pb-6 { padding-bottom: 1.5rem !important; }
+.pizza-house-root .pb-8 { padding-bottom: 2rem !important; }
+.pizza-house-root .pb-10 { padding-bottom: 2.5rem !important; }
+.pizza-house-root .pb-12 { padding-bottom: 3rem !important; }
+.pizza-house-root .pb-16 { padding-bottom: 4rem !important; }
+.pizza-house-root .pb-20 { padding-bottom: 5rem !important; }
+.pizza-house-root .pb-24 { padding-bottom: 6rem !important; }
+.pizza-house-root .pb-28 { padding-bottom: 7rem !important; }
 
 .pizza-house-root .space-y-1 > * + * { margin-top: 0.25rem !important; }
 .pizza-house-root .space-y-2 > * + * { margin-top: 0.5rem !important; }
@@ -1680,14 +1841,14 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
           <section className="py-16 lg:py-24 px-6 lg:px-12 bg-[#fcf9f8]" id="qalareya">
             <div className="max-w-7xl mx-auto flex flex-col items-center">
               {/* Section Header */}
-              <div className="text-center max-w-xl mb-12 flex flex-col items-center">
-                <span className="px-4 py-1.5 rounded-full bg-[#ffdcc3] text-[#2f1500] font-label-md text-label-md uppercase tracking-wider mb-3">
+              <div className="text-center max-w-xl mb-12 flex flex-col items-center" style={{ marginBottom: '3rem' }}>
+                <span className="px-4 py-1.5 rounded-full bg-[#ffdcc3] text-[#2f1500] font-label-md text-label-md uppercase tracking-wider mb-3" style={{ marginBottom: '0.75rem', display: 'inline-flex' }}>
                   {theme.galleryBadgeText || 'Foto Qalareya'}
                 </span>
-                <h2 className="font-headline-xl text-headline-xl text-[#1c1b1b] tracking-tight">
+                <h2 className="font-headline-xl text-headline-xl text-[#1c1b1b] tracking-tight" style={{ marginTop: 0, marginBottom: '0.75rem' }}>
                   {content.gallery?.title || theme.galleryHeadline || 'Dadlı Anlarımızdan Kadrlar'}
                 </h2>
-                <p className="font-body-md text-body-md text-[#5b403f] mt-2">
+                <p className="font-body-md text-body-md text-[#5b403f] mt-2" style={{ marginTop: '0.5rem', marginBottom: 0 }}>
                   {content.gallery?.subtitle ||
                     theme.gallerySubtitle ||
                     'Odun sobasının hərarəti, təzə xəmir sənəti və restoranımızın unikal abu-havası.'}
@@ -1771,14 +1932,14 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
           <section className="py-16 lg:py-24 px-6 lg:px-12 bg-[#fcf9f8]" id="menyu">
             <div className="max-w-7xl mx-auto flex flex-col items-center">
               {/* Section Header */}
-              <div className="text-center max-w-xl mb-10 flex flex-col items-center">
-                <span className="px-4 py-1.5 rounded-full bg-[#ffdad9] text-[#b20028] font-label-md text-label-md uppercase tracking-wider mb-3">
+              <div className="text-center max-w-xl mb-10 flex flex-col items-center" style={{ marginBottom: '2.5rem' }}>
+                <span className="px-4 py-1.5 rounded-full bg-[#ffdad9] text-[#b20028] font-label-md text-label-md uppercase tracking-wider mb-3" style={{ marginBottom: '0.75rem', display: 'inline-flex' }}>
                   {theme.menuBadgeText || 'Zərif Dadlar'}
                 </span>
-                <h2 className="font-headline-xl text-headline-xl text-[#1c1b1b] tracking-tight">
+                <h2 className="font-headline-xl text-headline-xl text-[#1c1b1b] tracking-tight" style={{ marginTop: 0, marginBottom: '0.75rem' }}>
                   {content.menu?.title || theme.menuHeadline || 'Menyumuz'}
                 </h2>
-                <p className="font-body-md text-body-md text-[#5b403f] mt-2">
+                <p className="font-body-md text-body-md text-[#5b403f] mt-2" style={{ marginTop: '0.5rem', marginBottom: 0 }}>
                   {content.menu?.subtitle ||
                     theme.menuSubtitle ||
                     'Hər zövqə uyğun seçimlər: ənənəvi İtalyan reseptləri və müasir çalarla hazırlanmış təamlar.'}
@@ -1786,7 +1947,7 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
               </div>
 
               {/* Category Filter Pills */}
-              <div className="flex items-center gap-2 sm:gap-3 overflow-x-auto max-w-full pb-4 mb-10 no-scrollbar">
+              <div className="flex items-center gap-2 sm:gap-3 overflow-x-auto max-w-full pb-4 mb-10 no-scrollbar" style={{ marginBottom: '2.5rem', paddingBottom: '0.5rem' }}>
                 {categoriesList.map((cat) => {
                   const isSelected = selectedCatId === cat.id;
                   return (
@@ -1824,7 +1985,7 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                     >
                       <div>
                         {/* Image Container with Badges */}
-                        <div className="relative w-full h-56 rounded-2xl overflow-hidden mb-5 bg-[#eae7e7]">
+                        <div className="relative w-full h-56 rounded-2xl overflow-hidden mb-5 bg-[#eae7e7]" style={{ marginBottom: '1.25rem' }}>
                           <img
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                             src={item.image || HERO_PIZZA_IMG}
@@ -1846,7 +2007,7 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                         </div>
 
                         {/* Title & Price */}
-                        <div className="flex items-start justify-between gap-2 mb-2">
+                        <div className="flex items-start justify-between gap-2 mb-2" style={{ marginBottom: '0.5rem' }}>
                           <h3 className="font-headline-md text-headline-md font-bold text-[#1c1b1b]">
                             {item.name}
                           </h3>
@@ -1859,7 +2020,7 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                         </div>
 
                         {/* Description */}
-                        <p className="font-body-sm text-body-sm text-[#5b403f] mb-6 leading-relaxed">
+                        <p className="font-body-sm text-body-sm text-[#5b403f] mb-6 leading-relaxed" style={{ marginBottom: '1.5rem' }}>
                           {item.description}
                         </p>
                       </div>
