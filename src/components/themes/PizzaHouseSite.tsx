@@ -2317,7 +2317,20 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
               </div>
 
               {/* Category Filter Pills */}
-              <div className="flex items-center gap-2 sm:gap-3 overflow-x-auto w-full pb-2 mb-10 no-scrollbar" style={{ marginBottom: '2.5rem', paddingBottom: '0.5rem', WebkitOverflowScrolling: 'touch' }}>
+              <div
+                className="flex items-center justify-center flex-wrap gap-2 sm:gap-3 w-full max-w-5xl mx-auto pb-2 mb-10 no-scrollbar"
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  flexWrap: 'wrap',
+                  gap: '0.625rem',
+                  marginBottom: '2.5rem',
+                  paddingBottom: '0.5rem',
+                  marginLeft: 'auto',
+                  marginRight: 'auto',
+                }}
+              >
                 {categoriesList.map((cat) => {
                   const isSelected = selectedCatId === cat.id;
                   return (
@@ -2329,7 +2342,7 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                       }`}
                       style={
                         isSelected
-                          ? { backgroundColor: '#d7263d', color: '#ffffff', boxShadow: '0 4px 12px rgba(215, 38, 61, 0.25)' }
+                          ? { backgroundColor: primaryColor, color: '#ffffff', boxShadow: `0 4px 14px ${primaryColor}40` }
                           : { backgroundColor: '#e5e2e1', color: '#1c1b1b' }
                       }
                     >
