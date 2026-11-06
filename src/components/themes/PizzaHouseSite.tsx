@@ -502,6 +502,7 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
 .pizza-house-root .flex-col { flex-direction: column !important; }
 .pizza-house-root .flex-wrap { flex-wrap: wrap !important; }
 .pizza-house-root .flex-row { flex-direction: row !important; }
+.pizza-house-root .flex-1 { flex: 1 1 0% !important; }
 .pizza-house-root .items-center { align-items: center !important; }
 .pizza-house-root .items-start { align-items: flex-start !important; }
 .pizza-house-root .items-end { align-items: flex-end !important; }
@@ -2409,23 +2410,24 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                       </div>
 
                       {/* Action Buttons: Add to Cart + Direct WhatsApp */}
-                      <div className="flex items-center gap-2 mt-auto">
+                      <div className="flex items-center gap-2 mt-auto w-full" style={{ width: '100%' }}>
                         <button
                           type="button"
                           onClick={() => handleAddToCart(item, priceFormatted)}
                           disabled={isOrdersPaused}
-                          className={`flex-1 py-3 px-4 rounded-xl font-label-lg text-label-lg font-semibold flex items-center justify-center gap-2 transition-all shadow-sm cursor-pointer ${
+                          className={`w-full flex-1 py-3 px-4 rounded-xl font-label-lg text-label-lg font-semibold flex items-center justify-center gap-2 transition-all shadow-sm cursor-pointer ${
                             isOrdersPaused
                               ? 'cursor-not-allowed'
                               : 'hover:-translate-y-0.5 active:translate-y-0'
                           }`}
                           style={
                             isOrdersPaused
-                              ? { backgroundColor: '#e5e2e1', color: '#5b403f' }
+                              ? { backgroundColor: '#e5e2e1', color: '#5b403f', width: '100%' }
                               : {
-                                  backgroundColor: '#d7263d',
+                                  backgroundColor: primaryColor,
                                   color: '#ffffff',
-                                  boxShadow: '0 2px 8px rgba(215, 38, 61, 0.2)',
+                                  boxShadow: `0 2px 8px ${primaryColor}35`,
+                                  width: '100%',
                                 }
                           }
                         >
