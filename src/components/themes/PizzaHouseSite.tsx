@@ -2960,7 +2960,7 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
                   {/* Ünvan */}
                   <div
-                    className="rounded-2xl bg-white shadow-sm flex items-start gap-4 border border-[#f0eded] transition-all hover:shadow-md text-left"
+                    className="rounded-2xl bg-white shadow-sm flex items-start gap-3.5 border border-[#f0eded] transition-all hover:shadow-md hover:border-[#ffdcc3] text-left p-5 h-full"
                     style={{
                       backgroundColor: '#ffffff',
                       borderColor: '#f0eded',
@@ -2969,28 +2969,28 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                     }}
                   >
                     <div
-                      className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
+                      className="rounded-xl flex items-center justify-center shrink-0"
                       style={{
+                        width: '46px',
+                        height: '46px',
+                        minWidth: '46px',
+                        minHeight: '46px',
+                        borderRadius: '12px',
                         backgroundColor: '#ffdad9',
                         color: '#b20028',
+                        flexShrink: 0,
                       }}
                     >
                       <MapPin size={22} />
                     </div>
-                    <div className="flex flex-col text-left min-w-0">
-                      <p
-                        className="font-label-sm text-label-sm uppercase font-bold tracking-wider"
-                        style={{ color: '#5b403f', marginBottom: '0.25rem' }}
-                      >
+                    <div className="flex flex-col text-left min-w-0 flex-1">
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-[#914d00] leading-none mb-1.5">
                         Ünvan
-                      </p>
-                      <p
-                        className="font-headline-sm text-headline-sm text-[#1c1b1b] font-bold leading-snug break-words"
-                        style={{ color: '#1c1b1b', marginBottom: '0.25rem' }}
-                      >
+                      </span>
+                      <p className="font-bold text-sm sm:text-[15px] text-[#1c1b1b] leading-snug break-words mb-1">
                         {organization.address || 'Bakı şəhəri, Nizami küçəsi 45'}
                       </p>
-                      <p className="font-body-sm text-body-sm" style={{ color: '#5b403f' }}>
+                      <p className="text-xs text-[#5b403f] leading-relaxed">
                         {organization.city || 'Fəvvarələr meydanı yaxınlığı'}
                       </p>
                     </div>
@@ -2998,7 +2998,7 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
 
                   {/* Telefon */}
                   <div
-                    className="rounded-2xl bg-white shadow-sm flex items-start gap-4 border border-[#f0eded] transition-all hover:shadow-md text-left"
+                    className="rounded-2xl bg-white shadow-sm flex items-start gap-3.5 border border-[#f0eded] transition-all hover:shadow-md hover:border-[#ffdcc3] text-left p-5 h-full"
                     style={{
                       backgroundColor: '#ffffff',
                       borderColor: '#f0eded',
@@ -3007,42 +3007,41 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                     }}
                   >
                     <div
-                      className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
+                      className="rounded-xl flex items-center justify-center shrink-0"
                       style={{
+                        width: '46px',
+                        height: '46px',
+                        minWidth: '46px',
+                        minHeight: '46px',
+                        borderRadius: '12px',
                         backgroundColor: '#ffdcc3',
                         color: '#914d00',
+                        flexShrink: 0,
                       }}
                     >
                       <Phone size={22} />
                     </div>
-                    <div className="flex flex-col text-left min-w-0">
-                      <p
-                        className="font-label-sm text-label-sm uppercase font-bold tracking-wider"
-                        style={{ color: '#5b403f', marginBottom: '0.25rem' }}
-                      >
+                    <div className="flex flex-col text-left min-w-0 flex-1">
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-[#914d00] leading-none mb-1.5">
                         Telefon
-                      </p>
+                      </span>
                       <a
-                        className="block font-headline-sm text-headline-sm text-[#1c1b1b] font-bold hover:text-[#b20028] transition-colors break-words"
-                        style={{ color: '#1c1b1b', marginBottom: '0.25rem' }}
+                        className="font-bold text-sm sm:text-[15px] text-[#1c1b1b] hover:text-[#b20028] transition-colors leading-snug break-words mb-1"
                         href={`tel:${organization.phone || '+994125980000'}`}
                       >
                         {organization.phone || '+994 12 598 00 00'}
                       </a>
-                      {whatsapp?.phoneNumber && (
-                        <a
-                          className="block font-body-sm text-body-sm text-[#5b403f] hover:text-[#b20028] transition-colors"
-                          href={`tel:+${whatsapp.countryCode}${whatsapp.phoneNumber}`}
-                        >
-                          +{whatsapp.countryCode} {whatsapp.phoneNumber}
-                        </a>
-                      )}
+                      <p className="text-xs text-[#5b403f] leading-relaxed">
+                        {whatsapp?.phoneNumber
+                          ? `WhatsApp: +${whatsapp.countryCode} ${whatsapp.phoneNumber}`
+                          : 'Sifariş və rezervasiya üçün'}
+                      </p>
                     </div>
                   </div>
 
                   {/* E-poçt */}
                   <div
-                    className="rounded-2xl bg-white shadow-sm flex items-start gap-4 border border-[#f0eded] transition-all hover:shadow-md text-left"
+                    className="rounded-2xl bg-white shadow-sm flex items-start gap-3.5 border border-[#f0eded] transition-all hover:shadow-md hover:border-[#ffdcc3] text-left p-5 h-full"
                     style={{
                       backgroundColor: '#ffffff',
                       borderColor: '#f0eded',
@@ -3051,29 +3050,31 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                     }}
                   >
                     <div
-                      className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
+                      className="rounded-xl flex items-center justify-center shrink-0"
                       style={{
+                        width: '46px',
+                        height: '46px',
+                        minWidth: '46px',
+                        minHeight: '46px',
+                        borderRadius: '12px',
                         backgroundColor: '#ffdea0',
                         color: '#715300',
+                        flexShrink: 0,
                       }}
                     >
                       <Mail size={22} />
                     </div>
-                    <div className="flex flex-col text-left min-w-0">
-                      <p
-                        className="font-label-sm text-label-sm uppercase font-bold tracking-wider"
-                        style={{ color: '#5b403f', marginBottom: '0.25rem' }}
-                      >
+                    <div className="flex flex-col text-left min-w-0 flex-1">
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-[#914d00] leading-none mb-1.5">
                         E-poçt
-                      </p>
+                      </span>
                       <a
-                        className="block font-headline-sm text-headline-sm text-[#1c1b1b] font-bold hover:text-[#b20028] transition-colors break-words"
-                        style={{ color: '#1c1b1b', marginBottom: '0.25rem' }}
+                        className="font-bold text-sm sm:text-[15px] text-[#1c1b1b] hover:text-[#b20028] transition-colors leading-snug break-words mb-1"
                         href={`mailto:${organization.email || 'info@pizzahouse.az'}`}
                       >
-                        {organization.email || 'info@pizzahouse.az'}
+                        {organization.email || 'pizzahouse@onlive.az'}
                       </a>
-                      <p className="font-body-sm text-body-sm" style={{ color: '#5b403f' }}>
+                      <p className="text-xs text-[#5b403f] leading-relaxed">
                         Dərhal cavablandırılır
                       </p>
                     </div>
@@ -3081,7 +3082,7 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
 
                   {/* İş saatları */}
                   <div
-                    className="rounded-2xl bg-white shadow-sm flex items-start gap-4 border border-[#f0eded] transition-all hover:shadow-md text-left"
+                    className="rounded-2xl bg-white shadow-sm flex items-start gap-3.5 border border-[#f0eded] transition-all hover:shadow-md hover:border-[#ffdcc3] text-left p-5 h-full"
                     style={{
                       backgroundColor: '#ffffff',
                       borderColor: '#f0eded',
@@ -3090,31 +3091,31 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                     }}
                   >
                     <div
-                      className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
+                      className="rounded-xl flex items-center justify-center shrink-0"
                       style={{
+                        width: '46px',
+                        height: '46px',
+                        minWidth: '46px',
+                        minHeight: '46px',
+                        borderRadius: '12px',
                         backgroundColor: '#ffdad9',
                         color: '#b20028',
+                        flexShrink: 0,
                       }}
                     >
                       <Clock size={22} />
                     </div>
-                    <div className="flex flex-col text-left min-w-0">
-                      <p
-                        className="font-label-sm text-label-sm uppercase font-bold tracking-wider"
-                        style={{ color: '#5b403f', marginBottom: '0.25rem' }}
-                      >
+                    <div className="flex flex-col text-left min-w-0 flex-1">
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-[#914d00] leading-none mb-1.5">
                         İş saatları
-                      </p>
-                      <p
-                        className="font-headline-sm text-headline-sm text-[#1c1b1b] font-bold"
-                        style={{ color: '#1c1b1b', marginBottom: '0.25rem' }}
-                      >
-                        Hər gün
-                      </p>
-                      <p className="font-body-sm text-body-sm" style={{ color: '#5b403f' }}>
+                      </span>
+                      <p className="font-bold text-sm sm:text-[15px] text-[#1c1b1b] leading-snug mb-1">
                         {workingHours && workingHours.length > 0 && workingHours[0].openTime
                           ? `${workingHours[0].openTime} – ${workingHours[0].closeTime}`
-                          : '10:00 – 23:00 fasiləsiz'}
+                          : '10:00 – 23:00'}
+                      </p>
+                      <p className="text-xs text-[#5b403f] leading-relaxed">
+                        Hər gün fasiləsiz
                       </p>
                     </div>
                   </div>
