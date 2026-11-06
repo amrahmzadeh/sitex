@@ -1564,6 +1564,13 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
 .pizza-house-root .aspect-\\[16\\/9\\] { aspect-ratio: 16 / 9 !important; }
 .pizza-house-root .aspect-\\[3\\/4\\] { aspect-ratio: 3 / 4 !important; }
 
+/* Font Weights & Transform */
+.pizza-house-root .font-bold { font-weight: 700 !important; }
+.pizza-house-root .font-extrabold { font-weight: 800 !important; }
+.pizza-house-root .font-semibold { font-weight: 600 !important; }
+.pizza-house-root .font-medium { font-weight: 500 !important; }
+.pizza-house-root .uppercase { text-transform: uppercase !important; }
+
 /* Border Radius */
 .pizza-house-root .rounded-xl { border-radius: 0.75rem !important; }
 .pizza-house-root .rounded-2xl { border-radius: 1rem !important; }
@@ -2984,7 +2991,7 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                       <MapPin size={22} />
                     </div>
                     <div className="flex flex-col text-left min-w-0 flex-1">
-                      <span className="text-[11px] font-bold uppercase tracking-wider text-[#914d00] leading-none mb-1.5">
+                      <span className="block font-bold text-sm text-[#1c1b1b]" style={{ fontWeight: 700, fontSize: '0.875rem', color: '#1c1b1b', marginBottom: '0.25rem' }}>
                         Ünvan
                       </span>
                       <p className="font-bold text-sm sm:text-[15px] text-[#1c1b1b] leading-snug break-words mb-1">
@@ -3022,7 +3029,7 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                       <Phone size={22} />
                     </div>
                     <div className="flex flex-col text-left min-w-0 flex-1">
-                      <span className="text-[11px] font-bold uppercase tracking-wider text-[#914d00] leading-none mb-1.5">
+                      <span className="block font-bold text-sm text-[#1c1b1b]" style={{ fontWeight: 700, fontSize: '0.875rem', color: '#1c1b1b', marginBottom: '0.25rem' }}>
                         Telefon
                       </span>
                       <a
@@ -3065,7 +3072,7 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                       <Mail size={22} />
                     </div>
                     <div className="flex flex-col text-left min-w-0 flex-1">
-                      <span className="text-[11px] font-bold uppercase tracking-wider text-[#914d00] leading-none mb-1.5">
+                      <span className="block font-bold text-sm text-[#1c1b1b]" style={{ fontWeight: 700, fontSize: '0.875rem', color: '#1c1b1b', marginBottom: '0.25rem' }}>
                         E-poçt
                       </span>
                       <a
@@ -3106,7 +3113,7 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                       <Clock size={22} />
                     </div>
                     <div className="flex flex-col text-left min-w-0 flex-1">
-                      <span className="text-[11px] font-bold uppercase tracking-wider text-[#914d00] leading-none mb-1.5">
+                      <span className="block font-bold text-sm text-[#1c1b1b]" style={{ fontWeight: 700, fontSize: '0.875rem', color: '#1c1b1b', marginBottom: '0.25rem' }}>
                         İş saatları
                       </span>
                       <p className="font-bold text-sm sm:text-[15px] text-[#1c1b1b] leading-snug mb-1">

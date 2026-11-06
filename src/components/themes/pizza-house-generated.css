@@ -754,6 +754,13 @@
 .pizza-house-root .aspect-\[16\/9\] { aspect-ratio: 16 / 9 !important; }
 .pizza-house-root .aspect-\[3\/4\] { aspect-ratio: 3 / 4 !important; }
 
+/* Font Weights & Transform */
+.pizza-house-root .font-bold { font-weight: 700 !important; }
+.pizza-house-root .font-extrabold { font-weight: 800 !important; }
+.pizza-house-root .font-semibold { font-weight: 600 !important; }
+.pizza-house-root .font-medium { font-weight: 500 !important; }
+.pizza-house-root .uppercase { text-transform: uppercase !important; }
+
 /* Border Radius */
 .pizza-house-root .rounded-xl { border-radius: 0.75rem !important; }
 .pizza-house-root .rounded-2xl { border-radius: 1rem !important; }
