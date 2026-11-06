@@ -6,3 +6,4 @@ console.log('.flex:', css.includes('display:flex'));
 console.log('lg\\:flex:', css.includes('lg\\:flex'));
 // Show first 500 chars
 console.log(css.substring(0, 300));
+

@@ -1992,3 +1992,273 @@ body {
   .pizza-house-root .lg\:items-center { align-items: center !important; }
   .pizza-house-root .lg\:flex-row { flex-direction: row !important; }
 }
+
+
+/* ==================== PIZZA HOUSE: ARBITRARY VALUE CLASSES (Tailwind v4 Safelist) ==================== */
+/* Background colors */
+.pizza-house-root .bg-\[\#1c1b1b\] { background-color: #1c1b1b !important; }
+.pizza-house-root .bg-\[\#313030\] { background-color: #313030 !important; }
+.pizza-house-root .bg-\[\#b20028\]\/20 { background-color: rgba(178,0,40,0.2) !important; }
+.pizza-house-root .bg-\[\#d7263d\] { background-color: #d7263d !important; }
+.pizza-house-root .bg-\[\#e5e2e1\] { background-color: #e5e2e1 !important; }
+.pizza-house-root .bg-\[\#eae7e7\] { background-color: #eae7e7 !important; }
+.pizza-house-root .bg-\[\#f0eded\] { background-color: #f0eded !important; }
+.pizza-house-root .bg-\[\#f6f3f2\] { background-color: #f6f3f2 !important; }
+.pizza-house-root .bg-\[\#fc9430\] { background-color: #fc9430 !important; }
+.pizza-house-root .bg-\[\#fc9430\]\/20 { background-color: rgba(252,148,48,0.2) !important; }
+.pizza-house-root .bg-\[\#fcf9f8\] { background-color: #fcf9f8 !important; }
+.pizza-house-root .bg-\[\#ffdad9\] { background-color: #ffdad9 !important; }
+.pizza-house-root .bg-\[\#ffdad9\]\/20 { background-color: rgba(255,218,217,0.2) !important; }
+.pizza-house-root .bg-\[\#ffdad9\]\/40 { background-color: rgba(255,218,217,0.4) !important; }
+.pizza-house-root .bg-\[\#ffdcc3\] { background-color: #ffdcc3 !important; }
+.pizza-house-root .bg-\[\#ffdcc3\]\/40 { background-color: rgba(255,220,195,0.4) !important; }
+.pizza-house-root .bg-\[\#ffdea0\] { background-color: #ffdea0 !important; }
+.pizza-house-root .bg-\[\#1c1b1b\]\/60 { background-color: rgba(28,27,27,0.6) !important; }
+.pizza-house-root .bg-\[\#313030\]\/90 { background-color: rgba(49,48,48,0.9) !important; }
+.pizza-house-root .bg-\[\#e5e2e1\]\/20 { background-color: rgba(229,226,225,0.2) !important; }
+
+/* Text colors */
+.pizza-house-root .text-\[\#1c1b1b\] { color: #1c1b1b !important; }
+.pizza-house-root .text-\[\#261a00\] { color: #261a00 !important; }
+.pizza-house-root .text-\[\#2f1500\] { color: #2f1500 !important; }
+.pizza-house-root .text-\[\#5b403f\] { color: #5b403f !important; }
+.pizza-house-root .text-\[\#663500\] { color: #663500 !important; }
+.pizza-house-root .text-\[\#715300\] { color: #715300 !important; }
+.pizza-house-root .text-\[\#914d00\] { color: #914d00 !important; }
+.pizza-house-root .text-\[\#b20028\] { color: #b20028 !important; }
+.pizza-house-root .text-\[\#d7263d\] { color: #d7263d !important; }
+.pizza-house-root .text-\[\#dcd9d9\] { color: #dcd9d9 !important; }
+.pizza-house-root .text-\[\#e5e2e1\] { color: #e5e2e1 !important; }
+.pizza-house-root .text-\[\#f3f0ef\] { color: #f3f0ef !important; }
+.pizza-house-root .text-\[\#fbbc0c\] { color: #fbbc0c !important; }
+.pizza-house-root .text-\[\#ffb3b2\] { color: #ffb3b2 !important; }
+.pizza-house-root .text-\[10px\] { font-size: 10px !important; }
+
+/* Border colors */
+.pizza-house-root .border-\[\#e5e2e1\] { border-color: #e5e2e1 !important; }
+.pizza-house-root .border-\[\#f0eded\] { border-color: #f0eded !important; }
+
+/* Fill colors (SVG) */
+.pizza-house-root .fill-\[\#261a00\] { fill: #261a00 !important; }
+.pizza-house-root .fill-\[\#b20028\] { fill: #b20028 !important; }
+.pizza-house-root .fill-\[\#fbbc0c\] { fill: #fbbc0c !important; }
+
+/* Hover states */
+.pizza-house-root .hover\:bg-\[\#1c1b1b\]:hover { background-color: #1c1b1b !important; }
+.pizza-house-root .hover\:bg-\[\#b20028\]:hover { background-color: #b20028 !important; }
+.pizza-house-root .hover\:bg-\[\#d7263d\]:hover { background-color: #d7263d !important; }
+.pizza-house-root .hover\:bg-\[\#e5e2e1\]:hover { background-color: #e5e2e1 !important; }
+.pizza-house-root .hover\:bg-\[\#dcd9d9\] { background-color: #dcd9d9 !important; }
+.pizza-house-root .hover\:bg-\[\#e5e2e1\]\/40:hover { background-color: rgba(229,226,225,0.4) !important; }
+.pizza-house-root .hover\:bg-\[\#25D366\]:hover { background-color: #25D366 !important; }
+.pizza-house-root .hover\:text-\[\#b20028\]:hover { color: #b20028 !important; }
+.pizza-house-root .group:hover .group-hover\:text-\[\#b20028\] { color: #b20028 !important; }
+
+/* Shadow */
+.pizza-house-root .shadow-\[\#d7263d\]\/20 { box-shadow: 0 4px 6px -1px rgba(215,38,61,0.2) !important; }
+.pizza-house-root .hover\:shadow-\[\#d7263d\]\/30:hover { box-shadow: 0 10px 15px -3px rgba(215,38,61,0.3) !important; }
+.pizza-house-root .shadow-\[0_1px_8px_rgba\(0\,0\,0\,0\.04\)\] { box-shadow: 0 1px 8px rgba(0,0,0,0.04) !important; }
+.pizza-house-root .shadow-\[0_4px_16px_-2px_rgba\(26\,26\,26\,0\.05\)\,0_2px_6px_-1px_rgba\(215\,38\,61\,0\.03\)\] { box-shadow: 0 4px 16px -2px rgba(26,26,26,0.05), 0 2px 6px -1px rgba(215,38,61,0.03) !important; }
+
+/* Border radius */
+.pizza-house-root .rounded-\[2rem\] { border-radius: 2rem !important; }
+.pizza-house-root .rounded-\[2\.5rem\] { border-radius: 2.5rem !important; }
+
+/* Selection */
+.pizza-house-root ::selection { background-color: #ffdad9; color: #410008; }
+
+/* Focus ring */
+.pizza-house-root .focus\:ring-\[\#b20028\]:focus { --tw-ring-color: #b20028; box-shadow: 0 0 0 3px var(--tw-ring-color); }
+
+/* Placeholder */
+.pizza-house-root .placeholder\:text-\[\#dcd9d9\]\/60::placeholder { color: rgba(220,217,217,0.6) !important; }
+
+/* Gradient */
+.pizza-house-root .from-\[\#1c1b1b\]\/80 { --tw-gradient-from: rgba(28,27,27,0.8); }
+.pizza-house-root .via-\[\#1c1b1b\]\/20 { --tw-gradient-via: rgba(28,27,27,0.2); }
+
+/* White with opacity */
+.pizza-house-root .bg-white { background-color: #ffffff !important; }
+.pizza-house-root .bg-white\/10 { background-color: rgba(255,255,255,0.1) !important; }
+.pizza-house-root .text-white { color: #ffffff !important; }
+.pizza-house-root .text-white\/50 { color: rgba(255,255,255,0.5) !important; }
+.pizza-house-root .border-white { border-color: #ffffff !important; }
+.pizza-house-root .border-white\/10 { border-color: rgba(255,255,255,0.1) !important; }
+.pizza-house-root .border-white\/5 { border-color: rgba(255,255,255,0.05) !important; }
+
+/* Background gradient */
+.pizza-house-root .bg-gradient-to-t { background-image: linear-gradient(to top, var(--tw-gradient-from, transparent), var(--tw-gradient-via, transparent), var(--tw-gradient-to, transparent)) !important; }
+.pizza-house-root .to-transparent { --tw-gradient-to: transparent; }
+.pizza-house-root .bg-cover { background-size: cover !important; }
+.pizza-house-root .bg-center { background-position: center !important; }
+
+/* Translate */
+.pizza-house-root .hover\:-translate-y-0\.5:hover { transform: translateY(-0.125rem) !important; }
+.pizza-house-root .-translate-y-0\.5 { transform: translateY(-0.125rem) !important; }
+
+/* Width/Height specific */
+.pizza-house-root .w-4 { width: 1rem !important; }
+.pizza-house-root .h-4 { height: 1rem !important; }
+.pizza-house-root .w-5 { width: 1.25rem !important; }
+.pizza-house-root .h-5 { height: 1.25rem !important; }
+.pizza-house-root .w-6 { width: 1.5rem !important; }
+.pizza-house-root .h-6 { height: 1.5rem !important; }
+.pizza-house-root .w-10 { width: 2.5rem !important; }
+.pizza-house-root .h-10 { height: 2.5rem !important; }
+.pizza-house-root .w-12 { width: 3rem !important; }
+.pizza-house-root .h-12 { height: 3rem !important; }
+.pizza-house-root .w-16 { width: 4rem !important; }
+.pizza-house-root .h-16 { height: 4rem !important; }
+.pizza-house-root .w-72 { width: 18rem !important; }
+.pizza-house-root .h-72 { height: 18rem !important; }
+.pizza-house-root .w-80 { width: 20rem !important; }
+.pizza-house-root .h-80 { height: 20rem !important; }
+.pizza-house-root .h-52 { height: 13rem !important; }
+.pizza-house-root .h-64 { height: 16rem !important; }
+.pizza-house-root .h-48 { height: 12rem !important; }
+.pizza-house-root .h-56 { height: 14rem !important; }
+.pizza-house-root .h-40 { height: 10rem !important; }
+.pizza-house-root .h-32 { height: 8rem !important; }
+.pizza-house-root .h-24 { height: 6rem !important; }
+.pizza-house-root .w-48 { width: 12rem !important; }
+.pizza-house-root .w-32 { width: 8rem !important; }
+.pizza-house-root .w-24 { width: 6rem !important; }
+.pizza-house-root .w-20 { width: 5rem !important; }
+.pizza-house-root .h-20 { height: 5rem !important; }
+.pizza-house-root .h-9 { height: 2.25rem !important; }
+.pizza-house-root .w-9 { width: 2.25rem !important; }
+.pizza-house-root .w-1 { width: 0.25rem !important; }
+.pizza-house-root .h-1 { height: 0.25rem !important; }
+.pizza-house-root .h-0\.5 { height: 0.125rem !important; }
+.pizza-house-root .w-full { width: 100% !important; }
+.pizza-house-root .w-1\/2 { width: 50% !important; }
+.pizza-house-root .w-1\/3 { width: 33.333% !important; }
+.pizza-house-root .w-2\/3 { width: 66.667% !important; }
+
+/* Flex specific */
+.pizza-house-root .flex-1 { flex: 1 1 0% !important; }
+.pizza-house-root .flex-none { flex: none !important; }
+.pizza-house-root .shrink-0 { flex-shrink: 0 !important; }
+.pizza-house-root .grow { flex-grow: 1 !important; }
+
+/* Line height */
+.pizza-house-root .leading-tight { line-height: 1.25 !important; }
+.pizza-house-root .leading-relaxed { line-height: 1.625 !important; }
+.pizza-house-root .leading-none { line-height: 1 !important; }
+
+/* Tracking */
+.pizza-house-root .tracking-tight { letter-spacing: -0.025em !important; }
+.pizza-house-root .tracking-wide { letter-spacing: 0.025em !important; }
+.pizza-house-root .tracking-widest { letter-spacing: 0.1em !important; }
+
+/* Font weight */
+.pizza-house-root .font-bold { font-weight: 700 !important; }
+.pizza-house-root .font-semibold { font-weight: 600 !important; }
+.pizza-house-root .font-black { font-weight: 900 !important; }
+.pizza-house-root .font-medium { font-weight: 500 !important; }
+.pizza-house-root .font-normal { font-weight: 400 !important; }
+
+/* Text size */
+.pizza-house-root .text-xs { font-size: 0.75rem !important; line-height: 1rem !important; }
+.pizza-house-root .text-sm { font-size: 0.875rem !important; line-height: 1.25rem !important; }
+.pizza-house-root .text-base { font-size: 1rem !important; line-height: 1.5rem !important; }
+.pizza-house-root .text-lg { font-size: 1.125rem !important; line-height: 1.75rem !important; }
+.pizza-house-root .text-xl { font-size: 1.25rem !important; line-height: 1.75rem !important; }
+.pizza-house-root .text-2xl { font-size: 1.5rem !important; line-height: 2rem !important; }
+.pizza-house-root .text-3xl { font-size: 1.875rem !important; line-height: 2.25rem !important; }
+
+/* Z-index */
+.pizza-house-root .z-0 { z-index: 0 !important; }
+.pizza-house-root .z-10 { z-index: 10 !important; }
+.pizza-house-root .z-20 { z-index: 20 !important; }
+.pizza-house-root .z-30 { z-index: 30 !important; }
+.pizza-house-root .z-40 { z-index: 40 !important; }
+.pizza-house-root .z-50 { z-index: 50 !important; }
+
+/* Top/Left/Right/Bottom specific */
+.pizza-house-root .top-1 { top: 0.25rem !important; }
+.pizza-house-root .top-2 { top: 0.5rem !important; }
+.pizza-house-root .top-4 { top: 1rem !important; }
+.pizza-house-root .top-6 { top: 1.5rem !important; }
+.pizza-house-root .top-8 { top: 2rem !important; }
+.pizza-house-root .top-1\/2 { top: 50% !important; }
+.pizza-house-root .-top-1 { top: -0.25rem !important; }
+.pizza-house-root .-top-2 { top: -0.5rem !important; }
+.pizza-house-root .-top-32 { top: -8rem !important; }
+.pizza-house-root .left-4 { left: 1rem !important; }
+.pizza-house-root .left-6 { left: 1.5rem !important; }
+.pizza-house-root .-left-32 { left: -8rem !important; }
+.pizza-house-root .right-0 { right: 0 !important; }
+.pizza-house-root .right-4 { right: 1rem !important; }
+.pizza-house-root .-right-1 { right: -0.25rem !important; }
+.pizza-house-root .-right-32 { right: -8rem !important; }
+.pizza-house-root .bottom-4 { bottom: 1rem !important; }
+.pizza-house-root .bottom-6 { bottom: 1.5rem !important; }
+.pizza-house-root .-translate-x-1\/2 { transform: translateX(-50%) !important; }
+.pizza-house-root .-translate-y-1\/2 { transform: translateY(-50%) !important; }
+
+/* Blur */
+.pizza-house-root .blur-3xl { filter: blur(64px) !important; }
+.pizza-house-root .blur-2xl { filter: blur(40px) !important; }
+
+/* Transition specific */
+.pizza-house-root .duration-200 { transition-duration: 200ms !important; }
+.pizza-house-root .duration-300 { transition-duration: 300ms !important; }
+
+/* Misc */
+.pizza-house-root .uppercase { text-transform: uppercase !important; }
+.pizza-house-root .truncate { overflow: hidden !important; text-overflow: ellipsis !important; white-space: nowrap !important; }
+.pizza-house-root .whitespace-nowrap { white-space: nowrap !important; }
+.pizza-house-root .select-none { user-select: none !important; }
+.pizza-house-root .aspect-square { aspect-ratio: 1 / 1 !important; }
+.pizza-house-root .aspect-video { aspect-ratio: 16 / 9 !important; }
+.pizza-house-root .col-span-full { grid-column: 1 / -1 !important; }
+.pizza-house-root .row-span-2 { grid-row: span 2 / span 2 !important; }
+.pizza-house-root .self-end { align-self: flex-end !important; }
+.pizza-house-root .self-start { align-self: flex-start !important; }
+.pizza-house-root .self-center { align-self: center !important; }
+.pizza-house-root .max-h-96 { max-height: 24rem !important; }
+.pizza-house-root .max-h-screen { max-height: 100vh !important; }
+.pizza-house-root .min-w-0 { min-width: 0 !important; }
+.pizza-house-root .border { border-width: 1px !important; }
+.pizza-house-root .border-2 { border-width: 2px !important; }
+.pizza-house-root .border-4 { border-width: 4px !important; }
+.pizza-house-root .border-b { border-bottom-width: 1px !important; }
+.pizza-house-root .border-t { border-top-width: 1px !important; }
+.pizza-house-root .border-b-2 { border-bottom-width: 2px !important; }
+.pizza-house-root .border-solid { border-style: solid !important; }
+.pizza-house-root .divide-y > * + * { border-top-width: 1px; border-top-style: solid; }
+.pizza-house-root .divide-white\/10 > * + * { border-color: rgba(255,255,255,0.1); }
+.pizza-house-root .ring-1 { box-shadow: inset 0 0 0 1px var(--tw-ring-color, rgba(0,0,0,0.05)); }
+.pizza-house-root .ring-2 { box-shadow: inset 0 0 0 2px var(--tw-ring-color, rgba(0,0,0,0.05)); }
+.pizza-house-root .focus\:outline-none:focus { outline: none !important; }
+.pizza-house-root .focus\:ring-2:focus { box-shadow: 0 0 0 2px var(--tw-ring-color, rgba(0,0,0,0.05)) !important; }
+.pizza-house-root .focus\:ring-offset-2:focus { --tw-ring-offset-width: 2px; }
+.pizza-house-root .resize-none { resize: none !important; }
+.pizza-house-root .pt-10 { padding-top: 2.5rem !important; }
+.pizza-house-root .pb-10 { padding-bottom: 2.5rem !important; }
+.pizza-house-root .pt-16 { padding-top: 4rem !important; }
+.pizza-house-root .pb-16 { padding-bottom: 4rem !important; }
+.pizza-house-root .pt-20 { padding-top: 5rem !important; }
+.pizza-house-root .pb-20 { padding-bottom: 5rem !important; }
+.pizza-house-root .px-2 { padding-left: 0.5rem !important; padding-right: 0.5rem !important; }
+.pizza-house-root .px-10 { padding-left: 2.5rem !important; padding-right: 2.5rem !important; }
+.pizza-house-root .px-12 { padding-left: 3rem !important; padding-right: 3rem !important; }
+.pizza-house-root .py-12 { padding-top: 3rem !important; padding-bottom: 3rem !important; }
+.pizza-house-root .py-20 { padding-top: 5rem !important; padding-bottom: 5rem !important; }
+.pizza-house-root .gap-0 { gap: 0 !important; }
+.pizza-house-root .gap-5 { gap: 1.25rem !important; }
+.pizza-house-root .gap-7 { gap: 1.75rem !important; }
+.pizza-house-root .gap-10 { gap: 2.5rem !important; }
+.pizza-house-root .gap-14 { gap: 3.5rem !important; }
+.pizza-house-root .gap-x-4 { column-gap: 1rem !important; }
+.pizza-house-root .gap-y-4 { row-gap: 1rem !important; }
+.pizza-house-root .gap-y-6 { row-gap: 1.5rem !important; }
+.pizza-house-root .mb-10 { margin-bottom: 2.5rem !important; }
+.pizza-house-root .mb-12 { margin-bottom: 3rem !important; }
+.pizza-house-root .mt-8 { margin-top: 2rem !important; }
+.pizza-house-root .mt-10 { margin-top: 2.5rem !important; }
+.pizza-house-root .mt-12 { margin-top: 3rem !important; }
+.pizza-house-root .mt-auto { margin-top: auto !important; }
+.pizza-house-root .ml-auto { margin-left: auto !important; }
+.pizza-house-root .mr-auto { margin-right: auto !important; }

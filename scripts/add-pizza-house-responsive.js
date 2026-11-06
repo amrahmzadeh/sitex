@@ -242,3 +242,4 @@ if (content.includes(marker)) {
 fs.writeFileSync(globalsPath, content);
 console.log('Successfully added Pizza House responsive utilities to globals.css!');
 console.log('New file size:', content.length);
+
