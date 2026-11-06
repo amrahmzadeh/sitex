@@ -369,3 +369,4 @@ if (globals.includes(marker)) {
 }
 fs.writeFileSync(globalsPath, globals, 'utf8');
 console.log('Updated globals.css with complete Pizza House definitions!');
+

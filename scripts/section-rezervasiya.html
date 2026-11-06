@@ -1,0 +1,97 @@
+id="rezervasiya">
+<!-- Atmospheric Ambient Glows -->
+<div class="absolute -top-40 right-1/4 w-96 h-96 rounded-full bg-primary/20 blur-3xl pointer-events-none"></div>
+<div class="absolute -bottom-40 left-1/4 w-96 h-96 rounded-full bg-secondary-container/20 blur-3xl pointer-events-none"></div>
+<div class="max-w-4xl mx-auto relative z-10">
+<!-- Elevated Form Card -->
+<div class="bg-inverse-surface rounded-3xl p-8 sm:p-12 shadow-2xl">
+<div class="text-center max-w-lg mx-auto mb-10">
+<div class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-primary-fixed/20 text-inverse-primary font-label-md text-label-md uppercase tracking-wider mb-3">
+<span class="material-symbols-outlined text-[18px]">table_bar</span>
+<span>Online Qeydiyyat</span>
+</div>
+<h2 class="font-headline-xl text-headline-xl text-on-primary tracking-tight">Masanı İndi Rezerv Et</h2>
+<p class="font-body-md text-body-md text-surface-dim mt-2">Bir neçə saniyəyə yerinizi təmin edin, ləzzətli axşamdan zövq alın.</p>
+</div>
+<form class="space-y-6" id="booking-form" onsubmit="handleBooking(event)">
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+<!-- Ad və Soyad -->
+<div class="flex flex-col space-y-2">
+<label class="font-label-md text-label-md text-surface-dim" for="name">Ad və soyad *</label>
+<div class="relative">
+<input class="w-full bg-on-background text-inverse-on-surface px-4 py-3.5 rounded-xl placeholder:text-surface-dim/60 focus:outline-none focus:ring-2 focus:ring-primary font-body-md text-body-md" id="name" placeholder="Məs: Elvin Məmmədov" required="" type="text"/>
+<span class="material-symbols-outlined absolute right-3.5 top-3.5 text-surface-dim text-[20px]">person</span>
+</div>
+</div>
+<!-- Telefon Nömrəsi -->
+<div class="flex flex-col space-y-2">
+<label class="font-label-md text-label-md text-surface-dim" for="phone">Telefon nömrəsi *</label>
+<div class="relative">
+<input class="w-full bg-on-background text-inverse-on-surface px-4 py-3.5 rounded-xl placeholder:text-surface-dim/60 focus:outline-none focus:ring-2 focus:ring-primary font-body-md text-body-md" id="phone" placeholder="+994 50 123 45 67" required="" type="tel"/>
+<span class="material-symbols-outlined absolute right-3.5 top-3.5 text-surface-dim text-[20px]">call</span>
+</div>
+</div>
+<!-- Tarix -->
+<div class="flex flex-col space-y-2">
+<label class="font-label-md text-label-md text-surface-dim" for="date">Tarix *</label>
+<div class="relative">
+<input class="w-full bg-on-background text-inverse-on-surface px-4 py-3.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary font-body-md text-body-md" id="date" required="" type="date"/>
+</div>
+</div>
+<!-- Saat -->
+<div class="flex flex-col space-y-2">
+<label class="font-label-md text-label-md text-surface-dim" for="time">Saat *</label>
+<div class="relative">
+<select class="w-full bg-on-background text-inverse-on-surface px-4 py-3.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary font-body-md text-body-md appearance-none" id="time" required="">
+<option disabled="" selected="" value="">Saat seçin</option>
+<option value="12:00">12:00 - Günorta</option>
+<option value="13:30">13:30</option>
+<option value="15:00">15:00</option>
+<option value="18:00">18:00 - Axşam</option>
+<option value="19:30">19:30</option>
+<option value="21:00">21:00</option>
+<option value="22:00">22:00</option>
+</select>
+<span class="material-symbols-outlined absolute right-3.5 top-3.5 text-surface-dim text-[20px] pointer-events-none">schedule</span>
+</div>
+</div>
+</div>
+<!-- Nəfər Sayı -->
+<div class="flex flex-col space-y-2">
+<label class="font-label-md text-label-md text-surface-dim" for="guests">Nəfər sayı *</label>
+<div class="relative">
+<select class="w-full bg-on-background text-inverse-on-surface px-4 py-3.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary font-body-md text-body-md appearance-none" id="guests" required="">
+<option value="2 nəfər">2 nəfər (Romantik masa)</option>
+<option selected="" value="3-4 nəfər">3-4 nəfər (Ailəvi masa)</option>
+<option value="5-6 nəfər">5-6 nəfər (Dost masası)</option>
+<option value="7+ nəfər">7+ nəfər (Böyük qrup / Ad günü)</option>
+</select>
+<span class="material-symbols-outlined absolute right-3.5 top-3.5 text-surface-dim text-[20px] pointer-events-none">group</span>
+</div>
+</div>
+<!-- Əlavə Qeyd -->
+<div class="flex flex-col space-y-2">
+<label class="font-label-md text-label-md text-surface-dim" for="notes">Əlavə qeyd</label>
+<textarea class="w-full bg-on-background text-inverse-on-surface px-4 py-3.5 rounded-xl placeholder:text-surface-dim/60 focus:outline-none focus:ring-2 focus:ring-primary font-body-md text-body-md" id="notes" placeholder="Xüsusi istək və ya pəhriz tələbləriniz varsa qeyd edin..." rows="3"></textarea>
+</div>
+<!-- Submit Button -->
+<button class="w-full py-4 rounded-xl bg-primary-container hover:bg-primary text-on-primary font-headline-sm text-headline-sm flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-primary-container/30 hover:-translate-y-0.5" type="submit">
+<span class="material-symbols-outlined text-[24px]">calendar_month</span>
+<span>Rezervasiyanı təsdiqlə</span>
+</button>
+</form>
+<!-- Success Confirmation State (Hidden initially) -->
+<div class="hidden text-center py-8" id="booking-success">
+<div class="w-16 h-16 rounded-full bg-tertiary-fixed text-on-tertiary-fixed flex items-center justify-center mx-auto mb-4">
+<span class="material-symbols-outlined text-4xl">check_circle</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-primary mb-2">Rezervasiyanız qəbul edildi!</h3>
+<p class="font-body-md text-body-md text-surface-dim max-w-md mx-auto">
+            Tezliklə menecerimiz sizinlə əlaqə saxlayaraq masanızı təsdiq edəcək. Sizi görməyə şad olarıq!
+          </p>
+<button class="mt-6 px-6 py-2.5 rounded-xl bg-surface-container-highest/20 hover:bg-surface-container-highest/40 text-on-primary font-label-md text-label-md transition-all" onclick="resetBookingForm()">
+            Yeni rezervasiya et
+          </button>
+</div>
+</div>
+</div>

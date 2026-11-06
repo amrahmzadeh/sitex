@@ -26,3 +26,4 @@ const colorClasses = sorted.filter(c =>
 );
 console.log('Color/shadow related classes:', colorClasses.length);
 console.log('Sample:', colorClasses.slice(0, 30));
+

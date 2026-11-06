@@ -182,3 +182,4 @@ if (comp.includes(oldH1)) {
 
 fs.writeFileSync(compPath, comp, 'utf8');
 console.log('Successfully updated PizzaHouseSite.tsx, length:', comp.length);
+

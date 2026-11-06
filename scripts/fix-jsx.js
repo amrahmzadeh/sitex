@@ -23,3 +23,4 @@ if (comp.includes(target) && comp.includes(targetEnd)) {
 } else {
   console.error('Target not found!');
 }
+

@@ -7,3 +7,4 @@ let m;
 while ((m = secRegex.exec(html)) !== null) {
   console.log('Section id:', m[1], 'at pos', m.index);
 }
+

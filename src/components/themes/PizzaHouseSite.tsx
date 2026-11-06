@@ -1347,11 +1347,14 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                 <button
                   key={item.id}
                   onClick={() => scrollTo(item.id)}
-                  className={`transition-colors py-1 px-3 rounded-xl cursor-pointer ${
-                    isActive
-                      ? 'bg-[#d7263d] text-white font-bold'
-                      : 'text-[#5b403f] hover:text-[#b20028] font-label-lg text-label-lg'
+                  className={`transition-colors py-1.5 px-3.5 rounded-xl cursor-pointer font-medium text-sm ${
+                    isActive ? 'font-bold' : 'hover:text-[#b20028]'
                   }`}
+                  style={
+                    isActive
+                      ? { backgroundColor: '#d7263d', color: '#ffffff' }
+                      : { color: '#5b403f' }
+                  }
                 >
                   {item.label}
                 </button>
@@ -1370,12 +1373,26 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
             )}
 
             {/* CTA Button */}
-            <button
-              onClick={() => scrollTo('rezervasiya')}
-              className="hidden sm:inline-flex items-center justify-center bg-[#d7263d] hover:bg-[#b20028] text-white font-label-lg text-label-lg px-6 py-2.5 rounded-xl shadow-[0_4px_16px_-2px_rgba(26,26,26,0.05),0_2px_6px_-1px_rgba(215,38,61,0.03)] hover:-translate-y-0.5 transition-all cursor-pointer"
-            >
-              Rezervasiya et
-            </button>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => scrollTo('rezervasiya')}
+                className="hidden sm:inline-flex items-center justify-center font-semibold text-sm px-6 py-2.5 rounded-xl transition-all cursor-pointer hover:-translate-y-0.5"
+                style={{
+                  backgroundColor: '#d7263d',
+                  color: '#ffffff',
+                  boxShadow: '0 4px 16px -2px rgba(26,26,26,0.05), 0 2px 6px -1px rgba(215,38,61,0.3)',
+                }}
+              >
+                Rezervasiya et
+              </button>
+              <div
+                className="hidden sm:flex w-8 h-8 rounded-full items-center justify-center text-white shrink-0"
+                style={{ backgroundColor: '#b20028' }}
+                title="Pizza House"
+              >
+                <Users size={16} />
+              </div>
+            </div>
 
             {/* Cart Counter badge if items added */}
             {cartCount > 0 && (
@@ -1498,7 +1515,12 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                 <div className="flex flex-wrap items-center gap-4 pt-1 w-full sm:w-auto">
                   <button
                     onClick={() => scrollTo('menyu')}
-                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#d7263d] hover:bg-[#b20028] text-white font-label-lg text-label-lg px-8 py-3.5 rounded-xl shadow-lg shadow-[#d7263d]/20 hover:-translate-y-0.5 transition-all cursor-pointer"
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 font-semibold text-base px-8 py-3.5 rounded-xl transition-all cursor-pointer hover:-translate-y-0.5"
+                    style={{
+                      backgroundColor: '#d7263d',
+                      color: '#ffffff',
+                      boxShadow: '0 10px 20px -3px rgba(215, 38, 61, 0.3)',
+                    }}
                   >
                     <span>{theme.heroCta1 || 'Menyuya bax'}</span>
                     <UtensilsCrossed size={19} />
@@ -1506,7 +1528,12 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
 
                   <button
                     onClick={() => scrollTo('rezervasiya')}
-                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#f0eded] hover:bg-[#e5e2e1] text-[#1c1b1b] font-label-lg text-label-lg px-8 py-3.5 rounded-xl transition-all cursor-pointer"
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 font-semibold text-base px-8 py-3.5 rounded-xl transition-all cursor-pointer hover:-translate-y-0.5 border"
+                    style={{
+                      backgroundColor: '#f0eded',
+                      color: '#1c1b1b',
+                      borderColor: '#eae7e7',
+                    }}
                   >
                     <span>{theme.heroCta2 || 'Masa rezerv et'}</span>
                     <Calendar size={19} />
@@ -1514,39 +1541,48 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                 </div>
 
                 {/* 3 Stats Chips */}
-                <div className="grid grid-cols-3 gap-3 sm:gap-4 pt-6 w-full max-w-lg">
-                  <div className="bg-white p-3.5 rounded-2xl shadow-sm flex flex-col items-center sm:items-start border border-[#f0eded]">
-                    <div className="flex items-center gap-1 text-[#715300] font-bold mb-1">
+                <div className="grid grid-cols-3 gap-3 sm:gap-4 pt-8 w-full max-w-lg">
+                  <div
+                    className="p-3.5 rounded-2xl shadow-sm flex flex-col items-center sm:items-start border"
+                    style={{ backgroundColor: '#ffffff', borderColor: '#f0eded' }}
+                  >
+                    <div className="flex items-center gap-1 font-bold mb-1">
                       <Star size={18} className="fill-[#fbbc0c] text-[#fbbc0c]" />
-                      <span className="font-headline-sm text-headline-sm text-[#1c1b1b]">
+                      <span className="font-bold text-base sm:text-lg text-[#1c1b1b]">
                         {theme.heroStat1Value || '10+ il'}
                       </span>
                     </div>
-                    <span className="font-label-md text-label-md text-[#5b403f] text-center sm:text-left">
+                    <span className="text-xs font-medium text-[#5b403f] text-center sm:text-left">
                       {theme.heroStat1Label || 'Təcrübə'}
                     </span>
                   </div>
 
-                  <div className="bg-white p-3.5 rounded-2xl shadow-sm flex flex-col items-center sm:items-start border border-[#f0eded]">
-                    <div className="flex items-center gap-1 text-[#b20028] font-bold mb-1">
-                      <Flame size={18} className="fill-[#b20028] text-[#b20028]" />
-                      <span className="font-headline-sm text-headline-sm text-[#1c1b1b]">
+                  <div
+                    className="p-3.5 rounded-2xl shadow-sm flex flex-col items-center sm:items-start border"
+                    style={{ backgroundColor: '#ffffff', borderColor: '#f0eded' }}
+                  >
+                    <div className="flex items-center gap-1 font-bold mb-1">
+                      <Flame size={18} className="fill-[#d7263d] text-[#d7263d]" />
+                      <span className="font-bold text-base sm:text-lg text-[#1c1b1b]">
                         {theme.heroStat2Value || '30+'}
                       </span>
                     </div>
-                    <span className="font-label-md text-label-md text-[#5b403f] text-center sm:text-left">
+                    <span className="text-xs font-medium text-[#5b403f] text-center sm:text-left">
                       {theme.heroStat2Label || 'Pizza növü'}
                     </span>
                   </div>
 
-                  <div className="bg-white p-3.5 rounded-2xl shadow-sm flex flex-col items-center sm:items-start border border-[#f0eded]">
-                    <div className="flex items-center gap-1 text-[#914d00] font-bold mb-1">
-                      <Users size={18} className="text-[#914d00]" />
-                      <span className="font-headline-sm text-headline-sm text-[#1c1b1b]">
+                  <div
+                    className="p-3.5 rounded-2xl shadow-sm flex flex-col items-center sm:items-start border"
+                    style={{ backgroundColor: '#ffffff', borderColor: '#f0eded' }}
+                  >
+                    <div className="flex items-center gap-1 font-bold mb-1">
+                      <Users size={18} className="text-[#fc9430]" />
+                      <span className="font-bold text-base sm:text-lg text-[#1c1b1b]">
                         {theme.heroStat3Value || '5000+'}
                       </span>
                     </div>
-                    <span className="font-label-md text-label-md text-[#5b403f] text-center sm:text-left">
+                    <span className="text-xs font-medium text-[#5b403f] text-center sm:text-left">
                       {theme.heroStat3Label || 'Məmnun qonaq'}
                     </span>
                   </div>
@@ -1953,6 +1989,7 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
           <section
             className="py-16 lg:py-24 px-6 lg:px-12 bg-[#1c1b1b] text-[#f3f0ef] relative overflow-hidden"
             id="rezervasiya"
+            style={{ backgroundColor: "#1c1b1b", color: "#ffffff" }}
           >
             {/* Atmospheric Ambient Glows */}
             <div className="absolute -top-40 right-1/4 w-96 h-96 rounded-full bg-[#b20028]/20 blur-3xl pointer-events-none" />
@@ -1960,7 +1997,14 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
 
             <div className="max-w-4xl mx-auto relative z-10">
               {/* Elevated Form Card */}
-              <div className="bg-[#313030] rounded-3xl p-8 sm:p-12 shadow-2xl border border-white/5">
+              <div
+                className="rounded-3xl p-8 sm:p-12 shadow-2xl border"
+                style={{
+                  backgroundColor: '#313030',
+                  color: '#ffffff',
+                  borderColor: 'rgba(255, 255, 255, 0.08)',
+                }}
+              >
                 <div className="text-center max-w-lg mx-auto mb-10">
                   <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#ffdad9]/20 text-[#ffb3b2] font-label-md text-label-md uppercase tracking-wider mb-3">
                     <Calendar size={16} />
@@ -2096,7 +2140,12 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                     <button
                       type="submit"
                       disabled={bookingLoading}
-                      className="w-full py-4 rounded-xl bg-[#d7263d] hover:bg-[#b20028] text-white font-headline-sm text-headline-sm flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-[#d7263d]/30 hover:-translate-y-0.5 cursor-pointer disabled:opacity-60"
+                      className="w-full py-4 rounded-xl font-bold text-base flex items-center justify-center gap-2 transition-all shadow-lg hover:-translate-y-0.5 cursor-pointer disabled:opacity-60"
+                      style={{
+                        backgroundColor: '#d7263d',
+                        color: '#ffffff',
+                        boxShadow: '0 10px 25px -3px rgba(215, 38, 61, 0.35)',
+                      }}
                     >
                       <Calendar size={22} />
                       <span>
@@ -2133,7 +2182,11 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
           {/* ========================================================
               6. ƏLAQƏ SECTION
               ======================================================== */}
-          <section className="py-16 lg:py-24 px-6 lg:px-12 bg-[#fcf9f8]" id="elaqe">
+          <section
+            id="elaqe"
+            className="py-20 lg:py-28 px-6 lg:px-12"
+            style={{ backgroundColor: '#fcf9f8' }}
+          >
             <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
               {/* Left Column: 4 Contact Cards & Socials */}
               <div className="lg:col-span-6 flex flex-col space-y-6">
@@ -2154,7 +2207,7 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {/* Ünvan */}
                   <div className="p-5 rounded-2xl bg-white shadow-sm flex flex-col justify-between border border-[#f0eded]">
-                    <div className="w-10 h-10 rounded-xl bg-[#ffdad9] text-[#b20028] flex items-center justify-center mb-3">
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-3" style={{ backgroundColor: "#ffdad9", color: "#b20028" }}>
                       <MapPin size={22} />
                     </div>
                     <div>
@@ -2172,7 +2225,7 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
 
                   {/* Telefon */}
                   <div className="p-5 rounded-2xl bg-white shadow-sm flex flex-col justify-between border border-[#f0eded]">
-                    <div className="w-10 h-10 rounded-xl bg-[#ffdcc3] text-[#914d00] flex items-center justify-center mb-3">
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-3" style={{ backgroundColor: "#ffdcc3", color: "#914d00" }}>
                       <Phone size={22} />
                     </div>
                     <div>
@@ -2198,7 +2251,7 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
 
                   {/* E-poçt */}
                   <div className="p-5 rounded-2xl bg-white shadow-sm flex flex-col justify-between border border-[#f0eded]">
-                    <div className="w-10 h-10 rounded-xl bg-[#ffdea0] text-[#715300] flex items-center justify-center mb-3">
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-3" style={{ backgroundColor: "#ffdea0", color: "#715300" }}>
                       <Mail size={22} />
                     </div>
                     <div>
@@ -2411,9 +2464,15 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
       {/* ========================================================
           FOOTER
           ======================================================== */}
-      <footer className="w-full bg-[#313030] text-[#f3f0ef] pt-12 pb-8">
-        <div className="max-w-7xl mx-auto px-6 lg:px-12">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 pb-10 border-b border-white/10">
+      <footer
+        className="w-full text-white pt-16 pb-12 px-6 lg:px-12 border-t"
+        style={{
+          backgroundColor: '#1c1b1b',
+          borderColor: 'rgba(255, 255, 255, 0.1)',
+        }}
+      >
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 pb-12 border-b border-white/10">
             {/* Col 1: Brand & Slogan */}
             <div className="space-y-4">
               <div className="flex items-center gap-2">
