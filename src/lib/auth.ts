@@ -24,16 +24,32 @@ export const authOptions: NextAuthOptions = {
           throw new Error('E-poçt və şifrə tələb olunur');
         }
 
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email.toLowerCase() },
+        const input = credentials.email.trim();
+        const inputLower = input.toLowerCase();
+
+        const user = await prisma.user.findFirst({
+          where: {
+            OR: [
+              { email: inputLower },
+              { employeeProfile: { username: input } },
+              { employeeProfile: { email: inputLower } },
+            ],
+          },
+          include: {
+            employeeProfile: true,
+          },
         });
 
         if (!user) {
           throw new Error('Hesab tapılmadı');
         }
 
-        // Super Admin always can login regardless of platform login_enabled setting
-        if (user.role !== 'SUPER_ADMIN') {
+        // Employee specific checks
+        if (user.role === 'EMPLOYEE') {
+          if (user.status === 'BANNED' || user.employeeProfile?.status === 'INACTIVE') {
+            throw new Error('Əməkdaş hesabı deaktiv edilib. Zəhmət olmasa adminə müraciət edin.');
+          }
+        } else if (user.role !== 'SUPER_ADMIN') {
           // Check if login is enabled
           const loginSetting = await prisma.platformSettings.findUnique({
             where: { key: 'login_enabled' },
@@ -59,6 +75,26 @@ export const authOptions: NextAuthOptions = {
           throw new Error('Şifrə yanlışdır');
         }
 
+        // Update employee last login and log activity
+        if (user.role === 'EMPLOYEE' && user.employeeProfile) {
+          try {
+            await prisma.employee.update({
+              where: { id: user.employeeProfile.id },
+              data: { lastLoginAt: new Date() },
+            });
+            await prisma.employeeActivityLog.create({
+              data: {
+                employeeId: user.employeeProfile.id,
+                action: 'LOGIN',
+                module: 'auth',
+                description: 'Sistemə uğurla daxil oldu',
+              },
+            });
+          } catch (e) {
+            console.error('Error logging employee login activity:', e);
+          }
+        }
+
         return {
           id: user.id,
           email: user.email,
@@ -68,6 +104,8 @@ export const authOptions: NextAuthOptions = {
           status: user.status,
           subscriptionExpiry: user.subscriptionExpiry?.toISOString() ?? null,
           maxSites: user.maxSites ?? null,
+          employeeId: user.employeeProfile?.id ?? null,
+          organizationId: user.employeeProfile?.organizationId ?? null,
         };
       },
     }),
@@ -80,6 +118,8 @@ export const authOptions: NextAuthOptions = {
         token.status = user.status;
         token.subscriptionExpiry = user.subscriptionExpiry;
         token.maxSites = user.maxSites;
+        token.employeeId = (user as any).employeeId ?? null;
+        token.organizationId = (user as any).organizationId ?? null;
       }
       return token;
     },
@@ -90,6 +130,8 @@ export const authOptions: NextAuthOptions = {
         (session.user as { status?: string }).status = token.status as string;
         (session.user as { subscriptionExpiry?: string | null }).subscriptionExpiry = token.subscriptionExpiry as string | null;
         (session.user as { maxSites?: number | null }).maxSites = token.maxSites as number | null;
+        (session.user as { employeeId?: string | null }).employeeId = token.employeeId as string | null;
+        (session.user as { organizationId?: string | null }).organizationId = token.organizationId as string | null;
       }
       return session;
     },

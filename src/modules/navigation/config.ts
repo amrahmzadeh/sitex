@@ -19,6 +19,7 @@ import {
   Inbox,
   Clock,
   PenLine,
+  Users,
 } from 'lucide-react';
 import { NavItemConfig, SiteContext } from './types';
 
@@ -259,6 +260,7 @@ export const dashboardNavItems: NavItemConfig[] = [
   { id: 'analytics', href: '/dashboard/analytics', icon: BarChart3, label: 'Analitika' },
   { id: 'billing', href: '/dashboard/billing', icon: CreditCard, label: 'Abunəlik' },
   { id: 'export-import', href: '/dashboard/export-import', icon: Download, label: 'Export / Import' },
+  { id: 'employees', href: '/dashboard/employees', icon: Users, label: 'Əməkdaşlar' },
   { id: 'settings', href: '/dashboard/settings', icon: Settings, label: 'Parametrlər' },
 ];
 

@@ -3,14 +3,11 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { menuItemSchema } from '@/lib/validations';
+import { verifyOrgPermission } from '@/lib/permissions';
 
-async function verifyAccess(orgId: string) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user) return null;
-  const userId = (session.user as { id: string }).id;
-  return prisma.membership.findUnique({
-    where: { userId_organizationId: { userId, organizationId: orgId } },
-  });
+async function verifyAccess(orgId: string, action: 'edit' | 'delete' = 'edit') {
+  const perm = await verifyOrgPermission(orgId, 'menu', action);
+  return perm.ok ? perm : null;
 }
 
 export async function PATCH(
@@ -19,7 +16,7 @@ export async function PATCH(
 ) {
   try {
     const { orgId, itemId } = await params;
-    const membership = await verifyAccess(orgId);
+    const membership = await verifyAccess(orgId, 'edit');
     if (!membership) {
       return NextResponse.json({ error: 'İcazəsiz giriş' }, { status: 401 });
     }
@@ -95,8 +92,8 @@ export async function DELETE(
 ) {
   try {
     const { orgId, itemId } = await params;
-    const membership = await verifyAccess(orgId);
-    if (!membership || membership.role === 'EDITOR') {
+    const membership = await verifyAccess(orgId, 'delete');
+    if (!membership) {
       return NextResponse.json({ error: 'İcazəsiz giriş' }, { status: 401 });
     }
 

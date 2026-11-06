@@ -8,6 +8,8 @@ declare module 'next-auth' {
     status?: string;
     subscriptionExpiry?: string | null;
     maxSites?: number | null;
+    employeeId?: string | null;
+    organizationId?: string | null;
   }
 
   interface Session {
@@ -20,6 +22,8 @@ declare module 'next-auth' {
       status?: string;
       subscriptionExpiry?: string | null;
       maxSites?: number | null;
+      employeeId?: string | null;
+      organizationId?: string | null;
     };
   }
 }
@@ -31,5 +35,7 @@ declare module 'next-auth/jwt' {
     status?: string;
     subscriptionExpiry?: string | null;
     maxSites?: number | null;
+    employeeId?: string | null;
+    organizationId?: string | null;
   }
 }

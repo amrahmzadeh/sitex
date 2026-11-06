@@ -54,6 +54,11 @@ export async function POST(req: Request) {
     }
 
     const userId = (session.user as { id: string }).id;
+    const userRole = (session.user as { role?: string }).role;
+
+    if (userRole === 'EMPLOYEE') {
+      return NextResponse.json({ error: 'Əməkdaşların yeni sayt yaratmaq hüququ yoxdur' }, { status: 403 });
+    }
 
     // Check user account access
     const access = await checkUserAccess(userId);

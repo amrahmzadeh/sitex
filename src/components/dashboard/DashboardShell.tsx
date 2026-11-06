@@ -10,7 +10,7 @@ import {
   UtensilsCrossed, Image, MessageCircle, Settings,
   LogOut, ChevronRight, Menu, Building2,
   BarChart3, CreditCard, ExternalLink, Sparkles, QrCode,
-  Share2, Shield, Download, X,
+  Share2, Shield, Download, X, ShieldAlert,
 } from 'lucide-react';
 import { dashboardNavItems, isNavItemVisible } from '@/modules/navigation';
 
@@ -36,6 +36,23 @@ export default function DashboardShell({ children }: { children: React.ReactNode
   const [currentOrg, setCurrentOrg] = useState<Organization | null>(null);
 
   const isSuperAdmin = (session?.user as { role?: string })?.role === 'SUPER_ADMIN';
+  const isEmployee = (session?.user as { role?: string })?.role === 'EMPLOYEE';
+  const [employeeData, setEmployeeData] = useState<{ isEmployee: boolean; permissions: Record<string, any>; employee?: any } | null>(null);
+  const [permLoading, setPermLoading] = useState(isEmployee);
+
+  useEffect(() => {
+    if (isEmployee) {
+      fetch('/api/employee/me')
+        .then((r) => r.json())
+        .then((d) => {
+          setEmployeeData(d);
+          setPermLoading(false);
+        })
+        .catch(() => setPermLoading(false));
+    } else {
+      setPermLoading(false);
+    }
+  }, [isEmployee]);
 
   useEffect(() => {
     fetch('/api/organizations')
@@ -152,23 +169,30 @@ export default function DashboardShell({ children }: { children: React.ReactNode
               </button>
             ))}
           </div>
-          <Link
-            href="/dashboard/new-organization"
-            style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 8, padding: '6px 10px', borderRadius: 8, fontSize: 12, color: '#B0B0B8', textDecoration: 'none' }}
-          >
-            + Yeni sayt
-          </Link>
+          {!isEmployee && (
+            <Link
+              href="/dashboard/new-organization"
+              style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 8, padding: '6px 10px', borderRadius: 8, fontSize: 12, color: '#B0B0B8', textDecoration: 'none' }}
+            >
+              + Yeni sayt
+            </Link>
+          )}
         </div>
       )}
 
       {/* Nav */}
       <nav style={{ flex: 1, padding: '12px 12px', overflowY: 'auto' }}>
-        {dashboardNavItems.filter((item) => isNavItemVisible(item, currentOrg ? {
-          id: currentOrg.id,
-          category: currentOrg.siteCategory,
-          subcategory: currentOrg.siteSubcategory,
-          website: currentOrg.website,
-        } : null, (session?.user as { role?: string })?.role)).map(({ href, icon: Icon, label }) => {
+        {dashboardNavItems.filter((item) => isNavItemVisible(
+          item,
+          currentOrg ? {
+            id: currentOrg.id,
+            category: currentOrg.siteCategory,
+            subcategory: currentOrg.siteSubcategory,
+            website: currentOrg.website,
+          } : null,
+          (session?.user as { role?: string })?.role,
+          employeeData?.permissions
+        )).map(({ href, icon: Icon, label }) => {
           const active = isActive(href);
           return (
             <Link
@@ -232,8 +256,17 @@ export default function DashboardShell({ children }: { children: React.ReactNode
             {session?.user?.name?.[0]?.toUpperCase() || 'U'}
           </div>
           <div style={{ minWidth: 0 }}>
-            <p style={{ fontSize: 13, fontWeight: 600, color: '#F5F5F7', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{session?.user?.name}</p>
-            <p style={{ fontSize: 11, color: '#B0B0B8', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{session?.user?.email}</p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <p style={{ fontSize: 13, fontWeight: 600, color: '#F5F5F7', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{session?.user?.name}</p>
+              {isEmployee && (
+                <span style={{ fontSize: 10, background: 'rgba(0,211,125,0.2)', color: '#00D37D', padding: '1px 5px', borderRadius: 4, fontWeight: 700 }}>
+                  Əməkdaş
+                </span>
+              )}
+            </div>
+            <p style={{ fontSize: 11, color: '#B0B0B8', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              {employeeData?.employee?.position || session?.user?.email}
+            </p>
           </div>
         </div>
         <button
@@ -251,6 +284,32 @@ export default function DashboardShell({ children }: { children: React.ReactNode
 
   const isBuilder = pathname === '/dashboard/builder' || pathname?.startsWith('/dashboard/builder');
   const isSiteEditor = pathname === '/dashboard/site-editor' || pathname?.startsWith('/dashboard/site-editor');
+
+  // Employee Route Protection Check
+  let isUnauthorizedForEmployee = false;
+  let targetModuleName = '';
+
+  if (isEmployee && !permLoading) {
+    if (pathname === '/dashboard/new-organization') {
+      isUnauthorizedForEmployee = true;
+      targetModuleName = 'Yeni sayt';
+    } else if (pathname.startsWith('/dashboard/')) {
+      const seg = pathname.replace('/dashboard/', '').split('/')[0];
+      if (seg) {
+        targetModuleName = seg;
+        if (seg === 'employees') {
+          isUnauthorizedForEmployee =
+            !employeeData?.permissions?.employees?.canView &&
+            !employeeData?.permissions?.employees?.canManage;
+        } else {
+          const perm = employeeData?.permissions?.[seg];
+          if (!perm || (!perm.canView && !perm.canManage)) {
+            isUnauthorizedForEmployee = true;
+          }
+        }
+      }
+    }
+  }
 
   if (isBuilder) {
     return (
@@ -320,7 +379,20 @@ export default function DashboardShell({ children }: { children: React.ReactNode
             flexDirection: isSiteEditor ? 'column' : undefined,
           }}
         >
-          {orgs.length === 0 && pathname !== '/dashboard/new-organization' ? (
+          {isUnauthorizedForEmployee ? (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', gap: 16, textAlign: 'center', padding: 24 }}>
+              <div style={{ width: 68, height: 68, borderRadius: '50%', background: 'rgba(239,68,68,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <ShieldAlert size={36} color="#EF4444" />
+              </div>
+              <h2 style={{ fontSize: 22, fontWeight: 700, color: '#F5F5F7' }}>Giriş Məhdudlaşdırılıb</h2>
+              <p style={{ color: '#8888A0', maxWidth: 440, fontSize: 14, lineHeight: 1.6 }}>
+                Hörmətli əməkdaş, bu bölməyə (<span style={{ color: '#EF4444', fontWeight: 600 }}>{targetModuleName}</span>) daxil olmaq üçün sistem icazəniz yoxdur. Zəhmət olmasa sayt rəhbərinə müraciət edin.
+              </p>
+              <Link href="/dashboard" className="dash-btn-primary" style={{ textDecoration: 'none', marginTop: 12 }}>
+                Ana Səhifəyə qayıt
+              </Link>
+            </div>
+          ) : orgs.length === 0 && pathname !== '/dashboard/new-organization' ? (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: 16, textAlign: 'center' }}>
               <Building2 size={48} color="#383334" />
               <h2 style={{ fontSize: 22, fontWeight: 700, color: '#E8E8F0' }}>Hələ saytınız yoxdur</h2>

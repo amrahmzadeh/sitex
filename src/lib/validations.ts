@@ -95,3 +95,53 @@ export type MenuCategoryInput = z.infer<typeof menuCategorySchema>;
 export type MenuItemInput = z.infer<typeof menuItemSchema>;
 export type WhatsAppInput = z.infer<typeof whatsappSchema>;
 export type ThemeConfig = z.infer<typeof themeSchema>;
+
+export const employeePermissionSchema = z.object({
+  module: z.string().min(1),
+  canView: z.boolean().default(true),
+  canCreate: z.boolean().default(false),
+  canEdit: z.boolean().default(false),
+  canDelete: z.boolean().default(false),
+  canManage: z.boolean().default(false),
+});
+
+export const employeeCreateSchema = z.object({
+  fullName: z.string().min(2, 'Ad və soyad ən azı 2 simvol olmalıdır'),
+  email: z.string().email('Düzgün e-poçt ünvanı daxil edin'),
+  username: z.string().min(3, 'İstifadəçi adı ən azı 3 simvol olmalıdır').regex(/^[a-zA-Z0-9._-]+$/, 'İstifadəçi adı yalnız hərf, rəqəm, nöqtə və tire ola bilər').optional().or(z.literal('')),
+  password: z.string().min(6, 'Şifrə ən azı 6 simvol olmalıdır'),
+  phone: z.string().optional().nullable().or(z.literal('')),
+  birthDate: z.string().optional().nullable().or(z.literal('')),
+  avatarUrl: z.string().optional().nullable().or(z.literal('')),
+  address: z.string().optional().nullable().or(z.literal('')),
+  notes: z.string().optional().nullable().or(z.literal('')),
+  position: z.string().optional().nullable().or(z.literal('')),
+  department: z.string().optional().nullable().or(z.literal('')),
+  workSchedule: z.string().default('Tam iş günü'),
+  startDate: z.string().optional().nullable().or(z.literal('')),
+  status: z.enum(['ACTIVE', 'INACTIVE', 'ON_LEAVE']).default('ACTIVE'),
+  organizationId: z.string().optional().nullable().or(z.literal('')),
+  permissions: z.array(employeePermissionSchema).default([]),
+});
+
+export const employeeUpdateSchema = z.object({
+  fullName: z.string().min(2, 'Ad və soyad ən azı 2 simvol olmalıdır').optional(),
+  email: z.string().email('Düzgün e-poçt ünvanı daxil edin').optional(),
+  username: z.string().min(3, 'İstifadəçi adı ən azı 3 simvol olmalıdır').regex(/^[a-zA-Z0-9._-]+$/, 'İstifadəçi adı yalnız hərf, rəqəm, nöqtə və tire ola bilər').optional().nullable().or(z.literal('')),
+  phone: z.string().optional().nullable().or(z.literal('')),
+  birthDate: z.string().optional().nullable().or(z.literal('')),
+  avatarUrl: z.string().optional().nullable().or(z.literal('')),
+  address: z.string().optional().nullable().or(z.literal('')),
+  notes: z.string().optional().nullable().or(z.literal('')),
+  position: z.string().optional().nullable().or(z.literal('')),
+  department: z.string().optional().nullable().or(z.literal('')),
+  workSchedule: z.string().optional(),
+  startDate: z.string().optional().nullable().or(z.literal('')),
+  status: z.enum(['ACTIVE', 'INACTIVE', 'ON_LEAVE']).optional(),
+  organizationId: z.string().optional().nullable().or(z.literal('')),
+  permissions: z.array(employeePermissionSchema).optional(),
+});
+
+export type EmployeeCreateInput = z.infer<typeof employeeCreateSchema>;
+export type EmployeeUpdateInput = z.infer<typeof employeeUpdateSchema>;
+export type EmployeePermissionInput = z.infer<typeof employeePermissionSchema>;

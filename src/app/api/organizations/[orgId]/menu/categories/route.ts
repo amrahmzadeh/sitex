@@ -4,14 +4,11 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { menuCategorySchema } from '@/lib/validations';
 import { generateSlug } from '@/lib/utils';
+import { verifyOrgPermission } from '@/lib/permissions';
 
-async function verifyAccess(orgId: string) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user) return null;
-  const userId = (session.user as { id: string }).id;
-  return prisma.membership.findUnique({
-    where: { userId_organizationId: { userId, organizationId: orgId } },
-  });
+async function verifyAccess(orgId: string, action: 'view' | 'create' = 'view') {
+  const perm = await verifyOrgPermission(orgId, 'menu', action);
+  return perm.ok ? perm : null;
 }
 
 export async function GET(
@@ -20,7 +17,7 @@ export async function GET(
 ) {
   try {
     const { orgId } = await params;
-    const membership = await verifyAccess(orgId);
+    const membership = await verifyAccess(orgId, 'view');
     if (!membership) {
       return NextResponse.json({ error: 'İcazəsiz giriş' }, { status: 401 });
     }
@@ -155,7 +152,7 @@ export async function POST(
 ) {
   try {
     const { orgId } = await params;
-    const membership = await verifyAccess(orgId);
+    const membership = await verifyAccess(orgId, 'create');
     if (!membership) {
       return NextResponse.json({ error: 'İcazəsiz giriş' }, { status: 401 });
     }
