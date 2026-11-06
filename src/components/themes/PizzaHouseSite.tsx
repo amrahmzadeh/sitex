@@ -25,6 +25,10 @@ import {
   ZoomIn,
   Send,
   Navigation,
+  ShoppingCart,
+  Plus,
+  Minus,
+  Trash2,
 } from 'lucide-react';
 import type { SiteData, MenuItem, MenuCategory, GalleryItem } from './RestaurantSite';
 import { ThemeConfig, getGoogleFontsUrl } from '@/lib/themes';
@@ -242,16 +246,121 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
 
   // Cart & Toast notification state
   const [toastMessage, setToastMessage] = useState<string | null>(null);
-  const [cartCount, setCartCount] = useState(0);
+  const [cart, setCart] = useState<
+    Record<
+      string,
+      {
+        id: string;
+        name: string;
+        price: number;
+        priceFormatted: string;
+        image?: string;
+        quantity: number;
+      }
+    >
+  >({});
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [cartNote, setCartNote] = useState('');
+
+  const cartEntries = useMemo(() => Object.values(cart), [cart]);
+  const cartCount = useMemo(
+    () => cartEntries.reduce((s, e) => s + e.quantity, 0),
+    [cartEntries]
+  );
+  const cartTotalSum = useMemo(
+    () => cartEntries.reduce((s, e) => s + e.price * e.quantity, 0),
+    [cartEntries]
+  );
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 3000);
   };
 
-  const handleAddToCart = (itemName: string, priceStr: string) => {
-    setCartCount((c) => c + 1);
-    showToast(`${itemName} (${priceStr}) əlavə edildi!`);
+  const handleAddToCart = (item: any, priceFormatted: string) => {
+    const priceNum =
+      typeof item.price === 'number'
+        ? item.price
+        : parseFloat(item.price) || 0;
+    setCart((prev) => {
+      const existing = prev[item.id];
+      return {
+        ...prev,
+        [item.id]: {
+          id: item.id,
+          name: item.name,
+          price: priceNum,
+          priceFormatted,
+          image: item.image,
+          quantity: (existing?.quantity || 0) + 1,
+        },
+      };
+    });
+    showToast(`${item.name} (${priceFormatted}) səbətə əlavə edildi!`);
+  };
+
+  const updateCartQuantity = (id: string, delta: number) => {
+    setCart((prev) => {
+      const existing = prev[id];
+      if (!existing) return prev;
+      const newQty = existing.quantity + delta;
+      if (newQty <= 0) {
+        const copy = { ...prev };
+        delete copy[id];
+        return copy;
+      }
+      return {
+        ...prev,
+        [id]: { ...existing, quantity: newQty },
+      };
+    });
+  };
+
+  const removeFromCart = (id: string) => {
+    setCart((prev) => {
+      const copy = { ...prev };
+      delete copy[id];
+      return copy;
+    });
+  };
+
+  const clearCart = () => setCart({});
+
+  const handleCheckoutWhatsApp = () => {
+    if (!whatsapp?.phoneNumber || cartEntries.length === 0) return;
+    const currency = organization.currency || 'AZN';
+    let text = `Salam! *${organization.name || 'Pizza House'}* üçün sifariş vermək istəyirəm:\n`;
+    if (table) {
+      text += `📍 *MASA:* ${table}\n`;
+    }
+    text += `\n🍽️ *SİFARİŞİM:* (${cartCount} ədəd)\n`;
+    cartEntries.forEach((e, idx) => {
+      const sub = e.price * e.quantity;
+      text += `${idx + 1}. *${e.name}* — ${e.quantity} ədəd x ${e.price.toFixed(2)} ${currency} = ${sub.toFixed(2)} ${currency}\n`;
+    });
+    text += `\n━━━━━━━━━━━━━━━━━━━━\n`;
+    text += `💰 *ÜMUMİ MƏBLƏĞ:* ${cartTotalSum.toFixed(2)} ${currency}\n`;
+    if (cartNote.trim()) {
+      text += `📝 *Qeyd:* ${cartNote.trim()}\n`;
+    }
+    const url = formatWhatsAppUrl(whatsapp.countryCode, whatsapp.phoneNumber, text);
+    window.open(url, '_blank');
+  };
+
+  const handleQuickWhatsApp = (item: any, priceFormatted: string) => {
+    if (!whatsapp?.phoneNumber) return;
+    const currency = organization.currency || 'AZN';
+    const priceNum =
+      typeof item.price === 'number'
+        ? item.price
+        : parseFloat(item.price) || 0;
+    let text = `Salam! *${organization.name || 'Pizza House'}* üçün sifariş vermək istəyirəm:\n`;
+    if (table) {
+      text += `📍 *MASA:* ${table}\n`;
+    }
+    text += `\n🍽️ *MƏHSUL:* ${item.name} — 1 ədəd x ${priceNum.toFixed(2)} ${currency} = ${priceNum.toFixed(2)} ${currency}\n`;
+    const url = formatWhatsAppUrl(whatsapp.countryCode, whatsapp.phoneNumber, text);
+    window.open(url, '_blank');
   };
 
   // Reservation form state
@@ -1565,12 +1674,13 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
             {/* Cart Counter badge if items added */}
             {cartCount > 0 && (
               <button
-                onClick={() => scrollTo('menyu')}
-                className="relative w-8 h-8 rounded-full bg-[#d7263d] flex items-center justify-center text-white cursor-pointer shadow-sm hover:bg-[#b20028] transition-colors"
-                title={`${cartCount} sifariş var`}
+                type="button"
+                onClick={() => setIsCartOpen(true)}
+                className="relative w-9 h-9 rounded-full bg-[#d7263d] flex items-center justify-center text-white cursor-pointer shadow-md hover:bg-[#b20028] transition-all hover:scale-105 active:scale-95"
+                title={`${cartCount} məhsul səbətdədir`}
               >
-                <ShoppingBag size={17} />
-                <span className="absolute -top-1 -right-1 bg-[#fc9430] text-[#663500] text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center">
+                <ShoppingBag size={18} />
+                <span className="absolute -top-1 -right-1 bg-[#fc9430] text-[#663500] text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center shadow-sm">
                   {cartCount}
                 </span>
               </button>
@@ -2057,24 +2167,52 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                         </p>
                       </div>
 
-                      {/* Add to Order Button */}
-                      <button
-                        onClick={() => handleAddToCart(item.name, priceFormatted)}
-                        disabled={isOrdersPaused}
-                        className={`w-full py-3 px-4 rounded-xl font-label-lg text-label-lg font-semibold flex items-center justify-center gap-2 transition-all shadow-sm cursor-pointer ${
-                          isOrdersPaused
-                            ? 'cursor-not-allowed'
-                            : 'hover:-translate-y-0.5'
-                        }`}
-                        style={
-                          isOrdersPaused
-                            ? { backgroundColor: '#e5e2e1', color: '#5b403f' }
-                            : { backgroundColor: '#d7263d', color: '#ffffff', boxShadow: '0 2px 8px rgba(215, 38, 61, 0.2)' }
-                        }
-                      >
-                        <span className="text-lg font-bold">+</span>
-                        <span>{isOrdersPaused ? 'Sifariş bağlıdır' : 'Əlavə et'}</span>
-                      </button>
+                      {/* Action Buttons: Add to Cart + Direct WhatsApp */}
+                      <div className="flex items-center gap-2 mt-auto">
+                        <button
+                          type="button"
+                          onClick={() => handleAddToCart(item, priceFormatted)}
+                          disabled={isOrdersPaused}
+                          className={`flex-1 py-3 px-4 rounded-xl font-label-lg text-label-lg font-semibold flex items-center justify-center gap-2 transition-all shadow-sm cursor-pointer ${
+                            isOrdersPaused
+                              ? 'cursor-not-allowed'
+                              : 'hover:-translate-y-0.5 active:translate-y-0'
+                          }`}
+                          style={
+                            isOrdersPaused
+                              ? { backgroundColor: '#e5e2e1', color: '#5b403f' }
+                              : {
+                                  backgroundColor: '#d7263d',
+                                  color: '#ffffff',
+                                  boxShadow: '0 2px 8px rgba(215, 38, 61, 0.2)',
+                                }
+                          }
+                        >
+                          <span className="text-lg font-bold leading-none">+</span>
+                          <span>{isOrdersPaused ? 'Sifariş bağlıdır' : 'Səbətə at'}</span>
+                        </button>
+
+                        {whatsapp?.phoneNumber && (
+                          <button
+                            type="button"
+                            title="WhatsApp ilə birbaşa sifariş et"
+                            onClick={() => handleQuickWhatsApp(item, priceFormatted)}
+                            disabled={isOrdersPaused}
+                            className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all shadow-sm cursor-pointer shrink-0 ${
+                              isOrdersPaused
+                                ? 'opacity-40 cursor-not-allowed'
+                                : 'hover:-translate-y-0.5 active:translate-y-0 hover:opacity-95'
+                            }`}
+                            style={{
+                              backgroundColor: '#25D366',
+                              color: '#ffffff',
+                              boxShadow: '0 2px 8px rgba(37, 211, 102, 0.25)',
+                            }}
+                          >
+                            <MessageCircle size={20} />
+                          </button>
+                        )}
+                      </div>
                     </div>
                   );
                 })}
@@ -2821,6 +2959,367 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
               </div>
             </div>
           </section>
+
+          {/* Cart Drawer */}
+          {isCartOpen && (
+            <div
+              className="fixed inset-0 z-[100] flex justify-end"
+              style={{ backgroundColor: 'rgba(0,0,0,0.6)' }}
+              onClick={() => setIsCartOpen(false)}
+            >
+              <div
+                className="relative h-full w-full flex flex-col"
+                style={{
+                  maxWidth: 420,
+                  backgroundColor: '#fcf9f8',
+                  boxShadow: '-8px 0 32px rgba(0,0,0,0.2)',
+                }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* Header */}
+                <div
+                  style={{
+                    padding: '20px 24px',
+                    borderBottom: '1px solid #f0eded',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <ShoppingCart size={22} color="#d7263d" />
+                    <h3
+                      style={{
+                        fontFamily: `"${headingFont}", sans-serif`,
+                        fontSize: 20,
+                        fontWeight: 800,
+                        color: '#1c1b1b',
+                        margin: 0,
+                      }}
+                    >
+                      Səbətiniz
+                    </h3>
+                    <span
+                      style={{
+                        background: '#ffdad9',
+                        color: '#b20028',
+                        fontSize: 12,
+                        fontWeight: 700,
+                        padding: '2px 8px',
+                        borderRadius: 100,
+                      }}
+                    >
+                      {cartCount}
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    {cartEntries.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={clearCart}
+                        style={{
+                          border: 'none',
+                          background: 'transparent',
+                          color: '#F87171',
+                          fontSize: 12,
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        Təmizlə
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => setIsCartOpen(false)}
+                      style={{
+                        border: 'none',
+                        background: '#f0eded',
+                        borderRadius: '50%',
+                        width: 32,
+                        height: 32,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'pointer',
+                        color: '#1c1b1b',
+                      }}
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Table badge if applicable */}
+                {table && (
+                  <div
+                    style={{
+                      margin: '12px 20px 0',
+                      padding: '10px 14px',
+                      borderRadius: 12,
+                      backgroundColor: '#ffdad9',
+                      border: '1px solid #ffb3b2',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                    }}
+                  >
+                    <span style={{ fontSize: 13, fontWeight: 700, color: '#1c1b1b' }}>
+                      📍 {table}
+                    </span>
+                  </div>
+                )}
+
+                {/* Empty state */}
+                {cartEntries.length === 0 ? (
+                  <div
+                    style={{
+                      flex: 1,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 12,
+                      color: '#5b403f',
+                      padding: '24px',
+                      textAlign: 'center',
+                    }}
+                  >
+                    <ShoppingCart size={48} style={{ opacity: 0.3 }} />
+                    <p style={{ fontSize: 16, fontWeight: 600, margin: 0 }}>
+                      Səbətiniz boşdur
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsCartOpen(false);
+                        scrollTo('menyu');
+                      }}
+                      style={{
+                        background: '#d7263d',
+                        color: '#fff',
+                        border: 'none',
+                        borderRadius: 12,
+                        padding: '10px 24px',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      Menyuya bax
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    {/* Items list */}
+                    <div
+                      style={{
+                        flex: 1,
+                        overflowY: 'auto',
+                        padding: '16px 20px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 12,
+                      }}
+                    >
+                      {cartEntries.map((entry) => (
+                        <div
+                          key={entry.id}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 12,
+                            padding: '12px',
+                            backgroundColor: '#fff',
+                            borderRadius: 16,
+                            border: '1px solid #f0eded',
+                          }}
+                        >
+                          {entry.image && (
+                            <img
+                              src={entry.image}
+                              alt={entry.name}
+                              style={{
+                                width: 56,
+                                height: 56,
+                                borderRadius: 10,
+                                objectFit: 'cover',
+                                flexShrink: 0,
+                              }}
+                            />
+                          )}
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <p
+                              style={{
+                                fontWeight: 700,
+                                color: '#1c1b1b',
+                                fontSize: 14,
+                                margin: 0,
+                                marginBottom: 4,
+                                whiteSpace: 'nowrap',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                              }}
+                            >
+                              {entry.name}
+                            </p>
+                            <p style={{ color: '#5b403f', fontSize: 13, margin: 0 }}>
+                              {entry.price.toFixed(2)} {organization.currency || 'AZN'}
+                            </p>
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                            <button
+                              type="button"
+                              onClick={() => updateCartQuantity(entry.id, -1)}
+                              style={{
+                                width: 28,
+                                height: 28,
+                                borderRadius: '50%',
+                                border: '1px solid #f0eded',
+                                background: '#fff',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                              }}
+                            >
+                              <Minus size={13} color="#5b403f" />
+                            </button>
+                            <span
+                              style={{
+                                fontWeight: 700,
+                                color: '#1c1b1b',
+                                minWidth: 20,
+                                textAlign: 'center',
+                                fontSize: 14,
+                              }}
+                            >
+                              {entry.quantity}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => updateCartQuantity(entry.id, 1)}
+                              style={{
+                                width: 28,
+                                height: 28,
+                                borderRadius: '50%',
+                                border: 'none',
+                                background: '#d7263d',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                              }}
+                            >
+                              <Plus size={13} color="#fff" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => removeFromCart(entry.id)}
+                              style={{
+                                width: 28,
+                                height: 28,
+                                borderRadius: '50%',
+                                border: 'none',
+                                background: 'transparent',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                marginLeft: 2,
+                              }}
+                            >
+                              <Trash2 size={14} color="#F87171" />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Note input */}
+                    <div style={{ padding: '0 20px 12px' }}>
+                      <textarea
+                        value={cartNote}
+                        onChange={(e) => setCartNote(e.target.value)}
+                        placeholder="Qeyd əlavə et (ixtiyari)..."
+                        rows={2}
+                        style={{
+                          width: '100%',
+                          padding: '10px 14px',
+                          borderRadius: 12,
+                          border: '1px solid #f0eded',
+                          fontSize: 14,
+                          color: '#1c1b1b',
+                          background: '#fff',
+                          resize: 'none',
+                          outline: 'none',
+                          boxSizing: 'border-box',
+                        }}
+                      />
+                    </div>
+
+                    {/* Total + Checkout */}
+                    <div style={{ padding: '12px 20px 24px', borderTop: '1px solid #f0eded' }}>
+                      <div
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          marginBottom: 14,
+                        }}
+                      >
+                        <span style={{ fontSize: 16, fontWeight: 700, color: '#1c1b1b' }}>
+                          Ümumi məbləğ:
+                        </span>
+                        <span style={{ fontSize: 20, fontWeight: 800, color: '#d7263d' }}>
+                          {cartTotalSum.toFixed(2)} {organization.currency || 'AZN'}
+                        </span>
+                      </div>
+                      {whatsapp?.phoneNumber && !isOrdersPaused ? (
+                        <button
+                          type="button"
+                          onClick={handleCheckoutWhatsApp}
+                          style={{
+                            width: '100%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: 10,
+                            padding: '14px',
+                            borderRadius: 14,
+                            border: 'none',
+                            backgroundColor: '#25D366',
+                            color: '#fff',
+                            fontWeight: 800,
+                            fontSize: 16,
+                            cursor: 'pointer',
+                            boxShadow: '0 4px 16px rgba(37,211,102,0.3)',
+                          }}
+                        >
+                          <MessageCircle size={20} />
+                          <span>WhatsApp ilə sifariş et</span>
+                        </button>
+                      ) : (
+                        <div
+                          style={{
+                            textAlign: 'center',
+                            color: '#5b403f',
+                            fontSize: 14,
+                            padding: '12px',
+                            background: '#f0eded',
+                            borderRadius: 12,
+                          }}
+                        >
+                          {isOrdersPaused
+                            ? 'Sifarişlər hazırda bağlıdır'
+                            : 'WhatsApp konfiqurasiya edilməyib'}
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* FLOATING ACTION: Bottom Right WhatsApp Pill with Pulse */}
           {whatsapp?.phoneNumber && (
