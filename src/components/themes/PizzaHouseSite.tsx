@@ -510,6 +510,9 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
 .pizza-house-root .justify-between { justify-content: space-between !important; }
 .pizza-house-root .justify-end { justify-content: flex-end !important; }
 .pizza-house-root .justify-start { justify-content: flex-start !important; }
+.pizza-house-root .text-center { text-align: center !important; }
+.pizza-house-root .text-left { text-align: left !important; }
+.pizza-house-root .text-right { text-align: right !important; }
 .pizza-house-root .w-full { width: 100% !important; }
 .pizza-house-root .h-full { height: 100% !important; }
 .pizza-house-root .min-h-screen { min-height: 100vh !important; }
@@ -741,7 +744,11 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
   .pizza-house-root .sm\\:gap-6 { gap: 1.5rem !important; }
   .pizza-house-root .sm\\:p-8 { padding: 2rem !important; }
   .pizza-house-root .sm\\:text-left { text-align: left !important; }
+  .pizza-house-root .sm\\:text-center { text-align: center !important; }
   .pizza-house-root .sm\\:items-start { align-items: flex-start !important; }
+  .pizza-house-root .sm\\:items-center { align-items: center !important; }
+  .pizza-house-root .sm\\:justify-start { justify-content: flex-start !important; }
+  .pizza-house-root .sm\\:justify-center { justify-content: center !important; }
   .pizza-house-root .sm\\:top-4 { top: 1rem !important; }
   .pizza-house-root .sm\\:-left-6 { left: -1.5rem !important; }
   .pizza-house-root .sm\\:-right-6 { right: -1.5rem !important; }
@@ -779,6 +786,12 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
   .pizza-house-root .lg\\:gap-12 { gap: 3rem !important; }
   .pizza-house-root .lg\\:px-12 { padding-left: 3rem !important; padding-right: 3rem !important; }
   .pizza-house-root .lg\\:py-28 { padding-top: 7rem !important; padding-bottom: 7rem !important; }
+  .pizza-house-root .lg\\:items-start { align-items: flex-start !important; }
+  .pizza-house-root .lg\\:items-center { align-items: center !important; }
+  .pizza-house-root .lg\\:text-left { text-align: left !important; }
+  .pizza-house-root .lg\\:text-center { text-align: center !important; }
+  .pizza-house-root .lg\\:justify-start { justify-content: flex-start !important; }
+  .pizza-house-root .lg\\:justify-center { justify-content: center !important; }
 }
 
 /* Pizza House Complete Style Definition (Self-Contained) */
@@ -1982,7 +1995,7 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
 
             <div className="max-w-7xl mx-auto relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
               {/* Left Column: Copy & Actions */}
-              <div className="lg:col-span-6 flex flex-col items-start space-y-4">
+              <div className="lg:col-span-6 flex flex-col items-center text-center lg:items-start lg:text-left space-y-4">
                 {/* Pill Badge */}
                 <div
                   className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full font-label-lg text-label-lg tracking-wide shadow-sm"
@@ -2030,7 +2043,7 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                 )}
 
                 {/* CTA Buttons */}
-                <div className="flex flex-wrap items-center gap-4 pt-1 w-full sm:w-auto">
+                <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-1 w-full sm:w-auto">
                   <button
                     onClick={() => scrollTo('menyu')}
                     className="w-full sm:w-auto inline-flex items-center justify-center gap-2 font-semibold text-base px-8 py-3.5 rounded-xl transition-all cursor-pointer hover:-translate-y-0.5"
@@ -2059,7 +2072,7 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                 </div>
 
                 {/* 3 Stats Chips */}
-                <div className="grid grid-cols-3 gap-3 sm:gap-4 pt-6 w-full max-w-lg">
+                <div className="grid grid-cols-3 gap-3 sm:gap-4 pt-6 w-full max-w-lg mx-auto lg:mx-0">
                   <div
                     className="p-3.5 sm:p-4 rounded-2xl shadow-sm hover:shadow-md transition-shadow flex flex-col items-center sm:items-start border"
                     style={{ backgroundColor: '#ffffff', borderColor: '#f0eded' }}
@@ -2514,7 +2527,7 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
               </div>
 
               {/* Right Column: Story & Features */}
-              <div className="lg:col-span-6 flex flex-col items-start space-y-6">
+              <div className="lg:col-span-6 flex flex-col items-center text-center lg:items-start lg:text-left space-y-6">
                 <span
                   className="inline-flex items-center px-4 py-1.5 rounded-full font-label-md text-label-md uppercase tracking-wider font-semibold"
                   style={{
@@ -2856,8 +2869,8 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
           >
             <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
               {/* Left Column: 4 Contact Cards & Socials */}
-              <div className="lg:col-span-6 flex flex-col space-y-6">
-                <div className="flex flex-col items-start">
+              <div className="lg:col-span-6 flex flex-col items-center text-center lg:items-start lg:text-left space-y-6">
+                <div className="flex flex-col items-center text-center lg:items-start lg:text-left w-full">
                   <span
                     className="inline-flex items-center px-4 py-1.5 rounded-full font-label-md text-label-md uppercase tracking-wider font-semibold"
                     style={{
@@ -3049,11 +3062,11 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                 </div>
 
                 {/* Social Media Badges */}
-                <div className="pt-2">
+                <div className="pt-2 flex flex-col items-center lg:items-start text-center lg:text-left w-full">
                   <p className="font-label-md text-label-md text-[#5b403f] mb-3">
                     Sosial şəbəkələrdə bizi izləyin:
                   </p>
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center justify-center lg:justify-start gap-3">
                     {/* Instagram */}
                     <a
                       className="w-12 h-12 rounded-2xl bg-white hover:bg-[#d7263d] text-[#1c1b1b] hover:text-white flex items-center justify-center shadow-sm transition-all border border-[#f0eded]"
@@ -3242,8 +3255,8 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
             }}
           >
             {/* Col 1: Brand & Slogan */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-2">
+            <div className="space-y-4 flex flex-col items-center text-center sm:items-start sm:text-left">
+              <div className="flex items-center justify-center sm:justify-start gap-2">
                 {organization.logo ? (
                   <img
                     src={organization.logo}
@@ -3271,9 +3284,9 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
             </div>
 
             {/* Col 2: Nav links */}
-            <div className="space-y-4">
+            <div className="space-y-4 flex flex-col items-center text-center sm:items-start sm:text-left">
               <h3 className="font-headline-sm text-headline-sm text-white font-bold tracking-tight">Naviqasiya</h3>
-              <ul className="space-y-2.5">
+              <ul className="space-y-2.5 flex flex-col items-center sm:items-start">
                 <li>
                   <button
                     onClick={() => scrollTo('hero')}
@@ -3310,9 +3323,9 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
             </div>
 
             {/* Col 3: Services */}
-            <div className="space-y-4">
+            <div className="space-y-4 flex flex-col items-center text-center sm:items-start sm:text-left">
               <h3 className="font-headline-sm text-headline-sm text-white font-bold tracking-tight">Xidmətlər</h3>
-              <ul className="space-y-2.5">
+              <ul className="space-y-2.5 flex flex-col items-center sm:items-start">
                 <li>
                   <button
                     onClick={() => scrollTo('rezervasiya')}
@@ -3349,12 +3362,12 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
             </div>
 
             {/* Col 4: Follow Us */}
-            <div className="space-y-4">
+            <div className="space-y-4 flex flex-col items-center text-center sm:items-start sm:text-left">
               <h3 className="font-headline-sm text-headline-sm text-white font-bold tracking-tight">Bizi İzləyin</h3>
               <p className="font-body-sm text-body-sm text-[#dcd9d9]">
                 Yeniliklərdən və kampaniyalardan xəbərdar olmaq üçün sosial şəbəkələrdə izləyin:
               </p>
-              <div className="flex items-center gap-2 pt-1">
+              <div className="flex items-center justify-center sm:justify-start gap-2 pt-1">
                 <a
                   aria-label="Instagram"
                   className="w-10 h-10 rounded-xl bg-white/10 hover:bg-[#d7263d] text-white flex items-center justify-center transition-all"
@@ -3401,13 +3414,13 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
 
           {/* Bottom Bar */}
           <div
-            className="flex flex-col sm:flex-row items-center justify-between gap-4"
+            className="flex flex-col sm:flex-row items-center justify-center sm:justify-between text-center sm:text-left gap-4"
             style={{ paddingTop: '0.75rem' }}
           >
             <p className="font-body-sm text-body-sm text-[#dcd9d9] text-center sm:text-left">
               {theme.footerCopyrightText || `© ${currentYear} Pizza House. Bütün hüquqlar qorunur.`}
             </p>
-            <div className="flex items-center gap-4 text-[#dcd9d9] font-body-sm text-body-sm">
+            <div className="flex items-center justify-center sm:justify-end gap-4 text-[#dcd9d9] font-body-sm text-body-sm">
               <span className="text-xs text-white/50">
                 {theme.footerPlatformText || 'Sayt SiteX platforması ilə yaradılıb'}
               </span>
