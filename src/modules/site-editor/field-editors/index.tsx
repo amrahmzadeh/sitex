@@ -54,21 +54,44 @@ export interface FieldEditorProps {
   orgId?: string;
 }
 
+function getFieldStringValue(value: FieldValue, isI18n: boolean | undefined, locale: Locale): string {
+  if (value === undefined || value === null) return '';
+  if (isI18n) {
+    if (typeof value === 'object' && !Array.isArray(value)) {
+      const i18n = value as I18nString;
+      return i18n[locale] ?? i18n['az'] ?? i18n['en'] ?? i18n['ru'] ?? '';
+    }
+    if (typeof value === 'string') return value;
+    return String(value);
+  } else {
+    if (typeof value === 'string') return value;
+    if (typeof value === 'object' && !Array.isArray(value)) {
+      const i18n = value as I18nString;
+      return i18n[locale] ?? i18n['az'] ?? i18n['en'] ?? i18n['ru'] ?? '';
+    }
+    return String(value);
+  }
+}
+
+function updateFieldStringValue(prevValue: FieldValue, nextStr: string, isI18n: boolean | undefined, locale: Locale): FieldValue {
+  if (isI18n) {
+    const baseObj = (prevValue && typeof prevValue === 'object' && !Array.isArray(prevValue))
+      ? { ...(prevValue as I18nString) }
+      : (typeof prevValue === 'string' ? { az: prevValue } : {});
+    return { ...baseObj, [locale]: nextStr };
+  }
+  return nextStr;
+}
+
 // ====================
 // TextField
 // ====================
 export function TextField({ schema, value, locale, onChange }: FieldEditorProps) {
   const isI18n = schema.i18n;
-  const strVal = isI18n
-    ? ((value as I18nString)?.[locale] ?? '')
-    : (typeof value === 'string' ? value : '');
+  const strVal = getFieldStringValue(value, isI18n, locale);
 
   const handleChange = (v: string) => {
-    if (isI18n) {
-      onChange({ ...(value as I18nString ?? {}), [locale]: v });
-    } else {
-      onChange(v);
-    }
+    onChange(updateFieldStringValue(value, v, isI18n, locale));
   };
 
   return (
@@ -92,16 +115,10 @@ export function TextField({ schema, value, locale, onChange }: FieldEditorProps)
 // ====================
 export function TextareaField({ schema, value, locale, onChange }: FieldEditorProps) {
   const isI18n = schema.i18n;
-  const strVal = isI18n
-    ? ((value as I18nString)?.[locale] ?? '')
-    : (typeof value === 'string' ? value : '');
+  const strVal = getFieldStringValue(value, isI18n, locale);
 
   const handleChange = (v: string) => {
-    if (isI18n) {
-      onChange({ ...(value as I18nString ?? {}), [locale]: v });
-    } else {
-      onChange(v);
-    }
+    onChange(updateFieldStringValue(value, v, isI18n, locale));
   };
 
   return (

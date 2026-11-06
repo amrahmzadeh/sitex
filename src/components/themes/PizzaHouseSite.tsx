@@ -2085,52 +2085,43 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                 </div>
 
                 {/* 3 Stats Chips */}
-                <div className="grid grid-cols-3 gap-3 sm:gap-4 pt-6 w-full max-w-lg mx-auto lg:mx-0">
-                  <div
-                    className="p-3.5 sm:p-4 rounded-2xl shadow-sm hover:shadow-md transition-shadow flex flex-col items-center sm:items-start border"
-                    style={{ backgroundColor: '#ffffff', borderColor: '#f0eded' }}
-                  >
-                    <div className="flex items-center gap-1.5 font-bold mb-1">
-                      <Star size={18} className="fill-[#fbbc0c] text-[#fbbc0c] shrink-0" />
-                      <span className="font-bold text-base sm:text-lg text-[#1c1b1b]">
-                        {theme.heroStat1Value || '10+ il'}
-                      </span>
-                    </div>
-                    <span className="text-xs sm:text-sm font-medium text-[#5b403f] text-center sm:text-left">
-                      {theme.heroStat1Label || 'Təcrübə'}
-                    </span>
-                  </div>
+                {(() => {
+                  // content.hero.stats is always populated from resolver (with defaults)
+                  const statsList = (content.hero?.stats && content.hero.stats.length > 0)
+                    ? content.hero.stats
+                    : [
+                        { value: theme.heroStat1Value || '10+ il', label: theme.heroStat1Label || 'Təcrübə' },
+                        { value: theme.heroStat2Value || '30+', label: theme.heroStat2Label || 'Pizza növü' },
+                        { value: theme.heroStat3Value || '5000+', label: theme.heroStat3Label || 'Məmnun qonaq' },
+                      ];
+                  const icons = [
+                    <Star key="1" size={18} className="fill-[#fbbc0c] text-[#fbbc0c] shrink-0" />,
+                    <Flame key="2" size={18} className="fill-[#d7263d] text-[#d7263d] shrink-0" />,
+                    <Users key="3" size={18} className="text-[#fc9430] shrink-0" />,
+                  ];
 
-                  <div
-                    className="p-3.5 sm:p-4 rounded-2xl shadow-sm hover:shadow-md transition-shadow flex flex-col items-center sm:items-start border"
-                    style={{ backgroundColor: '#ffffff', borderColor: '#f0eded' }}
-                  >
-                    <div className="flex items-center gap-1.5 font-bold mb-1">
-                      <Flame size={18} className="fill-[#d7263d] text-[#d7263d] shrink-0" />
-                      <span className="font-bold text-base sm:text-lg text-[#1c1b1b]">
-                        {theme.heroStat2Value || '30+'}
-                      </span>
+                  return (
+                    <div className="grid grid-cols-3 gap-3 sm:gap-4 pt-6 w-full max-w-lg mx-auto lg:mx-0">
+                      {statsList.slice(0, 3).map((st: any, idx: number) => (
+                        <div
+                          key={idx}
+                          className="p-3.5 sm:p-4 rounded-2xl shadow-sm hover:shadow-md transition-shadow flex flex-col items-center sm:items-start border"
+                          style={{ backgroundColor: '#ffffff', borderColor: '#f0eded' }}
+                        >
+                          <div className="flex items-center gap-1.5 font-bold mb-1">
+                            {icons[idx % icons.length]}
+                            <span className="font-bold text-base sm:text-lg text-[#1c1b1b]">
+                              {st.value}
+                            </span>
+                          </div>
+                          <span className="text-xs sm:text-sm font-medium text-[#5b403f] text-center sm:text-left">
+                            {st.label}
+                          </span>
+                        </div>
+                      ))}
                     </div>
-                    <span className="text-xs sm:text-sm font-medium text-[#5b403f] text-center sm:text-left">
-                      {theme.heroStat2Label || 'Pizza növü'}
-                    </span>
-                  </div>
-
-                  <div
-                    className="p-3.5 sm:p-4 rounded-2xl shadow-sm hover:shadow-md transition-shadow flex flex-col items-center sm:items-start border"
-                    style={{ backgroundColor: '#ffffff', borderColor: '#f0eded' }}
-                  >
-                    <div className="flex items-center gap-1.5 font-bold mb-1">
-                      <Users size={18} className="text-[#fc9430] shrink-0" />
-                      <span className="font-bold text-base sm:text-lg text-[#1c1b1b]">
-                        {theme.heroStat3Value || '5000+'}
-                      </span>
-                    </div>
-                    <span className="text-xs sm:text-sm font-medium text-[#5b403f] text-center sm:text-left">
-                      {theme.heroStat3Label || 'Məmnun qonaq'}
-                    </span>
-                  </div>
-                </div>
+                  );
+                })()}
               </div>
 
               {/* Right Column: Visual Pizza Showcase */}
@@ -2146,7 +2137,7 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                   <img
                     className="w-full h-full object-cover rounded-[2rem] shadow-inner"
                     alt={organization.name || 'Pizza House'}
-                    src={theme.headerImageUrl || HERO_PIZZA_IMG}
+                    src={content.hero?.backgroundImage || theme.headerImageUrl || HERO_PIZZA_IMG}
                   />
 
                   {/* Floating Badge 1: Rating (Desktop/tablet only) */}
@@ -2162,10 +2153,10 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                     </div>
                     <div>
                       <p className="font-headline-sm text-sm sm:text-base font-bold leading-tight text-[#1c1b1b]">
-                        {theme.heroRatingScore || '4.9'}
+                        {content.hero?.ratingScore || theme.heroRatingScore || '4.9'}
                       </p>
                       <p className="font-label-sm text-xs text-[#5b403f]">
-                        {theme.heroRatingLabel || 'Reytinq (2.4k+)'}
+                        {content.hero?.ratingLabel || theme.heroRatingLabel || 'Reytinq (2.4k+)'}
                       </p>
                     </div>
                   </div>
@@ -2183,10 +2174,10 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                     </div>
                     <div>
                       <p className="font-headline-sm text-sm sm:text-base font-bold leading-tight text-[#1c1b1b]">
-                        {theme.heroBadgeFeature1 || '100% Təbii'}
+                        {content.hero?.badge1Text || theme.heroBadgeFeature1 || '100% Təbii'}
                       </p>
                       <p className="font-label-sm text-xs text-[#5b403f]">
-                        {theme.heroBadgeFeature1Desc || 'Pendir & Xəmir'}
+                        {content.hero?.badge1Desc || theme.heroBadgeFeature1Desc || 'Pendir & Xəmir'}
                       </p>
                     </div>
                   </div>
@@ -2204,10 +2195,10 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                     </div>
                     <div>
                       <p className="font-headline-sm text-sm sm:text-base font-bold leading-tight text-[#1c1b1b]">
-                        {theme.heroBadgeFeature2 || '15 Dəqiqəyə'}
+                        {content.hero?.badge2Text || theme.heroBadgeFeature2 || '15 Dəqiqəyə'}
                       </p>
                       <p className="font-label-sm text-xs text-[#5b403f]">
-                        {theme.heroBadgeFeature2Desc || 'Süfrənizdə hazır'}
+                        {content.hero?.badge2Desc || theme.heroBadgeFeature2Desc || 'Süfrənizdə hazır'}
                       </p>
                     </div>
                   </div>
@@ -2224,10 +2215,10 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                       <Star size={16} className="fill-[#261a00] text-[#261a00]" />
                     </div>
                     <span className="font-bold text-xs text-[#1c1b1b] leading-tight">
-                      {theme.heroRatingScore || '4.9'}
+                      {content.hero?.ratingScore || theme.heroRatingScore || '4.9'}
                     </span>
                     <span className="text-[10px] text-[#5b403f] font-medium mt-0.5 leading-tight">
-                      {theme.heroRatingLabel || 'Reytinq'}
+                      {content.hero?.ratingLabel || theme.heroRatingLabel || 'Reytinq'}
                     </span>
                   </div>
 
@@ -2240,10 +2231,10 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                       <Clock size={16} className="text-[#914d00]" />
                     </div>
                     <span className="font-bold text-xs text-[#1c1b1b] leading-tight">
-                      {theme.heroBadgeFeature2 || '15 Dəqiqəyə'}
+                      {content.hero?.badge2Text || theme.heroBadgeFeature2 || '15 Dəqiqəyə'}
                     </span>
                     <span className="text-[10px] text-[#5b403f] font-medium mt-0.5 leading-tight">
-                      {theme.heroBadgeFeature2Desc || 'Süfrənizdə hazır'}
+                      {content.hero?.badge2Desc || theme.heroBadgeFeature2Desc || 'Süfrənizdə hazır'}
                     </span>
                   </div>
 
@@ -2256,10 +2247,10 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                       <Flame size={16} className="fill-[#b20028] text-[#b20028]" />
                     </div>
                     <span className="font-bold text-xs text-[#1c1b1b] leading-tight">
-                      {theme.heroBadgeFeature1 || '100% Təbii'}
+                      {content.hero?.badge1Text || theme.heroBadgeFeature1 || '100% Təbii'}
                     </span>
                     <span className="text-[10px] text-[#5b403f] font-medium mt-0.5 leading-tight">
-                      {theme.heroBadgeFeature1Desc || 'Pendir & Xəmir'}
+                      {content.hero?.badge1Desc || theme.heroBadgeFeature1Desc || 'Pendir & Xəmir'}
                     </span>
                   </div>
                 </div>
@@ -2295,37 +2286,131 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                 </p>
               </div>
 
-              {/* 8-item Interactive Gallery Grid */}
-              <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 lg:gap-6">
-                {effectiveGalleryItems.map((item) => (
-                  <div
-                    key={item.id}
-                    onClick={() =>
-                      setLightbox({
-                        open: true,
-                        src: item.url,
-                        caption: item.title || 'Pizza House',
-                      })
-                    }
-                    className="group relative h-72 rounded-2xl overflow-hidden cursor-pointer bg-[#eae7e7] shadow-md"
-                  >
-                    <img
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                      src={item.url}
-                      alt={item.title || 'Foto'}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#1c1b1b]/80 via-[#1c1b1b]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-5 text-white">
-                      <ZoomIn size={28} className="mb-1 text-[#fbbc0c]" />
-                      <p className="font-headline-sm text-headline-sm text-white">{item.title}</p>
-                      {item.description && (
-                        <p className="font-label-sm text-label-sm text-[#e5e2e1]">
-                          {item.description}
-                        </p>
-                      )}
+              {/* Interactive Gallery (Grid / Carousel / Masonry based on site-editor settings) */}
+              {(() => {
+                const layout = content.gallery?.layout || 'grid';
+                const cols = content.gallery?.columns || 4;
+                const canLightbox = content.gallery?.lightboxEnabled !== false;
+
+                const gridColsClass =
+                  cols === 2
+                    ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-2'
+                    : cols === 3
+                    ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
+                    : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4';
+
+                const handleItemClick = (item: any) => {
+                  if (canLightbox) {
+                    setLightbox({
+                      open: true,
+                      src: item.url,
+                      caption: item.title || 'Pizza House',
+                    });
+                  }
+                };
+
+                if (layout === 'carousel') {
+                  return (
+                    <div className="w-full relative group/carousel">
+                      <div
+                        id="pizza-gallery-carousel"
+                        className="w-full flex gap-4 sm:gap-6 overflow-x-auto pb-4 pt-1 snap-x snap-mandatory scroll-smooth no-scrollbar"
+                        style={{
+                          scrollbarWidth: 'none',
+                          msOverflowStyle: 'none',
+                          WebkitOverflowScrolling: 'touch',
+                        }}
+                      >
+                        {effectiveGalleryItems.map((item) => (
+                          <div
+                            key={item.id}
+                            onClick={() => handleItemClick(item)}
+                            className={`snap-center shrink-0 rounded-2xl overflow-hidden bg-[#eae7e7] shadow-md relative group ${
+                              canLightbox ? 'cursor-pointer' : 'cursor-default'
+                            }`}
+                            style={{
+                              width: cols === 2 ? 'clamp(280px, 45vw, 540px)' : 'clamp(260px, 30vw, 360px)',
+                              height: '320px',
+                            }}
+                          >
+                            <img
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                              src={item.url}
+                              alt={item.title || 'Foto'}
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-[#1c1b1b]/80 via-[#1c1b1b]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-5 text-white">
+                              {canLightbox && <ZoomIn size={28} className="mb-1 text-[#fbbc0c]" />}
+                              <p className="font-headline-sm text-headline-sm text-white font-bold">{item.title}</p>
+                              {item.description && (
+                                <p className="font-label-sm text-label-sm text-[#e5e2e1] mt-0.5">
+                                  {item.description}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Carousel Arrow Controls */}
+                      <button
+                        type="button"
+                        aria-label="Əvvəlki"
+                        onClick={() => {
+                          const el = document.getElementById('pizza-gallery-carousel');
+                          if (el) el.scrollBy({ left: -320, behavior: 'smooth' });
+                        }}
+                        className="hidden sm:flex absolute -left-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white shadow-lg items-center justify-center text-[#1c1b1b] hover:bg-[#d7263d] hover:text-white transition-all z-20 border border-[#f0eded]"
+                      >
+                        <ChevronRight size={22} className="rotate-180" />
+                      </button>
+                      <button
+                        type="button"
+                        aria-label="Növbəti"
+                        onClick={() => {
+                          const el = document.getElementById('pizza-gallery-carousel');
+                          if (el) el.scrollBy({ left: 320, behavior: 'smooth' });
+                        }}
+                        className="hidden sm:flex absolute -right-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white shadow-lg items-center justify-center text-[#1c1b1b] hover:bg-[#d7263d] hover:text-white transition-all z-20 border border-[#f0eded]"
+                      >
+                        <ChevronRight size={22} />
+                      </button>
                     </div>
+                  );
+                }
+
+                // Grid or Masonry layout
+                return (
+                  <div className={`w-full grid ${gridColsClass} gap-4 sm:gap-5 lg:gap-6`}>
+                    {effectiveGalleryItems.map((item, idx) => {
+                      const isMasonryTall = layout === 'masonry' && (idx % 3 === 0);
+                      return (
+                        <div
+                          key={item.id}
+                          onClick={() => handleItemClick(item)}
+                          className={`group relative rounded-2xl overflow-hidden bg-[#eae7e7] shadow-md ${
+                            isMasonryTall ? 'h-96' : 'h-72'
+                          } ${canLightbox ? 'cursor-pointer' : 'cursor-default'}`}
+                        >
+                          <img
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                            src={item.url}
+                            alt={item.title || 'Foto'}
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-[#1c1b1b]/80 via-[#1c1b1b]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-5 text-white">
+                            {canLightbox && <ZoomIn size={28} className="mb-1 text-[#fbbc0c]" />}
+                            <p className="font-headline-sm text-headline-sm text-white">{item.title}</p>
+                            {item.description && (
+                              <p className="font-label-sm text-label-sm text-[#e5e2e1]">
+                                {item.description}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
-                ))}
-              </div>
+                );
+              })()}
             </div>
           </section>
 
@@ -2561,7 +2646,7 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                   <div className="h-64 sm:h-72 rounded-3xl overflow-hidden bg-[#eae7e7] shadow-md">
                     <img
                       className="w-full h-full object-cover"
-                      src={theme.aboutImageUrl || ABOUT_COLLAGE_1}
+                      src={content.about?.image || theme.aboutImageUrl || ABOUT_COLLAGE_1}
                       alt="Usta xəmir açılışı"
                     />
                   </div>
@@ -2617,68 +2702,100 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
 
                 {/* 3 Feature Cards */}
                 <div className="w-full flex flex-col gap-4 pt-2">
-                  <div
-                    className="flex items-start gap-4 p-4 rounded-2xl shadow-sm hover:shadow-md transition-shadow border"
-                    style={{ backgroundColor: '#ffffff', borderColor: '#f0eded' }}
-                  >
-                    <div
-                      className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
-                      style={{ backgroundColor: '#ffdcc3', color: '#914d00' }}
-                    >
-                      <Sparkles size={24} />
-                    </div>
-                    <div>
-                      <h4 className="font-headline-sm text-headline-sm text-[#1c1b1b] font-bold">
-                        {theme.aboutFeature1Title || 'Təzə inqrediyentlər'}
-                      </h4>
-                      <p className="font-body-sm text-body-sm text-[#5b403f] mt-0.5 leading-relaxed">
-                        {theme.aboutFeature1Desc ||
-                          'Hər gün seçilmiş təbii tərəvəzlər və xalis pendir növləri.'}
-                      </p>
-                    </div>
-                  </div>
+                  {(() => {
+                    // content.about.features is always populated from resolver (with defaults)
+                    const featList = (content.about?.features && content.about.features.length > 0)
+                      ? content.about.features
+                      : [
+                          {
+                            title: theme.aboutFeature1Title || 'Təzə inqrediyentlər',
+                            description:
+                              theme.aboutFeature1Desc ||
+                              'Hər gün seçilmiş təbii tərəvəzlər və xalis pendir növləri.',
+                          },
+                          {
+                            title: theme.aboutFeature2Title || 'Sürətli xidmət',
+                            description:
+                              theme.aboutFeature2Desc ||
+                              'Sifarişiniz isti və xırçıltılı şəkildə masanıza operativ çatdırılır.',
+                          },
+                          {
+                            title: theme.aboutFeature3Title || 'Rahat atmosfer',
+                            description:
+                              theme.aboutFeature3Desc ||
+                              'Ailəniz və dostlarınızla xoş xatirələr yaratmaq üçün isti və səmimi məkan.',
+                          },
+                        ];
 
-                  <div
-                    className="flex items-start gap-4 p-4 rounded-2xl shadow-sm hover:shadow-md transition-shadow border"
-                    style={{ backgroundColor: '#ffffff', borderColor: '#f0eded' }}
-                  >
-                    <div
-                      className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
-                      style={{ backgroundColor: '#ffdad9', color: '#b20028' }}
-                    >
-                      <Clock size={24} />
-                    </div>
-                    <div>
-                      <h4 className="font-headline-sm text-headline-sm text-[#1c1b1b] font-bold">
-                        {theme.aboutFeature2Title || 'Sürətli xidmət'}
-                      </h4>
-                      <p className="font-body-sm text-body-sm text-[#5b403f] mt-0.5 leading-relaxed">
-                        {theme.aboutFeature2Desc ||
-                          'Sifarişiniz isti və xırçıltılı şəkildə masanıza operativ çatdırılır.'}
-                      </p>
-                    </div>
-                  </div>
+                    const iconColorStyles = [
+                      { bg: '#ffdcc3', color: '#914d00' },
+                      { bg: '#ffdad9', color: '#b20028' },
+                      { bg: '#ffdea0', color: '#715300' },
+                    ];
 
-                  <div
-                    className="flex items-start gap-4 p-4 rounded-2xl shadow-sm hover:shadow-md transition-shadow border"
-                    style={{ backgroundColor: '#ffffff', borderColor: '#f0eded' }}
-                  >
-                    <div
-                      className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
-                      style={{ backgroundColor: '#ffdea0', color: '#715300' }}
-                    >
-                      <Users size={24} />
-                    </div>
-                    <div>
-                      <h4 className="font-headline-sm text-headline-sm text-[#1c1b1b] font-bold">
-                        {theme.aboutFeature3Title || 'Rahat atmosfer'}
-                      </h4>
-                      <p className="font-body-sm text-body-sm text-[#5b403f] mt-0.5 leading-relaxed">
-                        {theme.aboutFeature3Desc ||
-                          'Ailəniz və dostlarınızla xoş xatirələr yaratmaq üçün isti və səmimi məkan.'}
-                      </p>
-                    </div>
-                  </div>
+                    const getFeatureIcon = (iconName?: string, idx: number = 0) => {
+                      const name = (iconName || '').toLowerCase();
+                      if (name.includes('clock') || name.includes('saat') || name.includes('sürət')) {
+                        return <Clock size={24} />;
+                      }
+                      if (name.includes('user') || name.includes('insan') || name.includes('ailə') || name.includes('dost')) {
+                        return <Users size={24} />;
+                      }
+                      if (name.includes('flame') || name.includes('alov') || name.includes('isti')) {
+                        return <Flame size={24} />;
+                      }
+                      if (name.includes('utensil') || name.includes('yemək') || name.includes('dad')) {
+                        return <UtensilsCrossed size={24} />;
+                      }
+                      if (name.includes('star') || name.includes('ulduz')) {
+                        return <Star size={24} />;
+                      }
+                      if (name.includes('heart') || name.includes('ürək') || name.includes('sevgi')) {
+                        return <Sparkles size={24} />;
+                      }
+                      if (name.includes('award') || name.includes('shield') || name.includes('keyfiyyət') || name.includes('zəmanət')) {
+                        return <CheckCircle size={24} />;
+                      }
+                      if (name.includes('sparkle') || name.includes('təzə')) {
+                        return <Sparkles size={24} />;
+                      }
+                      if (idx === 1) return <Clock size={24} />;
+                      if (idx === 2) return <Users size={24} />;
+                      return <Sparkles size={24} />;
+                    };
+
+                    return featList.map((feat: any, idx: number) => {
+                      const st = iconColorStyles[idx % iconColorStyles.length];
+                      return (
+                        <div
+                          key={idx}
+                          className="flex items-start gap-4 p-4 rounded-2xl shadow-sm hover:shadow-md transition-shadow border"
+                          style={{ backgroundColor: '#ffffff', borderColor: '#f0eded' }}
+                        >
+                          <div
+                            className="w-12 h-12 rounded-xl flex items-center justify-center"
+                            style={{
+                              backgroundColor: st.bg,
+                              color: st.color,
+                              flexShrink: 0,
+                              minWidth: '3rem',
+                              minHeight: '3rem',
+                            }}
+                          >
+                            {getFeatureIcon(feat.icon, idx)}
+                          </div>
+                          <div style={{ minWidth: 0 }}>
+                            <h4 className="font-headline-sm text-headline-sm text-[#1c1b1b] font-bold">
+                              {feat.title}
+                            </h4>
+                            <p className="font-body-sm text-body-sm text-[#5b403f] mt-0.5 leading-relaxed">
+                              {feat.description}
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    });
+                  })()}
                 </div>
               </div>
             </div>
@@ -2895,7 +3012,9 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                     >
                       <Calendar size={22} />
                       <span>
-                        {bookingLoading ? 'Göndərilir...' : 'Rezervasiyanı təsdiqlə'}
+                        {bookingLoading
+                          ? 'Göndərilir...'
+                          : content.reservation?.submitButtonText || 'Rezervasiyanı təsdiqlə'}
                       </span>
                     </button>
                   </form>
@@ -2909,8 +3028,8 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                       Rezervasiyanız qəbul edildi!
                     </h3>
                     <p className="font-body-md text-body-md text-[#dcd9d9] max-w-md mx-auto">
-                      Tezliklə menecerimiz sizinlə əlaqə saxlayaraq masanızı təsdiq edəcək. Sizi
-                      görməyə şad olarıq!
+                      {content.reservation?.successMessage ||
+                        'Tezliklə menecerimiz sizinlə əlaqə saxlayaraq masanızı təsdiq edəcək. Sizi görməyə şad olarıq!'}
                     </p>
                     <button
                       type="button"
@@ -2995,10 +3114,10 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                         Ünvan
                       </span>
                       <p className="font-bold text-sm sm:text-[15px] text-[#1c1b1b] leading-snug break-words mb-1">
-                        {organization.address || 'Bakı şəhəri, Nizami küçəsi 45'}
+                        {content.contact?.address || organization.address || 'Bakı şəhəri, Nizami küçəsi 45'}
                       </p>
                       <p className="text-xs text-[#5b403f] leading-relaxed">
-                        {organization.city || 'Fəvvarələr meydanı yaxınlığı'}
+                        {organization.city || 'Sarıoğulları market və 1 nömrəli məktəbin yanı'}
                       </p>
                     </div>
                   </div>
@@ -3034,9 +3153,9 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                       </span>
                       <a
                         className="font-bold text-sm sm:text-[15px] text-[#1c1b1b] hover:text-[#b20028] transition-colors leading-snug break-words mb-1"
-                        href={`tel:${organization.phone || '+994125980000'}`}
+                        href={`tel:${content.contact?.phone || organization.phone || '+994125980000'}`}
                       >
-                        {organization.phone || '+994 12 598 00 00'}
+                        {content.contact?.phone || organization.phone || '+994 12 598 00 00'}
                       </a>
                       <p className="text-xs text-[#5b403f] leading-relaxed">
                         {whatsapp?.phoneNumber
@@ -3077,9 +3196,9 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                       </span>
                       <a
                         className="font-bold text-sm sm:text-[15px] text-[#1c1b1b] hover:text-[#b20028] transition-colors leading-snug break-words mb-1"
-                        href={`mailto:${organization.email || 'info@pizzahouse.az'}`}
+                        href={`mailto:${content.contact?.email || organization.email || 'pizzahouse@onlive.az'}`}
                       >
-                        {organization.email || 'pizzahouse@onlive.az'}
+                        {content.contact?.email || organization.email || 'pizzahouse@onlive.az'}
                       </a>
                       <p className="text-xs text-[#5b403f] leading-relaxed">
                         Dərhal cavablandırılır
@@ -3201,71 +3320,93 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
               <div className="lg:col-span-6 flex flex-col">
                 <div className="bg-white rounded-3xl p-4 shadow-xl overflow-hidden relative border border-[#f0eded]">
                   {/* Map Component */}
-                  <div className="w-full h-80 rounded-2xl bg-[#eae7e7] relative overflow-hidden">
-                    {organization.mapEmbedUrl ? (
-                      <iframe
-                        src={organization.mapEmbedUrl}
-                        width="100%"
-                        height="100%"
-                        style={{ border: 0 }}
-                        allowFullScreen
-                        loading="lazy"
-                        referrerPolicy="no-referrer-when-downgrade"
-                        title="Xəritə"
-                      />
-                    ) : (
-                      <div
-                        className="absolute inset-0 bg-cover bg-center"
-                        style={{ backgroundImage: `url('${MAP_BG_IMG}')` }}
-                      >
-                        {/* Pin Marker */}
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
-                          <div className="w-10 h-10 rounded-full bg-[#d7263d] text-white flex items-center justify-center shadow-xl animate-bounce">
-                            <span className="text-xl">🍕</span>
-                          </div>
-                          <span className="px-2.5 py-0.5 rounded-md bg-[#1c1b1b] text-white font-label-sm text-label-sm mt-1 shadow whitespace-nowrap">
-                            {organization.name || 'Pizza House'}
-                          </span>
+                  {(() => {
+                    const rawMapUrl = (content.contact?.mapUrl || organization.mapEmbedUrl || organization.mapUrl || '').trim();
+                    const activeAddress = content.contact?.address || organization.address || 'Bakı şəhəri, Nizami küçəsi 45';
+
+                    // Parse iframe src if user pasted full <iframe ... src="..." />
+                    let embedSrc = '';
+                    if (rawMapUrl.includes('<iframe')) {
+                      const match = rawMapUrl.match(/src=["']([^"']+)["']/);
+                      if (match && match[1]) embedSrc = match[1];
+                    } else if (rawMapUrl.includes('google.com/maps/embed') || rawMapUrl.includes('output=embed')) {
+                      embedSrc = rawMapUrl;
+                    } else if (rawMapUrl) {
+                      // Standard fallback google maps embed URL that works without API keys
+                      embedSrc = `https://maps.google.com/maps?q=${encodeURIComponent(rawMapUrl.startsWith('http') ? activeAddress : rawMapUrl)}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+                    } else if (activeAddress) {
+                      embedSrc = `https://maps.google.com/maps?q=${encodeURIComponent(activeAddress)}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+                    }
+
+                    const openMapUrl =
+                      rawMapUrl.startsWith('http') && !rawMapUrl.includes('<iframe')
+                        ? rawMapUrl
+                        : `https://maps.google.com/?q=${encodeURIComponent(activeAddress)}`;
+
+                    return (
+                      <>
+                        <div className="w-full h-80 rounded-2xl bg-[#eae7e7] relative overflow-hidden">
+                          {embedSrc ? (
+                            <iframe
+                              src={embedSrc}
+                              width="100%"
+                              height="100%"
+                              style={{ border: 0 }}
+                              allowFullScreen
+                              loading="lazy"
+                              referrerPolicy="no-referrer-when-downgrade"
+                              title="Xəritə"
+                            />
+                          ) : (
+                            <div
+                              className="absolute inset-0 bg-cover bg-center"
+                              style={{ backgroundImage: `url('${MAP_BG_IMG}')` }}
+                            >
+                              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
+                                <div className="w-10 h-10 rounded-full bg-[#d7263d] text-white flex items-center justify-center shadow-xl animate-bounce">
+                                  <span className="text-xl">🍕</span>
+                                </div>
+                                <span className="px-2.5 py-0.5 rounded-md bg-[#1c1b1b] text-white font-label-sm text-label-sm mt-1 shadow whitespace-nowrap">
+                                  {organization.name || 'Pizza House'}
+                                </span>
+                              </div>
+                            </div>
+                          )}
                         </div>
-                      </div>
-                    )}
-                  </div>
 
-                  {/* Bottom Action Card Inside Map */}
-                  <div className="mt-4 p-4 rounded-2xl bg-[#f0eded] flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-xl overflow-hidden shrink-0 bg-[#eae7e7]">
-                        <img
-                          className="w-full h-full object-cover"
-                          src={MAP_STORE_THUMB}
-                          alt={organization.name || 'Pizza House Baku'}
-                        />
-                      </div>
-                      <div>
-                        <p className="font-headline-sm text-headline-sm text-[#1c1b1b] leading-tight">
-                          {organization.name || 'Pizza House Baku'}
-                        </p>
-                        <p className="font-body-sm text-body-sm text-[#5b403f]">
-                          {organization.address || 'Nizami küçəsi 45, Bakı'}
-                        </p>
-                      </div>
-                    </div>
+                        {/* Bottom Action Card Inside Map */}
+                        <div className="mt-4 p-4 rounded-2xl bg-[#f0eded] flex flex-col sm:flex-row items-center justify-between gap-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-12 h-12 rounded-xl overflow-hidden shrink-0 bg-[#eae7e7]">
+                              <img
+                                className="w-full h-full object-cover"
+                                src={MAP_STORE_THUMB}
+                                alt={organization.name || 'Pizza House'}
+                              />
+                            </div>
+                            <div>
+                              <p className="font-headline-sm text-headline-sm text-[#1c1b1b] leading-tight">
+                                {organization.name || 'Pizza House'}
+                              </p>
+                              <p className="font-body-sm text-body-sm text-[#5b403f] line-clamp-1">
+                                {activeAddress}
+                              </p>
+                            </div>
+                          </div>
 
-                    <a
-                      className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#d7263d] hover:bg-[#b20028] text-white font-label-md text-label-md transition-all shadow-sm"
-                      href={
-                        organization.mapUrl ||
-                        `https://maps.google.com/?q=${encodeURIComponent(
-                          organization.address || 'Nizami street 45, Baku, Azerbaijan'
-                        )}`
-                      }
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <Navigation size={17} />
-                      <span>Xəritədə aç</span>
-                    </a>
-                  </div>
+                          <a
+                            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#d7263d] hover:bg-[#b20028] text-white font-label-md text-label-md transition-all shadow-sm"
+                            href={openMapUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <Navigation size={17} />
+                            <span>Xəritədə aç</span>
+                          </a>
+                        </div>
+                      </>
+                    );
+                  })()}
                 </div>
               </div>
             </div>

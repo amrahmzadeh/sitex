@@ -138,9 +138,7 @@ const getSiteData = cache(async (slug: string, isPreview: boolean = false): Prom
       if (!siteContentMap[sc.pageKey]) siteContentMap[sc.pageKey] = {};
       const draft = isNotEmptyObj(sc.draftContent) ? sc.draftContent : null;
       const pub = isNotEmptyObj(sc.publishedContent) ? sc.publishedContent : null;
-      const doc = isPreview
-        ? (draft || pub || {})
-        : (pub || draft || {});
+      const doc = draft || pub || {};
       siteContentMap[sc.pageKey][sc.blockKey] = doc;
     }
 

@@ -1,8 +1,9 @@
 // GET  /api/organizations/[orgId]/site-content  → draft content map
-// PUT  /api/organizations/[orgId]/site-content  → update draft
+// PUT  /api/organizations/[orgId]/site-content  → update draft & published
 // DELETE /api/organizations/[orgId]/site-content → revert block to default
 
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/db';
@@ -28,14 +29,14 @@ export async function GET(
 
   const rows = await prisma.siteContent.findMany({
     where: { organizationId: orgId },
-    select: { pageKey: true, blockKey: true, draftContent: true, version: true },
+    select: { pageKey: true, blockKey: true, draftContent: true, publishedContent: true, version: true },
   });
 
-  // pageKey → blockKey → ContentDoc
+  // pageKey → blockKey → ContentDoc (draft prioriteti ilə)
   const content: Record<string, Record<string, unknown>> = {};
   for (const row of rows) {
     if (!content[row.pageKey]) content[row.pageKey] = {};
-    content[row.pageKey][row.blockKey] = row.draftContent;
+    content[row.pageKey][row.blockKey] = row.draftContent || row.publishedContent || {};
   }
 
   return NextResponse.json({ content });
@@ -57,21 +58,41 @@ export async function PUT(
     return NextResponse.json({ error: 'Yanlış format' }, { status: 400 });
   }
 
-  // Upsert each block
+  // Upsert each block into draftContent AND publishedContent for immediate site updates
   const ops = [];
   for (const [pageKey, blocks] of Object.entries(contentMap)) {
     for (const [blockKey, doc] of Object.entries(blocks)) {
       ops.push(
         prisma.siteContent.upsert({
           where: { organizationId_pageKey_blockKey: { organizationId: orgId, pageKey, blockKey } },
-          create: { organizationId: orgId, pageKey, blockKey, draftContent: doc as object },
-          update: { draftContent: doc as object },
+          create: {
+            organizationId: orgId,
+            pageKey,
+            blockKey,
+            draftContent: doc as object,
+            publishedContent: doc as object,
+          },
+          update: {
+            draftContent: doc as object,
+            publishedContent: doc as object,
+          },
         })
       );
     }
   }
 
   await prisma.$transaction(ops);
+
+  // Clear cache for the live site
+  const org = await prisma.organization.findUnique({
+    where: { id: orgId },
+    select: { slug: true },
+  });
+  if (org?.slug) {
+    revalidatePath(`/site/${org.slug}`);
+    revalidatePath(`/`);
+  }
+
   return NextResponse.json({ success: true });
 }
 
@@ -94,6 +115,14 @@ export async function DELETE(
   await prisma.siteContent.deleteMany({
     where: { organizationId: orgId, pageKey, blockKey },
   });
+
+  const org = await prisma.organization.findUnique({
+    where: { id: orgId },
+    select: { slug: true },
+  });
+  if (org?.slug) {
+    revalidatePath(`/site/${org.slug}`);
+  }
 
   return NextResponse.json({ success: true });
 }

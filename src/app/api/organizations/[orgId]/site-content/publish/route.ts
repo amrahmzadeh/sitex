@@ -2,6 +2,7 @@
 // draft → published, version++, history snapshot
 
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/db';
@@ -58,6 +59,15 @@ export async function POST(
   );
 
   await prisma.$transaction([...historyInserts, ...publishUpdates]);
+
+  const org = await prisma.organization.findUnique({
+    where: { id: orgId },
+    select: { slug: true },
+  });
+  if (org?.slug) {
+    revalidatePath(`/site/${org.slug}`);
+    revalidatePath('/');
+  }
 
   return NextResponse.json({ success: true, published: rows.length });
 }
