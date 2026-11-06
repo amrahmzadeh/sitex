@@ -481,11 +481,16 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
 .pizza-house-root .absolute { position: absolute !important; }
 .pizza-house-root .fixed { position: fixed !important; }
 .pizza-house-root .static { position: static !important; }
-.pizza-house-root .inset-0 { inset: 0 !important; }
+.pizza-house-root .inset-0 { inset: 0 !important; top: 0 !important; right: 0 !important; bottom: 0 !important; left: 0 !important; }
 .pizza-house-root .top-0 { top: 0 !important; }
 .pizza-house-root .right-0 { right: 0 !important; }
 .pizza-house-root .bottom-0 { bottom: 0 !important; }
 .pizza-house-root .left-0 { left: 0 !important; }
+.pizza-house-root .z-10 { z-index: 10 !important; }
+.pizza-house-root .z-20 { z-index: 20 !important; }
+.pizza-house-root .z-40 { z-index: 40 !important; }
+.pizza-house-root .z-50 { z-index: 50 !important; }
+.pizza-house-root .z-\\[100\\] { z-index: 100 !important; }
 .pizza-house-root .hidden { display: none !important; }
 .pizza-house-root .block { display: block !important; }
 .pizza-house-root .inline-block { display: inline-block !important; }
@@ -1574,6 +1579,15 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
 .pizza-house-root .to-transparent { --tw-gradient-to: transparent !important; }
 
 /* Animation */
+/* Floating cart & lightbox keyframes */
+@keyframes drawerFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes drawerSlideRight {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
 @keyframes bounceSlow {
   0%, 100% { transform: translateY(-5%); animation-timing-function: cubic-bezier(0.8,0,1,1); }
   50% { transform: none; animation-timing-function: cubic-bezier(0,0,0.2,1); }
@@ -2999,494 +3013,6 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
             </div>
           </section>
 
-          {/* Cart Drawer */}
-          {isCartOpen && (
-            <div
-              className="fixed inset-0 z-[100] flex justify-end"
-              style={{
-                backgroundColor: 'rgba(28, 27, 27, 0.45)',
-                backdropFilter: 'blur(6px)',
-                WebkitBackdropFilter: 'blur(6px)',
-                animation: 'fadeIn 0.25s ease-out',
-              }}
-              onClick={() => setIsCartOpen(false)}
-            >
-              <div
-                className="relative h-full w-full flex flex-col"
-                style={{
-                  maxWidth: 440,
-                  backgroundColor: '#ffffff',
-                  boxShadow: '-12px 0 40px rgba(0, 0, 0, 0.16)',
-                  animation: 'slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
-                }}
-                onClick={(e) => e.stopPropagation()}
-              >
-                {/* Header */}
-                <div
-                  style={{
-                    padding: '22px 24px',
-                    borderBottom: '1px solid #f0eded',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    backgroundColor: '#ffffff',
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <div
-                      style={{
-                        width: 42,
-                        height: 42,
-                        borderRadius: 14,
-                        backgroundColor: '#ffdad9',
-                        color: '#d7263d',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      <ShoppingCart size={22} />
-                    </div>
-                    <div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <h3
-                          style={{
-                            fontFamily: `"${headingFont}", sans-serif`,
-                            fontSize: 19,
-                            fontWeight: 800,
-                            color: '#1c1b1b',
-                            margin: 0,
-                            letterSpacing: '-0.02em',
-                          }}
-                        >
-                          Sifariş Səbəti
-                        </h3>
-                        {cartCount > 0 && (
-                          <span
-                            style={{
-                              background: '#d7263d',
-                              color: '#ffffff',
-                              fontSize: 11,
-                              fontWeight: 800,
-                              padding: '2px 8px',
-                              borderRadius: 9999,
-                            }}
-                          >
-                            {cartCount}
-                          </span>
-                        )}
-                      </div>
-                      <p style={{ margin: 0, fontSize: 12, color: '#5b403f', marginTop: 2 }}>
-                        {organization.name || 'Pizza House'}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    {cartEntries.length > 0 && (
-                      <button
-                        type="button"
-                        onClick={clearCart}
-                        title="Səbəti təmizlə"
-                        style={{
-                          border: 'none',
-                          background: '#fff0f0',
-                          color: '#d7263d',
-                          fontSize: 12,
-                          fontWeight: 700,
-                          cursor: 'pointer',
-                          padding: '6px 12px',
-                          borderRadius: 8,
-                          transition: 'background 0.2s',
-                        }}
-                      >
-                        Təmizlə
-                      </button>
-                    )}
-                    <button
-                      type="button"
-                      onClick={() => setIsCartOpen(false)}
-                      style={{
-                        border: 'none',
-                        background: '#f5f3f2',
-                        borderRadius: '50%',
-                        width: 36,
-                        height: 36,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        cursor: 'pointer',
-                        color: '#1c1b1b',
-                        transition: 'transform 0.15s, background 0.15s',
-                      }}
-                    >
-                      <X size={18} />
-                    </button>
-                  </div>
-                </div>
-
-                {/* Table badge if applicable */}
-                {table && (
-                  <div
-                    style={{
-                      margin: '14px 20px 0',
-                      padding: '10px 16px',
-                      borderRadius: 14,
-                      backgroundColor: '#ffdcc3',
-                      border: '1px solid #ffc299',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                    }}
-                  >
-                    <span style={{ fontSize: 13, fontWeight: 700, color: '#2f1500', display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <span>📍</span>
-                      <span>Masa: {table}</span>
-                    </span>
-                    <span style={{ fontSize: 11, color: '#914d00', fontWeight: 600 }}>Masaya çatdırılma</span>
-                  </div>
-                )}
-
-                {/* Content: Empty or List */}
-                {cartEntries.length === 0 ? (
-                  <div
-                    style={{
-                      flex: 1,
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: 16,
-                      color: '#5b403f',
-                      padding: '32px',
-                      textAlign: 'center',
-                    }}
-                  >
-                    <div
-                      style={{
-                        width: 80,
-                        height: 80,
-                        borderRadius: '50%',
-                        backgroundColor: '#fcf9f8',
-                        border: '2px dashed #e5e2e1',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: '#8f6a00',
-                      }}
-                    >
-                      <ShoppingCart size={36} style={{ opacity: 0.5 }} />
-                    </div>
-                    <div>
-                      <p style={{ fontSize: 18, fontWeight: 800, color: '#1c1b1b', margin: '0 0 6px 0' }}>
-                        Səbətiniz boşdur
-                      </p>
-                      <p style={{ fontSize: 13, color: '#5b403f', margin: 0, maxWidth: 240, lineHeight: 1.5 }}>
-                        Ləzzətli pizzalarımızdan və təamlarımızdan menyudan seçib əlavə edin.
-                      </p>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setIsCartOpen(false);
-                        scrollTo('menyu');
-                      }}
-                      style={{
-                        background: '#d7263d',
-                        color: '#fff',
-                        border: 'none',
-                        borderRadius: 14,
-                        padding: '12px 28px',
-                        fontWeight: 700,
-                        fontSize: 14,
-                        cursor: 'pointer',
-                        boxShadow: '0 4px 14px rgba(215, 38, 61, 0.28)',
-                        marginTop: 8,
-                      }}
-                    >
-                      Menyuya bax
-                    </button>
-                  </div>
-                ) : (
-                  <>
-                    {/* Items list */}
-                    <div
-                      style={{
-                        flex: 1,
-                        overflowY: 'auto',
-                        padding: '16px 20px',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: 12,
-                        backgroundColor: '#fcf9f8',
-                      }}
-                    >
-                      {cartEntries.map((entry) => (
-                        <div
-                          key={entry.id}
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 14,
-                            padding: '14px',
-                            backgroundColor: '#ffffff',
-                            borderRadius: 18,
-                            border: '1px solid #f0eded',
-                            boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
-                            transition: 'all 0.2s',
-                          }}
-                        >
-                          {entry.image ? (
-                            <img
-                              src={entry.image}
-                              alt={entry.name}
-                              style={{
-                                width: 62,
-                                height: 62,
-                                borderRadius: 12,
-                                objectFit: 'cover',
-                                flexShrink: 0,
-                                backgroundColor: '#f0eded',
-                              }}
-                            />
-                          ) : (
-                            <div
-                              style={{
-                                width: 62,
-                                height: 62,
-                                borderRadius: 12,
-                                backgroundColor: '#ffdcc3',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                fontSize: 24,
-                                flexShrink: 0,
-                              }}
-                            >
-                              🍕
-                            </div>
-                          )}
-                          <div style={{ flex: 1, minWidth: 0 }}>
-                            <p
-                              style={{
-                                fontWeight: 800,
-                                color: '#1c1b1b',
-                                fontSize: 15,
-                                margin: 0,
-                                marginBottom: 4,
-                                whiteSpace: 'nowrap',
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                              }}
-                            >
-                              {entry.name}
-                            </p>
-                            <p style={{ color: '#d7263d', fontSize: 14, fontWeight: 700, margin: 0 }}>
-                              {entry.price.toFixed(2)} {organization.currency || 'AZN'}
-                            </p>
-                          </div>
-                          <div
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: 6,
-                              backgroundColor: '#fcf9f8',
-                              padding: '4px 6px',
-                              borderRadius: 12,
-                              border: '1px solid #f0eded',
-                            }}
-                          >
-                            <button
-                              type="button"
-                              onClick={() => updateCartQuantity(entry.id, -1)}
-                              title="Azalt"
-                              style={{
-                                width: 26,
-                                height: 26,
-                                borderRadius: 8,
-                                border: 'none',
-                                background: '#ffffff',
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
-                              }}
-                            >
-                              <Minus size={13} color="#5b403f" />
-                            </button>
-                            <span
-                              style={{
-                                fontWeight: 800,
-                                color: '#1c1b1b',
-                                minWidth: 22,
-                                textAlign: 'center',
-                                fontSize: 13,
-                              }}
-                            >
-                              {entry.quantity}
-                            </span>
-                            <button
-                              type="button"
-                              onClick={() => updateCartQuantity(entry.id, 1)}
-                              title="Artır"
-                              style={{
-                                width: 26,
-                                height: 26,
-                                borderRadius: 8,
-                                border: 'none',
-                                background: '#d7263d',
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                boxShadow: '0 2px 6px rgba(215, 38, 61, 0.3)',
-                              }}
-                            >
-                              <Plus size={13} color="#ffffff" />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => removeFromCart(entry.id)}
-                              title="Sil"
-                              style={{
-                                width: 26,
-                                height: 26,
-                                borderRadius: 8,
-                                border: 'none',
-                                background: 'transparent',
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                marginLeft: 2,
-                              }}
-                            >
-                              <Trash2 size={14} color="#F87171" />
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* Note input */}
-                    <div
-                      style={{
-                        padding: '12px 20px 8px',
-                        backgroundColor: '#ffffff',
-                        borderTop: '1px solid #f0eded',
-                      }}
-                    >
-                      <label
-                        style={{
-                          display: 'block',
-                          fontSize: 12,
-                          fontWeight: 700,
-                          color: '#5b403f',
-                          marginBottom: 6,
-                          textTransform: 'uppercase',
-                          letterSpacing: '0.05em',
-                        }}
-                      >
-                        Sifariş üçün qeyd
-                      </label>
-                      <textarea
-                        value={cartNote}
-                        onChange={(e) => setCartNote(e.target.value)}
-                        placeholder="Məsələn: Acılı olmasın, sousu bol olsun..."
-                        rows={2}
-                        style={{
-                          width: '100%',
-                          padding: '10px 14px',
-                          borderRadius: 12,
-                          border: '1px solid #e5e2e1',
-                          fontSize: 13,
-                          color: '#1c1b1b',
-                          background: '#fcf9f8',
-                          resize: 'none',
-                          outline: 'none',
-                          boxSizing: 'border-box',
-                          fontFamily: 'inherit',
-                        }}
-                      />
-                    </div>
-
-                    {/* Total + Checkout */}
-                    <div
-                      style={{
-                        padding: '16px 20px 24px',
-                        borderTop: '1px solid #f0eded',
-                        backgroundColor: '#ffffff',
-                      }}
-                    >
-                      <div
-                        style={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'baseline',
-                          marginBottom: 14,
-                        }}
-                      >
-                        <span style={{ fontSize: 15, fontWeight: 700, color: '#5b403f' }}>
-                          Məhsul sayı: <b style={{ color: '#1c1b1b' }}>{cartCount} ədəd</b>
-                        </span>
-                        <div style={{ textAlign: 'right' }}>
-                          <span style={{ fontSize: 12, color: '#5b403f', display: 'block' }}>Yekun məbləğ</span>
-                          <span style={{ fontSize: 22, fontWeight: 900, color: '#d7263d', letterSpacing: '-0.02em' }}>
-                            {cartTotalSum.toFixed(2)} {organization.currency || 'AZN'}
-                          </span>
-                        </div>
-                      </div>
-
-                      {whatsapp?.phoneNumber && !isOrdersPaused ? (
-                        <button
-                          type="button"
-                          onClick={handleCheckoutWhatsApp}
-                          style={{
-                            width: '100%',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: 10,
-                            padding: '15px',
-                            borderRadius: 16,
-                            border: 'none',
-                            backgroundColor: '#25D366',
-                            color: '#ffffff',
-                            fontWeight: 800,
-                            fontSize: 16,
-                            cursor: 'pointer',
-                            boxShadow: '0 6px 20px rgba(37,211,102,0.35)',
-                            transition: 'transform 0.15s, box-shadow 0.15s',
-                          }}
-                        >
-                          <MessageCircle size={22} />
-                          <span>WhatsApp ilə sifarişi tamamla</span>
-                        </button>
-                      ) : (
-                        <div
-                          style={{
-                            textAlign: 'center',
-                            color: '#5b403f',
-                            fontSize: 14,
-                            padding: '12px',
-                            background: '#f0eded',
-                            borderRadius: 14,
-                            fontWeight: 600,
-                          }}
-                        >
-                          {isOrdersPaused
-                            ? 'Sifarişlər hazırda bağlıdır'
-                            : 'WhatsApp konfiqurasiya edilməyib'}
-                        </div>
-                      )}
-                    </div>
-                  </>
-                )}
-              </div>
-            </div>
-          )}
-
           {/* FLOATING ACTION: Bottom Right WhatsApp Pill with Pulse */}
           {whatsapp?.phoneNumber && (
             <aside aria-label="Sürətli Əlaqə" className="fixed bottom-6 right-6 z-40">
@@ -3711,6 +3237,514 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
           </div>
         </div>
       </footer>
+
+      {/* Cart Drawer - Placed at root level outside <main> & <header> to avoid layout shifts */}
+      {isCartOpen && (
+        <div
+          className="fixed inset-0 z-[100] flex justify-end"
+          style={{
+            position: 'fixed',
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            zIndex: 9999,
+            backgroundColor: 'rgba(28, 27, 27, 0.5)',
+            backdropFilter: 'blur(6px)',
+            WebkitBackdropFilter: 'blur(6px)',
+            animation: 'drawerFadeIn 0.25s ease-out',
+            display: 'flex',
+            justifyContent: 'flex-end',
+          }}
+          onClick={() => setIsCartOpen(false)}
+        >
+          <div
+            className="relative h-full w-full flex flex-col"
+            style={{
+              position: 'relative',
+              height: '100%',
+              width: '100%',
+              maxWidth: 440,
+              backgroundColor: '#ffffff',
+              boxShadow: '-12px 0 40px rgba(0, 0, 0, 0.2)',
+              animation: 'drawerSlideRight 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div
+              style={{
+                padding: '22px 24px',
+                borderBottom: '1px solid #f0eded',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                backgroundColor: '#ffffff',
+                flexShrink: 0,
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <div
+                  style={{
+                    width: 42,
+                    height: 42,
+                    borderRadius: 14,
+                    backgroundColor: '#ffdad9',
+                    color: '#d7263d',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <ShoppingCart size={22} />
+                </div>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <h3
+                      style={{
+                        fontFamily: `"${headingFont}", sans-serif`,
+                        fontSize: 19,
+                        fontWeight: 800,
+                        color: '#1c1b1b',
+                        margin: 0,
+                        letterSpacing: '-0.02em',
+                      }}
+                    >
+                      Sifariş Səbəti
+                    </h3>
+                    {cartCount > 0 && (
+                      <span
+                        style={{
+                          background: '#d7263d',
+                          color: '#ffffff',
+                          fontSize: 11,
+                          fontWeight: 800,
+                          padding: '2px 8px',
+                          borderRadius: 9999,
+                        }}
+                      >
+                        {cartCount}
+                      </span>
+                    )}
+                  </div>
+                  <p style={{ margin: 0, fontSize: 12, color: '#5b403f', marginTop: 2 }}>
+                    {organization.name || 'Pizza House'}
+                  </p>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                {cartEntries.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={clearCart}
+                    title="Səbəti təmizlə"
+                    style={{
+                      border: 'none',
+                      background: '#fff0f0',
+                      color: '#d7263d',
+                      fontSize: 12,
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      padding: '6px 12px',
+                      borderRadius: 8,
+                      transition: 'background 0.2s',
+                    }}
+                  >
+                    Təmizlə
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setIsCartOpen(false)}
+                  style={{
+                    border: 'none',
+                    background: '#f5f3f2',
+                    borderRadius: '50%',
+                    width: 36,
+                    height: 36,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    color: '#1c1b1b',
+                    transition: 'transform 0.15s, background 0.15s',
+                  }}
+                >
+                  <X size={18} />
+                </button>
+              </div>
+            </div>
+
+            {/* Table badge if applicable */}
+            {table && (
+              <div
+                style={{
+                  margin: '14px 20px 0',
+                  padding: '10px 16px',
+                  borderRadius: 14,
+                  backgroundColor: '#ffdcc3',
+                  border: '1px solid #ffc299',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  flexShrink: 0,
+                }}
+              >
+                <span style={{ fontSize: 13, fontWeight: 700, color: '#2f1500', display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span>📍</span>
+                  <span>Masa: {table}</span>
+                </span>
+                <span style={{ fontSize: 11, color: '#914d00', fontWeight: 600 }}>Masaya çatdırılma</span>
+              </div>
+            )}
+
+            {/* Content: Empty or List */}
+            {cartEntries.length === 0 ? (
+              <div
+                style={{
+                  flex: 1,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 16,
+                  color: '#5b403f',
+                  padding: '32px',
+                  textAlign: 'center',
+                }}
+              >
+                <div
+                  style={{
+                    width: 80,
+                    height: 80,
+                    borderRadius: '50%',
+                    backgroundColor: '#fcf9f8',
+                    border: '2px dashed #e5e2e1',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#8f6a00',
+                  }}
+                >
+                  <ShoppingCart size={36} style={{ opacity: 0.5 }} />
+                </div>
+                <div>
+                  <p style={{ fontSize: 18, fontWeight: 800, color: '#1c1b1b', margin: '0 0 6px 0' }}>
+                    Səbətiniz boşdur
+                  </p>
+                  <p style={{ fontSize: 13, color: '#5b403f', margin: 0, maxWidth: 240, lineHeight: 1.5 }}>
+                    Ləzzətli pizzalarımızdan və təamlarımızdan menyudan seçib əlavə edin.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsCartOpen(false);
+                    scrollTo('menyu');
+                  }}
+                  style={{
+                    background: '#d7263d',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: 14,
+                    padding: '12px 28px',
+                    fontWeight: 700,
+                    fontSize: 14,
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 14px rgba(215, 38, 61, 0.28)',
+                    marginTop: 8,
+                  }}
+                >
+                  Menyuya bax
+                </button>
+              </div>
+            ) : (
+              <>
+                {/* Items list */}
+                <div
+                  style={{
+                    flex: 1,
+                    overflowY: 'auto',
+                    padding: '16px 20px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 12,
+                    backgroundColor: '#fcf9f8',
+                  }}
+                >
+                  {cartEntries.map((entry) => (
+                    <div
+                      key={entry.id}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 14,
+                        padding: '14px',
+                        backgroundColor: '#ffffff',
+                        borderRadius: 18,
+                        border: '1px solid #f0eded',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
+                        transition: 'all 0.2s',
+                        flexShrink: 0,
+                      }}
+                    >
+                      {entry.image ? (
+                        <img
+                          src={entry.image}
+                          alt={entry.name}
+                          style={{
+                            width: 62,
+                            height: 62,
+                            borderRadius: 12,
+                            objectFit: 'cover',
+                            flexShrink: 0,
+                            backgroundColor: '#f0eded',
+                          }}
+                        />
+                      ) : (
+                        <div
+                          style={{
+                            width: 62,
+                            height: 62,
+                            borderRadius: 12,
+                            backgroundColor: '#ffdcc3',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: 24,
+                            flexShrink: 0,
+                          }}
+                        >
+                          🍕
+                        </div>
+                      )}
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <p
+                          style={{
+                            fontWeight: 800,
+                            color: '#1c1b1b',
+                            fontSize: 15,
+                            margin: 0,
+                            marginBottom: 4,
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                          }}
+                        >
+                          {entry.name}
+                        </p>
+                        <p style={{ color: '#d7263d', fontSize: 14, fontWeight: 700, margin: 0 }}>
+                          {entry.price.toFixed(2)} {organization.currency || 'AZN'}
+                        </p>
+                      </div>
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 6,
+                          backgroundColor: '#fcf9f8',
+                          padding: '4px 6px',
+                          borderRadius: 12,
+                          border: '1px solid #f0eded',
+                        }}
+                      >
+                        <button
+                          type="button"
+                          onClick={() => updateCartQuantity(entry.id, -1)}
+                          title="Azalt"
+                          style={{
+                            width: 26,
+                            height: 26,
+                            borderRadius: 8,
+                            border: 'none',
+                            background: '#ffffff',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+                          }}
+                        >
+                          <Minus size={13} color="#5b403f" />
+                        </button>
+                        <span
+                          style={{
+                            fontWeight: 800,
+                            color: '#1c1b1b',
+                            minWidth: 22,
+                            textAlign: 'center',
+                            fontSize: 13,
+                          }}
+                        >
+                          {entry.quantity}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => updateCartQuantity(entry.id, 1)}
+                          title="Artır"
+                          style={{
+                            width: 26,
+                            height: 26,
+                            borderRadius: 8,
+                            border: 'none',
+                            background: '#d7263d',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            boxShadow: '0 2px 6px rgba(215, 38, 61, 0.3)',
+                          }}
+                        >
+                          <Plus size={13} color="#ffffff" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => removeFromCart(entry.id)}
+                          title="Sil"
+                          style={{
+                            width: 26,
+                            height: 26,
+                            borderRadius: 8,
+                            border: 'none',
+                            background: 'transparent',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            marginLeft: 2,
+                          }}
+                        >
+                          <Trash2 size={14} color="#F87171" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Note input */}
+                <div
+                  style={{
+                    padding: '12px 20px 8px',
+                    backgroundColor: '#ffffff',
+                    borderTop: '1px solid #f0eded',
+                    flexShrink: 0,
+                  }}
+                >
+                  <label
+                    style={{
+                      display: 'block',
+                      fontSize: 12,
+                      fontWeight: 700,
+                      color: '#5b403f',
+                      marginBottom: 6,
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.05em',
+                    }}
+                  >
+                    Sifariş üçün qeyd
+                  </label>
+                  <textarea
+                    value={cartNote}
+                    onChange={(e) => setCartNote(e.target.value)}
+                    placeholder="Məsələn: Acılı olmasın, sousu bol olsun..."
+                    rows={2}
+                    style={{
+                      width: '100%',
+                      padding: '10px 14px',
+                      borderRadius: 12,
+                      border: '1px solid #e5e2e1',
+                      fontSize: 13,
+                      color: '#1c1b1b',
+                      background: '#fcf9f8',
+                      resize: 'none',
+                      outline: 'none',
+                      boxSizing: 'border-box',
+                      fontFamily: 'inherit',
+                    }}
+                  />
+                </div>
+
+                {/* Total + Checkout */}
+                <div
+                  style={{
+                    padding: '16px 20px 24px',
+                    borderTop: '1px solid #f0eded',
+                    backgroundColor: '#ffffff',
+                    flexShrink: 0,
+                  }}
+                >
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'baseline',
+                      marginBottom: 14,
+                    }}
+                  >
+                    <span style={{ fontSize: 15, fontWeight: 700, color: '#5b403f' }}>
+                      Məhsul sayı: <b style={{ color: '#1c1b1b' }}>{cartCount} ədəd</b>
+                    </span>
+                    <div style={{ textAlign: 'right' }}>
+                      <span style={{ fontSize: 12, color: '#5b403f', display: 'block' }}>Yekun məbləğ</span>
+                      <span style={{ fontSize: 22, fontWeight: 900, color: '#d7263d', letterSpacing: '-0.02em' }}>
+                        {cartTotalSum.toFixed(2)} {organization.currency || 'AZN'}
+                      </span>
+                    </div>
+                  </div>
+
+                  {whatsapp?.phoneNumber && !isOrdersPaused ? (
+                    <button
+                      type="button"
+                      onClick={handleCheckoutWhatsApp}
+                      style={{
+                        width: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 10,
+                        padding: '15px',
+                        borderRadius: 16,
+                        border: 'none',
+                        backgroundColor: '#25D366',
+                        color: '#ffffff',
+                        fontWeight: 800,
+                        fontSize: 16,
+                        cursor: 'pointer',
+                        boxShadow: '0 6px 20px rgba(37,211,102,0.35)',
+                        transition: 'transform 0.15s, box-shadow 0.15s',
+                      }}
+                    >
+                      <MessageCircle size={22} />
+                      <span>WhatsApp ilə sifarişi tamamla</span>
+                    </button>
+                  ) : (
+                    <div
+                      style={{
+                        textAlign: 'center',
+                        color: '#5b403f',
+                        fontSize: 14,
+                        padding: '12px',
+                        background: '#f0eded',
+                        borderRadius: 14,
+                        fontWeight: 600,
+                      }}
+                    >
+                      {isOrdersPaused
+                        ? 'Sifarişlər hazırda bağlıdır'
+                        : 'WhatsApp konfiqurasiya edilməyib'}
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
