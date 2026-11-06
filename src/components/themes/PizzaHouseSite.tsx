@@ -477,6 +477,15 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
       <link rel="stylesheet" href={fontsUrl} />
       <style dangerouslySetInnerHTML={{ __html: `
 /* Layout & Responsive utilities scoped to .pizza-house-root */
+.pizza-house-root .relative { position: relative !important; }
+.pizza-house-root .absolute { position: absolute !important; }
+.pizza-house-root .fixed { position: fixed !important; }
+.pizza-house-root .static { position: static !important; }
+.pizza-house-root .inset-0 { inset: 0 !important; }
+.pizza-house-root .top-0 { top: 0 !important; }
+.pizza-house-root .right-0 { right: 0 !important; }
+.pizza-house-root .bottom-0 { bottom: 0 !important; }
+.pizza-house-root .left-0 { left: 0 !important; }
 .pizza-house-root .hidden { display: none !important; }
 .pizza-house-root .block { display: block !important; }
 .pizza-house-root .inline-block { display: inline-block !important; }
@@ -1675,30 +1684,40 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
             <button
               type="button"
               onClick={() => setIsCartOpen(true)}
-              className="relative flex items-center justify-center p-2 rounded-full cursor-pointer transition-all hover:scale-105 active:scale-95 shadow-sm"
+              className="relative flex items-center justify-center rounded-full cursor-pointer transition-all hover:scale-105 active:scale-95 shadow-sm"
               style={{
+                position: 'relative',
                 backgroundColor: cartCount > 0 ? '#d7263d' : 'rgba(255, 255, 255, 0.85)',
                 color: cartCount > 0 ? '#ffffff' : '#1c1b1b',
                 border: cartCount > 0 ? 'none' : '1px solid #f0eded',
-                width: 42,
-                height: 42,
+                width: 44,
+                height: 44,
                 boxShadow: cartCount > 0 ? '0 4px 14px rgba(215, 38, 61, 0.35)' : '0 2px 8px rgba(0,0,0,0.04)',
               }}
               title={cartCount > 0 ? `${cartCount} məhsul səbətdədir` : 'Səbət boşdur'}
             >
-              <ShoppingCart size={20} />
+              <ShoppingCart size={21} />
               {cartCount > 0 && (
                 <span
-                  className="absolute -top-1.5 -right-1.5 font-bold flex items-center justify-center shadow-md animate-scale-in"
                   style={{
+                    position: 'absolute',
+                    top: -4,
+                    right: -4,
                     backgroundColor: '#ffdcc3',
                     color: '#914d00',
                     fontSize: 11,
+                    fontWeight: 800,
                     minWidth: 20,
                     height: 20,
                     borderRadius: 9999,
-                    padding: '0 4px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '0 5px',
                     border: '2px solid #ffffff',
+                    boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
+                    zIndex: 10,
+                    lineHeight: 1,
                   }}
                 >
                   {cartCount}
