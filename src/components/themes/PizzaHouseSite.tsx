@@ -2898,27 +2898,27 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
                   {/* Ünvan */}
                   <div
-                    className="rounded-2xl bg-white shadow-sm flex flex-col border border-[#f0eded] transition-all hover:shadow-md"
+                    className="rounded-2xl bg-white shadow-sm flex items-start gap-4 border border-[#f0eded] transition-all hover:shadow-md text-left"
                     style={{
                       backgroundColor: '#ffffff',
                       borderColor: '#f0eded',
-                      padding: '1.5rem',
+                      padding: '1.25rem',
+                      textAlign: 'left',
                     }}
                   >
                     <div
-                      className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                      className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
                       style={{
                         backgroundColor: '#ffdad9',
                         color: '#b20028',
-                        marginBottom: '1rem',
                       }}
                     >
                       <MapPin size={22} />
                     </div>
-                    <div className="flex flex-col">
+                    <div className="flex flex-col text-left min-w-0">
                       <p
                         className="font-label-sm text-label-sm uppercase font-bold tracking-wider"
                         style={{ color: '#5b403f', marginBottom: '0.25rem' }}
@@ -2926,7 +2926,7 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                         Ünvan
                       </p>
                       <p
-                        className="font-headline-sm text-headline-sm text-[#1c1b1b] font-bold leading-snug"
+                        className="font-headline-sm text-headline-sm text-[#1c1b1b] font-bold leading-snug break-words"
                         style={{ color: '#1c1b1b', marginBottom: '0.25rem' }}
                       >
                         {organization.address || 'Bakı şəhəri, Nizami küçəsi 45'}
@@ -2939,24 +2939,24 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
 
                   {/* Telefon */}
                   <div
-                    className="rounded-2xl bg-white shadow-sm flex flex-col border border-[#f0eded] transition-all hover:shadow-md"
+                    className="rounded-2xl bg-white shadow-sm flex items-start gap-4 border border-[#f0eded] transition-all hover:shadow-md text-left"
                     style={{
                       backgroundColor: '#ffffff',
                       borderColor: '#f0eded',
-                      padding: '1.5rem',
+                      padding: '1.25rem',
+                      textAlign: 'left',
                     }}
                   >
                     <div
-                      className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                      className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
                       style={{
                         backgroundColor: '#ffdcc3',
                         color: '#914d00',
-                        marginBottom: '1rem',
                       }}
                     >
                       <Phone size={22} />
                     </div>
-                    <div className="flex flex-col">
+                    <div className="flex flex-col text-left min-w-0">
                       <p
                         className="font-label-sm text-label-sm uppercase font-bold tracking-wider"
                         style={{ color: '#5b403f', marginBottom: '0.25rem' }}
@@ -2964,7 +2964,7 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                         Telefon
                       </p>
                       <a
-                        className="block font-headline-sm text-headline-sm text-[#1c1b1b] font-bold hover:text-[#b20028] transition-colors"
+                        className="block font-headline-sm text-headline-sm text-[#1c1b1b] font-bold hover:text-[#b20028] transition-colors break-words"
                         style={{ color: '#1c1b1b', marginBottom: '0.25rem' }}
                         href={`tel:${organization.phone || '+994125980000'}`}
                       >
@@ -2983,24 +2983,24 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
 
                   {/* E-poçt */}
                   <div
-                    className="rounded-2xl bg-white shadow-sm flex flex-col border border-[#f0eded] transition-all hover:shadow-md"
+                    className="rounded-2xl bg-white shadow-sm flex items-start gap-4 border border-[#f0eded] transition-all hover:shadow-md text-left"
                     style={{
                       backgroundColor: '#ffffff',
                       borderColor: '#f0eded',
-                      padding: '1.5rem',
+                      padding: '1.25rem',
+                      textAlign: 'left',
                     }}
                   >
                     <div
-                      className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                      className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
                       style={{
                         backgroundColor: '#ffdea0',
                         color: '#715300',
-                        marginBottom: '1rem',
                       }}
                     >
                       <Mail size={22} />
                     </div>
-                    <div className="flex flex-col">
+                    <div className="flex flex-col text-left min-w-0">
                       <p
                         className="font-label-sm text-label-sm uppercase font-bold tracking-wider"
                         style={{ color: '#5b403f', marginBottom: '0.25rem' }}
@@ -3008,7 +3008,7 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                         E-poçt
                       </p>
                       <a
-                        className="block font-headline-sm text-headline-sm text-[#1c1b1b] font-bold hover:text-[#b20028] transition-colors"
+                        className="block font-headline-sm text-headline-sm text-[#1c1b1b] font-bold hover:text-[#b20028] transition-colors break-words"
                         style={{ color: '#1c1b1b', marginBottom: '0.25rem' }}
                         href={`mailto:${organization.email || 'info@pizzahouse.az'}`}
                       >
@@ -3022,24 +3022,24 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
 
                   {/* İş saatları */}
                   <div
-                    className="rounded-2xl bg-white shadow-sm flex flex-col border border-[#f0eded] transition-all hover:shadow-md"
+                    className="rounded-2xl bg-white shadow-sm flex items-start gap-4 border border-[#f0eded] transition-all hover:shadow-md text-left"
                     style={{
                       backgroundColor: '#ffffff',
                       borderColor: '#f0eded',
-                      padding: '1.5rem',
+                      padding: '1.25rem',
+                      textAlign: 'left',
                     }}
                   >
                     <div
-                      className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                      className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
                       style={{
                         backgroundColor: '#ffdad9',
                         color: '#b20028',
-                        marginBottom: '1rem',
                       }}
                     >
                       <Clock size={22} />
                     </div>
-                    <div className="flex flex-col">
+                    <div className="flex flex-col text-left min-w-0">
                       <p
                         className="font-label-sm text-label-sm uppercase font-bold tracking-wider"
                         style={{ color: '#5b403f', marginBottom: '0.25rem' }}
