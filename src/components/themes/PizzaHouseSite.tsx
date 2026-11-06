@@ -1469,9 +1469,9 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
           HEADER / NAVBAR
           ======================================================== */}
       <header
-        className="fixed top-0 left-0 w-full z-50 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] transition-all"
+        className="fixed top-0 left-0 w-full z-50 backdrop-blur-md border-b border-[#f0eded]/80 shadow-[0_1px_8px_rgba(0,0,0,0.03)] transition-all"
         style={{
-          backgroundColor: theme.navbarBgColor || 'rgba(252, 249, 248, 0.88)',
+          backgroundColor: theme.navbarBgColor || 'rgba(252, 249, 248, 0.92)',
         }}
       >
         <div className="h-20 max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between">
@@ -1482,13 +1482,13 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
               scrollTo('hero');
             }}
             href="#hero"
-            className="flex items-center gap-2 group cursor-pointer"
+            className="flex items-center gap-2.5 group cursor-pointer transition-transform hover:scale-[1.02]"
           >
             {organization.logo ? (
               <img
                 src={organization.logo}
                 alt={organization.name}
-                className="h-9 w-auto object-contain rounded"
+                className="h-9 w-auto object-contain rounded-lg"
               />
             ) : (
               <img
@@ -1498,7 +1498,7 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
               />
             )}
             <span
-              className="font-headline-sm text-headline-sm text-[#1c1b1b] tracking-tight group-hover:text-[#b20028] transition-colors"
+              className="font-headline-sm text-headline-sm text-[#1c1b1b] font-bold tracking-tight group-hover:text-[#b20028] transition-colors"
               style={{ fontFamily: `"${headingFont}", sans-serif` }}
             >
               {organization.name || 'Pizza House'}
@@ -1506,7 +1506,7 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
           </a>
 
           {/* Desktop Navigation Menu */}
-          <nav className="hidden lg:flex items-center gap-7">
+          <nav className="hidden lg:flex items-center gap-2 xl:gap-3">
             {navItems.map((item) => {
               const isActive = activeSection === item.id;
               return (
@@ -1514,11 +1514,17 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                   key={item.id}
                   onClick={() => scrollTo(item.id)}
                   className={`transition-all py-2 px-4 rounded-xl cursor-pointer font-label-lg text-label-lg ${
-                    isActive ? 'font-bold' : 'hover:text-[#b20028]'
+                    isActive
+                      ? 'font-bold'
+                      : 'hover:text-[#b20028] hover:bg-[#f0eded]/80 font-medium'
                   }`}
                   style={
                     isActive
-                      ? { backgroundColor: '#d7263d', color: '#ffffff', boxShadow: '0 2px 8px rgba(215, 38, 61, 0.25)' }
+                      ? {
+                          backgroundColor: '#d7263d',
+                          color: '#ffffff',
+                          boxShadow: '0 2px 10px rgba(215, 38, 61, 0.25)',
+                        }
                       : { color: '#5b403f' }
                   }
                 >
@@ -1529,7 +1535,7 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
           </nav>
 
           {/* Right Header Controls */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             {/* Table badge if accessed via QR / table query */}
             {table && (
               <span className="hidden md:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#ffdcc3] text-[#2f1500] font-label-sm text-label-sm font-bold shadow-sm">
@@ -1538,33 +1544,24 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
               </span>
             )}
 
-            {/* CTA Button */}
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => scrollTo('rezervasiya')}
-                className="hidden sm:inline-flex items-center justify-center font-semibold text-sm px-6 py-2.5 rounded-xl transition-all cursor-pointer hover:-translate-y-0.5"
-                style={{
-                  backgroundColor: '#d7263d',
-                  color: '#ffffff',
-                  boxShadow: '0 4px 16px -2px rgba(26,26,26,0.05), 0 2px 6px -1px rgba(215,38,61,0.3)',
-                }}
-              >
-                Rezervasiya et
-              </button>
-              <div
-                className="w-8 h-8 rounded-full flex items-center justify-center text-white shrink-0 shadow-sm"
-                style={{ backgroundColor: '#b20028', color: '#ffffff' }}
-                title="Pizza House"
-              >
-                <Users size={16} />
-              </div>
-            </div>
+            {/* CTA Button without the users icon */}
+            <button
+              onClick={() => scrollTo('rezervasiya')}
+              className="hidden sm:inline-flex items-center justify-center font-semibold text-sm px-6 py-2.5 rounded-xl transition-all cursor-pointer hover:-translate-y-0.5 active:translate-y-0 shadow-sm hover:shadow-md"
+              style={{
+                backgroundColor: '#d7263d',
+                color: '#ffffff',
+                boxShadow: '0 4px 14px rgba(215, 38, 61, 0.25)',
+              }}
+            >
+              Rezervasiya et
+            </button>
 
             {/* Cart Counter badge if items added */}
             {cartCount > 0 && (
               <button
                 onClick={() => scrollTo('menyu')}
-                className="relative w-8 h-8 rounded-full bg-[#d7263d] flex items-center justify-center text-white cursor-pointer"
+                className="relative w-8 h-8 rounded-full bg-[#d7263d] flex items-center justify-center text-white cursor-pointer shadow-sm hover:bg-[#b20028] transition-colors"
                 title={`${cartCount} sifariş var`}
               >
                 <ShoppingBag size={17} />
@@ -1579,16 +1576,16 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
               type="button"
               aria-label="Menyunu aç"
               onClick={() => setMobileDrawerOpen((prev) => !prev)}
-              className="lg:hidden flex items-center justify-center p-1 text-[#1c1b1b] hover:text-[#b20028] focus:outline-none cursor-pointer"
+              className="lg:hidden flex items-center justify-center p-2 rounded-xl text-[#1c1b1b] hover:text-[#b20028] hover:bg-[#f0eded] focus:outline-none cursor-pointer transition-colors"
             >
-              {mobileDrawerOpen ? <X size={28} /> : <Menu size={28} />}
+              {mobileDrawerOpen ? <X size={26} /> : <Menu size={26} />}
             </button>
           </div>
         </div>
 
         {/* Mobile Navigation Drawer */}
         {mobileDrawerOpen && (
-          <div className="lg:hidden bg-[#f6f3f2] px-6 py-6 shadow-lg border-t border-[#e5e2e1]">
+          <div className="lg:hidden bg-[#fcf9f8] px-6 py-6 shadow-xl border-t border-[#f0eded]">
             <nav className="flex flex-col gap-2">
               {navItems.map((item) => {
                 const isActive = activeSection === item.id;
@@ -1596,10 +1593,10 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                   <button
                     key={item.id}
                     onClick={() => scrollTo(item.id)}
-                    className={`py-2 px-4 rounded-xl text-left cursor-pointer transition-colors ${
+                    className={`py-2.5 px-4 rounded-xl text-left cursor-pointer transition-colors ${
                       isActive
-                        ? 'bg-[#d7263d] text-white font-bold'
-                        : 'text-[#5b403f] hover:text-[#b20028] font-label-lg text-label-lg'
+                        ? 'bg-[#d7263d] text-white font-bold shadow-sm'
+                        : 'text-[#5b403f] hover:text-[#b20028] hover:bg-[#f0eded] font-label-lg text-label-lg font-medium'
                     }`}
                   >
                     {item.label}
@@ -1609,7 +1606,7 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
               <div className="pt-2">
                 <button
                   onClick={() => scrollTo('rezervasiya')}
-                  className="w-full flex items-center justify-center bg-[#d7263d] hover:bg-[#b20028] text-white font-label-lg text-label-lg py-3 rounded-xl transition-all cursor-pointer"
+                  className="w-full flex items-center justify-center bg-[#d7263d] hover:bg-[#b20028] text-white font-label-lg text-label-lg py-3 rounded-xl transition-all cursor-pointer shadow-sm font-semibold"
                 >
                   Rezervasiya et
                 </button>
