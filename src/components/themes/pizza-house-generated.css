@@ -1774,7 +1774,7 @@
 
 /* ---- Desktop nav pill wrap ---- */
 @media (min-width: 1024px) and (max-width: 1150px) {
-  .pizza-house-root nav .py-1\\.5.px-4 {
+  .pizza-house-root nav .py-1\.5.px-4 {
     padding-left: 0.75rem !important;
     padding-right: 0.75rem !important;
     font-size: 0.8rem !important;
