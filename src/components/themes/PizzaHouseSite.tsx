@@ -1637,11 +1637,16 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
               {/* Left Column: Copy & Actions */}
               <div className="lg:col-span-6 flex flex-col items-start space-y-4">
                 {/* Pill Badge */}
-                <div className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#ffdcc3] text-[#2f1500] shadow-sm">
+                <div
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full font-label-lg text-label-lg tracking-wide shadow-sm"
+                  style={{
+                    backgroundColor: '#ffdcc3',
+                    color: '#2f1500',
+                    display: 'inline-flex',
+                  }}
+                >
                   <span className="text-lg">🍕</span>
-                  <span className="font-label-lg text-label-lg tracking-wide">
-                    {theme.heroBadgeText || 'Odun sobasında hazırlanır'}
-                  </span>
+                  <span>{theme.heroBadgeText || 'Odun sobasında hazırlanır'}</span>
                 </div>
 
                 {/* H1 Heading */}
@@ -1842,7 +1847,15 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
             <div className="max-w-7xl mx-auto flex flex-col items-center">
               {/* Section Header */}
               <div className="text-center max-w-xl mb-12 flex flex-col items-center" style={{ marginBottom: '3rem' }}>
-                <span className="px-4 py-1.5 rounded-full bg-[#ffdcc3] text-[#2f1500] font-label-md text-label-md uppercase tracking-wider mb-3" style={{ marginBottom: '0.75rem', display: 'inline-flex' }}>
+                <span
+                  className="inline-flex items-center px-4 py-1.5 rounded-full font-label-md text-label-md uppercase tracking-wider font-semibold"
+                  style={{
+                    backgroundColor: '#ffdcc3',
+                    color: '#2f1500',
+                    marginBottom: '0.75rem',
+                    display: 'inline-flex',
+                  }}
+                >
                   {theme.galleryBadgeText || 'Foto Qalareya'}
                 </span>
                 <h2 className="font-headline-xl text-headline-xl text-[#1c1b1b] tracking-tight" style={{ marginTop: 0, marginBottom: '0.75rem' }}>
@@ -1933,7 +1946,15 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
             <div className="max-w-7xl mx-auto flex flex-col items-center">
               {/* Section Header */}
               <div className="text-center max-w-xl mb-10 flex flex-col items-center" style={{ marginBottom: '2.5rem' }}>
-                <span className="px-4 py-1.5 rounded-full bg-[#ffdad9] text-[#b20028] font-label-md text-label-md uppercase tracking-wider mb-3" style={{ marginBottom: '0.75rem', display: 'inline-flex' }}>
+                <span
+                  className="inline-flex items-center px-4 py-1.5 rounded-full font-label-md text-label-md uppercase tracking-wider font-semibold"
+                  style={{
+                    backgroundColor: '#ffdcc3',
+                    color: '#2f1500',
+                    marginBottom: '0.75rem',
+                    display: 'inline-flex',
+                  }}
+                >
                   {theme.menuBadgeText || 'Zərif Dadlar'}
                 </span>
                 <h2 className="font-headline-xl text-headline-xl text-[#1c1b1b] tracking-tight" style={{ marginTop: 0, marginBottom: '0.75rem' }}>
@@ -2115,9 +2136,16 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
 
               {/* Right Column: Story & Features */}
               <div className="lg:col-span-6 flex flex-col items-start space-y-6">
-                <div className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[#ffdcc3] text-[#2f1500] font-label-md text-label-md uppercase tracking-wider">
-                  <span>{theme.aboutBadgeText || 'Tariximiz və Dəyərlərimiz'}</span>
-                </div>
+                <span
+                  className="inline-flex items-center px-4 py-1.5 rounded-full font-label-md text-label-md uppercase tracking-wider font-semibold"
+                  style={{
+                    backgroundColor: '#ffdcc3',
+                    color: '#2f1500',
+                    display: 'inline-flex',
+                  }}
+                >
+                  {theme.aboutBadgeText || 'Tariximiz və Dəyərlərimiz'}
+                </span>
 
                 <h2 className="font-headline-xl text-headline-xl text-[#1c1b1b] tracking-tight">
                   {content.about?.title || theme.aboutHeadline || 'Bizim Hekayəmiz'}
@@ -2221,7 +2249,14 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                 }}
               >
                 <div className="text-center max-w-lg mx-auto mb-10">
-                  <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#ffdad9]/20 text-[#ffb3b2] font-label-md text-label-md uppercase tracking-wider mb-3">
+                  <div
+                    className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full font-label-md text-label-md uppercase tracking-wider font-semibold mb-3"
+                    style={{
+                      backgroundColor: 'rgba(255, 218, 217, 0.2)',
+                      color: '#ffb3b2',
+                      display: 'inline-flex',
+                    }}
+                  >
                     <Calendar size={16} />
                     <span>{theme.reservationBadgeText || 'Online Qeydiyyat'}</span>
                   </div>
