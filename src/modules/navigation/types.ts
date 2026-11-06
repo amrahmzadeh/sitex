@@ -20,6 +20,7 @@ export interface NavItemConfig {
   icon: LucideIcon;
   label: string;
   adminOnly?: boolean;
+  superAdminOnly?: boolean;
   visibleFor?: string[];
   isVisible?: (site: SiteContext | null) => boolean;
 }

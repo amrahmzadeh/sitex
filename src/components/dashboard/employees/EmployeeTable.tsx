@@ -15,6 +15,7 @@ import {
   Phone,
   Building2,
   ShieldAlert,
+  BarChart2,
 } from 'lucide-react';
 import { EmployeeItem } from './types';
 
@@ -28,6 +29,7 @@ interface Props {
   onToggleStatus: (emp: EmployeeItem) => void;
   onDelete: (emp: EmployeeItem) => void;
   onAddNew: () => void;
+  onFinance?: (emp: EmployeeItem) => void;
 }
 
 export default function EmployeeTable({
@@ -40,6 +42,7 @@ export default function EmployeeTable({
   onToggleStatus,
   onDelete,
   onAddNew,
+  onFinance,
 }: Props) {
   const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
 
@@ -340,6 +343,15 @@ export default function EmployeeTable({
                       >
                         <History size={15} />
                       </button>
+                      {onFinance && (
+                        <button
+                          onClick={() => onFinance(emp)}
+                          title="Maliyyə & Qiymətləndirmə"
+                          style={{ ...actionIconBtnStyle, color: '#00D37D' }}
+                        >
+                          <BarChart2 size={15} />
+                        </button>
+                      )}
                       <button
                         onClick={() => onToggleStatus(emp)}
                         title={emp.status === 'ACTIVE' ? 'Deaktiv et' : 'Aktiv et'}

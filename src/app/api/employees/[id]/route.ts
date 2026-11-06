@@ -162,6 +162,8 @@ export async function PATCH(
       if (data.workSchedule !== undefined) employeeUpdate.workSchedule = data.workSchedule;
       if (data.startDate !== undefined) employeeUpdate.startDate = data.startDate ? new Date(data.startDate) : null;
       if (data.status !== undefined) employeeUpdate.status = data.status;
+      if (data.baseSalary !== undefined) employeeUpdate.baseSalary = data.baseSalary !== null ? Number(data.baseSalary) : null;
+      if (data.salaryType !== undefined) employeeUpdate.salaryType = data.salaryType || 'MONTHLY';
 
       // Handle organization change
       if (data.organizationId !== undefined) {

@@ -508,8 +508,17 @@ model Employee {
 
   lastLoginAt    DateTime?
 
+  // Salary info
+  baseSalary     Float?                // Monthly base salary
+  salaryType     String?               @default("MONTHLY") // MONTHLY | HOURLY | DAILY | PROJECT
+
   permissions    EmployeePermission[]
   activityLogs   EmployeeActivityLog[]
+  ratings        EmployeeRating[]
+  bonuses        EmployeeBonus[]
+  penalties      EmployeePenalty[]
+  salaryRecords  EmployeeSalary[]
+  workLogs       EmployeeWorkLog[]
 
   createdAt      DateTime              @default(now())
   updatedAt      DateTime              @updatedAt
@@ -556,4 +565,128 @@ model EmployeeActivityLog {
   createdAt   DateTime @default(now())
 
   @@index([employeeId, createdAt])
+}
+
+// ==================== EMPLOYEE RATINGS ====================
+
+model EmployeeRating {
+  id          String   @id @default(cuid())
+  employeeId  String
+  employee    Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  stars       Int      // 1-5
+  note        String?  @db.Text
+  ratedById   String   // Admin user id
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([employeeId, createdAt])
+}
+
+// ==================== EMPLOYEE BONUSES ====================
+
+enum BonusType {
+  CASH
+  GIFT
+  EXTRA_LEAVE
+  OTHER
+}
+
+model EmployeeBonus {
+  id          String     @id @default(cuid())
+  employeeId  String
+  employee    Employee   @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  name        String
+  reason      String?    @db.Text
+  amount      Float      @default(0)
+  bonusType   BonusType  @default(CASH)
+  givenAt     DateTime   @default(now())
+  description String?    @db.Text
+  approvedById String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([employeeId, givenAt])
+}
+
+// ==================== EMPLOYEE PENALTIES ====================
+
+enum PenaltyType {
+  FINE
+  WARNING
+  SUSPENSION
+  OTHER
+}
+
+model EmployeePenalty {
+  id           String      @id @default(cuid())
+  employeeId   String
+  employee     Employee    @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  reason       String      @db.Text
+  amount       Float       @default(0) // Fine amount (0 if non-monetary)
+  penaltyType  PenaltyType @default(WARNING)
+  incidentAt   DateTime    @default(now())
+  description  String?     @db.Text
+  decidedById  String?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@index([employeeId, incidentAt])
+}
+
+// ==================== EMPLOYEE SALARY RECORDS ====================
+
+enum SalaryStatus {
+  PENDING
+  APPROVED
+  PAID
+}
+
+model EmployeeSalary {
+  id              String       @id @default(cuid())
+  employeeId      String
+  employee        Employee     @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  periodYear      Int          // e.g. 2026
+  periodMonth     Int          // 1-12
+  baseSalary      Float        @default(0)
+  workLogTotal    Float        @default(0) // sum of work logs for this period
+  bonusTotal      Float        @default(0) // sum of bonuses for this period
+  penaltyTotal    Float        @default(0) // sum of penalties for this period
+  totalGross      Float        @default(0) // baseSalary + workLogTotal + bonusTotal
+  totalDeduction  Float        @default(0) // penaltyTotal
+  totalNet        Float        @default(0) // totalGross - totalDeduction
+  paidAmount      Float        @default(0)
+  balance         Float        @default(0) // totalNet - paidAmount
+  status          SalaryStatus @default(PENDING)
+  note            String?      @db.Text
+  approvedById    String?
+  paidAt          DateTime?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  @@unique([employeeId, periodYear, periodMonth])
+  @@index([employeeId, periodYear, periodMonth])
+}
+
+// ==================== EMPLOYEE WORK LOGS ====================
+
+enum WorkLogStatus {
+  PENDING
+  APPROVED
+  PAID
+}
+
+model EmployeeWorkLog {
+  id           String        @id @default(cuid())
+  employeeId   String
+  employee     Employee      @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  title        String
+  description  String?       @db.Text
+  amount       Float         @default(0)
+  completedAt  DateTime      @default(now())
+  status       WorkLogStatus @default(PENDING)
+  salaryId     String?       // linked salary record after reconciliation
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([employeeId, completedAt])
 }

@@ -139,6 +139,8 @@ export const employeeUpdateSchema = z.object({
   startDate: z.string().optional().nullable().or(z.literal('')),
   status: z.enum(['ACTIVE', 'INACTIVE', 'ON_LEAVE']).optional(),
   organizationId: z.string().optional().nullable().or(z.literal('')),
+  baseSalary: z.number().optional().nullable(),
+  salaryType: z.string().optional().nullable(),
   permissions: z.array(employeePermissionSchema).optional(),
 });
 

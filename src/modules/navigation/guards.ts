@@ -6,6 +6,12 @@ export function isNavItemVisible(
   userRole?: string | null,
   employeePermissions?: Record<string, { canView?: boolean; canManage?: boolean }> | null
 ): boolean {
+  // superAdminOnly: only SUPER_ADMIN can see this
+  if (item.superAdminOnly && userRole !== 'SUPER_ADMIN') {
+    return false;
+  }
+
+  // adminOnly: only SUPER_ADMIN (legacy — kept for splash etc.)
   if (item.adminOnly && userRole !== 'SUPER_ADMIN') {
     return false;
   }

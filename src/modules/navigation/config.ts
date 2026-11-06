@@ -197,7 +197,7 @@ export const dashboardNavItems: NavItemConfig[] = [
   { id: 'dashboard', href: '/dashboard', icon: LayoutDashboard, label: 'Ana Səhifə' },
   { id: 'website', href: '/dashboard/website', icon: Globe, label: 'Veb Saytım' },
   { id: 'site-editor', href: '/dashboard/site-editor', icon: PenLine, label: 'Saytı Redaktə et' },
-  { id: 'theme', href: '/dashboard/theme', icon: Palette, label: 'Tema Redaktoru', adminOnly: true },
+  { id: 'theme', href: '/dashboard/theme', icon: Palette, label: 'Tema Redaktoru', superAdminOnly: true },
   { id: 'social', href: '/dashboard/social', icon: Share2, label: 'Sosial Media' },
   { id: 'gallery', href: '/dashboard/gallery', icon: Images, label: 'Qalareya' },
   { id: 'packages', href: '/dashboard/packages', icon: Package, label: 'Paketlər' },

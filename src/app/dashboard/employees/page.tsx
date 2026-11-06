@@ -22,6 +22,7 @@ import EmployeeModal from '@/components/dashboard/employees/EmployeeModal';
 import EmployeeDetailModal from '@/components/dashboard/employees/EmployeeDetailModal';
 import EmployeePasswordModal from '@/components/dashboard/employees/EmployeePasswordModal';
 import EmployeeActivityModal from '@/components/dashboard/employees/EmployeeActivityModal';
+import EmployeeFinanceModal from '@/components/dashboard/employees/EmployeeFinanceModal';
 import {
   EmployeeItem,
   EmployeeStats,
@@ -59,6 +60,9 @@ export default function EmployeesPage() {
 
   const [isActivityModalOpen, setIsActivityModalOpen] = useState(false);
   const [activityTargetEmployee, setActivityTargetEmployee] = useState<EmployeeItem | null>(null);
+
+  const [isFinanceModalOpen, setIsFinanceModalOpen] = useState(false);
+  const [financeTargetEmployee, setFinanceTargetEmployee] = useState<EmployeeItem | null>(null);
 
   const [deleteTargetEmployee, setDeleteTargetEmployee] = useState<EmployeeItem | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -419,6 +423,10 @@ export default function EmployeesPage() {
           setEditingEmployee(null);
           setIsModalOpen(true);
         }}
+        onFinance={(emp) => {
+          setFinanceTargetEmployee(emp);
+          setIsFinanceModalOpen(true);
+        }}
       />
 
       {/* Pagination Footer */}
@@ -517,6 +525,17 @@ export default function EmployeesPage() {
           setActivityTargetEmployee(null);
         }}
       />
+
+      {/* Finance & Evaluation Modal */}
+      {isFinanceModalOpen && financeTargetEmployee && (
+        <EmployeeFinanceModal
+          employee={financeTargetEmployee}
+          onClose={() => {
+            setIsFinanceModalOpen(false);
+            setFinanceTargetEmployee(null);
+          }}
+        />
+      )}
 
       {/* Delete Confirmation Modal */}
       <AnimatePresence>

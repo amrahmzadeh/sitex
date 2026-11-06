@@ -57,6 +57,7 @@ export default function EmployeeModal({
   const [startDate, setStartDate] = useState('');
   const [status, setStatus] = useState<'ACTIVE' | 'INACTIVE' | 'ON_LEAVE'>('ACTIVE');
   const [organizationId, setOrganizationId] = useState('');
+  const [baseSalary, setBaseSalary] = useState('');
 
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
@@ -102,6 +103,7 @@ export default function EmployeeModal({
       setStartDate(employee.startDate ? employee.startDate.split('T')[0] : '');
       setStatus(employee.status || 'ACTIVE');
       setOrganizationId(employee.organizationId || '');
+      setBaseSalary(employee.baseSalary != null ? String(employee.baseSalary) : '');
 
       setPassword('');
       setPasswordConfirm('');
@@ -132,6 +134,7 @@ export default function EmployeeModal({
       setStartDate(new Date().toISOString().split('T')[0]);
       setStatus('ACTIVE');
       setOrganizationId(organizations[0]?.id || '');
+      setBaseSalary('');
       setPassword('');
       setPasswordConfirm('');
     }
@@ -293,6 +296,7 @@ export default function EmployeeModal({
         startDate: startDate || null,
         status,
         organizationId: organizationId || null,
+        baseSalary: baseSalary ? Number(baseSalary) : null,
         permissions: permissionsPayload,
       };
 
@@ -653,6 +657,19 @@ export default function EmployeeModal({
                         </option>
                       ))}
                     </select>
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: '#B0B0B8', marginBottom: 6 }}>
+                      Əsas Aylıq Maaş (₼)
+                    </label>
+                    <input
+                      type="number"
+                      value={baseSalary}
+                      onChange={(e) => setBaseSalary(e.target.value)}
+                      placeholder="0.00"
+                      style={inputStyle}
+                    />
                   </div>
                 </div>
               )}
