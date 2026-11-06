@@ -366,91 +366,938 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
     >
       {/* Dynamic Google Fonts Header */}
       <link rel="stylesheet" href={fontsUrl} />
-      <style>{`
-        .font-display-hero {
-          font-family: "${headingFont}", sans-serif;
-          font-size: 56px;
-          line-height: 64px;
-          letter-spacing: -0.03em;
-          font-weight: 800;
-        }
-        @media (max-width: 768px) {
-          .font-display-hero {
-            font-size: 38px;
-            line-height: 44px;
-            letter-spacing: -0.02em;
-          }
-        }
-        .font-headline-xl {
-          font-family: "${headingFont}", sans-serif;
-          font-size: 40px;
-          line-height: 48px;
-          letter-spacing: -0.02em;
-          font-weight: 700;
-        }
-        @media (max-width: 768px) {
-          .font-headline-xl {
-            font-size: 30px;
-            line-height: 36px;
-            letter-spacing: -0.01em;
-          }
-        }
-        .font-headline-lg {
-          font-family: "${headingFont}", sans-serif;
-          font-size: 28px;
-          line-height: 34px;
-          letter-spacing: -0.01em;
-          font-weight: 700;
-        }
-        .font-headline-md {
-          font-family: "${headingFont}", sans-serif;
-          font-size: 22px;
-          line-height: 28px;
-          font-weight: 600;
-        }
-        .font-headline-sm {
-          font-family: "${headingFont}", sans-serif;
-          font-size: 18px;
-          line-height: 24px;
-          font-weight: 600;
-        }
-        .font-body-lg {
-          font-family: "${bodyFont}", sans-serif;
-          font-size: 18px;
-          line-height: 28px;
-        }
-        .font-body-md {
-          font-family: "${bodyFont}", sans-serif;
-          font-size: 16px;
-          line-height: 24px;
-        }
-        .font-body-sm {
-          font-family: "${bodyFont}", sans-serif;
-          font-size: 14px;
-          line-height: 20px;
-        }
-        .font-label-lg {
-          font-family: "${bodyFont}", sans-serif;
-          font-size: 15px;
-          line-height: 20px;
-          letter-spacing: 0.01em;
-          font-weight: 600;
-        }
-        .font-label-md {
-          font-family: "${bodyFont}", sans-serif;
-          font-size: 13px;
-          line-height: 18px;
-          letter-spacing: 0.02em;
-          font-weight: 600;
-        }
-        .font-label-sm {
-          font-family: "${bodyFont}", sans-serif;
-          font-size: 11px;
-          line-height: 14px;
-          letter-spacing: 0.04em;
-          font-weight: 700;
-        }
-      `}</style>
+      <style dangerouslySetInnerHTML={{ __html: `
+/* Layout & Responsive utilities scoped to .pizza-house-root */
+.pizza-house-root .hidden { display: none !important; }
+.pizza-house-root .block { display: block !important; }
+.pizza-house-root .inline-block { display: inline-block !important; }
+.pizza-house-root .flex { display: flex !important; }
+.pizza-house-root .inline-flex { display: inline-flex !important; }
+.pizza-house-root .grid { display: grid !important; }
+.pizza-house-root .flex-col { flex-direction: column !important; }
+.pizza-house-root .flex-wrap { flex-wrap: wrap !important; }
+.pizza-house-root .flex-row { flex-direction: row !important; }
+.pizza-house-root .items-center { align-items: center !important; }
+.pizza-house-root .items-start { align-items: flex-start !important; }
+.pizza-house-root .items-end { align-items: flex-end !important; }
+.pizza-house-root .justify-center { justify-content: center !important; }
+.pizza-house-root .justify-between { justify-content: space-between !important; }
+.pizza-house-root .justify-end { justify-content: flex-end !important; }
+.pizza-house-root .justify-start { justify-content: flex-start !important; }
+.pizza-house-root .w-full { width: 100% !important; }
+.pizza-house-root .h-full { height: 100% !important; }
+.pizza-house-root .min-h-screen { min-height: 100vh !important; }
+.pizza-house-root .w-auto { width: auto !important; }
+.pizza-house-root .h-auto { height: auto !important; }
+.pizza-house-root .w-8 { width: 2rem !important; }
+.pizza-house-root .h-8 { height: 2rem !important; }
+.pizza-house-root .w-9 { width: 2.25rem !important; }
+.pizza-house-root .h-9 { height: 2.25rem !important; }
+.pizza-house-root .w-10 { width: 2.5rem !important; }
+.pizza-house-root .h-10 { height: 2.5rem !important; }
+.pizza-house-root .w-12 { width: 3rem !important; }
+.pizza-house-root .h-12 { height: 3rem !important; }
+.pizza-house-root .w-14 { width: 3.5rem !important; }
+.pizza-house-root .h-14 { height: 3.5rem !important; }
+.pizza-house-root .w-72 { width: 18rem !important; }
+.pizza-house-root .h-72 { height: 18rem !important; }
+.pizza-house-root .w-96 { width: 24rem !important; }
+.pizza-house-root .h-96 { height: 24rem !important; }
+
+.pizza-house-root .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)) !important; }
+.pizza-house-root .grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+.pizza-house-root .grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+.pizza-house-root .grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; }
+.pizza-house-root .grid-cols-12 { grid-template-columns: repeat(12, minmax(0, 1fr)) !important; }
+
+.pizza-house-root .col-span-1 { grid-column: span 1 / span 1 !important; }
+.pizza-house-root .col-span-2 { grid-column: span 2 / span 2 !important; }
+.pizza-house-root .col-span-full { grid-column: 1 / -1 !important; }
+.pizza-house-root .row-span-2 { grid-row: span 2 / span 2 !important; }
+
+.pizza-house-root .gap-1 { gap: 0.25rem !important; }
+.pizza-house-root .gap-1\\.5 { gap: 0.375rem !important; }
+.pizza-house-root .gap-2 { gap: 0.5rem !important; }
+.pizza-house-root .gap-2\\.5 { gap: 0.625rem !important; }
+.pizza-house-root .gap-3 { gap: 0.75rem !important; }
+.pizza-house-root .gap-4 { gap: 1rem !important; }
+.pizza-house-root .gap-6 { gap: 1.5rem !important; }
+.pizza-house-root .gap-8 { gap: 2rem !important; }
+.pizza-house-root .gap-12 { gap: 3rem !important; }
+
+.pizza-house-root .space-y-1 > * + * { margin-top: 0.25rem !important; }
+.pizza-house-root .space-y-2 > * + * { margin-top: 0.5rem !important; }
+.pizza-house-root .space-y-3 > * + * { margin-top: 0.75rem !important; }
+.pizza-house-root .space-y-4 > * + * { margin-top: 1rem !important; }
+.pizza-house-root .space-y-6 > * + * { margin-top: 1.5rem !important; }
+.pizza-house-root .space-y-8 > * + * { margin-top: 2rem !important; }
+
+.pizza-house-root .space-x-2 > * + * { margin-left: 0.5rem !important; }
+.pizza-house-root .space-x-3 > * + * { margin-left: 0.75rem !important; }
+.pizza-house-root .space-x-4 > * + * { margin-left: 1rem !important; }
+
+/* Responsive Overrides */
+@media (min-width: 640px) {
+  .pizza-house-root .sm\\:inline { display: inline !important; }
+  .pizza-house-root .sm\\:inline-flex { display: inline-flex !important; }
+  .pizza-house-root .sm\\:flex { display: flex !important; }
+  .pizza-house-root .sm\\:hidden { display: none !important; }
+  .pizza-house-root .sm\\:flex-row { flex-direction: row !important; }
+  .pizza-house-root .sm\\:w-auto { width: auto !important; }
+  .pizza-house-root .sm\\:w-96 { width: 24rem !important; }
+  .pizza-house-root .sm\\:h-96 { height: 24rem !important; }
+  .pizza-house-root .sm\\:max-w-lg { max-width: 32rem !important; }
+  .pizza-house-root .sm\\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .pizza-house-root .sm\\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+  .pizza-house-root .sm\\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; }
+  .pizza-house-root .sm\\:gap-4 { gap: 1rem !important; }
+  .pizza-house-root .sm\\:gap-6 { gap: 1.5rem !important; }
+  .pizza-house-root .sm\\:p-8 { padding: 2rem !important; }
+  .pizza-house-root .sm\\:text-left { text-align: left !important; }
+  .pizza-house-root .sm\\:items-start { align-items: flex-start !important; }
+  .pizza-house-root .sm\\:top-4 { top: 1rem !important; }
+  .pizza-house-root .sm\\:-left-6 { left: -1.5rem !important; }
+  .pizza-house-root .sm\\:-right-6 { right: -1.5rem !important; }
+  .pizza-house-root .sm\\:-bottom-4 { bottom: -1rem !important; }
+  .pizza-house-root .sm\\:bottom-6 { bottom: 1.5rem !important; }
+  .pizza-house-root .sm\\:left-8 { left: 2rem !important; }
+  .pizza-house-root .sm\\:-left-4 { left: -1rem !important; }
+}
+
+@media (min-width: 768px) {
+  .pizza-house-root .md\\:flex { display: flex !important; }
+  .pizza-house-root .md\\:hidden { display: none !important; }
+  .pizza-house-root .md\\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .pizza-house-root .md\\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+  .pizza-house-root .md\\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; }
+  .pizza-house-root .md\\:col-span-2 { grid-column: span 2 / span 2 !important; }
+  .pizza-house-root .md\\:gap-8 { gap: 2rem !important; }
+  .pizza-house-root .md\\:p-8 { padding: 2rem !important; }
+  .pizza-house-root .md\\:p-12 { padding: 3rem !important; }
+}
+
+@media (min-width: 1024px) {
+  .pizza-house-root .lg\\:flex { display: flex !important; }
+  .pizza-house-root .lg\\:hidden { display: none !important; }
+  .pizza-house-root .lg\\:grid-cols-12 { grid-template-columns: repeat(12, minmax(0, 1fr)) !important; }
+  .pizza-house-root .lg\\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; }
+  .pizza-house-root .lg\\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+  .pizza-house-root .lg\\:col-span-3 { grid-column: span 3 / span 3 !important; }
+  .pizza-house-root .lg\\:col-span-4 { grid-column: span 4 / span 4 !important; }
+  .pizza-house-root .lg\\:col-span-5 { grid-column: span 5 / span 5 !important; }
+  .pizza-house-root .lg\\:col-span-6 { grid-column: span 6 / span 6 !important; }
+  .pizza-house-root .lg\\:col-span-7 { grid-column: span 7 / span 7 !important; }
+  .pizza-house-root .lg\\:col-span-8 { grid-column: span 8 / span 8 !important; }
+  .pizza-house-root .lg\\:gap-8 { gap: 2rem !important; }
+  .pizza-house-root .lg\\:gap-12 { gap: 3rem !important; }
+  .pizza-house-root .lg\\:px-12 { padding-left: 3rem !important; padding-right: 3rem !important; }
+  .pizza-house-root .lg\\:py-28 { padding-top: 7rem !important; padding-bottom: 7rem !important; }
+}
+
+/* Pizza House Complete Style Definition (Self-Contained) */
+@import url('https://fonts.googleapis.com/css2?family=Epilogue:wght@600;700;800;900&family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap');
+
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-style: normal !important;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+}
+
+.pizza-house-root {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+  color: #1c1b1b;
+  background-color: #fcf9f8;
+  -webkit-font-smoothing: antialiased;
+}
+
+.pizza-house-root ::selection {
+  background-color: #ffdad9 !important;
+  color: #410008 !important;
+}
+
+/* Typography tokens */
+.pizza-house-root .font-display-hero,
+.pizza-house-root .text-display-hero {
+  font-family: 'Epilogue', sans-serif !important;
+  font-size: 56px !important;
+  line-height: 64px !important;
+  letter-spacing: -0.03em !important;
+  font-weight: 800 !important;
+}
+@media (max-width: 768px) {
+  .pizza-house-root .font-display-hero,
+  .pizza-house-root .text-display-hero {
+    font-size: 38px !important;
+    line-height: 44px !important;
+    letter-spacing: -0.02em !important;
+  }
+}
+
+.pizza-house-root .font-display-hero-mobile,
+.pizza-house-root .text-display-hero-mobile {
+  font-family: 'Epilogue', sans-serif !important;
+  font-size: 38px !important;
+  line-height: 44px !important;
+  letter-spacing: -0.02em !important;
+  font-weight: 800 !important;
+}
+
+.pizza-house-root .font-headline-xl,
+.pizza-house-root .text-headline-xl {
+  font-family: 'Epilogue', sans-serif !important;
+  font-size: 40px !important;
+  line-height: 48px !important;
+  letter-spacing: -0.02em !important;
+  font-weight: 700 !important;
+}
+@media (max-width: 768px) {
+  .pizza-house-root .font-headline-xl,
+  .pizza-house-root .text-headline-xl {
+    font-size: 30px !important;
+    line-height: 36px !important;
+    letter-spacing: -0.01em !important;
+  }
+}
+
+.pizza-house-root .font-headline-xl-mobile,
+.pizza-house-root .text-headline-xl-mobile {
+  font-family: 'Epilogue', sans-serif !important;
+  font-size: 30px !important;
+  line-height: 36px !important;
+  letter-spacing: -0.01em !important;
+  font-weight: 700 !important;
+}
+
+.pizza-house-root .font-headline-lg,
+.pizza-house-root .text-headline-lg {
+  font-family: 'Epilogue', sans-serif !important;
+  font-size: 28px !important;
+  line-height: 34px !important;
+  letter-spacing: -0.01em !important;
+  font-weight: 700 !important;
+}
+
+.pizza-house-root .font-headline-md,
+.pizza-house-root .text-headline-md {
+  font-family: 'Epilogue', sans-serif !important;
+  font-size: 22px !important;
+  line-height: 28px !important;
+  font-weight: 600 !important;
+}
+
+.pizza-house-root .font-headline-sm,
+.pizza-house-root .text-headline-sm {
+  font-family: 'Epilogue', sans-serif !important;
+  font-size: 18px !important;
+  line-height: 24px !important;
+  font-weight: 600 !important;
+}
+
+.pizza-house-root .font-label-lg,
+.pizza-house-root .text-label-lg {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 15px !important;
+  line-height: 20px !important;
+  letter-spacing: 0.01em !important;
+  font-weight: 600 !important;
+}
+
+.pizza-house-root .font-label-md,
+.pizza-house-root .text-label-md {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 13px !important;
+  line-height: 18px !important;
+  letter-spacing: 0.02em !important;
+  font-weight: 600 !important;
+}
+
+.pizza-house-root .font-label-sm,
+.pizza-house-root .text-label-sm {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 11px !important;
+  line-height: 14px !important;
+  letter-spacing: 0.04em !important;
+  font-weight: 700 !important;
+}
+
+.pizza-house-root .font-body-lg,
+.pizza-house-root .text-body-lg {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 18px !important;
+  line-height: 28px !important;
+  font-weight: 400 !important;
+}
+
+.pizza-house-root .font-body-md,
+.pizza-house-root .text-body-md {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 16px !important;
+  line-height: 24px !important;
+  font-weight: 400 !important;
+}
+
+.pizza-house-root .font-body-sm,
+.pizza-house-root .text-body-sm {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 14px !important;
+  line-height: 20px !important;
+  font-weight: 400 !important;
+}
+
+.pizza-house-root .bg-on-background { background-color: #1c1b1b !important; }
+.pizza-house-root .text-on-background { color: #1c1b1b !important; }
+.pizza-house-root .border-on-background { border-color: #1c1b1b !important; }
+.pizza-house-root .fill-on-background { fill: #1c1b1b !important; }
+.pizza-house-root .hover\\:bg-on-background:hover { background-color: #1c1b1b !important; }
+.pizza-house-root .hover\\:text-on-background:hover { color: #1c1b1b !important; }
+.pizza-house-root .group:hover .group-hover\\:text-on-background { color: #1c1b1b !important; }
+
+.pizza-house-root .bg-surface-container-highest { background-color: #e5e2e1 !important; }
+.pizza-house-root .text-surface-container-highest { color: #e5e2e1 !important; }
+.pizza-house-root .border-surface-container-highest { border-color: #e5e2e1 !important; }
+.pizza-house-root .fill-surface-container-highest { fill: #e5e2e1 !important; }
+.pizza-house-root .hover\\:bg-surface-container-highest:hover { background-color: #e5e2e1 !important; }
+.pizza-house-root .hover\\:text-surface-container-highest:hover { color: #e5e2e1 !important; }
+.pizza-house-root .group:hover .group-hover\\:text-surface-container-highest { color: #e5e2e1 !important; }
+
+.pizza-house-root .bg-on-primary-container { background-color: #fff2f1 !important; }
+.pizza-house-root .text-on-primary-container { color: #fff2f1 !important; }
+.pizza-house-root .border-on-primary-container { border-color: #fff2f1 !important; }
+.pizza-house-root .fill-on-primary-container { fill: #fff2f1 !important; }
+.pizza-house-root .hover\\:bg-on-primary-container:hover { background-color: #fff2f1 !important; }
+.pizza-house-root .hover\\:text-on-primary-container:hover { color: #fff2f1 !important; }
+.pizza-house-root .group:hover .group-hover\\:text-on-primary-container { color: #fff2f1 !important; }
+
+.pizza-house-root .bg-error { background-color: #ba1a1a !important; }
+.pizza-house-root .text-error { color: #ba1a1a !important; }
+.pizza-house-root .border-error { border-color: #ba1a1a !important; }
+.pizza-house-root .fill-error { fill: #ba1a1a !important; }
+.pizza-house-root .hover\\:bg-error:hover { background-color: #ba1a1a !important; }
+.pizza-house-root .hover\\:text-error:hover { color: #ba1a1a !important; }
+.pizza-house-root .group:hover .group-hover\\:text-error { color: #ba1a1a !important; }
+
+.pizza-house-root .bg-on-tertiary { background-color: #ffffff !important; }
+.pizza-house-root .text-on-tertiary { color: #ffffff !important; }
+.pizza-house-root .border-on-tertiary { border-color: #ffffff !important; }
+.pizza-house-root .fill-on-tertiary { fill: #ffffff !important; }
+.pizza-house-root .hover\\:bg-on-tertiary:hover { background-color: #ffffff !important; }
+.pizza-house-root .hover\\:text-on-tertiary:hover { color: #ffffff !important; }
+.pizza-house-root .group:hover .group-hover\\:text-on-tertiary { color: #ffffff !important; }
+
+.pizza-house-root .bg-primary-fixed { background-color: #ffdad9 !important; }
+.pizza-house-root .text-primary-fixed { color: #ffdad9 !important; }
+.pizza-house-root .border-primary-fixed { border-color: #ffdad9 !important; }
+.pizza-house-root .fill-primary-fixed { fill: #ffdad9 !important; }
+.pizza-house-root .hover\\:bg-primary-fixed:hover { background-color: #ffdad9 !important; }
+.pizza-house-root .hover\\:text-primary-fixed:hover { color: #ffdad9 !important; }
+.pizza-house-root .group:hover .group-hover\\:text-primary-fixed { color: #ffdad9 !important; }
+
+.pizza-house-root .bg-inverse-surface { background-color: #313030 !important; }
+.pizza-house-root .text-inverse-surface { color: #313030 !important; }
+.pizza-house-root .border-inverse-surface { border-color: #313030 !important; }
+.pizza-house-root .fill-inverse-surface { fill: #313030 !important; }
+.pizza-house-root .hover\\:bg-inverse-surface:hover { background-color: #313030 !important; }
+.pizza-house-root .hover\\:text-inverse-surface:hover { color: #313030 !important; }
+.pizza-house-root .group:hover .group-hover\\:text-inverse-surface { color: #313030 !important; }
+
+.pizza-house-root .bg-secondary-fixed { background-color: #ffdcc3 !important; }
+.pizza-house-root .text-secondary-fixed { color: #ffdcc3 !important; }
+.pizza-house-root .border-secondary-fixed { border-color: #ffdcc3 !important; }
+.pizza-house-root .fill-secondary-fixed { fill: #ffdcc3 !important; }
+.pizza-house-root .hover\\:bg-secondary-fixed:hover { background-color: #ffdcc3 !important; }
+.pizza-house-root .hover\\:text-secondary-fixed:hover { color: #ffdcc3 !important; }
+.pizza-house-root .group:hover .group-hover\\:text-secondary-fixed { color: #ffdcc3 !important; }
+
+.pizza-house-root .bg-tertiary-fixed-dim { background-color: #fbbc0c !important; }
+.pizza-house-root .text-tertiary-fixed-dim { color: #fbbc0c !important; }
+.pizza-house-root .border-tertiary-fixed-dim { border-color: #fbbc0c !important; }
+.pizza-house-root .fill-tertiary-fixed-dim { fill: #fbbc0c !important; }
+.pizza-house-root .hover\\:bg-tertiary-fixed-dim:hover { background-color: #fbbc0c !important; }
+.pizza-house-root .hover\\:text-tertiary-fixed-dim:hover { color: #fbbc0c !important; }
+.pizza-house-root .group:hover .group-hover\\:text-tertiary-fixed-dim { color: #fbbc0c !important; }
+
+.pizza-house-root .bg-on-tertiary-fixed { background-color: #261a00 !important; }
+.pizza-house-root .text-on-tertiary-fixed { color: #261a00 !important; }
+.pizza-house-root .border-on-tertiary-fixed { border-color: #261a00 !important; }
+.pizza-house-root .fill-on-tertiary-fixed { fill: #261a00 !important; }
+.pizza-house-root .hover\\:bg-on-tertiary-fixed:hover { background-color: #261a00 !important; }
+.pizza-house-root .hover\\:text-on-tertiary-fixed:hover { color: #261a00 !important; }
+.pizza-house-root .group:hover .group-hover\\:text-on-tertiary-fixed { color: #261a00 !important; }
+
+.pizza-house-root .bg-on-error-container { background-color: #93000a !important; }
+.pizza-house-root .text-on-error-container { color: #93000a !important; }
+.pizza-house-root .border-on-error-container { border-color: #93000a !important; }
+.pizza-house-root .fill-on-error-container { fill: #93000a !important; }
+.pizza-house-root .hover\\:bg-on-error-container:hover { background-color: #93000a !important; }
+.pizza-house-root .hover\\:text-on-error-container:hover { color: #93000a !important; }
+.pizza-house-root .group:hover .group-hover\\:text-on-error-container { color: #93000a !important; }
+
+.pizza-house-root .bg-on-secondary-fixed-variant { background-color: #6e3900 !important; }
+.pizza-house-root .text-on-secondary-fixed-variant { color: #6e3900 !important; }
+.pizza-house-root .border-on-secondary-fixed-variant { border-color: #6e3900 !important; }
+.pizza-house-root .fill-on-secondary-fixed-variant { fill: #6e3900 !important; }
+.pizza-house-root .hover\\:bg-on-secondary-fixed-variant:hover { background-color: #6e3900 !important; }
+.pizza-house-root .hover\\:text-on-secondary-fixed-variant:hover { color: #6e3900 !important; }
+.pizza-house-root .group:hover .group-hover\\:text-on-secondary-fixed-variant { color: #6e3900 !important; }
+
+.pizza-house-root .bg-on-surface-variant { background-color: #5b403f !important; }
+.pizza-house-root .text-on-surface-variant { color: #5b403f !important; }
+.pizza-house-root .border-on-surface-variant { border-color: #5b403f !important; }
+.pizza-house-root .fill-on-surface-variant { fill: #5b403f !important; }
+.pizza-house-root .hover\\:bg-on-surface-variant:hover { background-color: #5b403f !important; }
+.pizza-house-root .hover\\:text-on-surface-variant:hover { color: #5b403f !important; }
+.pizza-house-root .group:hover .group-hover\\:text-on-surface-variant { color: #5b403f !important; }
+
+.pizza-house-root .bg-surface-tint { background-color: #bd0a2e !important; }
+.pizza-house-root .text-surface-tint { color: #bd0a2e !important; }
+.pizza-house-root .border-surface-tint { border-color: #bd0a2e !important; }
+.pizza-house-root .fill-surface-tint { fill: #bd0a2e !important; }
+.pizza-house-root .hover\\:bg-surface-tint:hover { background-color: #bd0a2e !important; }
+.pizza-house-root .hover\\:text-surface-tint:hover { color: #bd0a2e !important; }
+.pizza-house-root .group:hover .group-hover\\:text-surface-tint { color: #bd0a2e !important; }
+
+.pizza-house-root .bg-on-tertiary-fixed-variant { background-color: #5c4300 !important; }
+.pizza-house-root .text-on-tertiary-fixed-variant { color: #5c4300 !important; }
+.pizza-house-root .border-on-tertiary-fixed-variant { border-color: #5c4300 !important; }
+.pizza-house-root .fill-on-tertiary-fixed-variant { fill: #5c4300 !important; }
+.pizza-house-root .hover\\:bg-on-tertiary-fixed-variant:hover { background-color: #5c4300 !important; }
+.pizza-house-root .hover\\:text-on-tertiary-fixed-variant:hover { color: #5c4300 !important; }
+.pizza-house-root .group:hover .group-hover\\:text-on-tertiary-fixed-variant { color: #5c4300 !important; }
+
+.pizza-house-root .bg-surface-bright { background-color: #fcf9f8 !important; }
+.pizza-house-root .text-surface-bright { color: #fcf9f8 !important; }
+.pizza-house-root .border-surface-bright { border-color: #fcf9f8 !important; }
+.pizza-house-root .fill-surface-bright { fill: #fcf9f8 !important; }
+.pizza-house-root .hover\\:bg-surface-bright:hover { background-color: #fcf9f8 !important; }
+.pizza-house-root .hover\\:text-surface-bright:hover { color: #fcf9f8 !important; }
+.pizza-house-root .group:hover .group-hover\\:text-surface-bright { color: #fcf9f8 !important; }
+
+.pizza-house-root .bg-background { background-color: #fcf9f8 !important; }
+.pizza-house-root .text-background { color: #fcf9f8 !important; }
+.pizza-house-root .border-background { border-color: #fcf9f8 !important; }
+.pizza-house-root .fill-background { fill: #fcf9f8 !important; }
+.pizza-house-root .hover\\:bg-background:hover { background-color: #fcf9f8 !important; }
+.pizza-house-root .hover\\:text-background:hover { color: #fcf9f8 !important; }
+.pizza-house-root .group:hover .group-hover\\:text-background { color: #fcf9f8 !important; }
+
+.pizza-house-root .bg-surface-container-lowest { background-color: #ffffff !important; }
+.pizza-house-root .text-surface-container-lowest { color: #ffffff !important; }
+.pizza-house-root .border-surface-container-lowest { border-color: #ffffff !important; }
+.pizza-house-root .fill-surface-container-lowest { fill: #ffffff !important; }
+.pizza-house-root .hover\\:bg-surface-container-lowest:hover { background-color: #ffffff !important; }
+.pizza-house-root .hover\\:text-surface-container-lowest:hover { color: #ffffff !important; }
+.pizza-house-root .group:hover .group-hover\\:text-surface-container-lowest { color: #ffffff !important; }
+
+.pizza-house-root .bg-outline-variant { background-color: #e4bdbc !important; }
+.pizza-house-root .text-outline-variant { color: #e4bdbc !important; }
+.pizza-house-root .border-outline-variant { border-color: #e4bdbc !important; }
+.pizza-house-root .fill-outline-variant { fill: #e4bdbc !important; }
+.pizza-house-root .hover\\:bg-outline-variant:hover { background-color: #e4bdbc !important; }
+.pizza-house-root .hover\\:text-outline-variant:hover { color: #e4bdbc !important; }
+.pizza-house-root .group:hover .group-hover\\:text-outline-variant { color: #e4bdbc !important; }
+
+.pizza-house-root .bg-on-secondary-fixed { background-color: #2f1500 !important; }
+.pizza-house-root .text-on-secondary-fixed { color: #2f1500 !important; }
+.pizza-house-root .border-on-secondary-fixed { border-color: #2f1500 !important; }
+.pizza-house-root .fill-on-secondary-fixed { fill: #2f1500 !important; }
+.pizza-house-root .hover\\:bg-on-secondary-fixed:hover { background-color: #2f1500 !important; }
+.pizza-house-root .hover\\:text-on-secondary-fixed:hover { color: #2f1500 !important; }
+.pizza-house-root .group:hover .group-hover\\:text-on-secondary-fixed { color: #2f1500 !important; }
+
+.pizza-house-root .bg-secondary-container { background-color: #fc9430 !important; }
+.pizza-house-root .text-secondary-container { color: #fc9430 !important; }
+.pizza-house-root .border-secondary-container { border-color: #fc9430 !important; }
+.pizza-house-root .fill-secondary-container { fill: #fc9430 !important; }
+.pizza-house-root .hover\\:bg-secondary-container:hover { background-color: #fc9430 !important; }
+.pizza-house-root .hover\\:text-secondary-container:hover { color: #fc9430 !important; }
+.pizza-house-root .group:hover .group-hover\\:text-secondary-container { color: #fc9430 !important; }
+
+.pizza-house-root .bg-secondary { background-color: #914d00 !important; }
+.pizza-house-root .text-secondary { color: #914d00 !important; }
+.pizza-house-root .border-secondary { border-color: #914d00 !important; }
+.pizza-house-root .fill-secondary { fill: #914d00 !important; }
+.pizza-house-root .hover\\:bg-secondary:hover { background-color: #914d00 !important; }
+.pizza-house-root .hover\\:text-secondary:hover { color: #914d00 !important; }
+.pizza-house-root .group:hover .group-hover\\:text-secondary { color: #914d00 !important; }
+
+.pizza-house-root .bg-primary { background-color: #b20028 !important; }
+.pizza-house-root .text-primary { color: #b20028 !important; }
+.pizza-house-root .border-primary { border-color: #b20028 !important; }
+.pizza-house-root .fill-primary { fill: #b20028 !important; }
+.pizza-house-root .hover\\:bg-primary:hover { background-color: #b20028 !important; }
+.pizza-house-root .hover\\:text-primary:hover { color: #b20028 !important; }
+.pizza-house-root .group:hover .group-hover\\:text-primary { color: #b20028 !important; }
+
+.pizza-house-root .bg-inverse-primary { background-color: #ffb3b2 !important; }
+.pizza-house-root .text-inverse-primary { color: #ffb3b2 !important; }
+.pizza-house-root .border-inverse-primary { border-color: #ffb3b2 !important; }
+.pizza-house-root .fill-inverse-primary { fill: #ffb3b2 !important; }
+.pizza-house-root .hover\\:bg-inverse-primary:hover { background-color: #ffb3b2 !important; }
+.pizza-house-root .hover\\:text-inverse-primary:hover { color: #ffb3b2 !important; }
+.pizza-house-root .group:hover .group-hover\\:text-inverse-primary { color: #ffb3b2 !important; }
+
+.pizza-house-root .bg-on-primary { background-color: #ffffff !important; }
+.pizza-house-root .text-on-primary { color: #ffffff !important; }
+.pizza-house-root .border-on-primary { border-color: #ffffff !important; }
+.pizza-house-root .fill-on-primary { fill: #ffffff !important; }
+.pizza-house-root .hover\\:bg-on-primary:hover { background-color: #ffffff !important; }
+.pizza-house-root .hover\\:text-on-primary:hover { color: #ffffff !important; }
+.pizza-house-root .group:hover .group-hover\\:text-on-primary { color: #ffffff !important; }
+
+.pizza-house-root .bg-on-tertiary-container { background-color: #fff3e3 !important; }
+.pizza-house-root .text-on-tertiary-container { color: #fff3e3 !important; }
+.pizza-house-root .border-on-tertiary-container { border-color: #fff3e3 !important; }
+.pizza-house-root .fill-on-tertiary-container { fill: #fff3e3 !important; }
+.pizza-house-root .hover\\:bg-on-tertiary-container:hover { background-color: #fff3e3 !important; }
+.pizza-house-root .hover\\:text-on-tertiary-container:hover { color: #fff3e3 !important; }
+.pizza-house-root .group:hover .group-hover\\:text-on-tertiary-container { color: #fff3e3 !important; }
+
+.pizza-house-root .bg-on-secondary-container { background-color: #663500 !important; }
+.pizza-house-root .text-on-secondary-container { color: #663500 !important; }
+.pizza-house-root .border-on-secondary-container { border-color: #663500 !important; }
+.pizza-house-root .fill-on-secondary-container { fill: #663500 !important; }
+.pizza-house-root .hover\\:bg-on-secondary-container:hover { background-color: #663500 !important; }
+.pizza-house-root .hover\\:text-on-secondary-container:hover { color: #663500 !important; }
+.pizza-house-root .group:hover .group-hover\\:text-on-secondary-container { color: #663500 !important; }
+
+.pizza-house-root .bg-secondary-fixed-dim { background-color: #ffb77d !important; }
+.pizza-house-root .text-secondary-fixed-dim { color: #ffb77d !important; }
+.pizza-house-root .border-secondary-fixed-dim { border-color: #ffb77d !important; }
+.pizza-house-root .fill-secondary-fixed-dim { fill: #ffb77d !important; }
+.pizza-house-root .hover\\:bg-secondary-fixed-dim:hover { background-color: #ffb77d !important; }
+.pizza-house-root .hover\\:text-secondary-fixed-dim:hover { color: #ffb77d !important; }
+.pizza-house-root .group:hover .group-hover\\:text-secondary-fixed-dim { color: #ffb77d !important; }
+
+.pizza-house-root .bg-on-surface { background-color: #1c1b1b !important; }
+.pizza-house-root .text-on-surface { color: #1c1b1b !important; }
+.pizza-house-root .border-on-surface { border-color: #1c1b1b !important; }
+.pizza-house-root .fill-on-surface { fill: #1c1b1b !important; }
+.pizza-house-root .hover\\:bg-on-surface:hover { background-color: #1c1b1b !important; }
+.pizza-house-root .hover\\:text-on-surface:hover { color: #1c1b1b !important; }
+.pizza-house-root .group:hover .group-hover\\:text-on-surface { color: #1c1b1b !important; }
+
+.pizza-house-root .bg-outline { background-color: #906f6e !important; }
+.pizza-house-root .text-outline { color: #906f6e !important; }
+.pizza-house-root .border-outline { border-color: #906f6e !important; }
+.pizza-house-root .fill-outline { fill: #906f6e !important; }
+.pizza-house-root .hover\\:bg-outline:hover { background-color: #906f6e !important; }
+.pizza-house-root .hover\\:text-outline:hover { color: #906f6e !important; }
+.pizza-house-root .group:hover .group-hover\\:text-outline { color: #906f6e !important; }
+
+.pizza-house-root .bg-error-container { background-color: #ffdad6 !important; }
+.pizza-house-root .text-error-container { color: #ffdad6 !important; }
+.pizza-house-root .border-error-container { border-color: #ffdad6 !important; }
+.pizza-house-root .fill-error-container { fill: #ffdad6 !important; }
+.pizza-house-root .hover\\:bg-error-container:hover { background-color: #ffdad6 !important; }
+.pizza-house-root .hover\\:text-error-container:hover { color: #ffdad6 !important; }
+.pizza-house-root .group:hover .group-hover\\:text-error-container { color: #ffdad6 !important; }
+
+.pizza-house-root .bg-surface { background-color: #fcf9f8 !important; }
+.pizza-house-root .text-surface { color: #fcf9f8 !important; }
+.pizza-house-root .border-surface { border-color: #fcf9f8 !important; }
+.pizza-house-root .fill-surface { fill: #fcf9f8 !important; }
+.pizza-house-root .hover\\:bg-surface:hover { background-color: #fcf9f8 !important; }
+.pizza-house-root .hover\\:text-surface:hover { color: #fcf9f8 !important; }
+.pizza-house-root .group:hover .group-hover\\:text-surface { color: #fcf9f8 !important; }
+
+.pizza-house-root .bg-on-error { background-color: #ffffff !important; }
+.pizza-house-root .text-on-error { color: #ffffff !important; }
+.pizza-house-root .border-on-error { border-color: #ffffff !important; }
+.pizza-house-root .fill-on-error { fill: #ffffff !important; }
+.pizza-house-root .hover\\:bg-on-error:hover { background-color: #ffffff !important; }
+.pizza-house-root .hover\\:text-on-error:hover { color: #ffffff !important; }
+.pizza-house-root .group:hover .group-hover\\:text-on-error { color: #ffffff !important; }
+
+.pizza-house-root .bg-surface-container-low { background-color: #f6f3f2 !important; }
+.pizza-house-root .text-surface-container-low { color: #f6f3f2 !important; }
+.pizza-house-root .border-surface-container-low { border-color: #f6f3f2 !important; }
+.pizza-house-root .fill-surface-container-low { fill: #f6f3f2 !important; }
+.pizza-house-root .hover\\:bg-surface-container-low:hover { background-color: #f6f3f2 !important; }
+.pizza-house-root .hover\\:text-surface-container-low:hover { color: #f6f3f2 !important; }
+.pizza-house-root .group:hover .group-hover\\:text-surface-container-low { color: #f6f3f2 !important; }
+
+.pizza-house-root .bg-on-secondary { background-color: #ffffff !important; }
+.pizza-house-root .text-on-secondary { color: #ffffff !important; }
+.pizza-house-root .border-on-secondary { border-color: #ffffff !important; }
+.pizza-house-root .fill-on-secondary { fill: #ffffff !important; }
+.pizza-house-root .hover\\:bg-on-secondary:hover { background-color: #ffffff !important; }
+.pizza-house-root .hover\\:text-on-secondary:hover { color: #ffffff !important; }
+.pizza-house-root .group:hover .group-hover\\:text-on-secondary { color: #ffffff !important; }
+
+.pizza-house-root .bg-on-primary-fixed { background-color: #410008 !important; }
+.pizza-house-root .text-on-primary-fixed { color: #410008 !important; }
+.pizza-house-root .border-on-primary-fixed { border-color: #410008 !important; }
+.pizza-house-root .fill-on-primary-fixed { fill: #410008 !important; }
+.pizza-house-root .hover\\:bg-on-primary-fixed:hover { background-color: #410008 !important; }
+.pizza-house-root .hover\\:text-on-primary-fixed:hover { color: #410008 !important; }
+.pizza-house-root .group:hover .group-hover\\:text-on-primary-fixed { color: #410008 !important; }
+
+.pizza-house-root .bg-tertiary-container { background-color: #8f6a00 !important; }
+.pizza-house-root .text-tertiary-container { color: #8f6a00 !important; }
+.pizza-house-root .border-tertiary-container { border-color: #8f6a00 !important; }
+.pizza-house-root .fill-tertiary-container { fill: #8f6a00 !important; }
+.pizza-house-root .hover\\:bg-tertiary-container:hover { background-color: #8f6a00 !important; }
+.pizza-house-root .hover\\:text-tertiary-container:hover { color: #8f6a00 !important; }
+.pizza-house-root .group:hover .group-hover\\:text-tertiary-container { color: #8f6a00 !important; }
+
+.pizza-house-root .bg-on-primary-fixed-variant { background-color: #92001f !important; }
+.pizza-house-root .text-on-primary-fixed-variant { color: #92001f !important; }
+.pizza-house-root .border-on-primary-fixed-variant { border-color: #92001f !important; }
+.pizza-house-root .fill-on-primary-fixed-variant { fill: #92001f !important; }
+.pizza-house-root .hover\\:bg-on-primary-fixed-variant:hover { background-color: #92001f !important; }
+.pizza-house-root .hover\\:text-on-primary-fixed-variant:hover { color: #92001f !important; }
+.pizza-house-root .group:hover .group-hover\\:text-on-primary-fixed-variant { color: #92001f !important; }
+
+.pizza-house-root .bg-inverse-on-surface { background-color: #f3f0ef !important; }
+.pizza-house-root .text-inverse-on-surface { color: #f3f0ef !important; }
+.pizza-house-root .border-inverse-on-surface { border-color: #f3f0ef !important; }
+.pizza-house-root .fill-inverse-on-surface { fill: #f3f0ef !important; }
+.pizza-house-root .hover\\:bg-inverse-on-surface:hover { background-color: #f3f0ef !important; }
+.pizza-house-root .hover\\:text-inverse-on-surface:hover { color: #f3f0ef !important; }
+.pizza-house-root .group:hover .group-hover\\:text-inverse-on-surface { color: #f3f0ef !important; }
+
+.pizza-house-root .bg-surface-container { background-color: #f0eded !important; }
+.pizza-house-root .text-surface-container { color: #f0eded !important; }
+.pizza-house-root .border-surface-container { border-color: #f0eded !important; }
+.pizza-house-root .fill-surface-container { fill: #f0eded !important; }
+.pizza-house-root .hover\\:bg-surface-container:hover { background-color: #f0eded !important; }
+.pizza-house-root .hover\\:text-surface-container:hover { color: #f0eded !important; }
+.pizza-house-root .group:hover .group-hover\\:text-surface-container { color: #f0eded !important; }
+
+.pizza-house-root .bg-surface-container-high { background-color: #eae7e7 !important; }
+.pizza-house-root .text-surface-container-high { color: #eae7e7 !important; }
+.pizza-house-root .border-surface-container-high { border-color: #eae7e7 !important; }
+.pizza-house-root .fill-surface-container-high { fill: #eae7e7 !important; }
+.pizza-house-root .hover\\:bg-surface-container-high:hover { background-color: #eae7e7 !important; }
+.pizza-house-root .hover\\:text-surface-container-high:hover { color: #eae7e7 !important; }
+.pizza-house-root .group:hover .group-hover\\:text-surface-container-high { color: #eae7e7 !important; }
+
+.pizza-house-root .bg-surface-variant { background-color: #e5e2e1 !important; }
+.pizza-house-root .text-surface-variant { color: #e5e2e1 !important; }
+.pizza-house-root .border-surface-variant { border-color: #e5e2e1 !important; }
+.pizza-house-root .fill-surface-variant { fill: #e5e2e1 !important; }
+.pizza-house-root .hover\\:bg-surface-variant:hover { background-color: #e5e2e1 !important; }
+.pizza-house-root .hover\\:text-surface-variant:hover { color: #e5e2e1 !important; }
+.pizza-house-root .group:hover .group-hover\\:text-surface-variant { color: #e5e2e1 !important; }
+
+.pizza-house-root .bg-tertiary { background-color: #715300 !important; }
+.pizza-house-root .text-tertiary { color: #715300 !important; }
+.pizza-house-root .border-tertiary { border-color: #715300 !important; }
+.pizza-house-root .fill-tertiary { fill: #715300 !important; }
+.pizza-house-root .hover\\:bg-tertiary:hover { background-color: #715300 !important; }
+.pizza-house-root .hover\\:text-tertiary:hover { color: #715300 !important; }
+.pizza-house-root .group:hover .group-hover\\:text-tertiary { color: #715300 !important; }
+
+.pizza-house-root .bg-surface-dim { background-color: #dcd9d9 !important; }
+.pizza-house-root .text-surface-dim { color: #dcd9d9 !important; }
+.pizza-house-root .border-surface-dim { border-color: #dcd9d9 !important; }
+.pizza-house-root .fill-surface-dim { fill: #dcd9d9 !important; }
+.pizza-house-root .hover\\:bg-surface-dim:hover { background-color: #dcd9d9 !important; }
+.pizza-house-root .hover\\:text-surface-dim:hover { color: #dcd9d9 !important; }
+.pizza-house-root .group:hover .group-hover\\:text-surface-dim { color: #dcd9d9 !important; }
+
+.pizza-house-root .bg-tertiary-fixed { background-color: #ffdea0 !important; }
+.pizza-house-root .text-tertiary-fixed { color: #ffdea0 !important; }
+.pizza-house-root .border-tertiary-fixed { border-color: #ffdea0 !important; }
+.pizza-house-root .fill-tertiary-fixed { fill: #ffdea0 !important; }
+.pizza-house-root .hover\\:bg-tertiary-fixed:hover { background-color: #ffdea0 !important; }
+.pizza-house-root .hover\\:text-tertiary-fixed:hover { color: #ffdea0 !important; }
+.pizza-house-root .group:hover .group-hover\\:text-tertiary-fixed { color: #ffdea0 !important; }
+
+.pizza-house-root .bg-primary-container { background-color: #d7263d !important; }
+.pizza-house-root .text-primary-container { color: #d7263d !important; }
+.pizza-house-root .border-primary-container { border-color: #d7263d !important; }
+.pizza-house-root .fill-primary-container { fill: #d7263d !important; }
+.pizza-house-root .hover\\:bg-primary-container:hover { background-color: #d7263d !important; }
+.pizza-house-root .hover\\:text-primary-container:hover { color: #d7263d !important; }
+.pizza-house-root .group:hover .group-hover\\:text-primary-container { color: #d7263d !important; }
+
+.pizza-house-root .bg-primary-fixed-dim { background-color: #ffb3b2 !important; }
+.pizza-house-root .text-primary-fixed-dim { color: #ffb3b2 !important; }
+.pizza-house-root .border-primary-fixed-dim { border-color: #ffb3b2 !important; }
+.pizza-house-root .fill-primary-fixed-dim { fill: #ffb3b2 !important; }
+.pizza-house-root .hover\\:bg-primary-fixed-dim:hover { background-color: #ffb3b2 !important; }
+.pizza-house-root .hover\\:text-primary-fixed-dim:hover { color: #ffb3b2 !important; }
+.pizza-house-root .group:hover .group-hover\\:text-primary-fixed-dim { color: #ffb3b2 !important; }
+
+.pizza-house-root .bg-primary-container\\/10 { background-color: rgba(215, 38, 61, 0.10) !important; }
+.pizza-house-root .bg-primary-fixed\\/10 { background-color: rgba(255, 218, 217, 0.10) !important; }
+.pizza-house-root .bg-secondary-fixed\\/10 { background-color: rgba(255, 220, 195, 0.10) !important; }
+.pizza-house-root .bg-secondary-container\\/10 { background-color: rgba(252, 148, 48, 0.10) !important; }
+.pizza-house-root .bg-surface-container-highest\\/10 { background-color: rgba(229, 226, 225, 0.10) !important; }
+.pizza-house-root .bg-inverse-surface\\/10 { background-color: rgba(49, 48, 48, 0.10) !important; }
+.pizza-house-root .bg-on-background\\/10 { background-color: rgba(28, 27, 27, 0.10) !important; }
+.pizza-house-root .bg-surface\\/10 { background-color: rgba(252, 249, 248, 0.10) !important; }
+.pizza-house-root .border-white\\/10 { border-color: rgba(255, 255, 255, 0.10) !important; }
+.pizza-house-root .divide-white\\/10 > * + * { border-color: rgba(255, 255, 255, 0.10) !important; }
+.pizza-house-root .shadow-primary-container\\/10 { box-shadow: 0 10px 15px -3px rgba(215, 38, 61, 0.10) !important; }
+
+.pizza-house-root .bg-primary-container\\/20 { background-color: rgba(215, 38, 61, 0.20) !important; }
+.pizza-house-root .bg-primary-fixed\\/20 { background-color: rgba(255, 218, 217, 0.20) !important; }
+.pizza-house-root .bg-secondary-fixed\\/20 { background-color: rgba(255, 220, 195, 0.20) !important; }
+.pizza-house-root .bg-secondary-container\\/20 { background-color: rgba(252, 148, 48, 0.20) !important; }
+.pizza-house-root .bg-surface-container-highest\\/20 { background-color: rgba(229, 226, 225, 0.20) !important; }
+.pizza-house-root .bg-inverse-surface\\/20 { background-color: rgba(49, 48, 48, 0.20) !important; }
+.pizza-house-root .bg-on-background\\/20 { background-color: rgba(28, 27, 27, 0.20) !important; }
+.pizza-house-root .bg-surface\\/20 { background-color: rgba(252, 249, 248, 0.20) !important; }
+.pizza-house-root .border-white\\/20 { border-color: rgba(255, 255, 255, 0.20) !important; }
+.pizza-house-root .divide-white\\/20 > * + * { border-color: rgba(255, 255, 255, 0.20) !important; }
+.pizza-house-root .shadow-primary-container\\/20 { box-shadow: 0 10px 15px -3px rgba(215, 38, 61, 0.20) !important; }
+
+.pizza-house-root .bg-primary-container\\/40 { background-color: rgba(215, 38, 61, 0.40) !important; }
+.pizza-house-root .bg-primary-fixed\\/40 { background-color: rgba(255, 218, 217, 0.40) !important; }
+.pizza-house-root .bg-secondary-fixed\\/40 { background-color: rgba(255, 220, 195, 0.40) !important; }
+.pizza-house-root .bg-secondary-container\\/40 { background-color: rgba(252, 148, 48, 0.40) !important; }
+.pizza-house-root .bg-surface-container-highest\\/40 { background-color: rgba(229, 226, 225, 0.40) !important; }
+.pizza-house-root .bg-inverse-surface\\/40 { background-color: rgba(49, 48, 48, 0.40) !important; }
+.pizza-house-root .bg-on-background\\/40 { background-color: rgba(28, 27, 27, 0.40) !important; }
+.pizza-house-root .bg-surface\\/40 { background-color: rgba(252, 249, 248, 0.40) !important; }
+.pizza-house-root .border-white\\/40 { border-color: rgba(255, 255, 255, 0.40) !important; }
+.pizza-house-root .divide-white\\/40 > * + * { border-color: rgba(255, 255, 255, 0.40) !important; }
+.pizza-house-root .shadow-primary-container\\/40 { box-shadow: 0 10px 15px -3px rgba(215, 38, 61, 0.40) !important; }
+
+.pizza-house-root .bg-primary-container\\/60 { background-color: rgba(215, 38, 61, 0.60) !important; }
+.pizza-house-root .bg-primary-fixed\\/60 { background-color: rgba(255, 218, 217, 0.60) !important; }
+.pizza-house-root .bg-secondary-fixed\\/60 { background-color: rgba(255, 220, 195, 0.60) !important; }
+.pizza-house-root .bg-secondary-container\\/60 { background-color: rgba(252, 148, 48, 0.60) !important; }
+.pizza-house-root .bg-surface-container-highest\\/60 { background-color: rgba(229, 226, 225, 0.60) !important; }
+.pizza-house-root .bg-inverse-surface\\/60 { background-color: rgba(49, 48, 48, 0.60) !important; }
+.pizza-house-root .bg-on-background\\/60 { background-color: rgba(28, 27, 27, 0.60) !important; }
+.pizza-house-root .bg-surface\\/60 { background-color: rgba(252, 249, 248, 0.60) !important; }
+.pizza-house-root .border-white\\/60 { border-color: rgba(255, 255, 255, 0.60) !important; }
+.pizza-house-root .divide-white\\/60 > * + * { border-color: rgba(255, 255, 255, 0.60) !important; }
+.pizza-house-root .shadow-primary-container\\/60 { box-shadow: 0 10px 15px -3px rgba(215, 38, 61, 0.60) !important; }
+
+.pizza-house-root .bg-primary-container\\/80 { background-color: rgba(215, 38, 61, 0.80) !important; }
+.pizza-house-root .bg-primary-fixed\\/80 { background-color: rgba(255, 218, 217, 0.80) !important; }
+.pizza-house-root .bg-secondary-fixed\\/80 { background-color: rgba(255, 220, 195, 0.80) !important; }
+.pizza-house-root .bg-secondary-container\\/80 { background-color: rgba(252, 148, 48, 0.80) !important; }
+.pizza-house-root .bg-surface-container-highest\\/80 { background-color: rgba(229, 226, 225, 0.80) !important; }
+.pizza-house-root .bg-inverse-surface\\/80 { background-color: rgba(49, 48, 48, 0.80) !important; }
+.pizza-house-root .bg-on-background\\/80 { background-color: rgba(28, 27, 27, 0.80) !important; }
+.pizza-house-root .bg-surface\\/80 { background-color: rgba(252, 249, 248, 0.80) !important; }
+.pizza-house-root .border-white\\/80 { border-color: rgba(255, 255, 255, 0.80) !important; }
+.pizza-house-root .divide-white\\/80 > * + * { border-color: rgba(255, 255, 255, 0.80) !important; }
+.pizza-house-root .shadow-primary-container\\/80 { box-shadow: 0 10px 15px -3px rgba(215, 38, 61, 0.80) !important; }
+
+.pizza-house-root .bg-primary-container\\/85 { background-color: rgba(215, 38, 61, 0.85) !important; }
+.pizza-house-root .bg-primary-fixed\\/85 { background-color: rgba(255, 218, 217, 0.85) !important; }
+.pizza-house-root .bg-secondary-fixed\\/85 { background-color: rgba(255, 220, 195, 0.85) !important; }
+.pizza-house-root .bg-secondary-container\\/85 { background-color: rgba(252, 148, 48, 0.85) !important; }
+.pizza-house-root .bg-surface-container-highest\\/85 { background-color: rgba(229, 226, 225, 0.85) !important; }
+.pizza-house-root .bg-inverse-surface\\/85 { background-color: rgba(49, 48, 48, 0.85) !important; }
+.pizza-house-root .bg-on-background\\/85 { background-color: rgba(28, 27, 27, 0.85) !important; }
+.pizza-house-root .bg-surface\\/85 { background-color: rgba(252, 249, 248, 0.85) !important; }
+.pizza-house-root .border-white\\/85 { border-color: rgba(255, 255, 255, 0.85) !important; }
+.pizza-house-root .divide-white\\/85 > * + * { border-color: rgba(255, 255, 255, 0.85) !important; }
+.pizza-house-root .shadow-primary-container\\/85 { box-shadow: 0 10px 15px -3px rgba(215, 38, 61, 0.85) !important; }
+
+.pizza-house-root .bg-primary-container\\/90 { background-color: rgba(215, 38, 61, 0.90) !important; }
+.pizza-house-root .bg-primary-fixed\\/90 { background-color: rgba(255, 218, 217, 0.90) !important; }
+.pizza-house-root .bg-secondary-fixed\\/90 { background-color: rgba(255, 220, 195, 0.90) !important; }
+.pizza-house-root .bg-secondary-container\\/90 { background-color: rgba(252, 148, 48, 0.90) !important; }
+.pizza-house-root .bg-surface-container-highest\\/90 { background-color: rgba(229, 226, 225, 0.90) !important; }
+.pizza-house-root .bg-inverse-surface\\/90 { background-color: rgba(49, 48, 48, 0.90) !important; }
+.pizza-house-root .bg-on-background\\/90 { background-color: rgba(28, 27, 27, 0.90) !important; }
+.pizza-house-root .bg-surface\\/90 { background-color: rgba(252, 249, 248, 0.90) !important; }
+.pizza-house-root .border-white\\/90 { border-color: rgba(255, 255, 255, 0.90) !important; }
+.pizza-house-root .divide-white\\/90 > * + * { border-color: rgba(255, 255, 255, 0.90) !important; }
+.pizza-house-root .shadow-primary-container\\/90 { box-shadow: 0 10px 15px -3px rgba(215, 38, 61, 0.90) !important; }
+
+.pizza-house-root .p-margin { padding: 3rem !important; }
+.pizza-house-root .pt-margin { padding-top: 3rem !important; }
+.pizza-house-root .pb-margin { padding-bottom: 3rem !important; }
+.pizza-house-root .px-margin { padding-left: 3rem !important; padding-right: 3rem !important; }
+.pizza-house-root .py-margin { padding-top: 3rem !important; padding-bottom: 3rem !important; }
+.pizza-house-root .m-margin { margin: 3rem !important; }
+.pizza-house-root .mt-margin { margin-top: 3rem !important; }
+.pizza-house-root .mb-margin { margin-bottom: 3rem !important; }
+.pizza-house-root .gap-margin { gap: 3rem !important; }
+.pizza-house-root .space-y-margin > * + * { margin-top: 3rem !important; }
+.pizza-house-root .space-x-margin > * + * { margin-left: 3rem !important; }
+
+.pizza-house-root .p-gutter { padding: 1.5rem !important; }
+.pizza-house-root .pt-gutter { padding-top: 1.5rem !important; }
+.pizza-house-root .pb-gutter { padding-bottom: 1.5rem !important; }
+.pizza-house-root .px-gutter { padding-left: 1.5rem !important; padding-right: 1.5rem !important; }
+.pizza-house-root .py-gutter { padding-top: 1.5rem !important; padding-bottom: 1.5rem !important; }
+.pizza-house-root .m-gutter { margin: 1.5rem !important; }
+.pizza-house-root .mt-gutter { margin-top: 1.5rem !important; }
+.pizza-house-root .mb-gutter { margin-bottom: 1.5rem !important; }
+.pizza-house-root .gap-gutter { gap: 1.5rem !important; }
+.pizza-house-root .space-y-gutter > * + * { margin-top: 1.5rem !important; }
+.pizza-house-root .space-x-gutter > * + * { margin-left: 1.5rem !important; }
+
+.pizza-house-root .p-gutter-mobile { padding: 1rem !important; }
+.pizza-house-root .pt-gutter-mobile { padding-top: 1rem !important; }
+.pizza-house-root .pb-gutter-mobile { padding-bottom: 1rem !important; }
+.pizza-house-root .px-gutter-mobile { padding-left: 1rem !important; padding-right: 1rem !important; }
+.pizza-house-root .py-gutter-mobile { padding-top: 1rem !important; padding-bottom: 1rem !important; }
+.pizza-house-root .m-gutter-mobile { margin: 1rem !important; }
+.pizza-house-root .mt-gutter-mobile { margin-top: 1rem !important; }
+.pizza-house-root .mb-gutter-mobile { margin-bottom: 1rem !important; }
+.pizza-house-root .gap-gutter-mobile { gap: 1rem !important; }
+.pizza-house-root .space-y-gutter-mobile > * + * { margin-top: 1rem !important; }
+.pizza-house-root .space-x-gutter-mobile > * + * { margin-left: 1rem !important; }
+
+.pizza-house-root .p-space-sm { padding: 0.5rem !important; }
+.pizza-house-root .pt-space-sm { padding-top: 0.5rem !important; }
+.pizza-house-root .pb-space-sm { padding-bottom: 0.5rem !important; }
+.pizza-house-root .px-space-sm { padding-left: 0.5rem !important; padding-right: 0.5rem !important; }
+.pizza-house-root .py-space-sm { padding-top: 0.5rem !important; padding-bottom: 0.5rem !important; }
+.pizza-house-root .m-space-sm { margin: 0.5rem !important; }
+.pizza-house-root .mt-space-sm { margin-top: 0.5rem !important; }
+.pizza-house-root .mb-space-sm { margin-bottom: 0.5rem !important; }
+.pizza-house-root .gap-space-sm { gap: 0.5rem !important; }
+.pizza-house-root .space-y-space-sm > * + * { margin-top: 0.5rem !important; }
+.pizza-house-root .space-x-space-sm > * + * { margin-left: 0.5rem !important; }
+
+.pizza-house-root .p-margin-mobile { padding: 1.25rem !important; }
+.pizza-house-root .pt-margin-mobile { padding-top: 1.25rem !important; }
+.pizza-house-root .pb-margin-mobile { padding-bottom: 1.25rem !important; }
+.pizza-house-root .px-margin-mobile { padding-left: 1.25rem !important; padding-right: 1.25rem !important; }
+.pizza-house-root .py-margin-mobile { padding-top: 1.25rem !important; padding-bottom: 1.25rem !important; }
+.pizza-house-root .m-margin-mobile { margin: 1.25rem !important; }
+.pizza-house-root .mt-margin-mobile { margin-top: 1.25rem !important; }
+.pizza-house-root .mb-margin-mobile { margin-bottom: 1.25rem !important; }
+.pizza-house-root .gap-margin-mobile { gap: 1.25rem !important; }
+.pizza-house-root .space-y-margin-mobile > * + * { margin-top: 1.25rem !important; }
+.pizza-house-root .space-x-margin-mobile > * + * { margin-left: 1.25rem !important; }
+
+.pizza-house-root .p-space-lg { padding: 1.5rem !important; }
+.pizza-house-root .pt-space-lg { padding-top: 1.5rem !important; }
+.pizza-house-root .pb-space-lg { padding-bottom: 1.5rem !important; }
+.pizza-house-root .px-space-lg { padding-left: 1.5rem !important; padding-right: 1.5rem !important; }
+.pizza-house-root .py-space-lg { padding-top: 1.5rem !important; padding-bottom: 1.5rem !important; }
+.pizza-house-root .m-space-lg { margin: 1.5rem !important; }
+.pizza-house-root .mt-space-lg { margin-top: 1.5rem !important; }
+.pizza-house-root .mb-space-lg { margin-bottom: 1.5rem !important; }
+.pizza-house-root .gap-space-lg { gap: 1.5rem !important; }
+.pizza-house-root .space-y-space-lg > * + * { margin-top: 1.5rem !important; }
+.pizza-house-root .space-x-space-lg > * + * { margin-left: 1.5rem !important; }
+
+.pizza-house-root .p-space-xs { padding: 0.25rem !important; }
+.pizza-house-root .pt-space-xs { padding-top: 0.25rem !important; }
+.pizza-house-root .pb-space-xs { padding-bottom: 0.25rem !important; }
+.pizza-house-root .px-space-xs { padding-left: 0.25rem !important; padding-right: 0.25rem !important; }
+.pizza-house-root .py-space-xs { padding-top: 0.25rem !important; padding-bottom: 0.25rem !important; }
+.pizza-house-root .m-space-xs { margin: 0.25rem !important; }
+.pizza-house-root .mt-space-xs { margin-top: 0.25rem !important; }
+.pizza-house-root .mb-space-xs { margin-bottom: 0.25rem !important; }
+.pizza-house-root .gap-space-xs { gap: 0.25rem !important; }
+.pizza-house-root .space-y-space-xs > * + * { margin-top: 0.25rem !important; }
+.pizza-house-root .space-x-space-xs > * + * { margin-left: 0.25rem !important; }
+
+.pizza-house-root .p-space-md { padding: 1rem !important; }
+.pizza-house-root .pt-space-md { padding-top: 1rem !important; }
+.pizza-house-root .pb-space-md { padding-bottom: 1rem !important; }
+.pizza-house-root .px-space-md { padding-left: 1rem !important; padding-right: 1rem !important; }
+.pizza-house-root .py-space-md { padding-top: 1rem !important; padding-bottom: 1rem !important; }
+.pizza-house-root .m-space-md { margin: 1rem !important; }
+.pizza-house-root .mt-space-md { margin-top: 1rem !important; }
+.pizza-house-root .mb-space-md { margin-bottom: 1rem !important; }
+.pizza-house-root .gap-space-md { gap: 1rem !important; }
+.pizza-house-root .space-y-space-md > * + * { margin-top: 1rem !important; }
+.pizza-house-root .space-x-space-md > * + * { margin-left: 1rem !important; }
+
+.pizza-house-root .p-space-xl { padding: 2.5rem !important; }
+.pizza-house-root .pt-space-xl { padding-top: 2.5rem !important; }
+.pizza-house-root .pb-space-xl { padding-bottom: 2.5rem !important; }
+.pizza-house-root .px-space-xl { padding-left: 2.5rem !important; padding-right: 2.5rem !important; }
+.pizza-house-root .py-space-xl { padding-top: 2.5rem !important; padding-bottom: 2.5rem !important; }
+.pizza-house-root .m-space-xl { margin: 2.5rem !important; }
+.pizza-house-root .mt-space-xl { margin-top: 2.5rem !important; }
+.pizza-house-root .mb-space-xl { margin-bottom: 2.5rem !important; }
+.pizza-house-root .gap-space-xl { gap: 2.5rem !important; }
+.pizza-house-root .space-y-space-xl > * + * { margin-top: 2.5rem !important; }
+.pizza-house-root .space-x-space-xl > * + * { margin-left: 2.5rem !important; }
+
+/* Dimension, Spacing & Layout Utilities */
+.pizza-house-root .py-3\\.5 { padding-top: 0.875rem !important; padding-bottom: 0.875rem !important; }
+.pizza-house-root .px-8 { padding-left: 2rem !important; padding-right: 2rem !important; }
+.pizza-house-root .py-2\\.5 { padding-top: 0.625rem !important; padding-bottom: 0.625rem !important; }
+.pizza-house-root .px-4 { padding-left: 1rem !important; padding-right: 1rem !important; }
+.pizza-house-root .py-2 { padding-top: 0.5rem !important; padding-bottom: 0.5rem !important; }
+.pizza-house-root .p-3\\.5 { padding: 0.875rem !important; }
+.pizza-house-root .p-6 { padding: 1.5rem !important; }
+.pizza-house-root .p-8 { padding: 2rem !important; }
+.pizza-house-root .p-12 { padding: 3rem !important; }
+.pizza-house-root .pt-20 { padding-top: 5rem !important; }
+.pizza-house-root .pt-28 { padding-top: 7rem !important; }
+.pizza-house-root .pb-28 { padding-bottom: 7rem !important; }
+.pizza-house-root .py-28 { padding-top: 7rem !important; padding-bottom: 7rem !important; }
+.pizza-house-root .h-20 { height: 5rem !important; }
+.pizza-house-root .w-auto { width: auto !important; }
+.pizza-house-root .w-full { width: 100% !important; }
+.pizza-house-root .max-w-7xl { max-width: 80rem !important; }
+.pizza-house-root .max-w-xl { max-width: 36rem !important; }
+.pizza-house-root .max-w-lg { max-width: 32rem !important; }
+.pizza-house-root .max-w-md { max-width: 28rem !important; }
+.pizza-house-root .aspect-square { aspect-ratio: 1 / 1 !important; }
+.pizza-house-root .aspect-\\[4\\/3\\] { aspect-ratio: 4 / 3 !important; }
+.pizza-house-root .aspect-\\[16\\/9\\] { aspect-ratio: 16 / 9 !important; }
+.pizza-house-root .aspect-\\[3\\/4\\] { aspect-ratio: 3 / 4 !important; }
+
+/* Border Radius */
+.pizza-house-root .rounded-xl { border-radius: 0.75rem !important; }
+.pizza-house-root .rounded-2xl { border-radius: 1rem !important; }
+.pizza-house-root .rounded-3xl { border-radius: 1.5rem !important; }
+.pizza-house-root .rounded-\\[2rem\\] { border-radius: 2rem !important; }
+.pizza-house-root .rounded-\\[2\\.5rem\\] { border-radius: 2.5rem !important; }
+.pizza-house-root .rounded-full { border-radius: 9999px !important; }
+
+/* Shadows */
+.pizza-house-root .shadow-sm { box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important; }
+.pizza-house-root .shadow-md { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1) !important; }
+.pizza-house-root .shadow-lg { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1) !important; }
+.pizza-house-root .shadow-xl { box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important; }
+.pizza-house-root .shadow-2xl { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important; }
+.pizza-house-root .shadow-inner { box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06) !important; }
+.pizza-house-root .shadow-\\[0_1px_8px_rgba\\(0\\,0\\,0\\,0\\.04\\)\\] { box-shadow: 0 1px 8px rgba(0,0,0,0.04) !important; }
+.pizza-house-root .shadow-\\[0_4px_16px_-2px_rgba\\(26\\,26\\,26\\,0\\.05\\)\\,0_2px_6px_-1px_rgba\\(215\\,38\\,61\\,0\\.03\\)\\] { box-shadow: 0 4px 16px -2px rgba(26,26,26,0.05), 0 2px 6px -1px rgba(215,38,61,0.03) !important; }
+
+/* Transitions & Transforms */
+.pizza-house-root .transition-all { transition-property: all; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 200ms; }
+.pizza-house-root .transition-colors { transition-property: color, background-color, border-color, text-decoration-color, fill, stroke; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 200ms; }
+.pizza-house-root .transition-transform { transition-property: transform; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 300ms; }
+.pizza-house-root .hover\\:-translate-y-0\\.5:hover { transform: translateY(-2px) !important; }
+.pizza-house-root .hover\\:-translate-y-1:hover { transform: translateY(-4px) !important; }
+.pizza-house-root .hover\\:scale-105:hover { transform: scale(1.05) !important; }
+.pizza-house-root .group:hover .group-hover\\:scale-105 { transform: scale(1.05) !important; }
+.pizza-house-root .group:hover .group-hover\\:scale-110 { transform: scale(1.1) !important; }
+
+/* Backdrop & Filter */
+.pizza-house-root .blur-2xl { filter: blur(40px) !important; }
+.pizza-house-root .blur-3xl { filter: blur(64px) !important; }
+.pizza-house-root .backdrop-blur-xl { backdrop-filter: blur(24px) !important; -webkit-backdrop-filter: blur(24px) !important; }
+
+/* Gradients */
+.pizza-house-root .bg-gradient-to-t { background-image: linear-gradient(to top, var(--tw-gradient-stops)) !important; }
+.pizza-house-root .from-\\[\\#1c1b1b\\]\\/80 { --tw-gradient-from: rgba(28,27,27,0.8); --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(28,27,27,0)); }
+.pizza-house-root .from-black\\/80 { --tw-gradient-from: rgba(0,0,0,0.8); --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(0,0,0,0)); }
+.pizza-house-root .via-\\[\\#1c1b1b\\]\\/20 { --tw-gradient-to: rgba(28,27,27,0); --tw-gradient-stops: var(--tw-gradient-from), rgba(28,27,27,0.2), var(--tw-gradient-to); }
+.pizza-house-root .to-transparent { --tw-gradient-to: transparent !important; }
+
+/* Animation */
+@keyframes bounceSlow {
+  0%, 100% { transform: translateY(-5%); animation-timing-function: cubic-bezier(0.8,0,1,1); }
+  50% { transform: none; animation-timing-function: cubic-bezier(0,0,0.2,1); }
+}
+.pizza-house-root .animate-bounce {
+  animation: bounceSlow 4s infinite !important;
+}
+` }} />
 
       {/* ========================================================
           HEADER / NAVBAR
@@ -616,12 +1463,21 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
 
                 {/* H1 Heading */}
                 <h1 className="font-display-hero text-display-hero text-[#1c1b1b] tracking-tight leading-tight">
-                  {content.hero?.title || (
-                    <>
-                      Əsl Pizza Zövqü, <br />
-                      <span className="text-[#d7263d]">Hər Dilimdə</span>
-                    </>
-                  )}
+                  {(() => {
+                    const raw = content.hero?.title || theme.heroHeadline || 'Əsl Pizza Zövqü, Hər Dilimdə';
+                    if (raw.includes('Hər Dilimdə')) {
+                      const parts = raw.split('Hər Dilimdə');
+                      return (
+                        <>
+                          {parts[0]}
+                          <br className="hidden sm:inline" />
+                          <span className="text-[#d7263d] text-primary-container">Hər Dilimdə</span>
+                          {parts.slice(1).join('Hər Dilimdə')}
+                        </>
+                      );
+                    }
+                    return raw;
+                  })()}
                 </h1>
 
                 {/* Subtext */}

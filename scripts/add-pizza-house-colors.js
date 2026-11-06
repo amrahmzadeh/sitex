@@ -287,3 +287,4 @@ if (content.includes(marker)) {
 fs.writeFileSync(globalsPath, content);
 console.log('Successfully added Pizza House arbitrary color classes!');
 console.log('New file size:', content.length);
+
