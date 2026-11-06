@@ -2281,14 +2281,28 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
             <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
               {/* Left Column: 4 Contact Cards & Socials */}
               <div className="lg:col-span-6 flex flex-col space-y-6">
-                <div>
-                  <span className="px-4 py-1.5 rounded-full bg-[#ffdcc3] text-[#2f1500] font-label-md text-label-md uppercase tracking-wider">
+                <div className="flex flex-col items-start">
+                  <span
+                    className="inline-flex items-center px-4 py-1.5 rounded-full font-label-md text-label-md uppercase tracking-wider font-semibold"
+                    style={{
+                      backgroundColor: '#ffdcc3',
+                      color: '#2f1500',
+                      marginBottom: '1rem',
+                      display: 'inline-flex',
+                    }}
+                  >
                     {theme.contactBadgeText || 'Ünvan & Əlaqə'}
                   </span>
-                  <h2 className="font-headline-xl text-headline-xl text-[#1c1b1b] tracking-tight mt-3">
+                  <h2
+                    className="font-headline-xl text-headline-xl text-[#1c1b1b] tracking-tight font-bold"
+                    style={{ marginTop: 0, marginBottom: '0.5rem' }}
+                  >
                     {content.contact?.title || theme.contactHeadline || 'Bizimlə Əlaqə'}
                   </h2>
-                  <p className="font-body-md text-body-md text-[#5b403f] mt-1">
+                  <p
+                    className="font-body-md text-body-md text-[#5b403f]"
+                    style={{ marginTop: 0, marginBottom: '1.5rem' }}
+                  >
                     {content.contact?.subtitle ||
                       theme.contactSubtitle ||
                       'Sualınız var və ya sifariş vermək istəyirsiniz? Hər zaman xidmətinizdəyik.'}
@@ -2297,34 +2311,72 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {/* Ünvan */}
-                  <div className="p-5 rounded-2xl bg-white shadow-sm flex flex-col justify-between border border-[#f0eded]">
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-3" style={{ backgroundColor: "#ffdad9", color: "#b20028" }}>
+                  <div
+                    className="rounded-2xl bg-white shadow-sm flex flex-col border border-[#f0eded] transition-all hover:shadow-md"
+                    style={{
+                      backgroundColor: '#ffffff',
+                      borderColor: '#f0eded',
+                      padding: '1.5rem',
+                    }}
+                  >
+                    <div
+                      className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                      style={{
+                        backgroundColor: '#ffdad9',
+                        color: '#b20028',
+                        marginBottom: '1rem',
+                      }}
+                    >
                       <MapPin size={22} />
                     </div>
-                    <div>
-                      <p className="font-label-sm text-label-sm text-[#5b403f] uppercase font-bold tracking-wider">
+                    <div className="flex flex-col">
+                      <p
+                        className="font-label-sm text-label-sm uppercase font-bold tracking-wider"
+                        style={{ color: '#5b403f', marginBottom: '0.25rem' }}
+                      >
                         Ünvan
                       </p>
-                      <p className="font-headline-sm text-headline-sm text-[#1c1b1b] mt-1 leading-snug">
+                      <p
+                        className="font-headline-sm text-headline-sm text-[#1c1b1b] font-bold leading-snug"
+                        style={{ color: '#1c1b1b', marginBottom: '0.25rem' }}
+                      >
                         {organization.address || 'Bakı şəhəri, Nizami küçəsi 45'}
                       </p>
-                      <p className="font-body-sm text-body-sm text-[#5b403f] mt-0.5">
+                      <p className="font-body-sm text-body-sm" style={{ color: '#5b403f' }}>
                         {organization.city || 'Fəvvarələr meydanı yaxınlığı'}
                       </p>
                     </div>
                   </div>
 
                   {/* Telefon */}
-                  <div className="p-5 rounded-2xl bg-white shadow-sm flex flex-col justify-between border border-[#f0eded]">
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-3" style={{ backgroundColor: "#ffdcc3", color: "#914d00" }}>
+                  <div
+                    className="rounded-2xl bg-white shadow-sm flex flex-col border border-[#f0eded] transition-all hover:shadow-md"
+                    style={{
+                      backgroundColor: '#ffffff',
+                      borderColor: '#f0eded',
+                      padding: '1.5rem',
+                    }}
+                  >
+                    <div
+                      className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                      style={{
+                        backgroundColor: '#ffdcc3',
+                        color: '#914d00',
+                        marginBottom: '1rem',
+                      }}
+                    >
                       <Phone size={22} />
                     </div>
-                    <div>
-                      <p className="font-label-sm text-label-sm text-[#5b403f] uppercase font-bold tracking-wider">
+                    <div className="flex flex-col">
+                      <p
+                        className="font-label-sm text-label-sm uppercase font-bold tracking-wider"
+                        style={{ color: '#5b403f', marginBottom: '0.25rem' }}
+                      >
                         Telefon
                       </p>
                       <a
-                        className="block font-headline-sm text-headline-sm text-[#1c1b1b] hover:text-[#b20028] transition-colors mt-1"
+                        className="block font-headline-sm text-headline-sm text-[#1c1b1b] font-bold hover:text-[#b20028] transition-colors"
+                        style={{ color: '#1c1b1b', marginBottom: '0.25rem' }}
                         href={`tel:${organization.phone || '+994125980000'}`}
                       >
                         {organization.phone || '+994 12 598 00 00'}
@@ -2341,39 +2393,77 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                   </div>
 
                   {/* E-poçt */}
-                  <div className="p-5 rounded-2xl bg-white shadow-sm flex flex-col justify-between border border-[#f0eded]">
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-3" style={{ backgroundColor: "#ffdea0", color: "#715300" }}>
+                  <div
+                    className="rounded-2xl bg-white shadow-sm flex flex-col border border-[#f0eded] transition-all hover:shadow-md"
+                    style={{
+                      backgroundColor: '#ffffff',
+                      borderColor: '#f0eded',
+                      padding: '1.5rem',
+                    }}
+                  >
+                    <div
+                      className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                      style={{
+                        backgroundColor: '#ffdea0',
+                        color: '#715300',
+                        marginBottom: '1rem',
+                      }}
+                    >
                       <Mail size={22} />
                     </div>
-                    <div>
-                      <p className="font-label-sm text-label-sm text-[#5b403f] uppercase font-bold tracking-wider">
+                    <div className="flex flex-col">
+                      <p
+                        className="font-label-sm text-label-sm uppercase font-bold tracking-wider"
+                        style={{ color: '#5b403f', marginBottom: '0.25rem' }}
+                      >
                         E-poçt
                       </p>
                       <a
-                        className="block font-headline-sm text-headline-sm text-[#1c1b1b] hover:text-[#b20028] transition-colors mt-1"
+                        className="block font-headline-sm text-headline-sm text-[#1c1b1b] font-bold hover:text-[#b20028] transition-colors"
+                        style={{ color: '#1c1b1b', marginBottom: '0.25rem' }}
                         href={`mailto:${organization.email || 'info@pizzahouse.az'}`}
                       >
                         {organization.email || 'info@pizzahouse.az'}
                       </a>
-                      <p className="font-body-sm text-body-sm text-[#5b403f] mt-0.5">
+                      <p className="font-body-sm text-body-sm" style={{ color: '#5b403f' }}>
                         Dərhal cavablandırılır
                       </p>
                     </div>
                   </div>
 
                   {/* İş saatları */}
-                  <div className="p-5 rounded-2xl bg-white shadow-sm flex flex-col justify-between border border-[#f0eded]">
-                    <div className="w-10 h-10 rounded-xl bg-[#ffdad9] text-[#b20028] flex items-center justify-center mb-3">
+                  <div
+                    className="rounded-2xl bg-white shadow-sm flex flex-col border border-[#f0eded] transition-all hover:shadow-md"
+                    style={{
+                      backgroundColor: '#ffffff',
+                      borderColor: '#f0eded',
+                      padding: '1.5rem',
+                    }}
+                  >
+                    <div
+                      className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                      style={{
+                        backgroundColor: '#ffdad9',
+                        color: '#b20028',
+                        marginBottom: '1rem',
+                      }}
+                    >
                       <Clock size={22} />
                     </div>
-                    <div>
-                      <p className="font-label-sm text-label-sm text-[#5b403f] uppercase font-bold tracking-wider">
+                    <div className="flex flex-col">
+                      <p
+                        className="font-label-sm text-label-sm uppercase font-bold tracking-wider"
+                        style={{ color: '#5b403f', marginBottom: '0.25rem' }}
+                      >
                         İş saatları
                       </p>
-                      <p className="font-headline-sm text-headline-sm text-[#1c1b1b] mt-1">
+                      <p
+                        className="font-headline-sm text-headline-sm text-[#1c1b1b] font-bold"
+                        style={{ color: '#1c1b1b', marginBottom: '0.25rem' }}
+                      >
                         Hər gün
                       </p>
-                      <p className="font-body-sm text-body-sm text-[#5b403f] mt-0.5">
+                      <p className="font-body-sm text-body-sm" style={{ color: '#5b403f' }}>
                         {workingHours && workingHours.length > 0 && workingHours[0].openTime
                           ? `${workingHours[0].openTime} – ${workingHours[0].closeTime}`
                           : '10:00 – 23:00 fasiləsiz'}
@@ -2556,14 +2646,25 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
           FOOTER
           ======================================================== */}
       <footer
-        className="w-full text-white pt-16 pb-12 px-6 lg:px-12 border-t"
+        className="w-full text-white border-t"
         style={{
           backgroundColor: '#313030',
           borderColor: 'rgba(255, 255, 255, 0.08)',
+          paddingTop: '4.5rem',
+          paddingBottom: '3.5rem',
+          paddingLeft: '1.5rem',
+          paddingRight: '1.5rem',
         }}
       >
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 pb-12 border-b border-white/10">
+          <div
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 border-b"
+            style={{
+              paddingBottom: '3rem',
+              marginBottom: '2rem',
+              borderColor: 'rgba(255, 255, 255, 0.1)',
+            }}
+          >
             {/* Col 1: Brand & Slogan */}
             <div className="space-y-4">
               <div className="flex items-center gap-2">
@@ -2723,7 +2824,10 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
           </div>
 
           {/* Bottom Bar */}
-          <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div
+            className="flex flex-col sm:flex-row items-center justify-between gap-4"
+            style={{ paddingTop: '0.75rem' }}
+          >
             <p className="font-body-sm text-body-sm text-[#dcd9d9] text-center sm:text-left">
               {theme.footerCopyrightText || `© ${currentYear} Pizza House. Bütün hüquqlar qorunur.`}
             </p>
