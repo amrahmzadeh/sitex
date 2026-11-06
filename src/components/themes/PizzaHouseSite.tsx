@@ -2130,7 +2130,7 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
               </div>
 
               {/* Right Column: Visual Pizza Showcase */}
-              <div className="lg:col-span-6 relative flex justify-center items-center min-h-0">
+              <div className="lg:col-span-6 relative flex flex-col justify-center items-center min-h-0">
                 {/* Ambient Glowing Disc */}
                 <div className="absolute w-72 sm:w-96 h-72 sm:h-96 rounded-full bg-[#fc9430]/20 blur-2xl -z-10" />
 
@@ -2145,67 +2145,107 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                     src={theme.headerImageUrl || HERO_PIZZA_IMG}
                   />
 
-                  {/* Floating Badge 1: Rating */}
+                  {/* Floating Badge 1: Rating (Desktop/tablet only) */}
                   <div
-                    className="absolute top-2 left-2 sm:top-4 sm:-left-6 px-2.5 py-1.5 sm:px-4 sm:py-2.5 rounded-xl sm:rounded-2xl shadow-xl flex items-center gap-2 sm:gap-2.5 animate-bounce border border-[#f0eded] z-20"
+                    className="hidden sm:flex absolute sm:top-4 sm:-left-6 px-4 py-2.5 rounded-2xl shadow-xl items-center gap-2.5 animate-bounce border border-[#f0eded] z-20"
                     style={{ animationDuration: '4s', backgroundColor: '#ffffff' }}
                   >
                     <div
-                      className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl flex items-center justify-center shrink-0"
+                      className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
                       style={{ backgroundColor: '#ffdea0', color: '#261a00' }}
                     >
-                      <Star size={16} className="fill-[#261a00] text-[#261a00]" />
+                      <Star size={18} className="fill-[#261a00] text-[#261a00]" />
                     </div>
                     <div>
-                      <p className="font-headline-sm text-xs sm:text-base font-bold leading-tight text-[#1c1b1b]">
+                      <p className="font-headline-sm text-sm sm:text-base font-bold leading-tight text-[#1c1b1b]">
                         {theme.heroRatingScore || '4.9'}
                       </p>
-                      <p className="font-label-sm text-[10px] sm:text-xs text-[#5b403f]">
+                      <p className="font-label-sm text-xs text-[#5b403f]">
                         {theme.heroRatingLabel || 'Reytinq (2.4k+)'}
                       </p>
                     </div>
                   </div>
 
-                  {/* Floating Badge 2: 100% Mozzarella */}
+                  {/* Floating Badge 2: 100% Mozzarella (Desktop/tablet only) */}
                   <div
-                    className="absolute bottom-2 left-2 sm:bottom-6 sm:-left-4 px-2.5 py-1.5 sm:px-4 sm:py-2.5 rounded-xl sm:rounded-2xl shadow-xl flex items-center gap-2 sm:gap-2.5 border border-[#f0eded] z-20"
+                    className="hidden sm:flex absolute sm:bottom-6 sm:-left-4 px-4 py-2.5 rounded-2xl shadow-xl items-center gap-2.5 border border-[#f0eded] z-20"
                     style={{ backgroundColor: '#ffffff' }}
                   >
                     <div
-                      className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl flex items-center justify-center shrink-0"
+                      className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
                       style={{ backgroundColor: '#ffdad9', color: '#b20028' }}
                     >
-                      <Flame size={16} className="fill-[#b20028] text-[#b20028]" />
+                      <Flame size={18} className="fill-[#b20028] text-[#b20028]" />
                     </div>
                     <div>
-                      <p className="font-headline-sm text-xs sm:text-base font-bold leading-tight text-[#1c1b1b]">
+                      <p className="font-headline-sm text-sm sm:text-base font-bold leading-tight text-[#1c1b1b]">
                         {theme.heroBadgeFeature1 || '100% Təbii'}
                       </p>
-                      <p className="font-label-sm text-[10px] sm:text-xs text-[#5b403f]">
+                      <p className="font-label-sm text-xs text-[#5b403f]">
                         {theme.heroBadgeFeature1Desc || 'Pendir & Xəmir'}
                       </p>
                     </div>
                   </div>
 
-                  {/* Floating Badge 3: Fast baking */}
+                  {/* Floating Badge 3: Fast baking (Desktop/tablet only) */}
                   <div
-                    className="absolute top-2 right-2 sm:top-10 sm:-right-6 px-2.5 py-1.5 sm:px-4 sm:py-2.5 rounded-xl sm:rounded-2xl shadow-xl flex items-center gap-2 sm:gap-2.5 border border-[#f0eded] z-20"
+                    className="hidden sm:flex absolute sm:top-10 sm:-right-6 px-4 py-2.5 rounded-2xl shadow-xl items-center gap-2.5 border border-[#f0eded] z-20"
                     style={{ backgroundColor: '#ffffff' }}
                   >
                     <div
-                      className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl flex items-center justify-center shrink-0"
+                      className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
                       style={{ backgroundColor: '#ffdcc3', color: '#914d00' }}
                     >
-                      <Clock size={16} className="text-[#914d00]" />
+                      <Clock size={18} className="text-[#914d00]" />
                     </div>
                     <div>
-                      <p className="font-headline-sm text-xs sm:text-base font-bold leading-tight text-[#1c1b1b]">
+                      <p className="font-headline-sm text-sm sm:text-base font-bold leading-tight text-[#1c1b1b]">
                         {theme.heroBadgeFeature2 || '15 Dəqiqəyə'}
                       </p>
-                      <p className="font-label-sm text-[10px] sm:text-xs text-[#5b403f]">
+                      <p className="font-label-sm text-xs text-[#5b403f]">
                         {theme.heroBadgeFeature2Desc || 'Süfrənizdə hazır'}
                       </p>
                     </div>
+                  </div>
+                </div>
+
+                {/* Mobile-only Highlights: positioned cleanly underneath the image */}
+                <div className="flex sm:hidden items-center justify-around w-full max-w-xs mt-4 p-3.5 bg-white rounded-2xl shadow-md border border-[#f0eded]">
+                  {/* Rating */}
+                  <div className="flex flex-col items-center text-center">
+                    <div className="flex items-center gap-1 font-bold text-sm text-[#1c1b1b]">
+                      <Star size={15} className="fill-[#fbbc0c] text-[#fbbc0c]" />
+                      <span>{theme.heroRatingScore || '4.9'}</span>
+                    </div>
+                    <span className="text-[10px] text-[#5b403f] font-medium mt-0.5">
+                      {theme.heroRatingLabel || 'Reytinq (2.4k+)'}
+                    </span>
+                  </div>
+
+                  <div className="h-8 w-[1px] bg-[#f0eded]" />
+
+                  {/* 15 Dəqiqəyə */}
+                  <div className="flex flex-col items-center text-center">
+                    <div className="flex items-center gap-1 font-bold text-sm text-[#1c1b1b]">
+                      <Clock size={15} className="text-[#914d00]" />
+                      <span>{theme.heroBadgeFeature2 || '15 Dəqiqəyə'}</span>
+                    </div>
+                    <span className="text-[10px] text-[#5b403f] font-medium mt-0.5">
+                      {theme.heroBadgeFeature2Desc || 'Süfrənizdə hazır'}
+                    </span>
+                  </div>
+
+                  <div className="h-8 w-[1px] bg-[#f0eded]" />
+
+                  {/* 100% Təbii */}
+                  <div className="flex flex-col items-center text-center">
+                    <div className="flex items-center gap-1 font-bold text-sm text-[#1c1b1b]">
+                      <Flame size={15} className="fill-[#d7263d] text-[#d7263d]" />
+                      <span>{theme.heroBadgeFeature1 || '100% Təbii'}</span>
+                    </div>
+                    <span className="text-[10px] text-[#5b403f] font-medium mt-0.5">
+                      {theme.heroBadgeFeature1Desc || 'Pendir & Xəmir'}
+                    </span>
                   </div>
                 </div>
               </div>
