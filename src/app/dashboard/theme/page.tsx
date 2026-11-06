@@ -1341,26 +1341,78 @@ export default function ThemePage() {
           </div>
 
           <p style={{ fontSize: 12, color: '#9BA3AF', margin: 0, lineHeight: '18px' }}>
-            <strong>Warm Gourmet Street Food</strong> — Qaranlıq şifer dərinlikləri, zəfəran qızılı işıltılar, interaktiv səbət və sürətli WhatsApp sifariş sistemi.
+            Eksklüziv dizayn, xüsusi vizual identiklik və interaktiv modullar təqdim edən premium şablonlar.
           </p>
 
           {theme.isProTemplate && (
-            <div
-              style={{
-                marginTop: 12,
-                padding: '8px 12px',
-                borderRadius: 8,
-                background: 'rgba(229, 169, 60, 0.15)',
-                border: '1px solid rgba(229, 169, 60, 0.3)',
-                fontSize: 12,
-                color: '#ffc665',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6,
-              }}
-            >
-              <Check size={14} />
-              <span>Pro Şablon aktivdir. Saytınız yeni dizaynla işləyəcək.</span>
+            <div style={{ marginTop: 14, display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {[
+                {
+                  id: 'pizzaHouse',
+                  templateId: 'pizza-house',
+                  preset: defaultThemes.pizzaHouse,
+                  title: '🍕 Pizza House (PRO)',
+                  desc: 'Odun sobası pizzası, zərif Neapolitan palitrası, interaktiv qalereya və masa rezervasiyası.',
+                },
+                {
+                  id: 'randevuCafe',
+                  templateId: 'randevu-cafe',
+                  preset: defaultThemes.randevuCafe,
+                  title: '🍃 Randevu Cafe & Lounge (PRO)',
+                  desc: 'Ailəvi lounge və kafe üçün bento şəbəkəsi, zümrüd-burqundu rəngləri və xüsusi təkliflər.',
+                },
+                {
+                  id: 'warmGourmetPro',
+                  templateId: 'warm-gourmet-pro',
+                  preset: defaultThemes.warmGourmetPro,
+                  title: '🔥 Warm Gourmet Street Food (PRO)',
+                  desc: 'Qaranlıq şifer dərinlikləri, zəfəran qızılı işıltılar, interaktiv menyu və sürətli sifariş.',
+                },
+              ].map((proItem) => {
+                const isSelected =
+                  theme.proTemplateId === proItem.templateId ||
+                  theme.templateId === proItem.templateId ||
+                  theme.id === proItem.id;
+                return (
+                  <button
+                    key={proItem.id}
+                    type="button"
+                    onClick={() => {
+                      if (proItem.preset) {
+                        setTheme((p) => ({
+                          ...p,
+                          ...proItem.preset,
+                          isProTemplate: true,
+                          templateId: proItem.templateId,
+                          proTemplateId: proItem.templateId,
+                          id: proItem.id,
+                        }));
+                      }
+                    }}
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'flex-start',
+                      gap: 4,
+                      padding: '10px 12px',
+                      borderRadius: 10,
+                      border: `1px solid ${isSelected ? '#E5A93C' : '#2A2A3A'}`,
+                      background: isSelected ? 'rgba(229, 169, 60, 0.15)' : '#181A20',
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                      transition: 'all 0.15s',
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: isSelected ? '#ffc665' : '#E8E8F0' }}>
+                        {proItem.title}
+                      </span>
+                      {isSelected && <Check size={14} color="#ffc665" />}
+                    </div>
+                    <span style={{ fontSize: 11, color: '#9BA3AF' }}>{proItem.desc}</span>
+                  </button>
+                );
+              })}
             </div>
           )}
         </div>

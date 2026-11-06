@@ -1,969 +1,714 @@
 <!DOCTYPE html>
 
-<html class="scroll-smooth" lang="az"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Randevu Cafe &amp; Family Lounge | Ləziz Təamlar və İsti Ailəvi Ab-hava</title>
-<!-- Google Fonts -->
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&amp;family=Plus+Jakarta+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
-<!-- Material Symbols Outlined -->
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<!-- Tailwind CSS v3 -->
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<!-- Tailwind Configuration verbatim as mandated -->
-<script id="tailwind-config">
-    tailwind.config = {
-      darkMode: "class",
-      theme: {
-        extend: {
-          "colors": {
-            "primary-container": "#065f38",
-            "on-error-container": "#93000a",
-            "inverse-surface": "#2f312f",
-            "on-tertiary": "#ffffff",
-            "on-primary-fixed": "#002110",
-            "on-secondary-fixed": "#410007",
-            "error-container": "#ffdad6",
-            "outline": "#6f7a71",
-            "surface-bright": "#faf9f6",
-            "primary-fixed-dim": "#8ad7a5",
-            "tertiary-fixed": "#ffe088",
-            "surface-container-lowest": "#ffffff",
-            "secondary-fixed-dim": "#ffb3b1",
-            "surface-container-high": "#e9e8e5",
-            "on-tertiary-fixed-variant": "#574500",
-            "tertiary": "#735c00",
-            "secondary-fixed": "#ffdad8",
-            "outline-variant": "#bfc9bf",
-            "on-error": "#ffffff",
-            "on-surface": "#1a1c1a",
-            "surface": "#faf9f6",
-            "surface-container": "#efeeeb",
-            "inverse-on-surface": "#f2f1ee",
-            "surface-container-highest": "#e3e2e0",
-            "tertiary-container": "#cca830",
-            "on-background": "#1a1c1a",
-            "on-tertiary-fixed": "#241a00",
-            "on-secondary-fixed-variant": "#881c24",
-            "surface-tint": "#1b6b43",
-            "surface-dim": "#dbdad7",
-            "surface-container-low": "#f4f3f1",
-            "on-primary-fixed-variant": "#00522f",
-            "error": "#ba1a1a",
-            "inverse-primary": "#8ad7a5",
-            "secondary": "#a93539",
-            "on-surface-variant": "#3f4941",
-            "secondary-container": "#ff7576",
-            "on-primary": "#ffffff",
-            "on-secondary": "#ffffff",
-            "on-primary-container": "#8ad7a5",
-            "primary-fixed": "#a5f4c0",
-            "primary": "#004527",
-            "on-tertiary-container": "#4f3e00",
-            "background": "#faf9f6",
-            "surface-variant": "#e3e2e0",
-            "on-secondary-container": "#720917",
-            "tertiary-fixed-dim": "#e9c349"
-          },
-          "borderRadius": {
-            "DEFAULT": "0.25rem",
-            "lg": "0.5rem",
-            "xl": "0.75rem",
-            "full": "9999px"
-          },
-          "spacing": {
-            "gutter": "1.5rem",
-            "margin-lg": "4rem",
-            "margin-md": "2.5rem",
-            "gutter-lg": "2rem",
-            "space-lg": "2rem",
-            "space-sm": "0.75rem",
-            "gutter-sm": "1rem",
-            "space-xl": "3.5rem",
-            "space-md": "1.25rem",
-            "margin": "1.5rem",
-            "space-xs": "0.375rem"
-          },
-          "fontFamily": {
-            "headline-md": ["Playfair Display"],
-            "title-md": ["Plus Jakarta Sans"],
-            "title-lg": ["Plus Jakarta Sans"],
-            "display-hero": ["Playfair Display"],
-            "label-md": ["Plus Jakarta Sans"],
-            "body-sm": ["Plus Jakarta Sans"],
-            "body-lg": ["Plus Jakarta Sans"],
-            "display-hero-mobile": ["Playfair Display"],
-            "headline-lg-mobile": ["Playfair Display"],
-            "body-md": ["Plus Jakarta Sans"],
-            "headline-sm": ["Playfair Display"],
-            "label-lg": ["Plus Jakarta Sans"],
-            "headline-lg": ["Playfair Display"],
-            "label-caps": ["Plus Jakarta Sans"]
-          },
-          "fontSize": {
-            "headline-md": ["28px", { "lineHeight": "36px", "letterSpacing": "0em", "fontWeight": "600" }],
-            "title-md": ["17px", { "lineHeight": "24px", "letterSpacing": "0em", "fontWeight": "600" }],
-            "title-lg": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
-            "display-hero": ["56px", { "lineHeight": "68px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
-            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.08em", "fontWeight": "600" }],
-            "body-sm": ["13px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "400" }],
-            "body-lg": ["17px", { "lineHeight": "28px", "letterSpacing": "0em", "fontWeight": "400" }],
-            "display-hero-mobile": ["38px", { "lineHeight": "48px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
-            "headline-lg-mobile": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
-            "body-md": ["15px", { "lineHeight": "24px", "letterSpacing": "0.01em", "fontWeight": "400" }],
-            "headline-sm": ["22px", { "lineHeight": "30px", "letterSpacing": "0em", "fontWeight": "600" }],
-            "label-lg": ["14px", { "lineHeight": "18px", "letterSpacing": "0.06em", "fontWeight": "600" }],
-            "headline-lg": ["40px", { "lineHeight": "50px", "letterSpacing": "-0.015em", "fontWeight": "600" }],
-            "label-caps": ["11px", { "lineHeight": "14px", "letterSpacing": "0.12em", "fontWeight": "700" }]
-          }
-        },
-      },
-    }
-  </script>
-<style>
-    .material-symbols-outlined {
-      font-family: 'Material Symbols Outlined';
-      font-weight: normal;
-      font-style: normal;
-      font-size: 20px;
-      line-height: 1;
-      letter-spacing: normal;
-      text-transform: none;
-      display: inline-block;
-      white-space: nowrap;
-      word-wrap: normal;
-      direction: ltr;
-      -webkit-font-feature-settings: 'liga';
-      -webkit-font-smoothing: antialiased;
-    }
-    .frosted-glass {
-      background: rgba(250, 249, 246, 0.85);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.6), 0 8px 32px -4px rgba(28, 29, 31, 0.06);
-    }
-  </style>
-</head>
-<body class="bg-background text-on-surface antialiased font-body-md text-body-md selection:bg-primary selection:text-white">
-<!-- =========================================================================
-       SHARED COMPONENT 1: TopNavBar (Exact mapping from JSON & Style Tokens)
-       ========================================================================= -->
-<header class="fixed top-4 inset-x-4 md:inset-x-8 rounded-full z-50 bg-surface/85 backdrop-blur-md shadow-md border border-outline-variant/30">
-<div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-<!-- Brand Logo -->
-<a class="flex items-center gap-3 active:scale-95 transition-transform duration-150 group" href="#hero">
-<div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-on-primary shadow-sm shadow-primary/20">
-<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">restaurant_menu</span>
+<html class="scroll-smooth" lang="az"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@600;700;800&amp;family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"on-background":"#1c1b1b","surface-container-highest":"#e5e2e1","on-primary-container":"#fff2f1","error":"#ba1a1a","on-tertiary":"#ffffff","primary-fixed":"#ffdad9","inverse-surface":"#313030","secondary-fixed":"#ffdcc3","tertiary-fixed-dim":"#fbbc0c","on-tertiary-fixed":"#261a00","on-error-container":"#93000a","on-secondary-fixed-variant":"#6e3900","on-surface-variant":"#5b403f","surface-tint":"#bd0a2e","on-tertiary-fixed-variant":"#5c4300","surface-bright":"#fcf9f8","background":"#fcf9f8","surface-container-lowest":"#ffffff","outline-variant":"#e4bdbc","on-secondary-fixed":"#2f1500","secondary-container":"#fc9430","secondary":"#914d00","primary":"#b20028","inverse-primary":"#ffb3b2","on-primary":"#ffffff","on-tertiary-container":"#fff3e3","on-secondary-container":"#663500","secondary-fixed-dim":"#ffb77d","on-surface":"#1c1b1b","outline":"#906f6e","error-container":"#ffdad6","surface":"#fcf9f8","on-error":"#ffffff","surface-container-low":"#f6f3f2","on-secondary":"#ffffff","on-primary-fixed":"#410008","tertiary-container":"#8f6a00","on-primary-fixed-variant":"#92001f","inverse-on-surface":"#f3f0ef","surface-container":"#f0eded","surface-container-high":"#eae7e7","surface-variant":"#e5e2e1","tertiary":"#715300","surface-dim":"#dcd9d9","tertiary-fixed":"#ffdea0","primary-container":"#d7263d","primary-fixed-dim":"#ffb3b2"},borderRadius:{DEFAULT:"0.25rem",lg:"0.5rem",xl:"0.75rem",full:"9999px"},spacing:{"margin":"3rem","gutter":"1.5rem","gutter-mobile":"1rem","space-sm":"0.5rem","margin-mobile":"1.25rem","space-lg":"1.5rem","space-xs":"0.25rem","space-md":"1rem","space-xl":"2.5rem"},fontFamily:{"headline-md":["Epilogue"],"label-lg":["Inter"],"body-sm":["Inter"],"headline-lg":["Epilogue"],"display-hero":["Epilogue"],"headline-sm":["Epilogue"],"display-hero-mobile":["Epilogue"],"label-md":["Inter"],"headline-xl":["Epilogue"],"headline-xl-mobile":["Epilogue"],"body-md":["Inter"],"body-lg":["Inter"],"label-sm":["Inter"]},fontSize:{"headline-md":["22px",{lineHeight:"28px",fontWeight:"600"}],"label-lg":["15px",{lineHeight:"20px",letterSpacing:"0.01em",fontWeight:"600"}],"body-sm":["14px",{lineHeight:"20px",fontWeight:"400"}],"headline-lg":["28px",{lineHeight:"34px",letterSpacing:"-0.01em",fontWeight:"700"}],"display-hero":["56px",{lineHeight:"64px",letterSpacing:"-0.03em",fontWeight:"800"}],"headline-sm":["18px",{lineHeight:"24px",fontWeight:"600"}],"display-hero-mobile":["38px",{lineHeight:"44px",letterSpacing:"-0.02em",fontWeight:"800"}],"label-md":["13px",{lineHeight:"18px",letterSpacing:"0.02em",fontWeight:"600"}],"headline-xl":["40px",{lineHeight:"48px",letterSpacing:"-0.02em",fontWeight:"700"}],"headline-xl-mobile":["30px",{lineHeight:"36px",letterSpacing:"-0.01em",fontWeight:"700"}],"body-md":["16px",{lineHeight:"24px",fontWeight:"400"}],"body-lg":["18px",{lineHeight:"28px",fontWeight:"400"}],"label-sm":["11px",{lineHeight:"14px",letterSpacing:"0.04em",fontWeight:"700"}]}}}};</script></head><body class="bg-surface font-body-md text-on-surface antialiased selection:bg-primary-fixed selection:text-on-primary-fixed"><header class="fixed top-0 left-0 w-full z-50 bg-surface/85 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-20 max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between"><a class="flex items-center gap-space-sm group" href="#hero"><img alt="Pizza House Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuACB0mAksM3aRPhjsT8OxLfp7adGNG-ZMTtcWiad_Wb35YCaS7dSWGxgU2jDhX5zvKlBhOCKXebmEH7rtRQ8pjyxl_8BQByRau-fZtWdwhqMWWus-glqZPm22yDUU7j6LMeNHFmSqbxj5GyzkfUthaY7PLlvKNwn-DQlOXX-m0-NbwzoLoNrE64AwObC0jPWRbTnHylbv9TpRcpeQVxjmm5inNoXkcrjx4u9sAcjMQ"/><span class="font-headline-sm text-headline-sm text-on-surface tracking-tight group-hover:text-primary transition-colors">Pizza House</span></a><nav class="hidden lg:flex items-center gap-space-lg" data-active-classes="bg-primary-container text-on-primary font-bold rounded-xl"><a aria-current="page" class="transition-colors py-space-xs px-space-sm bg-primary-container text-on-primary font-bold rounded-xl" data-path="landing" href="#hero">Ana Səhifə</a><a class="text-on-surface-variant hover:text-primary font-label-lg text-label-lg transition-colors py-space-xs px-space-sm" data-path="qalareya" href="#qalareya">Qalareya</a><a class="text-on-surface-variant hover:text-primary font-label-lg text-label-lg transition-colors py-space-xs px-space-sm" data-path="menyu" href="#menyu">Menyu</a><a class="text-on-surface-variant hover:text-primary font-label-lg text-label-lg transition-colors py-space-xs px-space-sm" data-path="haqqimizda" href="#haqqimizda">Haqqımızda</a><a class="text-on-surface-variant hover:text-primary font-label-lg text-label-lg transition-colors py-space-xs px-space-sm" data-path="rezervasiya" href="#rezervasiya">Rezervasiya</a><a class="text-on-surface-variant hover:text-primary font-label-lg text-label-lg transition-colors py-space-xs px-space-sm" data-path="elaqe" href="#elaqe">Əlaqə</a></nav><div class="flex items-center gap-space-md"><a class="hidden sm:inline-flex items-center justify-center bg-primary-container hover:bg-primary text-on-primary font-label-lg text-label-lg px-space-lg py-space-sm rounded-xl shadow-[0_4px_16px_-2px_rgba(26,26,26,0.05),0_2px_6px_-1px_rgba(215,38,61,0.03)] hover:-translate-y-0.5 transition-all" href="#rezervasiya">Rezervasiya et</a><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><button aria-label="Menyunu aç" class="lg:hidden flex items-center justify-center p-space-xs text-on-surface hover:text-primary focus:outline-none" onclick="document.getElementById('mobile-drawer').classList.toggle('hidden')" type="button"><span class="material-symbols-outlined text-[28px]">menu</span></button></div></div><div class="hidden lg:hidden bg-surface-container-low px-6 py-space-lg shadow-lg" id="mobile-drawer"><nav class="flex flex-col gap-space-sm" data-active-classes="bg-primary-container text-on-primary font-bold rounded-xl"><a aria-current="page" class="py-space-sm px-space-md bg-primary-container text-on-primary font-bold rounded-xl" data-path="landing" href="#hero" onclick="document.getElementById('mobile-drawer').classList.add('hidden')">Ana Səhifə</a><a class="text-on-surface-variant hover:text-primary font-label-lg text-label-lg py-space-sm px-space-md rounded-lg" data-path="qalareya" href="#qalareya" onclick="document.getElementById('mobile-drawer').classList.add('hidden')">Qalareya</a><a class="text-on-surface-variant hover:text-primary font-label-lg text-label-lg py-space-sm px-space-md rounded-lg" data-path="menyu" href="#menyu" onclick="document.getElementById('mobile-drawer').classList.add('hidden')">Menyu</a><a class="text-on-surface-variant hover:text-primary font-label-lg text-label-lg py-space-sm px-space-md rounded-lg" data-path="haqqimizda" href="#haqqimizda" onclick="document.getElementById('mobile-drawer').classList.add('hidden')">Haqqımızda</a><a class="text-on-surface-variant hover:text-primary font-label-lg text-label-lg py-space-sm px-space-md rounded-lg" data-path="rezervasiya" href="#rezervasiya" onclick="document.getElementById('mobile-drawer').classList.add('hidden')">Rezervasiya</a><a class="text-on-surface-variant hover:text-primary font-label-lg text-label-lg py-space-sm px-space-md rounded-lg" data-path="elaqe" href="#elaqe" onclick="document.getElementById('mobile-drawer').classList.add('hidden')">Əlaqə</a><div class="pt-space-sm"><a class="w-full flex items-center justify-center bg-primary-container hover:bg-primary text-on-primary font-label-lg text-label-lg py-space-sm rounded-xl" href="#rezervasiya" onclick="document.getElementById('mobile-drawer').classList.add('hidden')">Rezervasiya et</a></div></nav></div></header><main class="w-full pt-20 bg-surface"><div class="flex flex-col w-full">
+<!-- 1. HERO SECTION (Ana Səhifə) -->
+<section class="relative overflow-hidden bg-surface-bright py-space-xl lg:py-28 px-6 lg:px-12" id="hero">
+<!-- Subtle culinary warm blur spots & vector motif -->
+<div class="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-secondary-fixed/40 blur-3xl pointer-events-none"></div>
+<div class="absolute top-1/2 -right-32 w-96 h-96 rounded-full bg-primary-fixed/40 blur-3xl pointer-events-none"></div>
+<div class="max-w-7xl mx-auto relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+<!-- Left Column: Copy & Actions -->
+<div class="lg:col-span-6 flex flex-col items-start space-y-space-md">
+<!-- Pill Badge -->
+<div class="inline-flex items-center gap-space-xs px-4 py-2 rounded-full bg-secondary-fixed text-on-secondary-fixed shadow-sm">
+<span class="text-lg">🍕</span>
+<span class="font-label-lg text-label-lg tracking-wide">Odun sobasında hazırlanır</span>
 </div>
-<div class="flex flex-col">
-<span class="font-headline-md text-headline-sm font-semibold tracking-tight text-primary">Randevu</span>
-<span class="font-label-caps text-label-caps text-on-surface-variant -mt-1 tracking-widest">Lounge</span>
-</div>
-</a>
-<!-- Desktop Navigation Links (Verbatim labels from JSON, Ana Səhifə as Active) -->
-<nav class="hidden md:flex items-center gap-7">
-<a class="text-primary font-semibold border-b-2 border-primary pb-1 font-label-lg text-label-lg transition-colors" href="#hero">Ana Səhifə</a>
-<a class="text-on-surface-variant hover:text-on-surface font-medium transition-colors font-label-lg text-label-lg hover:text-primary duration-200" href="#about">Haqqımızda</a>
-<a class="text-on-surface-variant hover:text-on-surface font-medium transition-colors font-label-lg text-label-lg hover:text-primary duration-200" href="#menu">Menyu</a>
-<a class="text-on-surface-variant hover:text-on-surface font-medium transition-colors font-label-lg text-label-lg hover:text-primary duration-200" href="#offers">Xüsusi Təkliflər</a>
-<a class="text-on-surface-variant hover:text-on-surface font-medium transition-colors font-label-lg text-label-lg hover:text-primary duration-200" href="#gallery">Qalereya</a>
-<a class="text-on-surface-variant hover:text-on-surface font-medium transition-colors font-label-lg text-label-lg hover:text-primary duration-200" href="#reservation">Əlaqə</a>
-</nav>
-<!-- Trailing Action Cluster -->
-<div class="flex items-center gap-3">
-<!-- Quick Phone Action -->
-<a class="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full text-on-surface hover:text-primary transition-colors text-label-md font-label-md" href="tel:+994124908877">
-<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">call</span>
-<span class="font-medium">+994 (12) 490-88-77</span>
-</a>
-<!-- Trailing Primary Action from JSON: Masa Sifarişi -->
-<a class="bg-primary hover:bg-primary-container text-white px-5 py-2.5 rounded-full font-label-lg text-label-lg transition-all shadow-md shadow-primary/20 active:scale-95 flex items-center gap-2" href="#reservation">
-<span>Masa Sifarişi</span>
-<span class="material-symbols-outlined text-sm">calendar_month</span>
-</a>
-</div>
-</div>
-</header>
-<!-- =========================================================================
-       HERO SECTION: Atmospheric Luxury & Conversions
-       ========================================================================= -->
-<section class="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden" id="hero">
-<!-- Atmospheric Ambient Glows -->
-<div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-primary-fixed/25 rounded-full blur-[140px] pointer-events-none -z-10"></div>
-<div class="absolute top-1/3 right-10 w-[350px] h-[350px] bg-secondary-fixed/30 rounded-full blur-[120px] pointer-events-none -z-10"></div>
-<div class="max-w-7xl mx-auto px-6 md:px-8">
-<div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
-<!-- Left Hero Content (7 Cols) -->
-<div class="lg:col-span-7 space-y-8 text-left">
-<!-- Welcoming Pill Tag -->
-<div class="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-surface-container-low border border-outline-variant/40 shadow-sm">
-<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-<span class="font-label-caps text-label-caps text-primary tracking-widest">AİLƏVİ VƏ PREMIUM LOUNGE TƏCRÜBƏSİ</span>
-</div>
-<!-- Hero Headline -->
-<h1 class="font-display-hero text-display-hero text-on-surface tracking-tight">
-            Ailəniz və Doğmalarınızla <span class="text-primary italic font-normal">Unudulmaz Görüşlər</span>
+<!-- H1 Heading -->
+<h1 class="font-display-hero text-display-hero text-on-background tracking-tight leading-tight">
+          Əsl Pizza Zövqü, <br/>
+<span class="text-primary-container">Hər Dilimdə</span>
 </h1>
-<!-- Hero Subheadline -->
-<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">
-            Ləziz təamlar, xüsusi qəhvə çeşidləri və isti ailəvi ab-hava — Randevu Cafe &amp; Family Lounge-da hər an dəyərlidir.
-          </p>
-<!-- CTAs -->
-<div class="flex flex-wrap items-center gap-4 pt-2">
-<a class="inline-flex items-center gap-3 bg-primary hover:bg-primary-container text-white px-8 py-4 rounded-full font-label-lg text-label-lg shadow-lg shadow-primary/25 hover:shadow-xl transition-all duration-200 active:scale-95 group" href="#menu">
-<span>Menyu ilə Tanışlıq</span>
-<span class="material-symbols-outlined transition-transform group-hover:translate-x-1">arrow_forward</span>
-</a>
-<a class="inline-flex items-center gap-2 border border-secondary text-secondary hover:bg-secondary hover:text-white px-7 py-4 rounded-full font-label-lg text-label-lg transition-all duration-200 active:scale-95" href="#reservation">
-<span class="material-symbols-outlined">table_restaurant</span>
-<span>Rezervasiya Et</span>
-</a>
-</div>
-<!-- Trust Badges & Amenities Grid -->
-<div class="pt-6 grid grid-cols-1 sm:grid-cols-3 gap-4 border-t border-outline-variant/30">
-<div class="flex items-start gap-3 p-2">
-<div class="p-2 rounded-lg bg-primary-fixed/30 text-primary">
-<span class="material-symbols-outlined">family_restroom</span>
-</div>
-<div>
-<h4 class="font-title-md text-title-md text-on-surface text-sm">Ailəvi Mühit</h4>
-<p class="font-body-sm text-body-sm text-on-surface-variant text-xs">Uşaq guşəsi və sakit masalar</p>
-</div>
-</div>
-<div class="flex items-start gap-3 p-2">
-<div class="p-2 rounded-lg bg-tertiary-fixed/40 text-tertiary">
-<span class="material-symbols-outlined">menu_book</span>
-</div>
-<div>
-<h4 class="font-title-md text-title-md text-on-surface text-sm">Zəngin Menyu</h4>
-<p class="font-body-sm text-body-sm text-on-surface-variant text-xs">Milli və Avropa mətbəxi</p>
-</div>
-</div>
-<div class="flex items-start gap-3 p-2">
-<div class="p-2 rounded-lg bg-secondary-fixed/40 text-secondary">
-<span class="material-symbols-outlined">music_note</span>
-</div>
-<div>
-<h4 class="font-title-md text-title-md text-on-surface text-sm">Canlı Musiqi</h4>
-<p class="font-body-sm text-body-sm text-on-surface-variant text-xs">Hər həftəsonu akustik ifalar</p>
-</div>
-</div>
-</div>
-</div>
-<!-- Right Hero Visual Bento Presentation (5 Cols) -->
-<div class="lg:col-span-5 relative">
-<div class="relative grid grid-cols-2 gap-4">
-<!-- Large Main Dish Image -->
-<div class="col-span-2 relative rounded-2xl overflow-hidden shadow-xl aspect-[16/10] border border-outline-variant/20 group">
-<img alt="Gourmet Delicacies at Randevu Lounge" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Gourmet roasted tenderloin steak elegantly plated on artisanal charcoal ceramic tableware, accompanied by grilled asparagus and rich glaze, set within a warmly lit luxury restaurant lounge with warm emerald and champagne gold undertones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA4HiGTVfQaNbM4U-wZKMsCB12zSOJkgnvGV7sN2g0Y2mjNZQNwE6iz66hcCJYeUaVO4DpbwhshWnhKlmHccuavGsyumaI9pi0kjLHrAEzBGasYmiuk6PhMgYFyYvQlDy4Yk74DV_2qKfTjO4vM5SdpMblXvwnhp1R2ma2GvHQaXyBzLZaXDY6CzpYcFOEXDAZnQhOCk0GeD_6789WrQcl6ehky5KreEuDIkykp7rPA"/>
-<div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-<div class="absolute bottom-4 left-4 right-4 flex justify-between items-end text-white">
-<div>
-<span class="font-label-caps text-label-caps text-primary-fixed tracking-wider">ŞEFİN SEÇİMİ</span>
-<p class="font-headline-sm text-headline-sm text-white">Özəl Dad Palitrası</p>
-</div>
-<span class="px-3 py-1 rounded-full bg-primary/90 text-white font-label-md text-label-md">Gündəlik Təzə</span>
-</div>
-</div>
-<!-- Sub Visual: Coffee Art -->
-<div class="relative rounded-2xl overflow-hidden shadow-lg aspect-square border border-outline-variant/20 group">
-<img alt="Artisanal Coffee &amp; Barista" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Barista pouring delicate latte art into a ceramic cup at a modern marble espresso bar in a cozy cafe, surrounded by roasted coffee beans and warm pendant lights reflecting soft amber hues." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB5VOBoWhwfNzdrAbD5y2BU56pTxhzH9zNABtnSxtZspAbrK78Rt8UlLMSkfwAgsRDr-PWTEsShsWhUucgZ75gf8F8vZOzYXXlst42rKmOAh1etzk_-oPCHvcp4hxUwOVX-YnsbwXObcgtQ8vGVmFUx5VeDX5mLm6EyAnRwJMYqlacXGcZaHvURgNlJxFEDdqLE5qHktiDCR9MLN-Ztz6dCMpjGpM9as6wjTeB95riB"/>
-<div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
-<span class="absolute bottom-3 left-3 text-white font-title-md text-xs font-semibold">Arabika Qəhvəsi</span>
-</div>
-<!-- Sub Visual: Interior Ambience -->
-<div class="relative rounded-2xl overflow-hidden shadow-lg aspect-square border border-outline-variant/20 group">
-<img alt="Randevu Lounge Atmosferi" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Luxurious dining interior of Randevu Family Lounge featuring emerald green velvet seating, custom wooden tables, warm architectural illumination, and a welcoming family banquet setup." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDtlqmjUov30dWKoZvePZwimADYiElKmAAjX3CEGbcKhyXevC_9lXXi07R6IzBWL7VU1UZDOfcLPzZyUvwdmNJtnuZZdizDbNhtXDBzAZ7Wsp6pUIGFnYd5PE7FQSohYt0ogKtyu-d_r2eQR5Ym15ha8YoaekbgUNiDUQFi_7K1D3FdOmlOZIo_mtjZ-g-ZQkJrsf07QjuPUKiVi2wqZDsNacaBxg39ue1w_rbAy_Ab"/>
-<div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
-<span class="absolute bottom-3 left-3 text-white font-title-md text-xs font-semibold">Səmimi Mühit</span>
-</div>
-</div>
-<!-- Floating Floating Floating Card -->
-<div class="absolute -bottom-6 -left-6 hidden sm:flex items-center gap-3 p-4 rounded-xl frosted-glass border border-outline-variant/30 shadow-xl">
-<div class="w-12 h-12 rounded-full bg-primary-fixed flex items-center justify-center text-primary font-bold">
-<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
-</div>
-<div>
-<div class="flex items-center gap-1 text-tertiary">
-<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
-<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
-<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
-<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
-<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
-</div>
-<p class="font-title-md text-title-md text-xs text-on-surface">4.9 / 5 Xoşbəxt Qonaqlar</p>
-</div>
-</div>
-</div>
-</div>
-</div>
-</section>
-<!-- =========================================================================
-       SECTION 2: ABOUT US (Haqqımızda)
-       ========================================================================= -->
-<section class="py-20 md:py-28 bg-surface-container-low border-y border-outline-variant/20" id="about">
-<div class="max-w-7xl mx-auto px-6 md:px-8">
-<div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-<!-- Visual Column (5 Cols) -->
-<div class="lg:col-span-5 relative order-2 lg:order-1">
-<div class="relative mx-auto max-w-md lg:max-w-none">
-<div class="rounded-3xl overflow-hidden shadow-2xl border-4 border-surface-container-lowest">
-<img alt="Randevu Usta Aşpazları" class="w-full h-[460px] object-cover" data-alt="Professional executive chef finishing a gourmet entree dish in an open luxury kitchen, warm studio backlighting, focused culinary craftsmanship, high-end hospitality environment with clean stainless steel and marble counters." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDW9Q4_Bmk62V9a9ir3kzpNaShxlftvlCNgznnInoUafE7u-eiOdjpUZDK3YnAqDNYHVzpqEtrJMhclnS56PUTYzZU659t6X27NceMQCv8n5RgdpZUU4c64kyXYjfvX4USvRJWVTYX6dYxi7JDtwBSoDfDPL0y4ymTj2C00zeLrX4iQL7MlagpSaKmTJSfeG9zR-PvoCQ79-AkaHYua7EGlUdSAOilBcZAPpREaQ_lg"/>
-</div>
-<!-- Accent Badge Overlay -->
-<div class="absolute -bottom-6 -right-4 bg-primary text-white p-5 rounded-2xl shadow-xl max-w-[220px]">
-<span class="font-label-caps text-label-caps text-primary-fixed uppercase tracking-wider block mb-1">MƏTBƏX SƏNƏTİ</span>
-<p class="font-headline-sm text-headline-sm leading-tight text-white">Yalnız təbii və yerli nemətlər</p>
-</div>
-</div>
-</div>
-<!-- Content Column (7 Cols) -->
-<div class="lg:col-span-7 space-y-6 order-1 lg:order-2">
-<div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-primary/10 text-primary">
-<span class="material-symbols-outlined text-sm">auto_awesome</span>
-<span class="font-label-caps text-label-caps tracking-widest">BİZİM HEKAYƏMİZ</span>
-</div>
-<h2 class="font-headline-lg text-headline-lg text-on-surface">
-            Randevu — Sevgi və Zövqlə Hazırlanan <span class="text-primary italic">Təamların Məkanı</span>
-</h2>
-<p class="font-body-lg text-body-lg text-on-surface-variant leading-relaxed">
-            Filosofiyamız ailəniz və dostlarınızla rahat, lüks və səmimi bir mühitdə xoş xatirələr yaratmağınız üçün qurulub. Təzə yerli inqrediyentlər, usta aşpazlar və unikal interyer dizaynı ilə hər ziyarəti xüsusi bir mərasimə çeviririk.
-          </p>
-<p class="font-body-md text-body-md text-on-surface-variant/90">
-            İstər səhər saatlarında isti təndir çörəyi ilə başlayan klassik Azərbaycan süfrəsi, istərsə də axşam saatlarında canlı akustik musiqi sədaları altında romantik şam yeməyi — hər detal sizin rahatlığınız üçün düşünülüb.
-          </p>
-<!-- Key Metrics Grid -->
-<div class="grid grid-cols-2 sm:grid-cols-4 gap-6 pt-6 border-t border-outline-variant/30">
-<div class="p-3 bg-surface rounded-xl border border-outline-variant/20">
-<span class="font-display-hero text-3xl font-bold text-primary block">100+</span>
-<span class="font-label-md text-label-md text-on-surface-variant">Ləziz Təam</span>
-</div>
-<div class="p-3 bg-surface rounded-xl border border-outline-variant/20">
-<span class="font-display-hero text-3xl font-bold text-secondary block">50+</span>
-<span class="font-label-md text-label-md text-on-surface-variant">İsti &amp; Soyuq İçki</span>
-</div>
-<div class="p-3 bg-surface rounded-xl border border-outline-variant/20">
-<span class="font-display-hero text-3xl font-bold text-primary block">100%</span>
-<span class="font-label-md text-label-md text-on-surface-variant">Razı Qonaqlar</span>
-</div>
-<div class="p-3 bg-surface rounded-xl border border-outline-variant/20">
-<span class="font-display-hero text-3xl font-bold text-tertiary block">7/24</span>
-<span class="font-label-md text-label-md text-on-surface-variant">Səmimi Qonaqpərvərlik</span>
-</div>
-</div>
-</div>
-</div>
-</div>
-</section>
-<!-- =========================================================================
-       SECTION 3: INTERACTIVE MENU (Ləziz Menyumuz)
-       ========================================================================= -->
-<section class="py-20 md:py-28 max-w-7xl mx-auto px-6 md:px-8" id="menu">
-<div class="text-center max-w-3xl mx-auto space-y-4 mb-14">
-<div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-primary/10 text-primary">
-<span class="material-symbols-outlined text-sm">restaurant</span>
-<span class="font-label-caps text-label-caps tracking-widest">QASTRO-TƏCRÜBƏ</span>
-</div>
-<h2 class="font-headline-lg text-headline-lg text-on-surface">Ləziz Menyumuz</h2>
-<p class="font-body-lg text-body-lg text-on-surface-variant">
-        Hər biri təravətli yerli inqrediyentlərlə hazırlanan kulinariya şah əsərləri. Zövqünüzə uyğun seçimləri kəşf edin.
-      </p>
-<!-- Category Filter Tabs -->
-<div class="flex flex-wrap items-center justify-center gap-2 pt-6">
-<button class="px-5 py-2.5 rounded-full font-label-md text-label-md bg-primary text-white shadow-sm transition-all">Hamısı</button>
-<button class="px-5 py-2.5 rounded-full font-label-md text-label-md bg-surface-container-low text-on-surface hover:bg-surface-container hover:text-primary transition-all">Səhər Yeməkləri</button>
-<button class="px-5 py-2.5 rounded-full font-label-md text-label-md bg-surface-container-low text-on-surface hover:bg-surface-container hover:text-primary transition-all">İsti Yeməklər</button>
-<button class="px-5 py-2.5 rounded-full font-label-md text-label-md bg-surface-container-low text-on-surface hover:bg-surface-container hover:text-primary transition-all">Qəlyanaltılar</button>
-<button class="px-5 py-2.5 rounded-full font-label-md text-label-md bg-surface-container-low text-on-surface hover:bg-surface-container hover:text-primary transition-all">Desertlər</button>
-<button class="px-5 py-2.5 rounded-full font-label-md text-label-md bg-surface-container-low text-on-surface hover:bg-surface-container hover:text-primary transition-all">İçkilər &amp; Qəhvə</button>
-</div>
-</div>
-<!-- Dish Cards Bento Grid -->
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-<!-- Dish 1: Breakfast -->
-<div class="bg-surface-container-lowest rounded-2xl overflow-hidden border border-outline-variant/30 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col group">
-<div class="relative h-56 overflow-hidden">
-<img alt="Klassik Randevu Səhər Yeməyi" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Lavish traditional Azerbaijani breakfast banquet featuring fresh honeycomb, rich clotted cream, artisan local cheeses, warm tandir bread, olives, and fresh herbs beautifully arranged on natural ceramic dishes in natural morning sunlight." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAvpRwNfzjZUFZxEG_OgLXDzQy3j9-PtZJq9oNuXda8gF9Mikp42SNZBiVrCw9EhB9E3mywqkvMXZJX0ZFzdjxDpFDXeY7lP_im2DS2sNJbLG3HXruw0e_gq4UI3ur4mskYHaJ83qpI0Jx7acGR2PENet02ibPR0Bj8OGl3WwmaOo7XDVmo9tQryck_ZlBPi9x3nYhNXFQ2aqUFPL9jTv8He4VyZxiqocifBde8Lpq5"/>
-<span class="absolute top-3 right-3 bg-primary text-white font-label-caps text-label-caps px-2.5 py-1 rounded-full shadow">Ailəvi Favorit</span>
-</div>
-<div class="p-6 flex-1 flex flex-col justify-between">
-<div>
-<div class="flex justify-between items-baseline mb-2">
-<h3 class="font-headline-sm text-lg font-semibold text-on-surface">Klassik Randevu Səhər Yeməyi</h3>
-<span class="font-title-lg text-title-lg text-primary font-bold ml-2">18.00 ₼</span>
-</div>
-<p class="font-body-sm text-body-sm text-on-surface-variant mb-6">
-              Bal, qaymaq, pendir çeşidləri, isti təndir çörəyi, təzə kərə yağı, zeytunlar və sınırsız süfrə çayı.
-            </p>
-</div>
-<div class="flex items-center justify-between pt-4 border-t border-outline-variant/20">
-<span class="text-xs text-on-surface-variant flex items-center gap-1">
-<span class="material-symbols-outlined text-sm text-tertiary">schedule</span> Səhər 10:00 - 14:00
-            </span>
-<a class="text-primary hover:text-primary-container font-label-md text-label-md font-semibold flex items-center gap-1 group-hover:underline" href="#reservation">
-              Sifariş et <span class="material-symbols-outlined text-sm">arrow_forward</span>
-</a>
-</div>
-</div>
-</div>
-<!-- Dish 2: Tenderloin Steak -->
-<div class="bg-surface-container-lowest rounded-2xl overflow-hidden border border-outline-variant/30 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col group">
-<div class="relative h-56 overflow-hidden">
-<img alt="Can Əti ilə Tenderloin Steyk" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Tenderloin steak grilled to medium-rare perfection served with rich wild mushroom cream sauce and charred garden vegetables on a dark slate plate in luxury restaurant dining room with soft warm reflections." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC9mTtjF-9jy0lEEA6wXd0ucN4gwZ6ZQwYoqSjqD_KakmOO5PhAFkd64eco4PBnNv0_6KTrkbsh4vFl6QpaEzCLYYiKm0zrpeg9R2q7Sxo0tSv_Bv3KNgmwH6WnOASVMfxNBenlUBbjHCQPW5B5m02fklt68peThzvyUAHyg8-EQM5zRBTBeGYdZrNOVsR1F0fkP080MmuQgNF0o6gK2HfycFNximijeB11V_7oOsRS"/>
-<span class="absolute top-3 right-3 bg-secondary text-white font-label-caps text-label-caps px-2.5 py-1 rounded-full shadow">Premium Ət</span>
-</div>
-<div class="p-6 flex-1 flex flex-col justify-between">
-<div>
-<div class="flex justify-between items-baseline mb-2">
-<h3 class="font-headline-sm text-lg font-semibold text-on-surface">Can Əti ilə Tenderloin Steyk</h3>
-<span class="font-title-lg text-title-lg text-primary font-bold ml-2">28.50 ₼</span>
-</div>
-<p class="font-body-sm text-body-sm text-on-surface-variant mb-6">
-              Xüsusi göbələk sousu, qızardılmış təzə tərəvəzlər və kərə yağlı kartof püresi ilə.
-            </p>
-</div>
-<div class="flex items-center justify-between pt-4 border-t border-outline-variant/20">
-<span class="text-xs text-on-surface-variant flex items-center gap-1">
-<span class="material-symbols-outlined text-sm text-primary">restaurant</span> Şef Spesialı
-            </span>
-<a class="text-primary hover:text-primary-container font-label-md text-label-md font-semibold flex items-center gap-1 group-hover:underline" href="#reservation">
-              Sifariş et <span class="material-symbols-outlined text-sm">arrow_forward</span>
-</a>
-</div>
-</div>
-</div>
-<!-- Dish 3: Fettuccine Alfredo -->
-<div class="bg-surface-container-lowest rounded-2xl overflow-hidden border border-outline-variant/30 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col group">
-<div class="relative h-56 overflow-hidden">
-<img alt="Truffle Souslu Fettuccine Alfredo" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Handmade fettuccine alfredo pasta twirled gracefully in a deep ceramic bowl, coated in silky parmesan cream and infused with aromatic black truffle shavings, bathed in warm intimate ambient lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAji5xJ4aYERcq9PsCeY_bsM_-HRKI6sc0x2eKlraTtbDZEktowzkI_icxJVYtHq11ak7GzK6PIumVSuzESHhqx4Vg5eZv__fNNFHdoQ3DXZQDqCLhllrVePRM6vycSWkDQt6m3Z2O5AJ_comJYbLQc__ooeif7a-tPquYgF3Z_9Ijzfq4MzeeB2FMBjeKdS3PnBfZKfuMlF3kW2NN3hMOrsB951n0FLmz54MiwBrSj"/>
-<span class="absolute top-3 right-3 bg-tertiary text-white font-label-caps text-label-caps px-2.5 py-1 rounded-full shadow">İtalyan Mətbəxi</span>
-</div>
-<div class="p-6 flex-1 flex flex-col justify-between">
-<div>
-<div class="flex justify-between items-baseline mb-2">
-<h3 class="font-headline-sm text-lg font-semibold text-on-surface">Truffle Souslu Fettuccine Alfredo</h3>
-<span class="font-title-lg text-title-lg text-primary font-bold ml-2">16.00 ₼</span>
-</div>
-<p class="font-body-sm text-body-sm text-on-surface-variant mb-6">
-              Qaymaqlı parmezan sousu, təzə əl istehsalı pasta və parfümlənmiş trüfel yağı.
-            </p>
-</div>
-<div class="flex items-center justify-between pt-4 border-t border-outline-variant/20">
-<span class="text-xs text-on-surface-variant flex items-center gap-1">
-<span class="material-symbols-outlined text-sm text-tertiary">dinner_dining</span> Klassik Dad
-            </span>
-<a class="text-primary hover:text-primary-container font-label-md text-label-md font-semibold flex items-center gap-1 group-hover:underline" href="#reservation">
-              Sifariş et <span class="material-symbols-outlined text-sm">arrow_forward</span>
-</a>
-</div>
-</div>
-</div>
-<!-- Dish 4: Grilled Salmon -->
-<div class="bg-surface-container-lowest rounded-2xl overflow-hidden border border-outline-variant/30 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col group">
-<div class="relative h-56 overflow-hidden">
-<img alt="Qızılbalıq Qrildə" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Crispy skinned Atlantic salmon fillet grilled to perfection, placed over grilled tender asparagus spears with a delicate lemon herb butter drizzle, fine dining plating on an ivory ceramic plate." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAogIjpq2OXox832YSiiBGndjlIFqAtNAgoiHzPAxy7IAWOx9HBTH3mQ_s7XYaYCZRGxRNi3Zzb3NbzKr35tSWA_RbtxJzeQXiljPt1wG0noBSEpS5qQLxqWXLODeceUmEhbAByolFwkaJTiapz-aR6Ycr3mehkieJ2pkLSVUDQWD213TLXjqrtzKXUONu9809RG9a4kqQZhx87vywFNEtCJwVMcDvZPbe7qBhEu0nw"/>
-<span class="absolute top-3 right-3 bg-primary text-white font-label-caps text-label-caps px-2.5 py-1 rounded-full shadow">Təzə Dəniz Məhsulu</span>
-</div>
-<div class="p-6 flex-1 flex flex-col justify-between">
-<div>
-<div class="flex justify-between items-baseline mb-2">
-<h3 class="font-headline-sm text-lg font-semibold text-on-surface">Qızılbalıq Qrildə</h3>
-<span class="font-title-lg text-title-lg text-primary font-bold ml-2">24.00 ₼</span>
-</div>
-<p class="font-body-sm text-body-sm text-on-surface-variant mb-6">
-              Limonlu kərə yağı sousu, qulançar və incə otlarla marinasiya edilmiş zərif qızılbalıq.
-            </p>
-</div>
-<div class="flex items-center justify-between pt-4 border-t border-outline-variant/20">
-<span class="text-xs text-on-surface-variant flex items-center gap-1">
-<span class="material-symbols-outlined text-sm text-primary">set_meal</span> Yüngül &amp; Sağlam
-            </span>
-<a class="text-primary hover:text-primary-container font-label-md text-label-md font-semibold flex items-center gap-1 group-hover:underline" href="#reservation">
-              Sifariş et <span class="material-symbols-outlined text-sm">arrow_forward</span>
-</a>
-</div>
-</div>
-</div>
-<!-- Dish 5: San Sebastian Cheesecake -->
-<div class="bg-surface-container-lowest rounded-2xl overflow-hidden border border-outline-variant/30 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col group">
-<div class="relative h-56 overflow-hidden">
-<img alt="San Sebastian Cheesecake" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Creamy caramelized San Sebastian cheesecake with a browned top crust, being drizzled with warm decadent Belgian dark chocolate sauce on a fine ceramic dish in an upscale patisserie setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCgGp0bMJ4i--q_q7T9TOenZsjnbHQ50_GXgMadfvVv2rNlb2tR87hpvxFg0OiOaiwq7AFi5e4bJw3GNF2aYM1YvbX0eNhjrNXt1sA4rdEkI_tVt-jHQfIIuAtc18PlKlsR8-gTcU0dE36OB3DgclLjCYgSXRmpophQXDTcY4HS2cuT6O7bch7RL9PEn4cHx8Q81nOrbf8RZP8hsHFaYkIWNEo_35MCjmAjTmJQGzjI"/>
-<span class="absolute top-3 right-3 bg-secondary text-white font-label-caps text-label-caps px-2.5 py-1 rounded-full shadow">Xüsusi Desert</span>
-</div>
-<div class="p-6 flex-1 flex flex-col justify-between">
-<div>
-<div class="flex justify-between items-baseline mb-2">
-<h3 class="font-headline-sm text-lg font-semibold text-on-surface">San Sebastian Cheesecake</h3>
-<span class="font-title-lg text-title-lg text-primary font-bold ml-2">9.50 ₼</span>
-</div>
-<p class="font-body-sm text-body-sm text-on-surface-variant mb-6">
-              Məxməri pendir teksturası, isti Belçika şokolad sousu ilə masa başında təqdim edilir.
-            </p>
-</div>
-<div class="flex items-center justify-between pt-4 border-t border-outline-variant/20">
-<span class="text-xs text-on-surface-variant flex items-center gap-1">
-<span class="material-symbols-outlined text-sm text-secondary">cake</span> Hər Gün Təzə Bişirilir
-            </span>
-<a class="text-primary hover:text-primary-container font-label-md text-label-md font-semibold flex items-center gap-1 group-hover:underline" href="#reservation">
-              Sifariş et <span class="material-symbols-outlined text-sm">arrow_forward</span>
-</a>
-</div>
-</div>
-</div>
-<!-- Dish 6: Karamel Macchiato -->
-<div class="bg-surface-container-lowest rounded-2xl overflow-hidden border border-outline-variant/30 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col group">
-<div class="relative h-56 overflow-hidden">
-<img alt="Xüsusi Karamel Macchiato" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Artisanal layered caramel macchiato in a clear tall glass with rich espresso layers, velvety steamed milk froth, and golden caramel drizzle, sitting next to roasted coffee beans on a walnut counter." src="https://lh3.googleusercontent.com/aida-public/AB6AXuALb9Kyj6H2XO4aFsaGIkg-9fyxP_UiSfGvuL96RsnBMDWVxyOF5x-tTbZbDmA8MKvlOH85A_tGzxvscJKXFJcPjYh8avKJcBGJb0fgdNSApPgORNDZGyO9jq50rm-6xaRYRzfkrVmTzc9-LzTyU0Oe4i2B03GZtxUUN5S0a7r7xIi4OyVXlhfokG8OGbvaurK-IVzfqxWf73wgHsbohTTX_mHc5DDWHTksgA3tBoTI"/>
-<span class="absolute top-3 right-3 bg-tertiary text-white font-label-caps text-label-caps px-2.5 py-1 rounded-full shadow">İmza Qəhvə</span>
-</div>
-<div class="p-6 flex-1 flex flex-col justify-between">
-<div>
-<div class="flex justify-between items-baseline mb-2">
-<h3 class="font-headline-sm text-lg font-semibold text-on-surface">Xüsusi Karamel Macchiato</h3>
-<span class="font-title-lg text-title-lg text-primary font-bold ml-2">6.50 ₼</span>
-</div>
-<p class="font-body-sm text-body-sm text-on-surface-variant mb-6">
-              100% seçmə Arabika dənələri, qovrulmuş fındıq siropu və ev üsulu kərə yağı karameli.
-            </p>
-</div>
-<div class="flex items-center justify-between pt-4 border-t border-outline-variant/20">
-<span class="text-xs text-on-surface-variant flex items-center gap-1">
-<span class="material-symbols-outlined text-sm text-tertiary">local_cafe</span> Barista Seçimi
-            </span>
-<a class="text-primary hover:text-primary-container font-label-md text-label-md font-semibold flex items-center gap-1 group-hover:underline" href="#reservation">
-              Sifariş et <span class="material-symbols-outlined text-sm">arrow_forward</span>
-</a>
-</div>
-</div>
-</div>
-</div>
-<!-- Menu Section Action Footer -->
-<div class="mt-14 text-center flex flex-wrap items-center justify-center gap-4">
-<a class="px-8 py-3.5 rounded-full bg-primary hover:bg-primary-container text-white font-label-lg text-label-lg shadow-md transition-all" href="#reservation">
-        Bütün Masalar üçün Rezervasiya
-      </a>
-<a class="px-8 py-3.5 rounded-full border border-primary text-primary hover:bg-primary hover:text-white font-label-lg text-label-lg transition-all flex items-center gap-2" href="#menu">
-<span class="material-symbols-outlined">download</span>
-<span>Bütün Menyunu Endir (PDF)</span>
-</a>
-</div>
-</section>
-<!-- =========================================================================
-       SECTION 4: SPECIAL OFFERS & COMBOS (Xüsusi Təkliflər)
-       ========================================================================= -->
-<section class="py-20 md:py-28 bg-inverse-surface text-inverse-on-surface relative overflow-hidden" id="offers">
-<!-- Subtle burgundy backdrop glow -->
-<div class="absolute -top-40 -right-40 w-96 h-96 bg-secondary/20 rounded-full blur-[120px] pointer-events-none"></div>
-<div class="absolute -bottom-40 -left-40 w-96 h-96 bg-primary/20 rounded-full blur-[120px] pointer-events-none"></div>
-<div class="max-w-7xl mx-auto px-6 md:px-8 relative z-10">
-<div class="text-center max-w-2xl mx-auto space-y-3 mb-16">
-<span class="font-label-caps text-label-caps text-secondary-fixed uppercase tracking-widest block">ÖZƏL FÜRSƏTLƏR</span>
-<h2 class="font-headline-lg text-headline-lg text-white">Xüsusi Təkliflər və Kombolar</h2>
-<p class="font-body-md text-body-md text-inverse-on-surface/80">
-          Randevu Lounge-un eksklüziv dəyər paketləri ilə hər anınızı daha dadlı və sərfəli edin.
+<!-- Subtext -->
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-xl leading-relaxed">
+          Təzə inqrediyentlər, əl ilə açılmış xəmir və isti ailə atmosferi. Pizza House-da hər qonaq xüsusidir və hər dilim sevgi ilə yoğrulur.
         </p>
-</div>
-<!-- Combo Banner Cards Grid -->
-<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-<!-- Offer 1: Business Lunch -->
-<div class="bg-surface-container-highest/10 border border-white/10 rounded-2xl p-8 backdrop-blur-sm flex flex-col justify-between hover:border-primary-fixed-dim/40 transition-all group">
-<div class="space-y-4">
-<div class="flex justify-between items-center">
-<span class="px-3 py-1 rounded-full bg-primary text-white font-label-caps text-label-caps">HƏFTƏ İÇİ</span>
-<span class="font-label-md text-label-md text-inverse-on-surface/70">12:00 - 15:00</span>
-</div>
-<h3 class="font-headline-sm text-headline-sm text-white">Biznes Nahar</h3>
-<p class="font-body-md text-body-md text-inverse-on-surface/75">
-              İşgüzar görüşləriniz və günorta fasilələriniz üçün günün şorbası, ləziz isti yemək, təzə mövsüm salatı və sərinləşdirici içki.
-            </p>
-<div class="pt-4">
-<span class="font-display-hero text-3xl font-bold text-primary-fixed">12.00 ₼</span>
-<span class="text-xs text-inverse-on-surface/60 ml-1">/ bir nəfər</span>
-</div>
-</div>
-<div class="pt-8">
-<a class="w-full inline-flex justify-center items-center py-3 rounded-full bg-white/10 hover:bg-primary text-white font-label-md text-label-md transition-all" href="#reservation">
-              Masa Ayır
-            </a>
-</div>
-</div>
-<!-- Offer 2: Family Weekend Combo (Featured Burgundy Card) -->
-<div class="bg-secondary/20 border-2 border-secondary rounded-2xl p-8 backdrop-blur-md flex flex-col justify-between relative shadow-2xl scale-105 group">
-<div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-secondary text-white font-label-caps text-label-caps px-4 py-1 rounded-full tracking-widest shadow">
-            ƏN ÇOX SEÇİLƏN
-          </div>
-<div class="space-y-4 pt-2">
-<div class="flex justify-between items-center">
-<span class="px-3 py-1 rounded-full bg-secondary-container text-on-secondary-container font-label-caps text-label-caps">HƏFTƏSONU</span>
-<span class="font-label-md text-label-md text-secondary-fixed">4 Nəfərlik</span>
-</div>
-<h3 class="font-headline-sm text-headline-sm text-white">Ailəvi Həftəsonu Paketi</h3>
-<p class="font-body-md text-body-md text-inverse-on-surface/85">
-              4 nəfərlik zəngin süfrə: qarışıq kabab seti, xüsusi souslu isti qarnirlər, limitsiz ətirli çay və uşaqlar üçün xüsusi San Sebastian deserti.
-            </p>
-<div class="pt-4">
-<span class="font-display-hero text-3xl font-bold text-white">55.00 ₼</span>
-<span class="text-xs text-inverse-on-surface/70 line-through ml-2">72.00 ₼</span>
-</div>
-</div>
-<div class="pt-8">
-<a class="w-full inline-flex justify-center items-center py-3.5 rounded-full bg-secondary hover:bg-secondary/90 text-white font-label-md text-label-md shadow-lg transition-all" href="#reservation">
-              Paketi Rezerv Et
-            </a>
-</div>
-</div>
-<!-- Offer 3: Birthday & Celebration -->
-<div class="bg-surface-container-highest/10 border border-white/10 rounded-2xl p-8 backdrop-blur-sm flex flex-col justify-between hover:border-tertiary-fixed-dim/40 transition-all group">
-<div class="space-y-4">
-<div class="flex justify-between items-center">
-<span class="px-3 py-1 rounded-full bg-tertiary text-white font-label-caps text-label-caps">TƏNTƏNƏLİ GÜNLƏR</span>
-<span class="font-label-md text-label-md text-tertiary-fixed">VIP Xidmət</span>
-</div>
-<h3 class="font-headline-sm text-headline-sm text-white">Ad Günü &amp; Özəl Günlər</h3>
-<p class="font-body-md text-body-md text-inverse-on-surface/75">
-              VIP Lounge otağı, fərdi tematik masa dekorasiyası, fotozona təminatı və şefdən təbrik deserti ilə yanaşı canlı musiqi hədiyyə.
-            </p>
-<div class="pt-4">
-<span class="font-display-hero text-2xl font-bold text-tertiary-fixed">Fərdi Menyu</span>
-<span class="text-xs text-inverse-on-surface/60 block">10+ nəfərdən etibarən</span>
-</div>
-</div>
-<div class="pt-8">
-<a class="w-full inline-flex justify-center items-center py-3 rounded-full bg-white/10 hover:bg-tertiary text-white font-label-md text-label-md transition-all" href="tel:+994124908877">
-              Müzakirə Et
-            </a>
-</div>
-</div>
-</div>
-</div>
-</section>
-<!-- =========================================================================
-       SECTION 5: ATMOSPHERE & GALLERY (Qalereya & Ab-hava)
-       ========================================================================= -->
-<section class="py-20 md:py-28 max-w-7xl mx-auto px-6 md:px-8" id="gallery">
-<div class="flex flex-col md:flex-row md:items-end justify-between mb-14 gap-6">
-<div>
-<div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-primary/10 text-primary mb-3">
-<span class="material-symbols-outlined text-sm">photo_camera</span>
-<span class="font-label-caps text-label-caps tracking-widest">INTERYER &amp; DUYĞULAR</span>
-</div>
-<h2 class="font-headline-lg text-headline-lg text-on-surface">Qalereya &amp; Ab-hava</h2>
-<p class="font-body-md text-body-md text-on-surface-variant max-w-xl">
-          Hər küncündə incə zövq və səmimiyyət gizlənən məkanımızdan unudulmaz görüntülər.
-        </p>
-</div>
-<div class="flex items-center gap-3">
-<span class="font-label-md text-label-md text-on-surface-variant">Instagram:</span>
-<a class="text-primary font-semibold hover:underline flex items-center gap-1 font-label-lg" href="https://instagram.com" rel="noopener noreferrer" target="_blank">
-          @randevu.lounge.baku
-          <span class="material-symbols-outlined text-sm">open_in_new</span>
+<!-- CTA Buttons -->
+<div class="flex flex-wrap items-center gap-space-md pt-space-xs w-full sm:w-auto">
+<a class="w-full sm:w-auto inline-flex items-center justify-center gap-space-xs bg-primary-container hover:bg-primary text-on-primary font-label-lg text-label-lg px-8 py-3.5 rounded-xl shadow-lg shadow-primary-container/20 hover:-translate-y-0.5 transition-all" href="#menyu">
+<span>Menyuya bax</span>
+<span class="material-symbols-outlined text-[20px]">restaurant_menu</span>
+</a>
+<a class="w-full sm:w-auto inline-flex items-center justify-center gap-space-xs bg-surface-container hover:bg-surface-container-highest text-on-surface font-label-lg text-label-lg px-8 py-3.5 rounded-xl transition-all" href="#rezervasiya">
+<span>Masa rezerv et</span>
+<span class="material-symbols-outlined text-[20px]">event_seat</span>
 </a>
 </div>
+<!-- 3 Stats Chips -->
+<div class="grid grid-cols-3 gap-3 sm:gap-4 pt-6 w-full max-w-lg">
+<div class="bg-surface-container-lowest p-3.5 rounded-2xl shadow-sm flex flex-col items-center sm:items-start">
+<div class="flex items-center gap-1 text-tertiary font-bold mb-1">
+<span class="material-symbols-outlined text-[18px] text-tertiary-fixed-dim" style="font-variation-settings: 'FILL' 1;">stars</span>
+<span class="font-headline-sm text-headline-sm text-on-background">10+ il</span>
 </div>
-<!-- Asymmetrical Gallery Grid -->
-<div class="grid grid-cols-1 md:grid-cols-12 gap-6">
-<!-- Feature 1: Large Lounge Sofas (7 cols) -->
-<div class="md:col-span-7 relative rounded-2xl overflow-hidden shadow-md aspect-[16/10] group">
-<img alt="VIP Lounge Otağı" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="Cozy VIP lounge room inside Randevu Lounge with emerald green velvet curved sofas, brass trimmed coffee tables, warm architectural accent lighting, and elegant wood paneling creating an intimate ambiance." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCFYm8y89TSz-VHBX7gxdl1aw2RendZYQJVQ8VYGKVsj2scervserDNUKHWZCY6t4lbCOj62kG_wQosDFY79QjDmScdRl4FIbkKLT8gnOVGgmBFk-OHZGN-f2N9SL-kIJMXYXUhbqXWp0QySqgvxGzhbmiu_QRj4Mo4_Ax2DF8tZBprWovDUJ8gGHqQC5RKiE3TCbef3aBg-PZKmnwqWCtcRJWmO0a5l0dTTWiT-QaA"/>
-<div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
-<div class="absolute bottom-6 left-6 text-white">
-<span class="font-label-caps text-label-caps text-primary-fixed uppercase tracking-wider">KOMFORT</span>
-<h3 class="font-headline-sm text-xl font-semibold">Geniş və Rahat VIP Divanlar</h3>
+<span class="font-label-md text-label-md text-on-surface-variant text-center sm:text-left">Təcrübə</span>
 </div>
+<div class="bg-surface-container-lowest p-3.5 rounded-2xl shadow-sm flex flex-col items-center sm:items-start">
+<div class="flex items-center gap-1 text-tertiary font-bold mb-1">
+<span class="material-symbols-outlined text-[18px] text-primary" style="font-variation-settings: 'FILL' 1;">local_pizza</span>
+<span class="font-headline-sm text-headline-sm text-on-background">30+</span>
 </div>
-<!-- Feature 2: Barista Counter (5 cols) -->
-<div class="md:col-span-5 relative rounded-2xl overflow-hidden shadow-md aspect-[16/10] md:aspect-auto group">
-<img alt="Qəhvə Barı və Barista" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="Skilled coffee barista in a clean apron carefully tamping freshly ground Arabica beans at a high-end chrome espresso machine with soft amber pendant lighting glowing over polished white marble counters." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD0aB8HH2_l9ai2SyrHfnmC3khrN8n4b26mol89dGUgvIGYCIOo18kn6aWm75dYGUEUFLB1JZTIQn7gR39laX2bP_LREQUP6zEIqA8nTvsa9frgrSGIelqRwW09A4AHTZi4BJOlw0rwnSdOKvnffZPyEoIyWVgBOvxl8oP2_EOo6KXhqENgSw8bbFnx3RumMVjLkzqI92H6XdfueOioG6ElED4Zo2cSCxfcosdG_4yu"/>
-<div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
-<div class="absolute bottom-6 left-6 text-white">
-<span class="font-label-caps text-label-caps text-tertiary-fixed uppercase tracking-wider">QƏHVƏ ZÖVQÜ</span>
-<h3 class="font-headline-sm text-xl font-semibold">Təbii Arabika Ətri</h3>
+<span class="font-label-md text-label-md text-on-surface-variant text-center sm:text-left">Pizza növü</span>
 </div>
+<div class="bg-surface-container-lowest p-3.5 rounded-2xl shadow-sm flex flex-col items-center sm:items-start">
+<div class="flex items-center gap-1 text-tertiary font-bold mb-1">
+<span class="material-symbols-outlined text-[18px] text-secondary" style="font-variation-settings: 'FILL' 1;">sentiment_satisfied</span>
+<span class="font-headline-sm text-headline-sm text-on-background">5000+</span>
 </div>
-<!-- Feature 3: Family Dining Setup (4 cols) -->
-<div class="md:col-span-4 relative rounded-2xl overflow-hidden shadow-md aspect-square group">
-<img alt="Ailəvi Görüşlər" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="Happy multi-generational Azerbaijani family smiling and clinking beverage glasses across an abundant dinner table with appetizers in a warm restaurant dining lounge bathed in golden hour light." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZLreUvXAbw5jSRKZD4oM6MW8mnlVmHCebHRMdvt99FI4h4YhQmDOj_45XfBL8OAYRdT3S1Z4g-fYUfSitcIBAJmEeORokQCcabjxcbEdj5rDk__WcGmZ3y3LHjqrhzE4MuSuEdNtLs-aReBVIgIooY6DFI4fbvsnYcQFkksI44C0YpbjGOJN6YyDP5BaMg56XO8RoYwc86qoOIiLvEwIqok62Zj4j_C4AwTUDgnUg"/>
-<div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
-<div class="absolute bottom-4 left-4 text-white">
-<h4 class="font-headline-sm text-lg font-semibold">Səmimi Ailə Masaları</h4>
+<span class="font-label-md text-label-md text-on-surface-variant text-center sm:text-left">Məmnun qonaq</span>
 </div>
 </div>
-<!-- Feature 4: Fireplace / Ambient Corner (4 cols) -->
-<div class="md:col-span-4 relative rounded-2xl overflow-hidden shadow-md aspect-square group">
-<img alt="İsti Buxarı və Rahatlıq" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="Modern indoor architectural fireplace glowing with warm flames surrounded by dark slate stone and low ambient seating, creating a cozy winter evening dining experience." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC1sEo1fqDy_47To3Qu9DJsaZxdCF87iOwg-YnKE5wXVKzUCInI0rgmetC-qYaxMuvS7_W__cHN8v9NuqKw2KimuDHpPZDUZ5YN3B-nwYLImcP5Famfj6L6Iz8ViiiHzdQiI8jqEvO5-HyaRgKzZD452kA3P-EBGnq4MZ364Tb1WguUj8_EA8F-KB2QOYKyBzUvMLRcEilZzm7KSnCAhc7oy8DrMDpFR7ymJkmYjpRl"/>
-<div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
-<div class="absolute bottom-4 left-4 text-white">
-<h4 class="font-headline-sm text-lg font-semibold">İsti Buxarı Ab-havası</h4>
+</div>
+<!-- Right Column: Visual Pizza Showcase -->
+<div class="lg:col-span-6 relative flex justify-center items-center">
+<!-- Ambient Glowing Disc -->
+<div class="absolute w-72 sm:w-96 h-72 sm:h-96 rounded-full bg-secondary-container/20 blur-2xl -z-10"></div>
+<!-- Large Featured Pizza Image Container -->
+<div class="relative w-full max-w-md sm:max-w-lg aspect-square rounded-[2.5rem] p-3 bg-surface-container-lowest shadow-2xl flex items-center justify-center">
+<img class="w-full h-full object-cover rounded-[2rem] shadow-inner" data-alt="Artisanal freshly baked Neapolitan Margherita pizza on a rustic wooden peel board, blistered leopard crust with authentic char, melted buffalo mozzarella bubbles, fresh basil leaves, rich vibrant red San Marzano tomato sauce, warm rustic wood-fired pizzeria glow." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRo2I5hR5P2Ed1OTmJzkWtMGU0i_uR0qwSdmeG2oWLVEgxNAW1po47QBNuSxj1dAU_lfTqeZPXc5ilHkEEYLreE3nWUTbCO65kOVvo6XV5FnQfof074aAhxxo-naGWW7RQGd-M5tGhDO3vsS3x-BN4Mh0ipkW5AUoAQ-z77BEigw-TjbaZrcQ8Tb7B1xNfBBknUp-wiZQBTi2lizPQY69cZRFQa1-CJI1GW9TEC4c"/>
+<!-- Floating Badge 1: Rating -->
+<div class="absolute -top-3 -left-3 sm:top-4 sm:-left-6 bg-surface-container-lowest px-4 py-2.5 rounded-2xl shadow-xl flex items-center gap-2.5 animate-bounce" style="animation-duration: 4s;">
+<div class="w-8 h-8 rounded-xl bg-tertiary-fixed flex items-center justify-center text-on-tertiary-fixed">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<div>
+<p class="font-headline-sm text-headline-sm leading-tight text-on-background">4.9</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Reytinq (2.4k+)</p>
 </div>
 </div>
-<!-- Feature 5: Live Music Acoustic Stage (4 cols) -->
-<div class="md:col-span-4 relative rounded-2xl overflow-hidden shadow-md aspect-square group">
-<img alt="Canlı Musiqi Guşəsi" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="Acoustic guitar and vintage microphone resting on an intimate low stage in a dim lounge corner with warm atmospheric spotlighting, ready for a live weekend evening musical performance." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCs_fipWoSnJ5jE-XMluxNTHo3Monb-m6HJ_uNiCAUpraxSGVPwNR6FrAZnNN8bDYLK_b_OdG9vgYI8M9Np0Bd7ETe_oWbHzUNPzv32LaXX_RPQx-84aq3NmEdfygJLGpvwQ2oy2PRAm7t5x1-Sd5QSzJP61FmJtR6fu8uoY_pxMqJzCRQIiQhPBXk0-gIrH4ljkizDQRPlNszot-P-Quq7TbbodoMl7kWdkiWmCBdw"/>
-<div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
-<div class="absolute bottom-4 left-4 text-white">
-<h4 class="font-headline-sm text-lg font-semibold">Həftəsonu Canlı İfalar</h4>
+<!-- Floating Badge 2: 100% Mozzarella -->
+<div class="absolute -bottom-4 -left-2 sm:bottom-6 sm:-left-4 bg-surface-container-lowest px-4 py-2.5 rounded-2xl shadow-xl flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-xl bg-primary-fixed flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+</div>
+<div>
+<p class="font-headline-sm text-headline-sm leading-tight text-on-background">100% Təbii</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Pendir &amp; Xəmir</p>
+</div>
+</div>
+<!-- Floating Badge 3: Fast baking -->
+<div class="absolute -top-3 -right-2 sm:top-10 sm:-right-6 bg-surface-container-lowest px-4 py-2.5 rounded-2xl shadow-xl flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-xl bg-secondary-fixed flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[20px]">timer</span>
+</div>
+<div>
+<p class="font-headline-sm text-headline-sm leading-tight text-on-background">15 Dəqiqəyə</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Süfrənizdə hazır</p>
+</div>
+</div>
 </div>
 </div>
 </div>
 </section>
-<!-- =========================================================================
-       SECTION 6: RESERVATION & BOOKING FORM (Masa Rezervasiyası)
-       ========================================================================= -->
-<section class="py-20 md:py-28 bg-surface-container-low border-t border-outline-variant/20 relative" id="reservation">
-<div class="max-w-5xl mx-auto px-6 md:px-8">
-<!-- Card Container -->
-<div class="bg-surface-container-lowest rounded-3xl p-8 md:p-14 shadow-2xl border border-outline-variant/30">
-<div class="text-center max-w-xl mx-auto mb-10 space-y-3">
-<div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-primary/10 text-primary">
-<span class="material-symbols-outlined text-sm">calendar_add_on</span>
-<span class="font-label-caps text-label-caps tracking-widest">ONLAYN SİFARİŞ</span>
+<!-- 2. QALAREYA SECTION -->
+<section class="py-space-xl lg:py-24 px-6 lg:px-12 bg-surface" id="qalareya">
+<div class="max-w-7xl mx-auto flex flex-col items-center">
+<!-- Section Header -->
+<div class="text-center max-w-xl mb-12 flex flex-col items-center">
+<span class="px-4 py-1.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-md text-label-md uppercase tracking-wider mb-3">Foto Qalareya</span>
+<h2 class="font-headline-xl text-headline-xl text-on-background tracking-tight">Dadlı Anlarımızdan Kadrlar</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-2">Odun sobasının hərarəti, təzə xəmir sənəti və restoranımızın unikal abu-havası.</p>
 </div>
-<h2 class="font-headline-lg text-headline-lg text-on-surface">Masa Rezervasiyası</h2>
-<p class="font-body-md text-body-md text-on-surface-variant">
-            Xüsusi gününüz və ya ailəvi şam yeməyiniz üçün masanızı indidən təmin edin.
-          </p>
-</div>
-<form class="space-y-6" onsubmit="event.preventDefault(); alert('Təşəkkür edirik! Rezervasiya sorğunuz qəbul edildi. Operatorumuz 10 dəqiqə ərzində sizinlə əlaqə saxlayacaq.');">
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-<!-- Ad və Soyad -->
-<div class="space-y-2">
-<label class="block font-label-lg text-label-lg text-on-surface font-semibold" for="name">Ad və Soyad</label>
-<div class="relative">
-<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline">person</span>
-<input class="w-full pl-12 pr-4 py-3.5 rounded-xl border border-outline-variant/60 focus:border-primary focus:ring-2 focus:ring-primary/20 text-on-surface bg-white font-body-md transition-all" id="name" placeholder="Məsələn: Orxan Əliyev" required="" type="text"/>
+<!-- 8-item Interactive Gallery Grid -->
+<div class="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+<!-- Card 1 -->
+<div class="group relative h-72 rounded-2xl overflow-hidden cursor-pointer bg-surface-container-high shadow-md" onclick="openLightbox('placeholder', 'Odun Sobasında Pişmə Anı')">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="Wood-fired brick oven blazing with golden orange flames inside, crisp bubbling pizza crust baking on the hot hearth stone, rustic Neapolitan artisan pizzeria kitchen atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-qdpTsuzMwGIwaIB7dtKmEw6qTN2_qBrw3qCOZQI4s8OS3iId4kQbTpyOXrlxt0CXrKBzypITRCAS4VKdYTvvTtqi0dzhhvhLwHKtzouQQcSK2AV1CjDAagyja76li9-GszdJZbJJthmjMeBQeke-qj_75a16xaRBWPHp3F1Fqe5af14Xq7ttzJ3UePVFk9uQEVA-iLKNIcWyxl21FSskr5nHAc-M9Mit3qWsPXI"/>
+<div class="absolute inset-0 bg-gradient-to-t from-on-background/80 via-on-background/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-5 text-on-primary">
+<span class="material-symbols-outlined text-3xl mb-1 text-tertiary-fixed-dim">zoom_in</span>
+<p class="font-headline-sm text-headline-sm">Odun Sobası</p>
+<p class="font-label-sm text-label-sm text-surface-variant">450 dərəcə istilikdə təbii bişmə</p>
 </div>
 </div>
-<!-- Əlaqə Nömrəsi -->
-<div class="space-y-2">
-<label class="block font-label-lg text-label-lg text-on-surface font-semibold" for="phone">Əlaqə nömrəsi</label>
-<div class="relative">
-<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline">phone</span>
-<input class="w-full pl-12 pr-4 py-3.5 rounded-xl border border-outline-variant/60 focus:border-primary focus:ring-2 focus:ring-primary/20 text-on-surface bg-white font-body-md transition-all" id="phone" placeholder="+994 (50) 000-00-00" required="" type="tel"/>
+<!-- Card 2 -->
+<div class="group relative h-72 rounded-2xl overflow-hidden cursor-pointer bg-surface-container-high shadow-md" onclick="openLightbox('placeholder', 'Usta Əllərlə Xəmir Açılışı')">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="Close up of a skilled Italian pizza chef stretching fresh white artisanal pizza dough dusted with semolina flour on a dark marble counter, slow-motion airborne flour dust particles." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXMC477BRbf-XTTIvqgv5A8DE76aFLulPCrGIbuoqxwnwSa6nn9aXVysg5rhDHnvGVDUcwinx7pASuIEVrzm6qufTDNl8wEYNpQUVyTPZE3Owy4NDoihX9ceaJQ7rE_NRQ0YDqEOlMREwlbOnLF_8JCPD5bts-6u1KYPTZfvBUCkHZWkJl9_qselZ8NVsbu_UUW8gaxD_Uk869wGacZz1gGbnLL6T8HOhiLbozDFA"/>
+<div class="absolute inset-0 bg-gradient-to-t from-on-background/80 via-on-background/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-5 text-on-primary">
+<span class="material-symbols-outlined text-3xl mb-1 text-tertiary-fixed-dim">zoom_in</span>
+<p class="font-headline-sm text-headline-sm">Usta Əli</p>
+<p class="font-label-sm text-label-sm text-surface-variant">72 saat mayalanmış xüsusi xəmir</p>
 </div>
 </div>
-<!-- Qonaq Sayı -->
-<div class="space-y-2">
-<label class="block font-label-lg text-label-lg text-on-surface font-semibold" for="guests">Qonaq sayı</label>
-<div class="relative">
-<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline">group</span>
-<select class="w-full pl-12 pr-4 py-3.5 rounded-xl border border-outline-variant/60 focus:border-primary focus:ring-2 focus:ring-primary/20 text-on-surface bg-white font-body-md transition-all appearance-none" id="guests">
-<option value="1-2">1 - 2 nəfər (Romantik / Fərdi)</option>
-<option selected="" value="3-5">3 - 5 nəfər (Ailəvi süfrə)</option>
-<option value="6+">6+ nəfər (Böyük qrup / Tədbir)</option>
-</select>
-<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-outline text-sm">expand_more</span>
+<!-- Card 3 -->
+<div class="group relative h-72 rounded-2xl overflow-hidden cursor-pointer bg-surface-container-high shadow-md" onclick="openLightbox('placeholder', 'Klassik Margherita Sənəti')">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="Overhead aesthetic flatlay of an authentic Neapolitan Margherita pizza with vibrant green basil, melted creamy white mozzarella pearls, extra virgin olive oil drizzle, on rustic wood board." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC61X2ua1FUb_HfD5YvZCtb2aUVJXYkwdiXU-bNePnVEGDVuissDk8Cb3Tg7KKMmkabbSsaV5UqnXCHVnIcBdLBDJ9fn2LfrvxPUNEd273YSJC9lchaFyErYIv9JiNV4L9x5NLLQVprcP5pLB9CrI_JYsdqQn3mVHVO_aRQLnAv6Q6oP6NR-nvE4SsjBYJAjnJdTZNKV1sLLvL6sXi2ItPzsoehULs5mtN8UdIabnE"/>
+<div class="absolute inset-0 bg-gradient-to-t from-on-background/80 via-on-background/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-5 text-on-primary">
+<span class="material-symbols-outlined text-3xl mb-1 text-tertiary-fixed-dim">zoom_in</span>
+<p class="font-headline-sm text-headline-sm">Klassik Margherita</p>
+<p class="font-label-sm text-label-sm text-surface-variant">Təbii İtalyan pomidor sousu</p>
 </div>
 </div>
-<!-- Tarix və Saat -->
-<div class="space-y-2">
-<label class="block font-label-lg text-label-lg text-on-surface font-semibold" for="datetime">Tarix və Saat</label>
-<div class="relative">
-<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline">event</span>
-<input class="w-full pl-12 pr-4 py-3.5 rounded-xl border border-outline-variant/60 focus:border-primary focus:ring-2 focus:ring-primary/20 text-on-surface bg-white font-body-md transition-all" id="datetime" required="" type="datetime-local"/>
+<!-- Card 4 -->
+<div class="group relative h-72 rounded-2xl overflow-hidden cursor-pointer bg-surface-container-high shadow-md" onclick="openLightbox('placeholder', 'İsti və Rahat İnteryer')">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="Warm ambient interior of Pizza House restaurant in Baku, cozy wooden booths, exposed brick, soft pendant filament lamps, plants hanging from industrial shelves, relaxed dining atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4CgYh5qwfoEBG1xt31hWtcC0BdG_WSzyD7tSVosUeg-3d5qw9HZMH5YYO5ZK4wqoR9ZTDPLJSKKc2koerrepIMfzCNqTFSgn9DwpUn48L0bjHxpybqMGN9612Watf6Z7BvSi0HqGv-9bDYrYx7Kt1RuGC4jSRmgzmykN0Fd609OdQggpGcTD9_iM8oTBXXGo74opjdSIDjbw_Q-R6YQxMvqgyMyW2doCdyG8nAg0"/>
+<div class="absolute inset-0 bg-gradient-to-t from-on-background/80 via-on-background/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-5 text-on-primary">
+<span class="material-symbols-outlined text-3xl mb-1 text-tertiary-fixed-dim">zoom_in</span>
+<p class="font-headline-sm text-headline-sm">Rahat Zal</p>
+<p class="font-label-sm text-label-sm text-surface-variant">Ailəniz üçün isti ocaq</p>
 </div>
 </div>
-<!-- Masa Seçimi -->
-<div class="space-y-2 md:col-span-2">
-<label class="block font-label-lg text-label-lg text-on-surface font-semibold">Masa Seçimi</label>
-<div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-<label class="flex items-center gap-3 p-3.5 rounded-xl border border-outline-variant/50 cursor-pointer hover:border-primary transition-colors has-[:checked]:border-primary has-[:checked]:bg-primary/5">
-<input checked="" class="text-primary focus:ring-primary" name="zone" type="radio" value="lounge"/>
+<!-- Card 5 -->
+<div class="group relative h-72 rounded-2xl overflow-hidden cursor-pointer bg-surface-container-high shadow-md" onclick="openLightbox('placeholder', 'Acılı Pepperoni Qat-Qat')">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="Delicious close-up of a hot slice of pepperoni pizza being pulled with stretching stringy mozzarella cheese strands, glistening cured pepperoni cups, red chili flakes sprinkles." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBH4kW4bn4UF1wrBCdRsIm6OTrTd2JDlEY1FZQzLOYbvhsCzGsHn3fqK0I7FNce9Ptwl8DpZYMo9eT7J6Mo3km1_5M98SAVxQIZZS13I_ygNZuEQcjRXx1YJLmGwl0eqp5lnW09kJ5mb4ih6fLK-0E9p_YdCKO6IhF2KLCv__cYhPWhyInwTmEvqG3YAoInHZwSZEcXgdeLuewL82aowqjxdwnDPI9aGrVUuE0kRUY"/>
+<div class="absolute inset-0 bg-gradient-to-t from-on-background/80 via-on-background/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-5 text-on-primary">
+<span class="material-symbols-outlined text-3xl mb-1 text-tertiary-fixed-dim">zoom_in</span>
+<p class="font-headline-sm text-headline-sm">Ən Çox Sevilən</p>
+<p class="font-label-sm text-label-sm text-surface-variant">Xırçıltılı pepperoni ləzzəti</p>
+</div>
+</div>
+<!-- Card 6 -->
+<div class="group relative h-72 rounded-2xl overflow-hidden cursor-pointer bg-surface-container-high shadow-md" onclick="openLightbox('placeholder', 'Qonaqlarımızın Sevinci')">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="Cheerful group of diverse friends and family smiling and toasting drinks around a long wooden dining table filled with colorful pizzas, craft drinks and salads in a stylish restaurant." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBh0_oiFSlhwGXhssUa_Ax-Pa5lFmzdUBHyX08E8W46sYSuDA_v-cbHI7k4kv6ToYDSB4mWhGviKdhVjV43yk4ErTFz2wfMIQqlphOVA7MDwhAOSPbjg9F4sFwkzKqqkrGipW2z4KGvk2tfClPEEcOuYfxmfwX-xLtmtQlUTjXKpRLg96G58Afcr3oJOx5dWdk_u0uy6FK8nXfPZv_bvWBQI3w4HngXYO0DZB5_lpo"/>
+<div class="absolute inset-0 bg-gradient-to-t from-on-background/80 via-on-background/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-5 text-on-primary">
+<span class="material-symbols-outlined text-3xl mb-1 text-tertiary-fixed-dim">zoom_in</span>
+<p class="font-headline-sm text-headline-sm">Xoş Xatirələr</p>
+<p class="font-label-sm text-label-sm text-surface-variant">Bir süfrə arxasında birlik</p>
+</div>
+</div>
+<!-- Card 7 -->
+<div class="group relative h-72 rounded-2xl overflow-hidden cursor-pointer bg-surface-container-high shadow-md" onclick="openLightbox('placeholder', 'Təzə Tərəvəzlər və Ədviyyatlar')">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="Fresh culinary ingredients arranged on a rustic slate board: ruby red cherry tomatoes, fresh green basil bunches, garlic cloves, whole block of aged Parmesan cheese, sea salt crystals." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCllCdx3ur9wElZUyiWPWWrUw80UyHwM6D5D5y77eN25TXk281dM6DWTi-KmV3H6BY6kHtk6s4zMrPkARVobN7cux7s3N0mHsIEkMXxSgS_Ak2oPgDk0WvPlTpkyALuAIssHmN8DJZvs0NC3FHkHg5pwtGPwD0wD10X9EyYyZMlEGzbA8aDCiGuXokKLIU7BxlTQ3WrvqZUcmVrHUd6W160E6OSJ98H2zPXZJUsipo"/>
+<div class="absolute inset-0 bg-gradient-to-t from-on-background/80 via-on-background/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-5 text-on-primary">
+<span class="material-symbols-outlined text-3xl mb-1 text-tertiary-fixed-dim">zoom_in</span>
+<p class="font-headline-sm text-headline-sm">Təbii Məhsullar</p>
+<p class="font-label-sm text-label-sm text-surface-variant">Yerli fermerlərdən təzə tədarük</p>
+</div>
+</div>
+<!-- Card 8 -->
+<div class="group relative h-72 rounded-2xl overflow-hidden cursor-pointer bg-surface-container-high shadow-md" onclick="openLightbox('placeholder', 'Qurman Şef İmzası')">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="Gourmet signature pizza topped with thinly sliced beef prosciutto, baby arugula leaves, shaved Parmigiano-Reggiano curls and balsamic reduction glaze drops, artfully presented on wood." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAlO0dS3F-Uux2wvNv7ZqA7ydRajgBi_odvfojErjQU2cbRZAj6904WQyYMMzJTZxlXPwLxYQvGKdoG8VIqki65tfIn2HseaWYEjqAfbpmrGTNLbQDB7zXXs3a4ktTPOXT9iTSW4XxGAHz7vnB_nKxYqXZBIGVGuVDrPWoJWuMMDxHgikOy5KNtWjiA0LW82lj0J52G4iHm4HKgHGQiv6I7fmdxoIL7ZMjlpVwy0-g"/>
+<div class="absolute inset-0 bg-gradient-to-t from-on-background/80 via-on-background/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-5 text-on-primary">
+<span class="material-symbols-outlined text-3xl mb-1 text-tertiary-fixed-dim">zoom_in</span>
+<p class="font-headline-sm text-headline-sm">Şef İmzası</p>
+<p class="font-label-sm text-label-sm text-surface-variant">Pizza House xüsusi reseptləri</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Interactive Lightbox Modal for Gallery -->
+<div class="fixed inset-0 z-50 bg-inverse-surface/90 backdrop-blur-md hidden items-center justify-center p-4" id="gallery-lightbox">
+<div class="relative max-w-3xl w-full bg-surface-container-lowest rounded-3xl overflow-hidden shadow-2xl">
+<button class="absolute top-4 right-4 z-20 w-10 h-10 rounded-full bg-on-background/60 hover:bg-on-background text-on-primary flex items-center justify-center transition-colors" onclick="closeLightbox()">
+<span class="material-symbols-outlined text-2xl">close</span>
+</button>
+<div class="w-full h-96 sm:h-[480px] bg-on-background flex items-center justify-center">
+<img alt="Böyüdülmüş Şəkil" class="w-full h-full object-cover" id="lightbox-img" src=""/>
+</div>
+<div class="p-6 bg-surface-container-lowest flex items-center justify-between">
+<h4 class="font-headline-sm text-headline-sm text-on-background" id="lightbox-caption"></h4>
+<span class="px-3 py-1 bg-secondary-fixed text-on-secondary-fixed rounded-full font-label-sm text-label-sm font-bold">Pizza House Baku</span>
+</div>
+</div>
+</div>
+<!-- 3. MENYU SECTION -->
+<section class="py-space-xl lg:py-24 px-6 lg:px-12 bg-surface-bright" id="menyu">
+<div class="max-w-7xl mx-auto flex flex-col items-center">
+<!-- Section Header -->
+<div class="text-center max-w-xl mb-10 flex flex-col items-center">
+<span class="px-4 py-1.5 rounded-full bg-primary-fixed text-primary font-label-md text-label-md uppercase tracking-wider mb-3">Zərif Dadlar</span>
+<h2 class="font-headline-xl text-headline-xl text-on-background tracking-tight">Menyumuz</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-2">Hər zövqə uyğun seçimlər: ənənəvi İtalyan reseptləri və müasir çalarla hazırlanmış təamlar.</p>
+</div>
+<!-- Category Filter Pills -->
+<div class="flex items-center gap-2 sm:gap-3 overflow-x-auto max-w-full pb-4 mb-10 scrollbar-none">
+<button class="menu-cat-btn px-6 py-2.5 rounded-full font-label-lg text-label-lg transition-all bg-primary-container text-on-primary shadow-md" onclick="filterCategory('pizzalar', this)">
+          Pizzalar
+        </button>
+<button class="menu-cat-btn px-6 py-2.5 rounded-full font-label-lg text-label-lg transition-all bg-surface-container-highest text-on-surface hover:bg-surface-dim" onclick="filterCategory('makaronlar', this)">
+          Makaronlar
+        </button>
+<button class="menu-cat-btn px-6 py-2.5 rounded-full font-label-lg text-label-lg transition-all bg-surface-container-highest text-on-surface hover:bg-surface-dim" onclick="filterCategory('salatlar', this)">
+          Salatlar
+        </button>
+<button class="menu-cat-btn px-6 py-2.5 rounded-full font-label-lg text-label-lg transition-all bg-surface-container-highest text-on-surface hover:bg-surface-dim" onclick="filterCategory('qelyanaltilar', this)">
+          Qəlyanaltılar
+        </button>
+<button class="menu-cat-btn px-6 py-2.5 rounded-full font-label-lg text-label-lg transition-all bg-surface-container-highest text-on-surface hover:bg-surface-dim" onclick="filterCategory('desertler', this)">
+          Desertlər
+        </button>
+<button class="menu-cat-btn px-6 py-2.5 rounded-full font-label-lg text-label-lg transition-all bg-surface-container-highest text-on-surface hover:bg-surface-dim" onclick="filterCategory('ickiler', this)">
+          İçkilər
+        </button>
+</div>
+<!-- 3-Column Menu Grid (Pizzas Displayed) -->
+<div class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="menu-items-grid">
+<!-- Card 1: Margherita -->
+<div class="menu-card bg-surface-container-lowest rounded-3xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
 <div>
-<span class="font-title-md text-sm block">VIP Lounge</span>
-<span class="text-xs text-on-surface-variant">Yumşaq divanlar</span>
+<div class="relative w-full h-56 rounded-2xl overflow-hidden mb-5 bg-surface-container-high">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Classic Margherita pizza with San Marzano tomato puree, melted buffalo mozzarella bubbles, fresh basil leaves on thin charred Neapolitan dough." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD9VzKu9XJYWTzbduzK9C2KfndAWmdqy4pwFwsJumiO3sjWGUbOHHWlUE-NN4C1I8dLOS3N4n7Sn_SAUXX7rT63spfnJQpWnWF4ewt3pBXamIUOVfLHktSR5rXthxRg8dti32jRzZFYWgwj8PE3qXTrna0vh6BozyaUiUeFcFYucyEC5NSn7sEKr9FrJ2c7U2b-dJjKKEPVyYa8yCqHbTLCSe91d6URpPmLSTHBPYI"/>
 </div>
-</label>
-<label class="flex items-center gap-3 p-3.5 rounded-xl border border-outline-variant/50 cursor-pointer hover:border-primary transition-colors has-[:checked]:border-primary has-[:checked]:bg-primary/5">
-<input class="text-primary focus:ring-primary" name="zone" type="radio" value="terrace"/>
-<div>
-<span class="font-title-md text-sm block">Açıq Teras</span>
-<span class="text-xs text-on-surface-variant">Təmiz hava &amp; mənzərə</span>
+<div class="flex items-start justify-between gap-2 mb-2">
+<h3 class="font-headline-md text-headline-md text-on-background">Margherita</h3>
+<span class="inline-block px-3 py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-headline-sm text-headline-sm font-bold shrink-0">12 ₼</span>
 </div>
-</label>
-<label class="flex items-center gap-3 p-3.5 rounded-xl border border-outline-variant/50 cursor-pointer hover:border-primary transition-colors has-[:checked]:border-primary has-[:checked]:bg-primary/5">
-<input class="text-primary focus:ring-primary" name="zone" type="radio" value="family"/>
-<div>
-<span class="font-title-md text-sm block">Ailəvi Zal</span>
-<span class="text-xs text-on-surface-variant">Uşaq guşəsinə yaxın</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-6 leading-relaxed">
+              Klassik pomidor sousu, təbii mozzarella, təzə reyhan və soyuq sıxım zeytun yağı.
+            </p>
 </div>
-</label>
-</div>
-</div>
-<!-- Qeyd / Xüsusi İstək -->
-<div class="space-y-2 md:col-span-2">
-<label class="block font-label-lg text-label-lg text-on-surface font-semibold" for="notes">Qeyd / Xüsusi istək</label>
-<textarea class="w-full px-4 py-3 rounded-xl border border-outline-variant/60 focus:border-primary focus:ring-2 focus:ring-primary/20 text-on-surface bg-white font-body-md transition-all" id="notes" placeholder="Məsələn: Uşaq stulu tələb olunur, ad günü təbriki..." rows="3"></textarea>
-</div>
-</div>
-<!-- Submit Button -->
-<div class="pt-4">
-<button class="w-full py-4 rounded-xl bg-primary hover:bg-primary-container text-white font-label-lg text-label-lg font-semibold shadow-lg shadow-primary/25 transition-all flex items-center justify-center gap-2 group active:scale-[0.99]" type="submit">
-<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-<span>Rezervasiyanı Təsdiqlə</span>
+<button class="w-full py-3 px-4 rounded-xl bg-primary-container hover:bg-primary text-on-primary font-label-lg text-label-lg flex items-center justify-center gap-2 transition-all shadow-sm" onclick="addToOrder('Margherita', '12 ₼')">
+<span class="material-symbols-outlined text-[18px]">add</span>
+<span>Əlavə et</span>
 </button>
 </div>
-<!-- Microcopy -->
-<p class="text-center font-body-sm text-body-sm text-on-surface-variant/80 pt-2 flex items-center justify-center gap-2">
-<span class="material-symbols-outlined text-sm text-primary">verified_user</span>
-<span>Zəhmət olmasa təsdiq üçün operatorumuzun 10 dəqiqə ərzində sizinlə əlaqə saxlamasını gözləyin.</span>
-</p>
-</form>
+<!-- Card 2: Pepperoni -->
+<div class="menu-card bg-surface-container-lowest rounded-3xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
+<div>
+<div class="relative w-full h-56 rounded-2xl overflow-hidden mb-5 bg-surface-container-high">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Spicy Pepperoni pizza with crispy cupping pepperoni slices, golden melted mozzarella cheese, crushed red pepper flakes and rustic charred crust." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCf3Uf30aiYnF-gfNaXyq9MNoSAoLC6IQIeArP--FFzAoGQ9N9uMkCKw2mhFMWlGP49VxXwSDjhU7Dlm21bZ2TM65TlG_AzgUEq_X2ujDiRpJZmuRwS8Hfn4UWL2kndQ8JuFGgpdqvmojNAIhvsUGe4Lgfay5KPPVd7S3a53QHhIYcGDLISE3BvwTWMWDbY9pBJuk3yuhH0O8QdK9GI__4Q1bOJV8FfuTryJtox60c"/>
+<span class="absolute top-3 left-3 px-3 py-1 bg-secondary text-on-secondary rounded-full font-label-sm text-label-sm font-bold shadow-md">Ən çox satılan</span>
+</div>
+<div class="flex items-start justify-between gap-2 mb-2">
+<h3 class="font-headline-md text-headline-md text-on-background">Pepperoni</h3>
+<span class="inline-block px-3 py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-headline-sm text-headline-sm font-bold shrink-0">15 ₼</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-6 leading-relaxed">
+              Hisə verilmiş acılı pepperoni, bol mozzarella pendiri və xüsusi tomat sousu.
+            </p>
+</div>
+<button class="w-full py-3 px-4 rounded-xl bg-primary-container hover:bg-primary text-on-primary font-label-lg text-label-lg flex items-center justify-center gap-2 transition-all shadow-sm" onclick="addToOrder('Pepperoni', '15 ₼')">
+<span class="material-symbols-outlined text-[18px]">add</span>
+<span>Əlavə et</span>
+</button>
+</div>
+<!-- Card 3: Dörd Pendir (Quattro Formaggi) -->
+<div class="menu-card bg-surface-container-lowest rounded-3xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
+<div>
+<div class="relative w-full h-56 rounded-2xl overflow-hidden mb-5 bg-surface-container-high">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Four cheese Quattro Formaggi pizza with creamy rich blend of mozzarella, gorgonzola, parmesan and dorblu melted together on light golden crust." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC6ZiIBSqD1fQa2Qyu6t7z-wSP1Cua-eBE81b1giGveSOFas421v35RqHvzX9ckwlQ99OSmwDL_q5DTg4T7AQXbQo0Xsxu98lSVRrKsot9jpYP4fx88sCfc_LxPl35DxjS-jUb5wsel_85SdbojAx8q66a_l-Gy2mrmsSEh4-SNFkX8Azi4SWwm-gh-7SYuOW6d9fNuT8DCAF2wXob3K7SRhNVZtbqCGnu-hxDQyVg"/>
+</div>
+<div class="flex items-start justify-between gap-2 mb-2">
+<h3 class="font-headline-md text-headline-md text-on-background">Dörd Pendir</h3>
+<span class="inline-block px-3 py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-headline-sm text-headline-sm font-bold shrink-0">17 ₼</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-6 leading-relaxed">
+              Mozzarella, gorgonzola, parmesan və dorblu pendirlərinin möhtəşəm harmoniyası.
+            </p>
+</div>
+<button class="w-full py-3 px-4 rounded-xl bg-primary-container hover:bg-primary text-on-primary font-label-lg text-label-lg flex items-center justify-center gap-2 transition-all shadow-sm" onclick="addToOrder('Dörd Pendir', '17 ₼')">
+<span class="material-symbols-outlined text-[18px]">add</span>
+<span>Əlavə et</span>
+</button>
+</div>
+<!-- Card 4: Tavuklu BBQ -->
+<div class="menu-card bg-surface-container-lowest rounded-3xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
+<div>
+<div class="relative w-full h-56 rounded-2xl overflow-hidden mb-5 bg-surface-container-high">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Barbecue chicken pizza topped with tender grilled chicken breast cubes, caramelized red onions, sweet smoky BBQ swirl and fresh cilantro sprigs." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBADMwtK5iT18BdtW6lk7Xw4lKDMLwFOAptPFvnPbsQT-g8txTC1H5OGgZvp4PTIcLBMc3dRxhsMnrOI0mGv-ZyK-79nGTirGi0zORgjW-RhYUl06LD3vv2EFq0T2sv6o6joYH2ZkHdq7EEsAHapCR-u71jbXgGbZPcpdrjLow4uHWVNXlFypcKfYxPlY0Z9pe-7oX2ewiIcutkUV7IKwq7aN3cAvuKNDQA3fsbd4s"/>
+<span class="absolute top-3 left-3 px-3 py-1 bg-secondary text-on-secondary rounded-full font-label-sm text-label-sm font-bold shadow-md">Ən çox satılan</span>
+</div>
+<div class="flex items-start justify-between gap-2 mb-2">
+<h3 class="font-headline-md text-headline-md text-on-background">Tavuklu BBQ</h3>
+<span class="inline-block px-3 py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-headline-sm text-headline-sm font-bold shrink-0">16 ₼</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-6 leading-relaxed">
+              Qızardılmış toyuq filesi, karamelizə olunmuş soğan, BBQ sousu və mozzarella.
+            </p>
+</div>
+<button class="w-full py-3 px-4 rounded-xl bg-primary-container hover:bg-primary text-on-primary font-label-lg text-label-lg flex items-center justify-center gap-2 transition-all shadow-sm" onclick="addToOrder('Tavuklu BBQ', '16 ₼')">
+<span class="material-symbols-outlined text-[18px]">add</span>
+<span>Əlavə et</span>
+</button>
+</div>
+<!-- Card 5: Göbələkli (Funghi) -->
+<div class="menu-card bg-surface-container-lowest rounded-3xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
+<div>
+<div class="relative w-full h-56 rounded-2xl overflow-hidden mb-5 bg-surface-container-high">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Rustic mushroom pizza funghi with wild sliced champignon mushrooms, roasted garlic oil, aromatic thyme leaves and white mozzarella on puffed crust." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAOTABoeHVt8UagrvmnGWBTben88X_MdR5lX-Hpy2mqcAcKBiyq_C14Snz955ILxcdltE6EYj0j4O56q0jPeCsUo0Z084ctM2j2YFwzvXiWekx-JB1O0ct94n-J-s11oWa-QieDIBsmoWz3iJr3V9GG1o6fvcYaaua0mJ2uPdewDbgtle10p0ANSaErvlQLqVzzskq-cABvZ9GATNBRFyLs18H-uqtDOMpXUEK6_P0"/>
+</div>
+<div class="flex items-start justify-between gap-2 mb-2">
+<h3 class="font-headline-md text-headline-md text-on-background">Göbələkli</h3>
+<span class="inline-block px-3 py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-headline-sm text-headline-sm font-bold shrink-0">14 ₼</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-6 leading-relaxed">
+              Təzə şampinyon göbələkləri, sarımsaq yağı, dağ kəklikotu və mozzarella pendiri.
+            </p>
+</div>
+<button class="w-full py-3 px-4 rounded-xl bg-primary-container hover:bg-primary text-on-primary font-label-lg text-label-lg flex items-center justify-center gap-2 transition-all shadow-sm" onclick="addToOrder('Göbələkli', '14 ₼')">
+<span class="material-symbols-outlined text-[18px]">add</span>
+<span>Əlavə et</span>
+</button>
+</div>
+<!-- Card 6: Pizza House Xüsusi -->
+<div class="menu-card bg-surface-container-lowest rounded-3xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
+<div>
+<div class="relative w-full h-56 rounded-2xl overflow-hidden mb-5 bg-surface-container-high">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Chef special gourmet pizza loaded with cured beef basturma prosciutto, juicy cherry tomatoes, kalamata olives, shaved parmesan and peppery fresh arugula." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAT8G3TV4FF7lGJCjyVu81aIDDz9rqwJYZtmJV_sNj5LECHxP4_YS1uBxn-Wf7im1FOYC4CMpEebv6YXG7R6FXgf_5d7QR0KkExs61Im-UQ_sKy6dGhuSmp2wFkbuxSgCsrz6wMAxPsldkAIGwyJfTrKyTLt5_ccByjneNSBLV3B9gDetLgK8_cwYuQLgdZI845O1JOgMKoP24RxTP3LDCs8pyArrC-X4Jhy03jNME"/>
+<span class="absolute top-3 left-3 px-3 py-1 bg-tertiary-container text-on-tertiary-container rounded-full font-label-sm text-label-sm font-bold shadow-md">Şefin Seçimi</span>
+</div>
+<div class="flex items-start justify-between gap-2 mb-2">
+<h3 class="font-headline-md text-headline-md text-on-background">Pizza House Xüsusi</h3>
+<span class="inline-block px-3 py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-headline-sm text-headline-sm font-bold shrink-0">19 ₼</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-6 leading-relaxed">
+              Dana basdırması, xüsusi sous, zeytun, çeri pomidor, parmesan və təravətli arugula.
+            </p>
+</div>
+<button class="w-full py-3 px-4 rounded-xl bg-primary-container hover:bg-primary text-on-primary font-label-lg text-label-lg flex items-center justify-center gap-2 transition-all shadow-sm" onclick="addToOrder('Pizza House Xüsusi', '19 ₼')">
+<span class="material-symbols-outlined text-[18px]">add</span>
+<span>Əlavə et</span>
+</button>
+</div>
+</div>
+<!-- Quick Toast Feedback -->
+<div class="fixed bottom-24 left-1/2 -translate-x-1/2 bg-inverse-surface text-inverse-on-surface px-6 py-3 rounded-full font-label-lg text-label-lg shadow-2xl hidden items-center gap-2 z-50" id="toast">
+<span class="material-symbols-outlined text-tertiary-fixed-dim text-[20px]">check_circle</span>
+<span id="toast-text">Səbətə əlavə edildi</span>
 </div>
 </div>
 </section>
-<!-- =========================================================================
-       SECTION 7: LOCATION, WORKING HOURS & CONTACT (Ünvan və Əlaqə)
-       ========================================================================= -->
-<section class="py-20 md:py-28 max-w-7xl mx-auto px-6 md:px-8" id="contact">
-<div class="text-center max-w-2xl mx-auto space-y-3 mb-16">
-<div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-primary/10 text-primary">
-<span class="material-symbols-outlined text-sm">explore</span>
-<span class="font-label-caps text-label-caps tracking-widest">BİZİ ZİYARƏT EDİN</span>
+<!-- 4. HAQQIMIZDA SECTION -->
+<section class="py-space-xl lg:py-24 px-6 lg:px-12 bg-surface" id="haqqimizda">
+<div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+<!-- Left Column: Visual Artisan Collage -->
+<div class="lg:col-span-6 grid grid-cols-2 gap-4 relative">
+<div class="flex flex-col gap-4">
+<div class="h-64 sm:h-72 rounded-3xl overflow-hidden bg-surface-container-high shadow-md">
+<img class="w-full h-full object-cover" data-alt="Artisanal dough kneader chef dusting flour over sourdough preparation table in a warm cozy pizzeria kitchen." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDThHB2uam72P5rdDpCCIlhnaXCEZ0UEw9-mduJxZhEt73TekdKOESBPcFVu3k2Bf4dYYLL0KHZvQ25vZRUNDbHvzxcRai2dhxqVWRL3eP9bbt8jzGZDaI0p9eLvMfKZYwdrKyU-fhNzrIRBgHXfaoPzLYLjywxgCaZOn-IS7oYazuOeRpfSbBPOqwoa6HyAjEM6RiEHw04m-k9yxY5A5w2OiJ0ecla8vj20fDUOgM"/>
 </div>
-<h2 class="font-headline-lg text-headline-lg text-on-surface">Ünvan və Əlaqə</h2>
-<p class="font-body-md text-body-md text-on-surface-variant">
-        Bakının mərkəzində, asan çıxışlı və rahat parkinq imkanlı məkanımızda yolunuzu gözləyirik.
-      </p>
-</div>
-<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-<!-- Info Cards Grid (5 Cols) -->
-<div class="lg:col-span-5 flex flex-col justify-between gap-4">
-<!-- Address Card -->
-<div class="p-6 rounded-2xl bg-surface-container-lowest border border-outline-variant/30 shadow-sm flex items-start gap-4">
-<div class="p-3 rounded-xl bg-primary/10 text-primary shrink-0">
-<span class="material-symbols-outlined">location_on</span>
-</div>
-<div>
-<h4 class="font-title-md text-title-md text-on-surface mb-1">Məkan Ünvanımız</h4>
-<p class="font-body-md text-body-md text-on-surface-variant">Bakı şəhəri, Nərimanov rayonu, Atatürk prospekti 42</p>
-<span class="font-body-sm text-body-sm text-outline mt-1 block">Yaxınlıqda: Gənclik metrosu, parkinq mövcuddur</span>
+<div class="h-44 sm:h-52 rounded-3xl overflow-hidden bg-surface-container-high shadow-md">
+<img class="w-full h-full object-cover" data-alt="Traditional wood-burning brick pizza oven with glowing hot coals and red logs inside a rustic Italian pizzeria." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDWYSMKAEU2SXFCul0CJpIcf7OND873yIQjOVfv0sjRXM6PpuOK5Cm06kZwNzr26FkZfYdBMnmYyHyB_mzO6Fyv-FNwKRZjQ_W6HJ9xCBZj9dyE3VZQKIuGrKt2_vAPs-NnwHt9R8fzfrIOC2eY9iM8tw14CVEXza_TDYpPlx-CbFMrkFZyvQd3Js2wLOOVVM-umKvScMRS6GWii6JLTBkytCkABDW1Uvkhw7x5mFk"/>
 </div>
 </div>
-<!-- Hours Card -->
-<div class="p-6 rounded-2xl bg-surface-container-lowest border border-outline-variant/30 shadow-sm flex items-start gap-4">
-<div class="p-3 rounded-xl bg-tertiary/15 text-tertiary shrink-0">
-<span class="material-symbols-outlined">schedule</span>
+<div class="flex flex-col gap-4 pt-8">
+<div class="h-44 sm:h-52 rounded-3xl overflow-hidden bg-surface-container-high shadow-md">
+<img class="w-full h-full object-cover" data-alt="Freshly picked aromatic basil bunch, ripe red vine tomatoes and extra virgin olive oil bottle in kitchen setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCs1ITLDuq_HymG0ik10t9YbJXfWh3CmzHhYNh7ounC9YCN6tX0HJL-tYseGT-73UMKhwK5uPncMLMtPbbxyhod0EoJEM23NxBQucnsUjJvYl_lmAsunHhRTmpE9IRjN7vSmKL1nRz71R2lsaFOTpHui5m_DBxRHNgpA-57uYOk1s_EEXdcXlPnfOJI4VU826vzmr-pQNtu4KLVwjPgF4wcXBZTxR3tMGeN5yrr9lQ"/>
 </div>
-<div>
-<h4 class="font-title-md text-title-md text-on-surface mb-1">İş Saatlarımız</h4>
-<p class="font-body-md text-body-md text-on-surface-variant">Həftə içi: 10:00 — 00:00</p>
-<p class="font-body-md text-body-md text-on-surface-variant">Həftəsonu: 10:00 — 01:00</p>
+<div class="h-64 sm:h-72 rounded-3xl overflow-hidden bg-surface-container-high shadow-md">
+<img class="w-full h-full object-cover" data-alt="Smiling friendly professional pizza chef in apron holding fresh hot pizza on wooden peel proudly looking at camera." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDDb2G0cjJP5XWCbnsUMR0aTqMoJMl1Phiy4lvq__V3Rgk10nGXQuWDD0i3ABcmC1PeaWOey8WCYvDgk_QobjI3mrlxDRPdG7MwbC89L9F5QA25Iq4NrKKLDB2ce2WZrc8bEZCaUXJUB80MGCmn4r3awctVVtXTzbZo-2gV9I_wTq98fEPtenXqHzGE4IpRxHJaN2fpkoj1IKmBe50HWip-6BSuTxlRjGa2z7plaNU"/>
 </div>
 </div>
-<!-- Phone & Direct WhatsApp Card -->
-<div class="p-6 rounded-2xl bg-surface-container-lowest border border-outline-variant/30 shadow-sm flex items-start gap-4">
-<div class="p-3 rounded-xl bg-secondary/10 text-secondary shrink-0">
-<span class="material-symbols-outlined">call</span>
-</div>
-<div class="space-y-1">
-<h4 class="font-title-md text-title-md text-on-surface mb-1">Telefon &amp; WhatsApp</h4>
-<p class="font-body-md text-body-md text-on-surface">
-<a class="hover:text-primary font-medium" href="tel:+994124908877">+994 (12) 490-88-77</a>
-</p>
-<p class="font-body-md text-body-md text-on-surface">
-<a class="hover:text-primary font-medium" href="tel:+994502208877">+994 (50) 220-88-77</a>
-</p>
-<div class="pt-2">
-<a class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary font-label-md text-label-md hover:bg-primary hover:text-white transition-colors" href="https://wa.me/994502208877" rel="noopener noreferrer" target="_blank">
-<span class="material-symbols-outlined text-sm">chat</span> WhatsApp ilə yazın
-              </a>
+<!-- Decorative Center Badge -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-28 h-28 rounded-full bg-primary-container text-on-primary flex flex-col items-center justify-center p-2 text-center shadow-xl">
+<span class="font-headline-sm text-headline-sm leading-none font-bold">2014</span>
+<span class="font-label-sm text-label-sm mt-1">İldən bəri sevgiylə</span>
 </div>
 </div>
+<!-- Right Column: Story & Features -->
+<div class="lg:col-span-6 flex flex-col items-start space-y-6">
+<div class="inline-flex items-center gap-space-xs px-4 py-1.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-md text-label-md uppercase tracking-wider">
+<span>Tariximiz və Dəyərlərimiz</span>
 </div>
-</div>
-<!-- Styled Map Preview (7 Cols) -->
-<div class="lg:col-span-7 rounded-2xl overflow-hidden shadow-lg border border-outline-variant/30 relative min-h-[380px]">
-<img alt="Randevu Lounge Xəritə Ünvanı" class="w-full h-full object-cover" data-alt="Stylized top-down architectural map view of modern Baku boulevard and Ataturk Avenue district, marked with a prominent luxury emerald location pin indicating Randevu Cafe &amp; Family Lounge." data-location="Baku, Azerbaijan" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCokS_k9U61ZsmM0_N6fMg2_KXFckJb2W6ElBxKHiwALqCileRi1IaY-zBqfFURNgl5cnkr0_Y8PwH0546UZJTwlgS0mhjtxqUl4xlKQ9WRyf5g1Db11YWFcJfs4FIxE10fk3GXWFoQQDBeNv_f0hsgvZQpTtWcVNpoS7KAOiYYl4PsGepKvEPMIP9WCn8UMxe5E3EAoIhSSIfaI6vmNVZrptSDajgYgbY6yEAcM3Mu"/>
-<!-- Interactive Pin Overlay Card -->
-<div class="absolute bottom-6 left-6 right-6 md:right-auto md:max-w-sm p-4 rounded-xl frosted-glass border border-outline-variant/40 shadow-xl">
-<div class="flex items-center gap-3">
-<div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white shrink-0">
-<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">restaurant</span>
-</div>
-<div>
-<h5 class="font-title-md text-sm text-on-surface">Randevu Cafe &amp; Lounge</h5>
-<p class="text-xs text-on-surface-variant">Atatürk pr. 42 (Qapalı Pulsuz Parkinq)</p>
-</div>
-</div>
-<div class="mt-3 pt-3 border-t border-outline-variant/30 flex justify-between items-center text-xs">
-<span class="text-primary font-semibold flex items-center gap-1">
-<span class="w-2 h-2 rounded-full bg-primary animate-ping"></span> İndi Açıqdır
-            </span>
-<a class="text-on-surface hover:text-primary font-medium flex items-center gap-0.5" href="https://maps.google.com" rel="noopener noreferrer" target="_blank">
-              Xəritədə Aç <span class="material-symbols-outlined text-xs">open_in_new</span>
-</a>
-</div>
-</div>
-</div>
-</div>
-</section>
-<!-- =========================================================================
-       SHARED COMPONENT 2: Footer (Verbatim content from JSON & tokens)
-       ========================================================================= -->
-<footer class="bg-inverse-surface border-t border-outline/20">
-<div class="w-full px-6 py-12 md:py-16 max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
-<!-- Brand Anchor -->
-<div class="flex flex-col items-center md:items-start gap-2">
-<a class="font-headline-md text-headline-md font-bold text-inverse-on-surface" href="#hero">Randevu Lounge</a>
-<p class="text-inverse-on-surface/70 text-body-sm max-w-sm text-center md:text-left">
-          Ailəniz və doğmalarınız üçün Bakının ən sevimli və rahat qastronomik məkanı.
+<h2 class="font-headline-xl text-headline-xl text-on-background tracking-tight">
+          Bizim Hekayəmiz
+        </h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant leading-relaxed">
+          Pizza House ailə ocağının istiliyini italyan dadı ilə birləşdirir. Hər gün təzə xəmir yoğurur, yerli və keyfiyyətli məhsullardan istifadə edirik ki, hər dilim sizə ev rahatlığı hiss etdirsin. Bakının mərkəzində əsl Neapolitan ləzzətini süfrənizə daşıyırıq.
         </p>
+<!-- 3 Feature Cards -->
+<div class="w-full flex flex-col gap-4 pt-2">
+<div class="flex items-start gap-4 p-4 rounded-2xl bg-surface-container-lowest shadow-sm hover:shadow-md transition-shadow">
+<div class="w-12 h-12 rounded-xl bg-secondary-fixed flex items-center justify-center text-secondary shrink-0">
+<span class="material-symbols-outlined text-[24px]">eco</span>
 </div>
-<!-- Links (Immutable exact labels from JSON) -->
-<div class="flex flex-wrap justify-center items-center gap-6">
-<a class="text-inverse-primary underline font-medium text-body-sm" href="#hero">Ana Səhifə</a>
-<a class="text-inverse-on-surface/70 hover:text-inverse-on-surface text-body-sm transition-colors" href="#about">Haqqımızda</a>
-<a class="text-inverse-on-surface/70 hover:text-inverse-on-surface text-body-sm transition-colors" href="#menu">Menyu</a>
-<a class="text-inverse-on-surface/70 hover:text-inverse-on-surface text-body-sm transition-colors" href="#reservation">Rezervasiya Şərtləri</a>
-<a class="text-inverse-on-surface/70 hover:text-inverse-on-surface text-body-sm transition-colors" href="#contact">Məxfilik Siyasəti</a>
-<a class="text-inverse-on-surface/70 hover:text-inverse-on-surface text-body-sm transition-colors" href="#contact">Əlaqə</a>
-</div>
-<!-- Socials & Hours -->
-<div class="flex items-center gap-4 text-inverse-on-surface">
-<a aria-label="Instagram" class="w-9 h-9 rounded-full bg-white/10 hover:bg-primary flex items-center justify-center transition-colors" href="https://instagram.com">
-<span class="material-symbols-outlined text-sm">photo_camera</span>
-</a>
-<a aria-label="Facebook" class="w-9 h-9 rounded-full bg-white/10 hover:bg-primary flex items-center justify-center transition-colors" href="https://facebook.com">
-<span class="material-symbols-outlined text-sm">public</span>
-</a>
-<a aria-label="TikTok" class="w-9 h-9 rounded-full bg-white/10 hover:bg-primary flex items-center justify-center transition-colors" href="https://tiktok.com">
-<span class="material-symbols-outlined text-sm">music_note</span>
-</a>
+<div>
+<h4 class="font-headline-sm text-headline-sm text-on-background">Təzə inqrediyentlər</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Hər gün seçilmiş təbii tərəvəzlər və xalis pendir növləri.</p>
 </div>
 </div>
-<!-- Copyright (Exact string from JSON) -->
-<div class="border-t border-white/5 py-4 text-center">
-<p class="text-xs text-inverse-on-surface/50">
-        © 2025 Randevu Cafe &amp; Family Lounge. Bütün hüquqlar qorunur.
-      </p>
+<div class="flex items-start gap-4 p-4 rounded-2xl bg-surface-container-lowest shadow-sm hover:shadow-md transition-shadow">
+<div class="w-12 h-12 rounded-xl bg-primary-fixed flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined text-[24px]">bolt</span>
 </div>
-</footer>
-<!-- =========================================================================
-       SHARED COMPONENT 3: BottomNavBar (Mobile Responsive Pivot from JSON)
-       ========================================================================= -->
-<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-2 pb-safe md:hidden bg-surface/90 backdrop-blur-lg border-t border-outline-variant/30 shadow-lg">
-<!-- Ana Səhifə (Active) -->
-<a class="flex flex-col items-center justify-center text-primary font-semibold" href="#hero">
-<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">cottage</span>
-<span class="text-label-md font-label-md">Ana Səhifə</span>
+<div>
+<h4 class="font-headline-sm text-headline-sm text-on-background">Sürətli xidmət</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Sifarişiniz isti və xırçıltılı şəkildə masanıza operativ çatdırılır.</p>
+</div>
+</div>
+<div class="flex items-start gap-4 p-4 rounded-2xl bg-surface-container-lowest shadow-sm hover:shadow-md transition-shadow">
+<div class="w-12 h-12 rounded-xl bg-tertiary-fixed flex items-center justify-center text-tertiary shrink-0">
+<span class="material-symbols-outlined text-[24px]">favorite</span>
+</div>
+<div>
+<h4 class="font-headline-sm text-headline-sm text-on-background">Rahat atmosfer</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Ailəniz və dostlarınızla xoş xatirələr yaratmaq üçün isti və səmimi məkan.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 5. REZERVASİYA SECTION -->
+<section class="py-space-xl lg:py-24 px-6 lg:px-12 bg-on-background text-inverse-on-surface relative overflow-hidden" id="rezervasiya">
+<!-- Atmospheric Ambient Glows -->
+<div class="absolute -top-40 right-1/4 w-96 h-96 rounded-full bg-primary/20 blur-3xl pointer-events-none"></div>
+<div class="absolute -bottom-40 left-1/4 w-96 h-96 rounded-full bg-secondary-container/20 blur-3xl pointer-events-none"></div>
+<div class="max-w-4xl mx-auto relative z-10">
+<!-- Elevated Form Card -->
+<div class="bg-inverse-surface rounded-3xl p-8 sm:p-12 shadow-2xl">
+<div class="text-center max-w-lg mx-auto mb-10">
+<div class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-primary-fixed/20 text-inverse-primary font-label-md text-label-md uppercase tracking-wider mb-3">
+<span class="material-symbols-outlined text-[18px]">table_bar</span>
+<span>Online Qeydiyyat</span>
+</div>
+<h2 class="font-headline-xl text-headline-xl text-on-primary tracking-tight">Masanı İndi Rezerv Et</h2>
+<p class="font-body-md text-body-md text-surface-dim mt-2">Bir neçə saniyəyə yerinizi təmin edin, ləzzətli axşamdan zövq alın.</p>
+</div>
+<form class="space-y-6" id="booking-form" onsubmit="handleBooking(event)">
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+<!-- Ad və Soyad -->
+<div class="flex flex-col space-y-2">
+<label class="font-label-md text-label-md text-surface-dim" for="name">Ad və soyad *</label>
+<div class="relative">
+<input class="w-full bg-on-background text-inverse-on-surface px-4 py-3.5 rounded-xl placeholder:text-surface-dim/60 focus:outline-none focus:ring-2 focus:ring-primary font-body-md text-body-md" id="name" placeholder="Məs: Elvin Məmmədov" required="" type="text"/>
+<span class="material-symbols-outlined absolute right-3.5 top-3.5 text-surface-dim text-[20px]">person</span>
+</div>
+</div>
+<!-- Telefon Nömrəsi -->
+<div class="flex flex-col space-y-2">
+<label class="font-label-md text-label-md text-surface-dim" for="phone">Telefon nömrəsi *</label>
+<div class="relative">
+<input class="w-full bg-on-background text-inverse-on-surface px-4 py-3.5 rounded-xl placeholder:text-surface-dim/60 focus:outline-none focus:ring-2 focus:ring-primary font-body-md text-body-md" id="phone" placeholder="+994 50 123 45 67" required="" type="tel"/>
+<span class="material-symbols-outlined absolute right-3.5 top-3.5 text-surface-dim text-[20px]">call</span>
+</div>
+</div>
+<!-- Tarix -->
+<div class="flex flex-col space-y-2">
+<label class="font-label-md text-label-md text-surface-dim" for="date">Tarix *</label>
+<div class="relative">
+<input class="w-full bg-on-background text-inverse-on-surface px-4 py-3.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary font-body-md text-body-md" id="date" required="" type="date"/>
+</div>
+</div>
+<!-- Saat -->
+<div class="flex flex-col space-y-2">
+<label class="font-label-md text-label-md text-surface-dim" for="time">Saat *</label>
+<div class="relative">
+<select class="w-full bg-on-background text-inverse-on-surface px-4 py-3.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary font-body-md text-body-md appearance-none" id="time" required="">
+<option disabled="" selected="" value="">Saat seçin</option>
+<option value="12:00">12:00 - Günorta</option>
+<option value="13:30">13:30</option>
+<option value="15:00">15:00</option>
+<option value="18:00">18:00 - Axşam</option>
+<option value="19:30">19:30</option>
+<option value="21:00">21:00</option>
+<option value="22:00">22:00</option>
+</select>
+<span class="material-symbols-outlined absolute right-3.5 top-3.5 text-surface-dim text-[20px] pointer-events-none">schedule</span>
+</div>
+</div>
+</div>
+<!-- Nəfər Sayı -->
+<div class="flex flex-col space-y-2">
+<label class="font-label-md text-label-md text-surface-dim" for="guests">Nəfər sayı *</label>
+<div class="relative">
+<select class="w-full bg-on-background text-inverse-on-surface px-4 py-3.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary font-body-md text-body-md appearance-none" id="guests" required="">
+<option value="2 nəfər">2 nəfər (Romantik masa)</option>
+<option selected="" value="3-4 nəfər">3-4 nəfər (Ailəvi masa)</option>
+<option value="5-6 nəfər">5-6 nəfər (Dost masası)</option>
+<option value="7+ nəfər">7+ nəfər (Böyük qrup / Ad günü)</option>
+</select>
+<span class="material-symbols-outlined absolute right-3.5 top-3.5 text-surface-dim text-[20px] pointer-events-none">group</span>
+</div>
+</div>
+<!-- Əlavə Qeyd -->
+<div class="flex flex-col space-y-2">
+<label class="font-label-md text-label-md text-surface-dim" for="notes">Əlavə qeyd</label>
+<textarea class="w-full bg-on-background text-inverse-on-surface px-4 py-3.5 rounded-xl placeholder:text-surface-dim/60 focus:outline-none focus:ring-2 focus:ring-primary font-body-md text-body-md" id="notes" placeholder="Xüsusi istək və ya pəhriz tələbləriniz varsa qeyd edin..." rows="3"></textarea>
+</div>
+<!-- Submit Button -->
+<button class="w-full py-4 rounded-xl bg-primary-container hover:bg-primary text-on-primary font-headline-sm text-headline-sm flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-primary-container/30 hover:-translate-y-0.5" type="submit">
+<span class="material-symbols-outlined text-[24px]">calendar_month</span>
+<span>Rezervasiyanı təsdiqlə</span>
+</button>
+</form>
+<!-- Success Confirmation State (Hidden initially) -->
+<div class="hidden text-center py-8" id="booking-success">
+<div class="w-16 h-16 rounded-full bg-tertiary-fixed text-on-tertiary-fixed flex items-center justify-center mx-auto mb-4">
+<span class="material-symbols-outlined text-4xl">check_circle</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-primary mb-2">Rezervasiyanız qəbul edildi!</h3>
+<p class="font-body-md text-body-md text-surface-dim max-w-md mx-auto">
+            Tezliklə menecerimiz sizinlə əlaqə saxlayaraq masanızı təsdiq edəcək. Sizi görməyə şad olarıq!
+          </p>
+<button class="mt-6 px-6 py-2.5 rounded-xl bg-surface-container-highest/20 hover:bg-surface-container-highest/40 text-on-primary font-label-md text-label-md transition-all" onclick="resetBookingForm()">
+            Yeni rezervasiya et
+          </button>
+</div>
+</div>
+</div>
+</section>
+<!-- 6. ƏLAQƏ SECTION -->
+<section class="py-space-xl lg:py-24 px-6 lg:px-12 bg-surface-bright" id="elaqe">
+<div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+<!-- Left Column: 4 Contact Cards & Socials -->
+<div class="lg:col-span-6 flex flex-col space-y-6">
+<div>
+<span class="px-4 py-1.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-md text-label-md uppercase tracking-wider">Ünvan &amp; Əlaqə</span>
+<h2 class="font-headline-xl text-headline-xl text-on-background tracking-tight mt-3">Bizimlə Əlaqə</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Sualınız var və ya sifariş vermək istəyirsiniz? Hər zaman xidmətinizdəyik.</p>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<!-- Ünvan -->
+<div class="p-5 rounded-2xl bg-surface-container-lowest shadow-sm flex flex-col justify-between">
+<div class="w-10 h-10 rounded-xl bg-primary-fixed text-primary flex items-center justify-center mb-3">
+<span class="material-symbols-outlined text-[22px]">location_on</span>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase font-bold tracking-wider">Ünvan</p>
+<p class="font-headline-sm text-headline-sm text-on-background mt-1 leading-snug">Bakı şəhəri, Nizami küçəsi 45</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Fəvvarələr meydanı yaxınlığı</p>
+</div>
+</div>
+<!-- Telefon -->
+<div class="p-5 rounded-2xl bg-surface-container-lowest shadow-sm flex flex-col justify-between">
+<div class="w-10 h-10 rounded-xl bg-secondary-fixed text-secondary flex items-center justify-center mb-3">
+<span class="material-symbols-outlined text-[22px]">phone_in_talk</span>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase font-bold tracking-wider">Telefon</p>
+<a class="block font-headline-sm text-headline-sm text-on-background hover:text-primary transition-colors mt-1" href="tel:+994125980000">+994 12 598 00 00</a>
+<a class="block font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" href="tel:+994502000000">+994 50 200 00 00</a>
+</div>
+</div>
+<!-- E-poçt -->
+<div class="p-5 rounded-2xl bg-surface-container-lowest shadow-sm flex flex-col justify-between">
+<div class="w-10 h-10 rounded-xl bg-tertiary-fixed text-tertiary flex items-center justify-center mb-3">
+<span class="material-symbols-outlined text-[22px]">mail</span>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase font-bold tracking-wider">E-poçt</p>
+<a class="block font-headline-sm text-headline-sm text-on-background hover:text-primary transition-colors mt-1" href="mailto:info@pizzahouse.az">info@pizzahouse.az</a>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Dərhal cavablandırılır</p>
+</div>
+</div>
+<!-- İş saatları -->
+<div class="p-5 rounded-2xl bg-surface-container-lowest shadow-sm flex flex-col justify-between">
+<div class="w-10 h-10 rounded-xl bg-primary-fixed text-primary flex items-center justify-center mb-3">
+<span class="material-symbols-outlined text-[22px]">schedule</span>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase font-bold tracking-wider">İş saatları</p>
+<p class="font-headline-sm text-headline-sm text-on-background mt-1">Hər gün</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">10:00 – 23:00 fasiləsiz</p>
+</div>
+</div>
+</div>
+<!-- Social Media Badges -->
+<div class="pt-2">
+<p class="font-label-md text-label-md text-on-surface-variant mb-3">Sosial şəbəkələrdə bizi izləyin:</p>
+<div class="flex items-center gap-3">
+<a class="w-12 h-12 rounded-2xl bg-surface-container-lowest hover:bg-primary-container text-on-surface hover:text-on-primary flex items-center justify-center shadow-sm transition-all" href="https://instagram.com" rel="noopener noreferrer" target="_blank">
+<span class="material-symbols-outlined text-[22px]">photo_camera</span>
 </a>
-<!-- Menyu -->
-<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary" href="#menu">
-<span class="material-symbols-outlined">menu_book</span>
-<span class="text-label-md font-label-md">Menyu</span>
+<a class="w-12 h-12 rounded-2xl bg-surface-container-lowest hover:bg-primary-container text-on-surface hover:text-on-primary flex items-center justify-center shadow-sm transition-all" href="https://facebook.com" rel="noopener noreferrer" target="_blank">
+<span class="material-symbols-outlined text-[22px]">public</span>
 </a>
-<!-- Qalereya -->
-<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary" href="#gallery">
-<span class="material-symbols-outlined">photo_library</span>
-<span class="text-label-md font-label-md">Qalereya</span>
+<a class="w-12 h-12 rounded-2xl bg-surface-container-lowest hover:bg-primary-container text-on-surface hover:text-on-primary flex items-center justify-center shadow-sm transition-all" href="https://whatsapp.com" rel="noopener noreferrer" target="_blank">
+<span class="material-symbols-outlined text-[22px]">chat</span>
 </a>
-<!-- Rezervasiya -->
-<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary" href="#reservation">
-<span class="material-symbols-outlined">calendar_month</span>
-<span class="text-label-md font-label-md">Rezervasiya</span>
+<a class="w-12 h-12 rounded-2xl bg-surface-container-lowest hover:bg-primary-container text-on-surface hover:text-on-primary flex items-center justify-center shadow-sm transition-all" href="https://tiktok.com" rel="noopener noreferrer" target="_blank">
+<span class="material-symbols-outlined text-[22px]">play_circle</span>
 </a>
-</nav>
-</body></html>
+</div>
+</div>
+</div>
+<!-- Right Column: Interactive Map Preview Card -->
+<div class="lg:col-span-6 flex flex-col">
+<div class="bg-surface-container-lowest rounded-3xl p-4 shadow-xl overflow-hidden relative">
+<!-- Static Map Component -->
+<div class="w-full h-80 rounded-2xl bg-surface-container-high relative overflow-hidden" data-location="Nizami street 45, Baku, Azerbaijan" style="">
+<!-- Simulated Map Canvas Overlay -->
+<div class="absolute inset-0 bg-cover bg-center" data-alt="Stylized top down city street roadmap view of central Baku Nizami street area with Fountain Square landmarks." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAygsD9wwQJq7H2v-k5iAip-wM3k8SPj-Wf-QFSEiAe4ee1c5PE_UPbjUQY_CA6uNVMkBTvJZIbjqmOh32yEi-Nu8sVL_ekgyJbW0lk8rXLAWpoDweu3HxU9YbYl4EKjXfKaePXYZQnPGg50MtWXHzXZeDvytKYuyVWqEjy0sz_t8JGWMxtod_g24DHc-GvVciULS8_z3oBAJeue9TeaC-Z_5F0cBVWIjX21gnXfA0')">
+<!-- Pin Marker -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary flex items-center justify-center shadow-xl animate-bounce">
+<span class="material-symbols-outlined text-2xl">local_pizza</span>
+</div>
+<span class="px-2.5 py-0.5 rounded-md bg-on-background text-on-primary font-label-sm text-label-sm mt-1 shadow">Pizza House</span>
+</div>
+</div>
+</div>
+<!-- Bottom Action Card Inside Map -->
+<div class="mt-4 p-4 rounded-2xl bg-surface-container flex flex-col sm:flex-row items-center justify-between gap-4">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-xl overflow-hidden shrink-0">
+<img class="w-full h-full object-cover" data-alt="Charming exterior entrance view of Pizza House Baku cafe on Nizami street with wooden facade and flower planters." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-ZGa3gGujBS7w5xs3xLsRlqteQtTm3XqzKRPrqlxdYd5TcAPmcrC8EjxBVrxVHqfm1WG3EjFkbbpYFuckImffvpZVAo8yGSsmTfjlOYb4VK7pmJ6KumE6LL5Vv8CHBuAE-BPKfQRZaTZDYsDQOiP_iS1qKNK2rY0V5ak3BUJdpZHGQOUb6qEuX72tRHBu3gkiprrkPZf4sSzqBBuW-J1IGQSFPiskWnkImrsZeVE"/>
+</div>
+<div>
+<p class="font-headline-sm text-headline-sm text-on-background leading-tight">Pizza House Baku</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Nizami küçəsi 45, Bakı</p>
+</div>
+</div>
+<a class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-primary-container hover:bg-primary text-on-primary font-label-md text-label-md transition-all shadow-sm" href="https://maps.google.com" rel="noopener noreferrer" target="_blank">
+<span class="material-symbols-outlined text-[18px]">directions</span>
+<span>Xəritədə aç</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- FLOATING ELEMENT: Bottom Right Call / WhatsApp Pill with Pulse -->
+<aside aria-label="Sürətli Əlaqə" class="fixed bottom-6 right-6 z-40">
+<a class="relative group flex items-center justify-center w-14 h-14 rounded-full bg-primary-container text-on-primary shadow-2xl hover:scale-110 transition-transform" href="https://wa.me/994502000000" rel="noopener noreferrer" target="_blank">
+<!-- Pulsing ring effect -->
+<span class="absolute inset-0 rounded-full bg-primary-container opacity-75 animate-ping"></span>
+<span class="material-symbols-outlined text-3xl relative z-10" style="font-variation-settings: 'FILL' 1;">chat</span>
+<!-- Hover Tooltip -->
+<span class="absolute right-16 px-3 py-1.5 rounded-xl bg-on-background text-on-primary font-label-sm text-label-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity shadow-lg pointer-events-none">
+        Bizə yazın (WhatsApp)
+      </span>
+</a>
+</aside>
+</div>
+<script>
+  // Gallery Lightbox Controller
+  function openLightbox(imgSrc, caption) {
+    const modal = document.getElementById('gallery-lightbox');
+    const img = document.getElementById('lightbox-img');
+    const cap = document.getElementById('lightbox-caption');
+    img.src = imgSrc;
+    cap.textContent = caption;
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeLightbox() {
+    const modal = document.getElementById('gallery-lightbox');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    document.body.style.overflow = '';
+  }
+
+  // Simulated Menu Filter Pills
+  function filterCategory(category, clickedBtn) {
+    const buttons = document.querySelectorAll('.menu-cat-btn');
+    buttons.forEach(btn => {
+      btn.className = 'menu-cat-btn px-6 py-2.5 rounded-full font-label-lg text-label-lg transition-all bg-surface-container-highest text-on-surface hover:bg-surface-dim';
+    });
+    clickedBtn.className = 'menu-cat-btn px-6 py-2.5 rounded-full font-label-lg text-label-lg transition-all bg-primary-container text-on-primary shadow-md';
+  }
+
+  // Add to Cart Micro-interaction Toast
+  function addToOrder(itemName, price) {
+    const toast = document.getElementById('toast');
+    const toastText = document.getElementById('toast-text');
+    toastText.textContent = itemName + ' (' + price + ') əlavə edildi!';
+    toast.classList.remove('hidden');
+    toast.classList.add('flex');
+    setTimeout(() => {
+      toast.classList.add('hidden');
+      toast.classList.remove('flex');
+    }, 2800);
+  }
+
+  // Booking Form Submission Handler
+  function handleBooking(event) {
+    event.preventDefault();
+    const form = document.getElementById('booking-form');
+    const successMsg = document.getElementById('booking-success');
+    form.classList.add('hidden');
+    successMsg.classList.remove('hidden');
+  }
+
+  function resetBookingForm() {
+    const form = document.getElementById('booking-form');
+    const successMsg = document.getElementById('booking-success');
+    form.reset();
+    form.classList.remove('hidden');
+    successMsg.classList.add('hidden');
+  }
+</script></main><footer class="w-full bg-inverse-surface text-inverse-on-surface pt-space-xl pb-space-lg"><div class="max-w-7xl mx-auto px-6 lg:px-12"><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-space-xl pb-space-xl"><div class="space-y-space-md"><div class="flex items-center gap-space-sm"><img alt="Pizza House Logo" class="h-8 w-auto object-contain brightness-0 invert" src="https://lh3.googleusercontent.com/aida-public/AB6AXuACB0mAksM3aRPhjsT8OxLfp7adGNG-ZMTtcWiad_Wb35YCaS7dSWGxgU2jDhX5zvKlBhOCKXebmEH7rtRQ8pjyxl_8BQByRau-fZtWdwhqMWWus-glqZPm22yDUU7j6LMeNHFmSqbxj5GyzkfUthaY7PLlvKNwn-DQlOXX-m0-NbwzoLoNrE64AwObC0jPWRbTnHylbv9TpRcpeQVxjmm5inNoXkcrjx4u9sAcjMQ"/><span class="font-headline-sm text-headline-sm text-inverse-on-surface font-bold tracking-tight">Pizza House</span></div><p class="font-body-md text-body-md text-surface-dim italic">Hər dilimdə sevgi</p><p class="font-body-sm text-body-sm text-surface-dim leading-relaxed">Odun sobasında xüsusi reseptlə bişirilən Neapolitan pizzaları və zərif qəhvə ənənəsi.</p></div><div class="space-y-space-md"><h3 class="font-headline-sm text-headline-sm text-inverse-on-surface">Naviqasiya</h3><ul class="space-y-space-sm"><li role="none"><a class="font-body-sm text-body-sm text-surface-dim hover:text-inverse-on-surface transition-colors" href="#hero">Ana Səhifə</a></li><li role="none"><a class="font-body-sm text-body-sm text-surface-dim hover:text-inverse-on-surface transition-colors" href="#menyu">Menyu</a></li><li role="none"><a class="font-body-sm text-body-sm text-surface-dim hover:text-inverse-on-surface transition-colors" href="#qalareya">Qalareya</a></li><li role="none"><a class="font-body-sm text-body-sm text-surface-dim hover:text-inverse-on-surface transition-colors" href="#haqqimizda">Haqqımızda</a></li></ul></div><div class="space-y-space-md"><h3 class="font-headline-sm text-headline-sm text-inverse-on-surface">Xidmətlər</h3><ul class="space-y-space-sm"><li role="none"><a class="font-body-sm text-body-sm text-surface-dim hover:text-inverse-on-surface transition-colors" href="#rezervasiya">Masa Rezervasiyası</a></li><li role="none"><a class="font-body-sm text-body-sm text-surface-dim hover:text-inverse-on-surface transition-colors" href="#elaqe">Əlaqə və Ünvan</a></li><li role="none"><a class="font-body-sm text-body-sm text-surface-dim hover:text-inverse-on-surface transition-colors" href="#menyu">Çatdırılma Xidməti</a></li><li role="none"><a class="font-body-sm text-body-sm text-surface-dim hover:text-inverse-on-surface transition-colors" href="#haqqimizda">Özəl Tədbirlər</a></li></ul></div><div class="space-y-space-md"><h3 class="font-headline-sm text-headline-sm text-inverse-on-surface">Bizi İzləyin</h3><p class="font-body-sm text-body-sm text-surface-dim">Yeniliklərdən və kampaniyalardan xəbərdar olmaq üçün sosial şəbəkələrdə izləyin:</p><div class="flex items-center gap-space-sm pt-space-xs"><a aria-label="Instagram" class="w-10 h-10 rounded-xl bg-surface-container-highest/10 hover:bg-primary-container text-inverse-on-surface hover:text-on-primary flex items-center justify-center transition-all" href="https://instagram.com" rel="noopener noreferrer" target="_blank"><span class="material-symbols-outlined text-[20px]">photo_camera</span></a><a aria-label="Facebook" class="w-10 h-10 rounded-xl bg-surface-container-highest/10 hover:bg-primary-container text-inverse-on-surface hover:text-on-primary flex items-center justify-center transition-all" href="https://facebook.com" rel="noopener noreferrer" target="_blank"><span class="material-symbols-outlined text-[20px]">public</span></a><a aria-label="WhatsApp" class="w-10 h-10 rounded-xl bg-surface-container-highest/10 hover:bg-primary-container text-inverse-on-surface hover:text-on-primary flex items-center justify-center transition-all" href="https://whatsapp.com" rel="noopener noreferrer" target="_blank"><span class="material-symbols-outlined text-[20px]">chat</span></a><a aria-label="TikTok" class="w-10 h-10 rounded-xl bg-surface-container-highest/10 hover:bg-primary-container text-inverse-on-surface hover:text-on-primary flex items-center justify-center transition-all" href="https://tiktok.com" rel="noopener noreferrer" target="_blank"><span class="material-symbols-outlined text-[20px]">play_circle</span></a></div></div></div><div class="pt-space-lg flex flex-col sm:flex-row items-center justify-between gap-space-md"><p class="font-body-sm text-body-sm text-surface-dim text-center sm:text-left">© 2026 Pizza House. Bütün hüquqlar qorunur.</p><div class="flex items-center gap-space-md text-surface-dim font-body-sm text-body-sm"><a class="hover:text-inverse-on-surface transition-colors" href="#">Məxfilik siyasəti</a><a class="hover:text-inverse-on-surface transition-colors" href="#">İstifadə qaydaları</a></div></div></div></footer></body></html>

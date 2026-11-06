@@ -1,138 +1,127 @@
 ---
-name: Randevu Cafe & Lounge
+name: Warm Artisanal Hospitality
 colors:
-  surface: '#faf9f6'
-  surface-dim: '#dbdad7'
-  surface-bright: '#faf9f6'
+  surface: '#fcf9f8'
+  surface-dim: '#dcd9d9'
+  surface-bright: '#fcf9f8'
   surface-container-lowest: '#ffffff'
-  surface-container-low: '#f4f3f1'
-  surface-container: '#efeeeb'
-  surface-container-high: '#e9e8e5'
-  surface-container-highest: '#e3e2e0'
-  on-surface: '#1a1c1a'
-  on-surface-variant: '#3f4941'
-  inverse-surface: '#2f312f'
-  inverse-on-surface: '#f2f1ee'
-  outline: '#6f7a71'
-  outline-variant: '#bfc9bf'
-  surface-tint: '#1b6b43'
-  primary: '#004527'
+  surface-container-low: '#f6f3f2'
+  surface-container: '#f0eded'
+  surface-container-high: '#eae7e7'
+  surface-container-highest: '#e5e2e1'
+  on-surface: '#1c1b1b'
+  on-surface-variant: '#5b403f'
+  inverse-surface: '#313030'
+  inverse-on-surface: '#f3f0ef'
+  outline: '#906f6e'
+  outline-variant: '#e4bdbc'
+  surface-tint: '#bd0a2e'
+  primary: '#b20028'
   on-primary: '#ffffff'
-  primary-container: '#065f38'
-  on-primary-container: '#8ad7a5'
-  inverse-primary: '#8ad7a5'
-  secondary: '#a93539'
+  primary-container: '#d7263d'
+  on-primary-container: '#fff2f1'
+  inverse-primary: '#ffb3b2'
+  secondary: '#914d00'
   on-secondary: '#ffffff'
-  secondary-container: '#ff7576'
-  on-secondary-container: '#720917'
-  tertiary: '#735c00'
+  secondary-container: '#fc9430'
+  on-secondary-container: '#663500'
+  tertiary: '#715300'
   on-tertiary: '#ffffff'
-  tertiary-container: '#cca830'
-  on-tertiary-container: '#4f3e00'
+  tertiary-container: '#8f6a00'
+  on-tertiary-container: '#fff3e3'
   error: '#ba1a1a'
   on-error: '#ffffff'
   error-container: '#ffdad6'
   on-error-container: '#93000a'
-  primary-fixed: '#a5f4c0'
-  primary-fixed-dim: '#8ad7a5'
-  on-primary-fixed: '#002110'
-  on-primary-fixed-variant: '#00522f'
-  secondary-fixed: '#ffdad8'
-  secondary-fixed-dim: '#ffb3b1'
-  on-secondary-fixed: '#410007'
-  on-secondary-fixed-variant: '#881c24'
-  tertiary-fixed: '#ffe088'
-  tertiary-fixed-dim: '#e9c349'
-  on-tertiary-fixed: '#241a00'
-  on-tertiary-fixed-variant: '#574500'
-  background: '#faf9f6'
-  on-background: '#1a1c1a'
-  surface-variant: '#e3e2e0'
+  primary-fixed: '#ffdad9'
+  primary-fixed-dim: '#ffb3b2'
+  on-primary-fixed: '#410008'
+  on-primary-fixed-variant: '#92001f'
+  secondary-fixed: '#ffdcc3'
+  secondary-fixed-dim: '#ffb77d'
+  on-secondary-fixed: '#2f1500'
+  on-secondary-fixed-variant: '#6e3900'
+  tertiary-fixed: '#ffdea0'
+  tertiary-fixed-dim: '#fbbc0c'
+  on-tertiary-fixed: '#261a00'
+  on-tertiary-fixed-variant: '#5c4300'
+  background: '#fcf9f8'
+  on-background: '#1c1b1b'
+  surface-variant: '#e5e2e1'
 typography:
   display-hero:
-    fontFamily: Playfair Display
+    fontFamily: Epilogue
     fontSize: 56px
-    fontWeight: '700'
-    lineHeight: 68px
-    letterSpacing: -0.02em
+    fontWeight: '800'
+    lineHeight: 64px
+    letterSpacing: -0.03em
   display-hero-mobile:
-    fontFamily: Playfair Display
+    fontFamily: Epilogue
     fontSize: 38px
+    fontWeight: '800'
+    lineHeight: 44px
+    letterSpacing: -0.02em
+  headline-xl:
+    fontFamily: Epilogue
+    fontSize: 40px
     fontWeight: '700'
     lineHeight: 48px
+    letterSpacing: -0.02em
+  headline-xl-mobile:
+    fontFamily: Epilogue
+    fontSize: 30px
+    fontWeight: '700'
+    lineHeight: 36px
     letterSpacing: -0.01em
   headline-lg:
-    fontFamily: Playfair Display
-    fontSize: 40px
-    fontWeight: '600'
-    lineHeight: 50px
-    letterSpacing: -0.015em
-  headline-lg-mobile:
-    fontFamily: Playfair Display
-    fontSize: 30px
-    fontWeight: '600'
-    lineHeight: 38px
+    fontFamily: Epilogue
+    fontSize: 28px
+    fontWeight: '700'
+    lineHeight: 34px
     letterSpacing: -0.01em
   headline-md:
-    fontFamily: Playfair Display
-    fontSize: 28px
-    fontWeight: '600'
-    lineHeight: 36px
-    letterSpacing: 0em
-  headline-sm:
-    fontFamily: Playfair Display
+    fontFamily: Epilogue
     fontSize: 22px
     fontWeight: '600'
-    lineHeight: 30px
-    letterSpacing: 0em
-  title-lg:
-    fontFamily: Plus Jakarta Sans
-    fontSize: 20px
-    fontWeight: '600'
     lineHeight: 28px
-    letterSpacing: -0.01em
-  title-md:
-    fontFamily: Plus Jakarta Sans
-    fontSize: 17px
+  headline-sm:
+    fontFamily: Epilogue
+    fontSize: 18px
     fontWeight: '600'
     lineHeight: 24px
-    letterSpacing: 0em
   body-lg:
-    fontFamily: Plus Jakarta Sans
-    fontSize: 17px
+    fontFamily: Inter
+    fontSize: 18px
     fontWeight: '400'
     lineHeight: 28px
-    letterSpacing: 0em
   body-md:
-    fontFamily: Plus Jakarta Sans
-    fontSize: 15px
+    fontFamily: Inter
+    fontSize: 16px
     fontWeight: '400'
     lineHeight: 24px
-    letterSpacing: 0.01em
   body-sm:
-    fontFamily: Plus Jakarta Sans
-    fontSize: 13px
+    fontFamily: Inter
+    fontSize: 14px
     fontWeight: '400'
     lineHeight: 20px
-    letterSpacing: 0.01em
   label-lg:
-    fontFamily: Plus Jakarta Sans
-    fontSize: 14px
+    fontFamily: Inter
+    fontSize: 15px
+    fontWeight: '600'
+    lineHeight: 20px
+    letterSpacing: 0.01em
+  label-md:
+    fontFamily: Inter
+    fontSize: 13px
     fontWeight: '600'
     lineHeight: 18px
-    letterSpacing: 0.06em
-  label-md:
-    fontFamily: Plus Jakarta Sans
-    fontSize: 12px
-    fontWeight: '600'
-    lineHeight: 16px
-    letterSpacing: 0.08em
-  label-caps:
-    fontFamily: Plus Jakarta Sans
+    letterSpacing: 0.02em
+  label-sm:
+    fontFamily: Inter
     fontSize: 11px
     fontWeight: '700'
     lineHeight: 14px
-    letterSpacing: 0.12em
+    letterSpacing: 0.04em
 rounded:
   sm: 0.25rem
   DEFAULT: 0.5rem
@@ -142,104 +131,89 @@ rounded:
   full: 9999px
 spacing:
   gutter: 1.5rem
-  gutter-sm: 1rem
-  gutter-lg: 2rem
-  margin: 1.5rem
-  margin-md: 2.5rem
-  margin-lg: 4rem
-  space-xs: 0.375rem
-  space-sm: 0.75rem
-  space-md: 1.25rem
-  space-lg: 2rem
-  space-xl: 3.5rem
+  gutter-mobile: 1rem
+  margin: 3rem
+  margin-mobile: 1.25rem
+  space-xs: 0.25rem
+  space-sm: 0.5rem
+  space-md: 1rem
+  space-lg: 1.5rem
+  space-xl: 2.5rem
 ---
 
 ## Brand & Style
+The design system reflects a vibrant, warm, and elevated casual dining identity centered on artisanal Neapolitan pizza crafting, rich coffee, and Azerbaijani hospitality. It blends the rustic soul of a wood-fired pizzeria with a crisp, modern cafe aesthetic. 
 
-This design system reflects an intimate, hospitable, and refined culinary experience tailored for a modern Azerbaijani family lounge and restaurant. The identity synthesizes high-end hospitality with familial warmth—striking an effortless balance between celebratory fine dining and relaxed everyday rendezvous.
-
-The aesthetic fuses modern quiet luxury with tactile warmth:
-- **Atmospheric Warmth:** Drawing inspiration from soft cafe ambient lighting, velvet upholstery, and natural marble.
-- **Glassmorphism & Layering:** Translucent frosted header navigation, layered menu sheets, and luminous backdrop glows.
-- **Restrained Ornamentation:** Subtly framed imagery, generous micro-spacing, and nuanced gold/emerald borders rather than heavy decoration.
-- **Tone & Mood:** Welcoming (*səmimi*), distinguished (*nəfis*), and celebratory (*təntənəli*).
+The visual style couples modern editorial food styling with tactile warmth:
+- Generous, rounded surfaces conveying pillowy dough and softness.
+- Subtle hand-drawn culinary linework and artisanal stamp accents paired with ultra-crisp interface elements.
+- Appetite-stimulating contrasts: sun-drenched warm creams against deep wood-fired char tones and luminous tomato reds.
+- Emotional goal: evoke sensory comfort, authentic craft, and joyful gathering from first browse to final checkout.
 
 ## Colors
+The palette balances appetizing primary tones with culinary-inspired neutrals:
 
-The palette grounds the interface in classic epicurean hues, calibrated to retain legibility and tactile warmth across light and darkened ambient themes:
-
-- **Primary (Emerald Spectrum):**
-  - Base Primary: `#065F38` (Deep Forest Emerald — dominant for text emphasis, key buttons, and brand anchors).
-  - Primary Bright: `#00A86B` (Vibrant Emerald — reserved for status badges, focused highlights, and interactive accents).
-  - Primary Hover: `#0E8A54` (Lush Forest — interactive states).
-- **Secondary (Wine & Burgundy Spectrum):**
-  - Base Secondary: `#8B1E26` (Noble Wine — reservation CTAs, culinary badges, celebratory callouts).
-  - Secondary Deep: `#5A0E14` (Dark Berry — interactive active states and footer contrast zones).
-  - Secondary Muted: `#7A171E` (Warm Claret).
-- **Tertiary (Warm Gold Accent):**
-  - Champagne Gold: `#D4AF37` (Subtle divider highlights, star ratings, and menu crest lines).
-- **Neutral (Warm Stone & Dark Slate):**
-  - Base Canvas / Background: `#FAF9F6` (Warm Alabaster Cream).
-  - Surface Alt / Card Container: `#F4F1EA` (Soft Cashmere Linen).
-  - Surface Pure: `#FFFFFF` (Floating modal and elevate card base).
-  - Text Primary / Charcoal: `#1C1D1F` (Deep Charcoal Slate).
-  - Text Secondary: `#575B62` (Warm Gray).
-  - Border Subdued: `rgba(28, 29, 31, 0.08)`.
+- **Primary (`#D7263D`)**: Ripe San Marzano tomato red. Reserved for high-intent actions, primary interactive calls to action, badges indicating urgency or house specials, and focal accents.
+- **Secondary (`#F28C28`)**: Wood-fired ember orange. Drives promotional ribbons, secondary buttons, warm gradient overlays, and dynamic hover states.
+- **Tertiary (`#F6B800`)**: Melted crust gold / mozzarella yellow. Used for monetary highlights (price tags, combos), star ratings, preparation-time badges, and culinary icons.
+- **Neutral Dark (`#1A1A1A`)**: Cast-iron slate. The baseline for sharp typography, footer panels, dark-themed hero blocks, and evening dining sections.
+- **Surfaces & Canvases**:
+  - Light Canvas: `#FFFFFF` (pure plate white for crisp product isolation) and `#FFF8EC` (warm semolina cream for alternating content sections and table reservation flows).
+  - Dark Surface / Cards: `#242424` with borders set to `rgba(255, 255, 255, 0.08)` for nocturnal cafe menus and late-night delivery themes.
 
 ## Typography
+Headings utilize **Epilogue**, delivering geometric warmth, substantial mass, and an artisanal poster feel in heavy weights without descending into cartoonishness. Body typography uses **Inter** to ensure seamless legibility for multi-ingredient descriptions, allergens, and receipt breakdowns across both Azerbaijani and English locales.
 
-The typographical voice balances continental editorial craftsmanship with effortless digital readability:
-
-- **Display & Headings:** `Playfair Display` evokes tailored menus, heritage hospitality, and sensory comfort. Headings should employ generous line height to accommodate Azerbaijani diacritics (`ə`, `ğ`, `ı`, `ö`, `ş`, `ü`) gracefully without collision.
-- **Body & Interface:** `Plus Jakarta Sans` provides geometric clarity, open counters, and high legibility at dense viewport scale, essential for reservation calendars, dish descriptions, and pricing tables.
-- **Casing and Hierarchy:** Section pre-titles and category badges use uppercase tracking (`label-caps`), while dish titles and lounge space names use editorial title case.
+- Use `display-hero` exclusively for marquee editorial statements and promo landings.
+- Menu item titles employ `headline-md` or `headline-sm` with tight line heights to maintain compact item grouping.
+- Price indicators leverage `headline-md` set in **Epilogue** Bold with currency signs aligned baseline-style for rapid optical scanning.
+- Micro-labels, dietary pills (e.g., "Vegetarian", "Halal", "Spicy"), and order status stamps use `label-sm` in all-caps with generous letter-spacing.
 
 ## Layout & Spacing
+The layout follows a fluid-responsive 12-column grid on desktop (max width `1280px`), adapting to 8 columns on tablets and 4 columns on mobile devices:
 
-A 12-column responsive fluid grid structured with generous vertical cadence:
+- **Desktop (≥ 1024px)**: 12 columns, `1.5rem` gutters, `3rem` screen margins. Allows two-up side-by-side ordering flows and four-up pizza category cards.
+- **Tablet (768px – 1023px)**: 8 columns, `1.25rem` gutters, `2rem` screen margins. Food cards collapse gracefully to a 2-column format.
+- **Mobile (≤ 767px)**: 4 columns, `1rem` gutters, `1.25rem` screen margins. Food customization steps switch to edge-to-edge horizontal carousels with peek overflow.
 
-- **Desktop (1280px+):** Max page width bounded at 1240px with `margin-lg` (64px) outer boundaries and 24px-32px column gutters. Hero sections and signature photo galleries break boundaries using full-bleed containers.
-- **Tablet (768px – 1024px):** 8-column layout with 24px gutters and 40px outer padding. Two-column menu presentation reflows into single column or tabbed displays.
-- **Mobile (< 768px):** 4-column layout with 16px gutters and 24px outer margin. Cards drop from lateral stacks to vertical linear progression.
-- **Rhythm:** Spacing follows comfortable increments (`12px`, `20px`, `32px`, `56px`), cultivating an open, unhurried, cafe-like browsing rhythm.
+Spacing between dish components defaults to `space-md`, while section transitions leverage `space-xl` or larger to let high-resolution photography breathe.
 
 ## Elevation & Depth
+Depth mimics physical plating and warm ambient restaurant lighting. Harsh digital drop-shadows are avoided in favor of warm, umber-tinted ambient diffusion:
 
-Visual hierarchy evokes the depth of low-lit architectural cafe spaces through warm ambient shadows and frosted layers:
-
-- **Level 0 (Base Canvas):** Flat Warm Off-White (`#FAF9F6`), absorbing environmental light.
-- **Level 1 (Soft Cards & Reservable Booths):** Casts a diffused warm shadow: `0 4px 20px -2px rgba(28, 29, 31, 0.04), 0 2px 6px -1px rgba(28, 29, 31, 0.02)`. Borders use an ultra-thin line: `1px solid rgba(28, 29, 31, 0.06)`.
-- **Level 2 (Interactive Hover & Featured Delicacies):** Elevated to `0 12px 32px -4px rgba(6, 95, 56, 0.08), 0 4px 12px -2px rgba(28, 29, 31, 0.04)`, pairing emerald micro-tinting with a slight lift.
-- **Level 3 (Sticky Nav & Modals):** Frosted Glassmorphism using `background: rgba(250, 249, 246, 0.82)`, `backdrop-filter: blur(14px)`, and an inner hairline highlight: `box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.6)`.
+- **Level 0 (Flat)**: Pure backgrounds (`#FFFFFF` and `#FFF8EC`).
+- **Level 1 (Plated Cards)**: Resting cards utilize `box-shadow: 0 4px 16px -2px rgba(26, 26, 26, 0.05), 0 2px 6px -1px rgba(215, 38, 61, 0.03)`.
+- **Level 2 (Hover / Elevated Selection)**: Lifted items or active food configurations transition to `box-shadow: 0 12px 28px -4px rgba(26, 26, 26, 0.1), 0 6px 14px -2px rgba(242, 140, 40, 0.08)`.
+- **Level 3 (Modals / Order Drawer)**: `box-shadow: 0 24px 48px -8px rgba(26, 26, 26, 0.22)`.
+- **Dark Mode Card Treatment**: Instead of deep shadows, dark surfaces (`#242424`) rely on subtle light bleeding: `box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06), 0 10px 24px -4px rgba(0, 0, 0, 0.45)`.
 
 ## Shapes
+Surfaces adopt a generous rounded form language evocative of rolled pizza dough, stone platters, and casual comfort:
 
-The design system embraces an approachable, softly rounded geometry:
-
-- **Base Radius (`rounded`, 8px):** Input controls, tags, and secondary action triggers.
-- **Container Radius (`rounded-lg`, 16px):** Primary menu cards, lounge room highlights, testimonial modules.
-- **Statement Radius (`rounded-xl`, 24px):** Hero featured imagery, reservation forms, and modal dialogs.
-- **Pill Formats:** Interactive filter chips, dietary tags (*Halal*, *Chef's Special*), and primary floating CTAs use `rounded-full` for welcoming softness.
+- Buttons, menu cards, and dialogue containers use `rounded-lg` (`16px`) to `rounded-xl` (`24px`).
+- Filter chips, dietary badges, and floating status bubbles use full pill geometry (`9999px`) to create optical variety against rectangular menu cards.
+- Imagery containers for signature pizzas use continuous squircle-cut or circular cutouts to showcase crust bubbles and fresh toppings seamlessly.
 
 ## Components
 
 ### Buttons
-- **Primary ("Masa Sifarişi" / Book Table):** Deep Emerald (`#065F38`) background, white text, subtle Champagne Gold hover border (`#D4AF37`). Padded with `14px 28px`, rounded to `10px` or full pill, accompanied by a soft glow on hover.
-- **Secondary (Burgundy Accent):** Deep Burgundy (`#8B1E26`) fill with pure white label, used specifically for seasonal experiences, chef specials, or lounge events.
-- **Outline / Ghost ("Menyu ilə Tanışlıq" / Explore Menu):** Transparent background with `1.5px` border in `#065F38`, shifting to `#065F38` background and off-white text on hover.
-
-### Cards
-- **Menu Item Cards:** Crisp white or cashmere linen background (`#FFFFFF` or `#F4F1EA`), rounded to 16px, framed with a delicate border `rgba(28, 29, 31, 0.05)`. Includes dish photography with 12px border radius, clear typography hierarchy, and dietary badges positioned top-right.
-- **Lounge & Family Zone Cards:** Large aspect-ratio media (16:10), gentle gradient overlay (`rgba(18, 19, 22, 0.4)` to transparent), hosting white serif title tags and occupancy/amenity indicators.
+- **Primary ("Order Now", "Add to Cart")**: Solid `#D7263D` background, `#FFFFFF` text, `rounded-xl` radius, bold `label-lg` typography. Padding: `14px 28px`. Hover shifts background to a rich tomato bake (`#BD1B30`) with a subtle `2px` upward translation.
+- **Secondary ("Customize", "View Details")**: Warm cream surface (`#FFF8EC`) with a subtle border (`1.5px solid rgba(242, 140, 40, 0.4)`), text colored `#1A1A1A`. Hover deepens border to solid `#F28C28`.
+- **Icon / Quantity Stepper (+ / -)**: Circular pills (`36px × 36px`), `#F6B800` tertiary background with `#1A1A1A` bold glyphs.
 
 ### Chips & Dietary Badges
-- Compact pill-shaped elements (`rounded-full`, padding `4px 12px`).
-- Filter states (e.g., *Səhər Yeməyi*, *Əsas Yeməklər*, *Şirniyyatlar*, *İçkilər*): Active states feature `#065F38` fill with off-white text; inactive states feature `#F4F1EA` with `#1C1D1F` text.
+- **Selection Chips (Crust / Size)**: Unselected: `#FFFFFF` fill with `1px solid #EBE4D8`. Selected: `#1A1A1A` fill with `#FFFFFF` text and gold highlight ring.
+- **Dietary Badges ("Spicy", "Chef's Pick")**: Mini-pills with `6px 12px` padding, uppercase `label-sm`. "Chef's Pick" uses `#F6B800` background with `#1A1A1A` text. "Spicy" uses soft `#D7263D` tint (`12%` opacity) with dark red text.
 
-### Input Fields & Reservation Picker
-- Inputs leverage `#FFFFFF` backgrounds with an inset feel, `1.5px` border in `rgba(28, 29, 31, 0.12)`, and active focus states illuminated by `#065F38` outline with 3px emerald ambient spread `rgba(6, 95, 56, 0.15)`.
-- Date/Time/Guest selectors are augmented with minimalist iconography (calendar, clock, guest icon) tinted in muted charcoal.
+### Food & Menu Cards
+- Elevated white or dark slate containers (`rounded-xl`, `20px` radius).
+- Food photography anchored at the top with negative margins or gentle circular clipping overflowing the card top border.
+- Bottom footer contains product title, short ingredient list (Inter `body-sm`, neutral gray), price in bold Epilogue, and a floating circular "+" add button.
 
-### Navigation Header
-- Floating, detached layout featuring a 16px margin from page boundaries on desktop.
-- Frosted cream surface (`rgba(250, 249, 246, 0.85)` + blur) with brand serif logotype on the left, centered menu navigation items, and prominent reservation CTA on the right.
+### Form Inputs & Selectors
+- Background: `#FFFFFF` on warm cream canvas, `#2A2A2A` on dark canvas.
+- Border: `1.5px solid #E5DEC9`. Focus state applies a crisp `2px` border in `#D7263D` with a diffuse `4px` glow (`rgba(215, 38, 61, 0.15)`).
+- Generous internal padding: `14px 18px`.
+
+### Quantity Selectors & Order Tray
+- A persistent docked mobile basket bar (`#1A1A1A` background, white text, tomato red checkout pill) with a badge count styled in `#F6B800`.

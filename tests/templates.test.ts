@@ -256,4 +256,13 @@ test('daxili temalar (bySalmanov, warmGourmetPro və s.) şablon kimi tapılır 
   assert.ok(muessiseRestoran);
   assert.equal(muessiseRestoran?.category, 'muessise-sayti');
   assert.equal(muessiseRestoran?.subcategory, 'restoran-ve-kafe');
+
+  const pizzaHouse = await getTemplateDefinition('pizzaHouse');
+  assert.ok(pizzaHouse);
+  assert.equal(pizzaHouse?.name, 'Pizza House & Artisanal Hospitality (PRO)');
+
+  const resolvedPizza = await resolveTemplateTheme('pizzaHouse');
+  assert.equal(resolvedPizza.templateId, 'pizzaHouse');
+  assert.equal(resolvedPizza.source, 'builtin');
+  assert.equal(resolvedPizza.theme.primaryColor, '#b20028');
 });

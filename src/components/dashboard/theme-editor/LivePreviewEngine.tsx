@@ -513,7 +513,8 @@ export default function LivePreviewEngine({
         }
         .sitex-preview-canvas .restaurant-site-container,
         .sitex-preview-canvas .pro-restaurant-site,
-        .sitex-preview-canvas .speech-academy-root {
+        .sitex-preview-canvas .speech-academy-root,
+        .sitex-preview-canvas .pizza-house-root {
           overflow-x: clip !important;
           position: relative !important;
           width: 100% !important;

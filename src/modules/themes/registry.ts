@@ -6,6 +6,7 @@ import { warmGourmetProTheme } from './builtin/warm-gourmet';
 import { bySalmanovTheme } from './builtin/by-salmanov';
 import { speechAcademyTheme } from './builtin/speech-academy';
 import { randevuCafeTheme } from './builtin/randevu-cafe';
+import { pizzaHouseTheme } from './builtin/pizza-house';
 
 class ThemeRegistry {
   private themes = new Map<string, ThemeDefinition>();
@@ -18,6 +19,7 @@ class ThemeRegistry {
     this.registerTheme(bySalmanovTheme);
     this.registerTheme(speechAcademyTheme);
     this.registerTheme(randevuCafeTheme);
+    this.registerTheme(pizzaHouseTheme);
   }
 
   public registerTheme(theme: ThemeDefinition): void {

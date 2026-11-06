@@ -14,6 +14,7 @@ import SplashScreen, { SplashConfig } from './SplashScreen';
 import ProRestaurantSite from './ProRestaurantSite';
 import SpeechAcademySite from './SpeechAcademySite';
 import RandevuCafeSite from './RandevuCafeSite';
+import PizzaHouseSite from './PizzaHouseSite';
 import FoodVideoPlayer from './FoodVideoPlayer';
 import { parseSetItems, formatSetSummary } from '@/lib/set-dishes';
 import { SocialIconsGroup } from './SocialIcons';
@@ -999,6 +1000,13 @@ export default function RestaurantSite({ data, initialTable }: { data: SiteData;
       theme.id === 'randevuCafe'
     ) {
       return <RandevuCafeSite data={data} theme={theme} />;
+    }
+    if (
+      theme.proTemplateId === 'pizza-house' ||
+      theme.templateId === 'pizza-house' ||
+      theme.id === 'pizzaHouse'
+    ) {
+      return <PizzaHouseSite data={data} theme={theme} table={table} />;
     }
     return <ProRestaurantSite data={data} theme={theme} table={table} />;
   }

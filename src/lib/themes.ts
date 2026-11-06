@@ -162,6 +162,27 @@ export interface ThemeConfig {
   contactBadgeText?: string;
   contactHeadline?: string;
   footerTagline?: string;
+
+  // Pizza House & Artisanal Hospitality Theme
+  heroStat1Value?: string;
+  heroStat1Label?: string;
+  heroStat2Value?: string;
+  heroStat2Label?: string;
+  heroStat3Value?: string;
+  heroStat3Label?: string;
+  heroBadgeFeature1?: string;
+  heroBadgeFeature1Desc?: string;
+  heroBadgeFeature2?: string;
+  heroBadgeFeature2Desc?: string;
+  aboutEstablishedYear?: string;
+  aboutEstablishedText?: string;
+  aboutFeature3Title?: string;
+  aboutFeature3Desc?: string;
+  galleryBadgeText?: string;
+  galleryHeadline?: string;
+  gallerySubtitle?: string;
+  footerSlogan?: string;
+  footerDescription?: string;
 }
 
 export const defaultThemes: Record<string, ThemeConfig> = {
@@ -497,6 +518,87 @@ export const defaultThemes: Record<string, ThemeConfig> = {
     footerPlatformText: 'Sayt SiteX platforması ilə yaradılıb',
     footerTagline: 'Ailəniz və doğmalarınız üçün ən sevimli qastronomik məkan.',
   },
+  pizzaHouse: {
+    id: 'pizzaHouse',
+    name: 'Pizza House & Artisanal Hospitality (PRO)',
+    description: 'Odun sobası təamları, təzə xəmir sənəti, zərif Neapolitan estetikası, interaktiv foto qalereya, dinamik menyu və onlayn rezervasiya sistemi ilə premium qastronomiya şablonu.',
+    category: ['Restoran & Kafe', 'Pitseriya & İtalyan', 'PRO'],
+    previewGradient: ['#b20028', '#fcf9f8'],
+    primaryColor: '#b20028',
+    secondaryColor: '#914d00',
+    accentColor: '#fc9430',
+    backgroundColor: '#fcf9f8',
+    textColor: '#1c1b1b',
+    headingFont: 'Epilogue',
+    bodyFont: 'Inter',
+    brandFont: 'Epilogue',
+    borderRadius: '16px',
+    heroHeight: '90vh',
+    heroOverlay: 0.1,
+    templateId: 'pizza-house',
+    buttonStyle: 'solid',
+    cardStyle: 'elevated',
+    headerStyle: 'glass',
+    footerStyle: 'dark',
+    isProTemplate: true,
+    proTemplateId: 'pizza-house',
+    whatsappColor: '#25D366',
+    whatsappIconColor: '#FFFFFF',
+    siteBgType: 'solid',
+    siteBgColor: '#fcf9f8',
+    navbarBgType: 'solid',
+    navbarBgColor: 'rgba(252, 249, 248, 0.85)',
+    formBgType: 'solid',
+    formBgColor: '#313030',
+    footerBgType: 'solid',
+    footerBgColor: '#313030',
+    heroBadgeText: 'Odun sobasında hazırlanır',
+    heroHeadline: 'Əsl Pizza Zövqü, Hər Dilimdə',
+    heroSubheadline: 'Təzə inqrediyentlər, əl ilə açılmış xəmir və isti ailə atmosferi. Pizza House-da hər qonaq xüsusidir və hər dilim sevgi ilə yoğrulur.',
+    heroCta1: 'Menyuya bax',
+    heroCta2: 'Masa rezerv et',
+    heroStat1Value: '10+ il',
+    heroStat1Label: 'Təcrübə',
+    heroStat2Value: '30+',
+    heroStat2Label: 'Pizza növü',
+    heroStat3Value: '5000+',
+    heroStat3Label: 'Məmnun qonaq',
+    heroRatingScore: '4.9',
+    heroRatingLabel: 'Reytinq (2.4k+)',
+    heroBadgeFeature1: '100% Təbii',
+    heroBadgeFeature1Desc: 'Pendir & Xəmir',
+    heroBadgeFeature2: '15 Dəqiqəyə',
+    heroBadgeFeature2Desc: 'Süfrənizdə hazır',
+    aboutBadgeText: 'TARİXİMİZ VƏ DƏYƏRLƏRİMİZ',
+    aboutHeadline: 'Bizim Hekayəmiz',
+    aboutBody1: 'Pizza House ailə ocağının istiliyini italyan dadı ilə birləşdirir. Hər gün təzə xəmir yoğurur, yerli və keyfiyyətli məhsullardan istifadə edirik ki, hər dilim sizə ev rahatlığı hiss etdirsin.',
+    aboutBody2: 'Bakının mərkəzində əsl Neapolitan ləzzətini süfrənizə daşıyırıq.',
+    aboutEstablishedYear: '2014',
+    aboutEstablishedText: 'İldən bəri sevgiylə',
+    aboutFeature1Title: 'Təzə inqrediyentlər',
+    aboutFeature1Desc: 'Hər gün seçilmiş təbii tərəvəzlər və xalis pendir növləri.',
+    aboutFeature2Title: 'Sürətli xidmət',
+    aboutFeature2Desc: 'Sifarişiniz isti və xırçıltılı şəkildə masanıza operativ çatdırılır.',
+    aboutFeature3Title: 'Rahat atmosfer',
+    aboutFeature3Desc: 'Ailəniz və dostlarınızla xoş xatirələr yaratmaq üçün isti və səmimi məkan.',
+    galleryBadgeText: 'FOTO QALAREYA',
+    galleryHeadline: 'Dadlı Anlarımızdan Kadrlar',
+    gallerySubtitle: 'Odun sobasının hərarəti, təzə xəmir sənəti və restoranımızın unikal abu-havası.',
+    menuBadgeText: 'ZƏRİF DADLAR',
+    menuHeadline: 'Menyumuz',
+    menuSubtitle: 'Hər zövqə uyğun seçimlər: ənənəvi İtalyan reseptləri və müasir çalarla hazırlanmış təamlar.',
+    reservationBadgeText: 'ONLİNE QEYDİYYAT',
+    reservationHeadline: 'Masanı İndi Rezerv Et',
+    reservationSubtitle: 'Bir neçə saniyəyə yerinizi təmin edin, ləzzətli axşamdan zövq alın.',
+    contactBadgeText: 'ÜNVAN & ƏLAQƏ',
+    contactHeadline: 'Bizimlə Əlaqə',
+    contactSubtitle: 'Sualınız var və ya sifariş vermək istəyirsiniz? Hər zaman xidmətinizdəyik.',
+    footerSlogan: 'Hər dilimdə sevgi',
+    footerDescription: 'Odun sobasında xüsusi reseptlə bişirilən Neapolitan pizzaları və zərif qəhvə ənənəsi.',
+    footerCopyrightText: '© 2026 Pizza House. Bütün hüquqlar qorunur.',
+    footerPlatformText: 'Sayt SiteX platforması ilə yaradılıb',
+    footerTagline: 'Əsl Neapolitan ləzzəti və isti ailə qonaqpərvərliyi.',
+  },
 };
 
 export function getThemeCSS(theme: Partial<ThemeConfig>): Record<string, string> {
@@ -529,6 +631,7 @@ export function getGoogleFontsUrl(theme: Partial<ThemeConfig>): string {
 }
 
 export const BRAND_FONTS = [
+  { name: 'Epilogue', label: 'Epilogue', category: 'Müasir Artisan Sans' },
   { name: 'Playfair Display', label: 'Playfair Display', category: 'Klassik Lüks Serif' },
   { name: 'Cinzel', label: 'Cinzel', category: 'Kral & Qədim Roma' },
   { name: 'Cormorant Garamond', label: 'Cormorant Garamond', category: 'Gourmet Zərif Serif' },

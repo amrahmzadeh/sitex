@@ -42,18 +42,35 @@ export default function ThemeAssetsManager({
     theme.proTemplateId === 'randevu-cafe' ||
     theme.id === 'randevuCafe';
 
+  const isPizzaHouseTheme =
+    theme.templateId === 'pizza-house' ||
+    theme.proTemplateId === 'pizza-house' ||
+    theme.id === 'pizzaHouse';
+
   const assetSlots: AssetSlot[] = [
     {
       key: 'headerImageUrl',
-      title: 'Başlıq Şəkli (Header Cover)',
-      description: 'Saytın əsas banner və qəhrəman (Hero) hissəsində göstərilən fon şəkli.',
+      title: isPizzaHouseTheme
+        ? 'Əsas Pizza Vitrini Şəkli (Hero Pizza)'
+        : 'Başlıq Şəkli (Header Cover)',
+      description: isPizzaHouseTheme
+        ? 'Hero hissəsində sağ tərəfdə göstərilən xüsusi odun sobası pizzası şəkli.'
+        : 'Saytın əsas banner və qəhrəman (Hero) hissəsində göstərilən fon şəkli.',
       url: theme.headerImageUrl,
-      recommendedSize: '1920 × 1080 px (16:9)',
+      recommendedSize: isPizzaHouseTheme ? '1000 × 1000 px (1:1 kvadrat)' : '1920 × 1080 px (16:9)',
     },
     {
       key: 'aboutImageUrl',
-      title: isRandevuTheme ? 'Haqqımızda Bölməsinin Şəkli (Aşpaz / Komanda / İnteryer)' : 'Haqqımızda Bölməsinin Şəkli',
-      description: isRandevuTheme ? 'Haqqımızda bölməsində sol tərəfdə göstərilən usta aşpaz və ya məkan şəkli.' : 'Saytın, komandanın və ya məkanın interyerini əks etdirən foto.',
+      title: isPizzaHouseTheme
+        ? 'Haqqımızda Kollaj Şəkli (Usta / Məkan)'
+        : isRandevuTheme
+        ? 'Haqqımızda Bölməsinin Şəkli (Aşpaz / Komanda / İnteryer)'
+        : 'Haqqımızda Bölməsinin Şəkli',
+      description: isPizzaHouseTheme
+        ? 'Haqqımızda bölməsindəki 4-lü kollajın sol üst əsas fotoşəkli.'
+        : isRandevuTheme
+        ? 'Haqqımızda bölməsində sol tərəfdə göstərilən usta aşpaz və ya məkan şəkli.'
+        : 'Saytın, komandanın və ya məkanın interyerini əks etdirən foto.',
       url: theme.aboutImageUrl,
       recommendedSize: '1200 × 800 px (4:3 və ya portret)',
     },
