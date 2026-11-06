@@ -2509,19 +2509,6 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                     />
                   </div>
                 </div>
-
-                {/* Decorative Center Badge */}
-                <div
-                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-28 h-28 rounded-full flex flex-col items-center justify-center p-2 text-center shadow-2xl z-20 border-4 border-white"
-                  style={{ backgroundColor: '#d7263d', color: '#ffffff' }}
-                >
-                  <span className="font-headline-sm text-2xl leading-none font-bold text-white">
-                    {theme.aboutEstablishedYear || '2014'}
-                  </span>
-                  <span className="font-label-sm text-xs mt-1 text-white/90 font-medium">
-                    {theme.aboutEstablishedText || 'İldən bəri sevgiylə'}
-                  </span>
-                </div>
               </div>
 
               {/* Right Column: Story & Features */}
