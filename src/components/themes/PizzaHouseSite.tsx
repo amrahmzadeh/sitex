@@ -2209,41 +2209,52 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                   </div>
                 </div>
 
-                {/* Mobile-only Highlights: positioned cleanly underneath the image */}
-                <div className="flex sm:hidden items-center justify-around w-full max-w-xs mt-4 p-3.5 bg-white rounded-2xl shadow-md border border-[#f0eded]">
+                {/* Mobile-only Highlights: 3 balanced cards underneath the image */}
+                <div className="grid sm:hidden grid-cols-3 gap-2 w-full max-w-sm mt-5 px-1">
                   {/* Rating */}
-                  <div className="flex flex-col items-center text-center">
-                    <div className="flex items-center gap-1 font-bold text-sm text-[#1c1b1b]">
-                      <Star size={15} className="fill-[#fbbc0c] text-[#fbbc0c]" />
-                      <span>{theme.heroRatingScore || '4.9'}</span>
+                  <div className="p-2.5 rounded-2xl bg-white shadow-sm border border-[#f0eded] flex flex-col items-center text-center">
+                    <div
+                      className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 mb-1.5"
+                      style={{ backgroundColor: '#ffdea0', color: '#261a00' }}
+                    >
+                      <Star size={16} className="fill-[#261a00] text-[#261a00]" />
                     </div>
-                    <span className="text-[10px] text-[#5b403f] font-medium mt-0.5">
-                      {theme.heroRatingLabel || 'Reytinq (2.4k+)'}
+                    <span className="font-bold text-xs text-[#1c1b1b] leading-tight">
+                      {theme.heroRatingScore || '4.9'}
+                    </span>
+                    <span className="text-[10px] text-[#5b403f] font-medium mt-0.5 leading-tight">
+                      {theme.heroRatingLabel || 'Reytinq'}
                     </span>
                   </div>
 
-                  <div className="h-8 w-[1px] bg-[#f0eded]" />
-
                   {/* 15 Dəqiqəyə */}
-                  <div className="flex flex-col items-center text-center">
-                    <div className="flex items-center gap-1 font-bold text-sm text-[#1c1b1b]">
-                      <Clock size={15} className="text-[#914d00]" />
-                      <span>{theme.heroBadgeFeature2 || '15 Dəqiqəyə'}</span>
+                  <div className="p-2.5 rounded-2xl bg-white shadow-sm border border-[#f0eded] flex flex-col items-center text-center">
+                    <div
+                      className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 mb-1.5"
+                      style={{ backgroundColor: '#ffdcc3', color: '#914d00' }}
+                    >
+                      <Clock size={16} className="text-[#914d00]" />
                     </div>
-                    <span className="text-[10px] text-[#5b403f] font-medium mt-0.5">
+                    <span className="font-bold text-xs text-[#1c1b1b] leading-tight">
+                      {theme.heroBadgeFeature2 || '15 Dəqiqəyə'}
+                    </span>
+                    <span className="text-[10px] text-[#5b403f] font-medium mt-0.5 leading-tight">
                       {theme.heroBadgeFeature2Desc || 'Süfrənizdə hazır'}
                     </span>
                   </div>
 
-                  <div className="h-8 w-[1px] bg-[#f0eded]" />
-
                   {/* 100% Təbii */}
-                  <div className="flex flex-col items-center text-center">
-                    <div className="flex items-center gap-1 font-bold text-sm text-[#1c1b1b]">
-                      <Flame size={15} className="fill-[#d7263d] text-[#d7263d]" />
-                      <span>{theme.heroBadgeFeature1 || '100% Təbii'}</span>
+                  <div className="p-2.5 rounded-2xl bg-white shadow-sm border border-[#f0eded] flex flex-col items-center text-center">
+                    <div
+                      className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 mb-1.5"
+                      style={{ backgroundColor: '#ffdad9', color: '#b20028' }}
+                    >
+                      <Flame size={16} className="fill-[#b20028] text-[#b20028]" />
                     </div>
-                    <span className="text-[10px] text-[#5b403f] font-medium mt-0.5">
+                    <span className="font-bold text-xs text-[#1c1b1b] leading-tight">
+                      {theme.heroBadgeFeature1 || '100% Təbii'}
+                    </span>
+                    <span className="text-[10px] text-[#5b403f] font-medium mt-0.5 leading-tight">
                       {theme.heroBadgeFeature1Desc || 'Pendir & Xəmir'}
                     </span>
                   </div>
