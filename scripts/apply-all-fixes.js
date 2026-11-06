@@ -331,3 +331,4 @@ if (comp.includes(footerOld)) {
 
 fs.writeFileSync('src/components/themes/PizzaHouseSite.tsx', comp, 'utf8');
 console.log('All fixes applied to PizzaHouseSite.tsx!');
+

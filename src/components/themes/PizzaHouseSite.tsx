@@ -514,6 +514,11 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
   -webkit-font-smoothing: antialiased;
 }
 
+.pizza-house-root .bg-white { background-color: #ffffff !important; }
+.pizza-house-root .text-white { color: #ffffff !important; }
+.pizza-house-root .border-white { border-color: #ffffff !important; }
+.pizza-house-root input::placeholder, .pizza-house-root textarea::placeholder { color: rgba(220, 217, 217, 0.6) !important; }
+
 .pizza-house-root {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
   color: #1c1b1b;
@@ -1340,19 +1345,19 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
           </a>
 
           {/* Desktop Navigation Menu */}
-          <nav className="hidden lg:flex items-center gap-6">
+          <nav className="hidden lg:flex items-center gap-7">
             {navItems.map((item) => {
               const isActive = activeSection === item.id;
               return (
                 <button
                   key={item.id}
                   onClick={() => scrollTo(item.id)}
-                  className={`transition-colors py-1.5 px-3.5 rounded-xl cursor-pointer font-medium text-sm ${
+                  className={`transition-all py-2 px-4 rounded-xl cursor-pointer font-label-lg text-label-lg ${
                     isActive ? 'font-bold' : 'hover:text-[#b20028]'
                   }`}
                   style={
                     isActive
-                      ? { backgroundColor: '#d7263d', color: '#ffffff' }
+                      ? { backgroundColor: '#d7263d', color: '#ffffff', boxShadow: '0 2px 8px rgba(215, 38, 61, 0.25)' }
                       : { color: '#5b403f' }
                   }
                 >
@@ -1386,8 +1391,8 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                 Rezervasiya et
               </button>
               <div
-                className="hidden sm:flex w-8 h-8 rounded-full items-center justify-center text-white shrink-0"
-                style={{ backgroundColor: '#b20028' }}
+                className="w-8 h-8 rounded-full flex items-center justify-center text-white shrink-0 shadow-sm"
+                style={{ backgroundColor: '#b20028', color: '#ffffff' }}
                 title="Pizza House"
               >
                 <Users size={16} />
@@ -1541,48 +1546,48 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                 </div>
 
                 {/* 3 Stats Chips */}
-                <div className="grid grid-cols-3 gap-3 sm:gap-4 pt-8 w-full max-w-lg">
+                <div className="grid grid-cols-3 gap-3 sm:gap-4 pt-6 w-full max-w-lg">
                   <div
-                    className="p-3.5 rounded-2xl shadow-sm flex flex-col items-center sm:items-start border"
+                    className="p-3.5 sm:p-4 rounded-2xl shadow-sm hover:shadow-md transition-shadow flex flex-col items-center sm:items-start border"
                     style={{ backgroundColor: '#ffffff', borderColor: '#f0eded' }}
                   >
-                    <div className="flex items-center gap-1 font-bold mb-1">
-                      <Star size={18} className="fill-[#fbbc0c] text-[#fbbc0c]" />
+                    <div className="flex items-center gap-1.5 font-bold mb-1">
+                      <Star size={18} className="fill-[#fbbc0c] text-[#fbbc0c] shrink-0" />
                       <span className="font-bold text-base sm:text-lg text-[#1c1b1b]">
                         {theme.heroStat1Value || '10+ il'}
                       </span>
                     </div>
-                    <span className="text-xs font-medium text-[#5b403f] text-center sm:text-left">
+                    <span className="text-xs sm:text-sm font-medium text-[#5b403f] text-center sm:text-left">
                       {theme.heroStat1Label || 'Təcrübə'}
                     </span>
                   </div>
 
                   <div
-                    className="p-3.5 rounded-2xl shadow-sm flex flex-col items-center sm:items-start border"
+                    className="p-3.5 sm:p-4 rounded-2xl shadow-sm hover:shadow-md transition-shadow flex flex-col items-center sm:items-start border"
                     style={{ backgroundColor: '#ffffff', borderColor: '#f0eded' }}
                   >
-                    <div className="flex items-center gap-1 font-bold mb-1">
-                      <Flame size={18} className="fill-[#d7263d] text-[#d7263d]" />
+                    <div className="flex items-center gap-1.5 font-bold mb-1">
+                      <Flame size={18} className="fill-[#d7263d] text-[#d7263d] shrink-0" />
                       <span className="font-bold text-base sm:text-lg text-[#1c1b1b]">
                         {theme.heroStat2Value || '30+'}
                       </span>
                     </div>
-                    <span className="text-xs font-medium text-[#5b403f] text-center sm:text-left">
+                    <span className="text-xs sm:text-sm font-medium text-[#5b403f] text-center sm:text-left">
                       {theme.heroStat2Label || 'Pizza növü'}
                     </span>
                   </div>
 
                   <div
-                    className="p-3.5 rounded-2xl shadow-sm flex flex-col items-center sm:items-start border"
+                    className="p-3.5 sm:p-4 rounded-2xl shadow-sm hover:shadow-md transition-shadow flex flex-col items-center sm:items-start border"
                     style={{ backgroundColor: '#ffffff', borderColor: '#f0eded' }}
                   >
-                    <div className="flex items-center gap-1 font-bold mb-1">
-                      <Users size={18} className="text-[#fc9430]" />
+                    <div className="flex items-center gap-1.5 font-bold mb-1">
+                      <Users size={18} className="text-[#fc9430] shrink-0" />
                       <span className="font-bold text-base sm:text-lg text-[#1c1b1b]">
                         {theme.heroStat3Value || '5000+'}
                       </span>
                     </div>
-                    <span className="text-xs font-medium text-[#5b403f] text-center sm:text-left">
+                    <span className="text-xs sm:text-sm font-medium text-[#5b403f] text-center sm:text-left">
                       {theme.heroStat3Label || 'Məmnun qonaq'}
                     </span>
                   </div>
@@ -1604,47 +1609,62 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
 
                   {/* Floating Badge 1: Rating */}
                   <div
-                    className="absolute -top-3 -left-3 sm:top-4 sm:-left-6 bg-white px-4 py-2.5 rounded-2xl shadow-xl flex items-center gap-2.5 animate-bounce border border-[#f0eded]"
-                    style={{ animationDuration: '4s' }}
+                    className="absolute -top-3 -left-3 sm:top-4 sm:-left-6 px-4 py-2.5 rounded-2xl shadow-xl flex items-center gap-2.5 animate-bounce border border-[#f0eded] z-20"
+                    style={{ animationDuration: '4s', backgroundColor: '#ffffff' }}
                   >
-                    <div className="w-8 h-8 rounded-xl bg-[#ffdea0] flex items-center justify-center text-[#261a00]">
+                    <div
+                      className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
+                      style={{ backgroundColor: '#ffdea0', color: '#261a00' }}
+                    >
                       <Star size={18} className="fill-[#261a00] text-[#261a00]" />
                     </div>
                     <div>
-                      <p className="font-headline-sm text-headline-sm leading-tight text-[#1c1b1b]">
+                      <p className="font-headline-sm text-sm sm:text-base font-bold leading-tight text-[#1c1b1b]">
                         {theme.heroRatingScore || '4.9'}
                       </p>
-                      <p className="font-label-sm text-label-sm text-[#5b403f]">
+                      <p className="font-label-sm text-xs text-[#5b403f]">
                         {theme.heroRatingLabel || 'Reytinq (2.4k+)'}
                       </p>
                     </div>
                   </div>
 
                   {/* Floating Badge 2: 100% Mozzarella */}
-                  <div className="absolute -bottom-4 -left-2 sm:bottom-6 sm:-left-4 bg-white px-4 py-2.5 rounded-2xl shadow-xl flex items-center gap-2.5 border border-[#f0eded]">
-                    <div className="w-8 h-8 rounded-xl bg-[#ffdad9] flex items-center justify-center text-[#b20028]">
+                  <div
+                    className="absolute -bottom-4 -left-2 sm:bottom-6 sm:-left-4 px-4 py-2.5 rounded-2xl shadow-xl flex items-center gap-2.5 border border-[#f0eded] z-20"
+                    style={{ backgroundColor: '#ffffff' }}
+                  >
+                    <div
+                      className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
+                      style={{ backgroundColor: '#ffdad9', color: '#b20028' }}
+                    >
                       <Flame size={18} className="fill-[#b20028] text-[#b20028]" />
                     </div>
                     <div>
-                      <p className="font-headline-sm text-headline-sm leading-tight text-[#1c1b1b]">
+                      <p className="font-headline-sm text-sm sm:text-base font-bold leading-tight text-[#1c1b1b]">
                         {theme.heroBadgeFeature1 || '100% Təbii'}
                       </p>
-                      <p className="font-label-sm text-label-sm text-[#5b403f]">
+                      <p className="font-label-sm text-xs text-[#5b403f]">
                         {theme.heroBadgeFeature1Desc || 'Pendir & Xəmir'}
                       </p>
                     </div>
                   </div>
 
                   {/* Floating Badge 3: Fast baking */}
-                  <div className="absolute -top-3 -right-2 sm:top-10 sm:-right-6 bg-white px-4 py-2.5 rounded-2xl shadow-xl flex items-center gap-2.5 border border-[#f0eded]">
-                    <div className="w-8 h-8 rounded-xl bg-[#ffdcc3] flex items-center justify-center text-[#914d00]">
+                  <div
+                    className="absolute -top-3 -right-2 sm:top-10 sm:-right-6 px-4 py-2.5 rounded-2xl shadow-xl flex items-center gap-2.5 border border-[#f0eded] z-20"
+                    style={{ backgroundColor: '#ffffff' }}
+                  >
+                    <div
+                      className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
+                      style={{ backgroundColor: '#ffdcc3', color: '#914d00' }}
+                    >
                       <Clock size={18} className="text-[#914d00]" />
                     </div>
                     <div>
-                      <p className="font-headline-sm text-headline-sm leading-tight text-[#1c1b1b]">
+                      <p className="font-headline-sm text-sm sm:text-base font-bold leading-tight text-[#1c1b1b]">
                         {theme.heroBadgeFeature2 || '15 Dəqiqəyə'}
                       </p>
-                      <p className="font-label-sm text-label-sm text-[#5b403f]">
+                      <p className="font-label-sm text-xs text-[#5b403f]">
                         {theme.heroBadgeFeature2Desc || 'Süfrənizdə hazır'}
                       </p>
                     </div>
@@ -1773,11 +1793,14 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                     <button
                       key={cat.id}
                       onClick={() => setSelectedCatId(cat.id)}
-                      className={`px-6 py-2.5 rounded-full font-label-lg text-label-lg transition-all cursor-pointer whitespace-nowrap ${
-                        isSelected
-                          ? 'bg-[#d7263d] text-white shadow-md'
-                          : 'bg-[#e5e2e1] text-[#1c1b1b] hover:bg-[#dcd9d9]'
+                      className={`px-6 py-2.5 rounded-full font-label-lg text-label-lg transition-all cursor-pointer whitespace-nowrap shadow-sm ${
+                        isSelected ? 'font-bold' : 'hover:opacity-90'
                       }`}
+                      style={
+                        isSelected
+                          ? { backgroundColor: '#d7263d', color: '#ffffff', boxShadow: '0 4px 12px rgba(215, 38, 61, 0.25)' }
+                          : { backgroundColor: '#e5e2e1', color: '#1c1b1b' }
+                      }
                     >
                       {cat.name}
                     </button>
@@ -1796,7 +1819,8 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                   return (
                     <div
                       key={item.id}
-                      className="bg-white rounded-3xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group border border-[#f0eded]"
+                      className="rounded-3xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group border"
+                      style={{ backgroundColor: '#ffffff', borderColor: '#f0eded' }}
                     >
                       <div>
                         {/* Image Container with Badges */}
@@ -1805,10 +1829,11 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                             src={item.image || HERO_PIZZA_IMG}
                             alt={item.name}
+                            style={{ objectFit: 'cover' }}
                           />
                           {(item.badge || item.isPopular || item.isFeatured) && (
                             <span
-                              className="absolute top-3 left-3 px-3 py-1 rounded-full font-label-sm text-label-sm font-bold shadow-md text-white"
+                              className="absolute top-3 left-3 px-3 py-1 rounded-full font-label-sm text-xs font-bold shadow-md text-white"
                               style={{
                                 backgroundColor:
                                   item.badgeColor ||
@@ -1822,10 +1847,13 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
 
                         {/* Title & Price */}
                         <div className="flex items-start justify-between gap-2 mb-2">
-                          <h3 className="font-headline-md text-headline-md text-[#1c1b1b]">
+                          <h3 className="font-headline-md text-headline-md font-bold text-[#1c1b1b]">
                             {item.name}
                           </h3>
-                          <span className="inline-block px-3 py-1 rounded-full bg-[#ffdea0] text-[#261a00] font-headline-sm text-headline-sm font-bold shrink-0">
+                          <span
+                            className="inline-block px-3 py-1 rounded-full font-headline-sm text-headline-sm font-bold shrink-0"
+                            style={{ backgroundColor: '#ffdea0', color: '#261a00' }}
+                          >
                             {priceFormatted}
                           </span>
                         </div>
@@ -1840,11 +1868,16 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                       <button
                         onClick={() => handleAddToCart(item.name, priceFormatted)}
                         disabled={isOrdersPaused}
-                        className={`w-full py-3 px-4 rounded-xl font-label-lg text-label-lg flex items-center justify-center gap-2 transition-all shadow-sm cursor-pointer ${
+                        className={`w-full py-3 px-4 rounded-xl font-label-lg text-label-lg font-semibold flex items-center justify-center gap-2 transition-all shadow-sm cursor-pointer ${
                           isOrdersPaused
-                            ? 'bg-[#e5e2e1] text-[#5b403f] cursor-not-allowed'
-                            : 'bg-[#d7263d] hover:bg-[#b20028] text-white hover:-translate-y-0.5'
+                            ? 'cursor-not-allowed'
+                            : 'hover:-translate-y-0.5'
                         }`}
+                        style={
+                          isOrdersPaused
+                            ? { backgroundColor: '#e5e2e1', color: '#5b403f' }
+                            : { backgroundColor: '#d7263d', color: '#ffffff', boxShadow: '0 2px 8px rgba(215, 38, 61, 0.2)' }
+                        }
                       >
                         <span className="text-lg font-bold">+</span>
                         <span>{isOrdersPaused ? 'Sifariş bağlıdır' : 'Əlavə et'}</span>
@@ -1906,11 +1939,14 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                 </div>
 
                 {/* Decorative Center Badge */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-28 h-28 rounded-full bg-[#d7263d] text-white flex flex-col items-center justify-center p-2 text-center shadow-xl border-4 border-white">
-                  <span className="font-headline-sm text-headline-sm leading-none font-bold">
+                <div
+                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-28 h-28 rounded-full flex flex-col items-center justify-center p-2 text-center shadow-2xl z-20 border-4 border-white"
+                  style={{ backgroundColor: '#d7263d', color: '#ffffff' }}
+                >
+                  <span className="font-headline-sm text-2xl leading-none font-bold text-white">
                     {theme.aboutEstablishedYear || '2014'}
                   </span>
-                  <span className="font-label-sm text-label-sm mt-1">
+                  <span className="font-label-sm text-xs mt-1 text-white/90 font-medium">
                     {theme.aboutEstablishedText || 'İldən bəri sevgiylə'}
                   </span>
                 </div>
@@ -1934,45 +1970,63 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
 
                 {/* 3 Feature Cards */}
                 <div className="w-full flex flex-col gap-4 pt-2">
-                  <div className="flex items-start gap-4 p-4 rounded-2xl bg-white shadow-sm hover:shadow-md transition-shadow border border-[#f0eded]">
-                    <div className="w-12 h-12 rounded-xl bg-[#ffdcc3] flex items-center justify-center text-[#914d00] shrink-0">
+                  <div
+                    className="flex items-start gap-4 p-4 rounded-2xl shadow-sm hover:shadow-md transition-shadow border"
+                    style={{ backgroundColor: '#ffffff', borderColor: '#f0eded' }}
+                  >
+                    <div
+                      className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
+                      style={{ backgroundColor: '#ffdcc3', color: '#914d00' }}
+                    >
                       <Sparkles size={24} />
                     </div>
                     <div>
-                      <h4 className="font-headline-sm text-headline-sm text-[#1c1b1b]">
+                      <h4 className="font-headline-sm text-headline-sm text-[#1c1b1b] font-bold">
                         {theme.aboutFeature1Title || 'Təzə inqrediyentlər'}
                       </h4>
-                      <p className="font-body-sm text-body-sm text-[#5b403f] mt-0.5">
+                      <p className="font-body-sm text-body-sm text-[#5b403f] mt-0.5 leading-relaxed">
                         {theme.aboutFeature1Desc ||
                           'Hər gün seçilmiş təbii tərəvəzlər və xalis pendir növləri.'}
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex items-start gap-4 p-4 rounded-2xl bg-white shadow-sm hover:shadow-md transition-shadow border border-[#f0eded]">
-                    <div className="w-12 h-12 rounded-xl bg-[#ffdad9] flex items-center justify-center text-[#b20028] shrink-0">
+                  <div
+                    className="flex items-start gap-4 p-4 rounded-2xl shadow-sm hover:shadow-md transition-shadow border"
+                    style={{ backgroundColor: '#ffffff', borderColor: '#f0eded' }}
+                  >
+                    <div
+                      className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
+                      style={{ backgroundColor: '#ffdad9', color: '#b20028' }}
+                    >
                       <Clock size={24} />
                     </div>
                     <div>
-                      <h4 className="font-headline-sm text-headline-sm text-[#1c1b1b]">
+                      <h4 className="font-headline-sm text-headline-sm text-[#1c1b1b] font-bold">
                         {theme.aboutFeature2Title || 'Sürətli xidmət'}
                       </h4>
-                      <p className="font-body-sm text-body-sm text-[#5b403f] mt-0.5">
+                      <p className="font-body-sm text-body-sm text-[#5b403f] mt-0.5 leading-relaxed">
                         {theme.aboutFeature2Desc ||
                           'Sifarişiniz isti və xırçıltılı şəkildə masanıza operativ çatdırılır.'}
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex items-start gap-4 p-4 rounded-2xl bg-white shadow-sm hover:shadow-md transition-shadow border border-[#f0eded]">
-                    <div className="w-12 h-12 rounded-xl bg-[#ffdea0] flex items-center justify-center text-[#715300] shrink-0">
+                  <div
+                    className="flex items-start gap-4 p-4 rounded-2xl shadow-sm hover:shadow-md transition-shadow border"
+                    style={{ backgroundColor: '#ffffff', borderColor: '#f0eded' }}
+                  >
+                    <div
+                      className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
+                      style={{ backgroundColor: '#ffdea0', color: '#715300' }}
+                    >
                       <Users size={24} />
                     </div>
                     <div>
-                      <h4 className="font-headline-sm text-headline-sm text-[#1c1b1b]">
+                      <h4 className="font-headline-sm text-headline-sm text-[#1c1b1b] font-bold">
                         {theme.aboutFeature3Title || 'Rahat atmosfer'}
                       </h4>
-                      <p className="font-body-sm text-body-sm text-[#5b403f] mt-0.5">
+                      <p className="font-body-sm text-body-sm text-[#5b403f] mt-0.5 leading-relaxed">
                         {theme.aboutFeature3Desc ||
                           'Ailəniz və dostlarınızla xoş xatirələr yaratmaq üçün isti və səmimi məkan.'}
                       </p>
@@ -2037,7 +2091,13 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                             value={booking.name}
                             onChange={(e) => setBooking({ ...booking, name: e.target.value })}
                             placeholder="Məs: Elvin Məmmədov"
-                            className="w-full bg-[#1c1b1b] text-[#f3f0ef] px-4 py-3.5 rounded-xl placeholder:text-[#dcd9d9]/60 focus:outline-none focus:ring-2 focus:ring-[#b20028] font-body-md text-body-md border border-white/10"
+                            className="w-full px-4 py-3.5 rounded-xl font-body-md text-body-md transition-all focus:outline-none focus:ring-2 focus:ring-[#d7263d]"
+                            style={{
+                              backgroundColor: '#1c1b1b',
+                              color: '#f3f0ef',
+                              border: '1px solid rgba(255, 255, 255, 0.15)',
+                              height: '52px',
+                            }}
                           />
                         </div>
                       </div>
@@ -2054,7 +2114,13 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                             value={booking.phone}
                             onChange={(e) => setBooking({ ...booking, phone: e.target.value })}
                             placeholder="+994 50 123 45 67"
-                            className="w-full bg-[#1c1b1b] text-[#f3f0ef] px-4 py-3.5 rounded-xl placeholder:text-[#dcd9d9]/60 focus:outline-none focus:ring-2 focus:ring-[#b20028] font-body-md text-body-md border border-white/10"
+                            className="w-full px-4 py-3.5 rounded-xl font-body-md text-body-md transition-all focus:outline-none focus:ring-2 focus:ring-[#d7263d]"
+                            style={{
+                              backgroundColor: '#1c1b1b',
+                              color: '#f3f0ef',
+                              border: '1px solid rgba(255, 255, 255, 0.15)',
+                              height: '52px',
+                            }}
                           />
                         </div>
                       </div>
@@ -2070,7 +2136,13 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                             required
                             value={booking.date}
                             onChange={(e) => setBooking({ ...booking, date: e.target.value })}
-                            className="w-full bg-[#1c1b1b] text-[#f3f0ef] px-4 py-3.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#b20028] font-body-md text-body-md border border-white/10"
+                            className="w-full px-4 py-3.5 rounded-xl font-body-md text-body-md transition-all focus:outline-none focus:ring-2 focus:ring-[#d7263d]"
+                            style={{
+                              backgroundColor: '#1c1b1b',
+                              color: '#f3f0ef',
+                              border: '1px solid rgba(255, 255, 255, 0.15)',
+                              height: '52px',
+                            }}
                           />
                         </div>
                       </div>
@@ -2085,7 +2157,13 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                             required
                             value={booking.time}
                             onChange={(e) => setBooking({ ...booking, time: e.target.value })}
-                            className="w-full bg-[#1c1b1b] text-[#f3f0ef] px-4 py-3.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#b20028] font-body-md text-body-md appearance-none border border-white/10"
+                            className="w-full px-4 py-3.5 rounded-xl font-body-md text-body-md transition-all focus:outline-none focus:ring-2 focus:ring-[#d7263d] appearance-none"
+                            style={{
+                              backgroundColor: '#1c1b1b',
+                              color: '#f3f0ef',
+                              border: '1px solid rgba(255, 255, 255, 0.15)',
+                              height: '52px',
+                            }}
                           >
                             <option disabled value="">
                               Saat seçin
@@ -2112,7 +2190,13 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                           required
                           value={booking.guests}
                           onChange={(e) => setBooking({ ...booking, guests: e.target.value })}
-                          className="w-full bg-[#1c1b1b] text-[#f3f0ef] px-4 py-3.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#b20028] font-body-md text-body-md appearance-none border border-white/10"
+                          className="w-full px-4 py-3.5 rounded-xl font-body-md text-body-md transition-all focus:outline-none focus:ring-2 focus:ring-[#d7263d] appearance-none"
+                          style={{
+                            backgroundColor: '#1c1b1b',
+                            color: '#f3f0ef',
+                            border: '1px solid rgba(255, 255, 255, 0.15)',
+                            height: '52px',
+                          }}
                         >
                           <option value="2 nəfər">2 nəfər (Romantik masa)</option>
                           <option value="3-4 nəfər">3-4 nəfər (Ailəvi masa)</option>
@@ -2132,7 +2216,13 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                         value={booking.notes}
                         onChange={(e) => setBooking({ ...booking, notes: e.target.value })}
                         placeholder="Xüsusi istək və ya pəhriz tələbləriniz varsa qeyd edin..."
-                        className="w-full bg-[#1c1b1b] text-[#f3f0ef] px-4 py-3.5 rounded-xl placeholder:text-[#dcd9d9]/60 focus:outline-none focus:ring-2 focus:ring-[#b20028] font-body-md text-body-md border border-white/10 resize-none"
+                        className="w-full px-4 py-3.5 rounded-xl font-body-md text-body-md transition-all focus:outline-none focus:ring-2 focus:ring-[#d7263d] resize-none"
+                        style={{
+                          backgroundColor: '#1c1b1b',
+                          color: '#f3f0ef',
+                          border: '1px solid rgba(255, 255, 255, 0.15)',
+                          minHeight: '100px',
+                        }}
                       />
                     </div>
 
@@ -2145,6 +2235,7 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                         backgroundColor: '#d7263d',
                         color: '#ffffff',
                         boxShadow: '0 10px 25px -3px rgba(215, 38, 61, 0.35)',
+                        height: '56px',
                       }}
                     >
                       <Calendar size={22} />
@@ -2467,8 +2558,8 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
       <footer
         className="w-full text-white pt-16 pb-12 px-6 lg:px-12 border-t"
         style={{
-          backgroundColor: '#1c1b1b',
-          borderColor: 'rgba(255, 255, 255, 0.1)',
+          backgroundColor: '#313030',
+          borderColor: 'rgba(255, 255, 255, 0.08)',
         }}
       >
         <div className="max-w-7xl mx-auto">
@@ -2504,8 +2595,8 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
 
             {/* Col 2: Nav links */}
             <div className="space-y-4">
-              <h3 className="font-headline-sm text-headline-sm text-white">Naviqasiya</h3>
-              <ul className="space-y-2">
+              <h3 className="font-headline-sm text-headline-sm text-white font-bold tracking-tight">Naviqasiya</h3>
+              <ul className="space-y-2.5">
                 <li>
                   <button
                     onClick={() => scrollTo('hero')}
@@ -2543,8 +2634,8 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
 
             {/* Col 3: Services */}
             <div className="space-y-4">
-              <h3 className="font-headline-sm text-headline-sm text-white">Xidmətlər</h3>
-              <ul className="space-y-2">
+              <h3 className="font-headline-sm text-headline-sm text-white font-bold tracking-tight">Xidmətlər</h3>
+              <ul className="space-y-2.5">
                 <li>
                   <button
                     onClick={() => scrollTo('rezervasiya')}
@@ -2582,7 +2673,7 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
 
             {/* Col 4: Follow Us */}
             <div className="space-y-4">
-              <h3 className="font-headline-sm text-headline-sm text-white">Bizi İzləyin</h3>
+              <h3 className="font-headline-sm text-headline-sm text-white font-bold tracking-tight">Bizi İzləyin</h3>
               <p className="font-body-sm text-body-sm text-[#dcd9d9]">
                 Yeniliklərdən və kampaniyalardan xəbərdar olmaq üçün sosial şəbəkələrdə izləyin:
               </p>

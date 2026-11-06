@@ -8,3 +8,4 @@ console.log(comp.substring(navIdx - 20, navIdx + 500));
 const contactIdx = comp.indexOf('{/* Ünvan */}');
 console.log('\nContact snippet:');
 console.log(comp.substring(contactIdx - 50, contactIdx + 600));
+

@@ -6,3 +6,4 @@ console.log(comp.substring(idx - 100, idx + 200));
 const btnIdx = comp.indexOf('Rezervasiyanı təsdiqlə');
 console.log('\nSubmit button snippet:');
 console.log(comp.substring(btnIdx - 200, btnIdx + 100));
+

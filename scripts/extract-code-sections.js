@@ -16,3 +16,4 @@ fs.writeFileSync('scripts/section-elaqe.html', getSection('id="elaqe"', '</secti
 fs.writeFileSync('scripts/section-footer.html', getSection('<footer', '</footer>'));
 
 console.log('Extracted all sections from code.html!');
+

@@ -5,3 +5,4 @@ const startIdx = comp.indexOf('id="elaqe"');
 const endIdx = comp.indexOf('<footer', startIdx);
 console.log('Complete Contact section:');
 console.log(comp.substring(startIdx, endIdx));
+

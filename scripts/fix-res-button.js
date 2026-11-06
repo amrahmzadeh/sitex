@@ -34,3 +34,4 @@ if (btnIdx !== -1) {
 
 fs.writeFileSync('src/components/themes/PizzaHouseSite.tsx', comp, 'utf8');
 console.log('Updated reservation styling!');
+

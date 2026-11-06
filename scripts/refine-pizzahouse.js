@@ -491,3 +491,4 @@ if (comp.includes(oldFooter)) {
 
 fs.writeFileSync(compPath, comp, 'utf8');
 console.log('Finished updating PizzaHouseSite.tsx! New length:', comp.length);
+

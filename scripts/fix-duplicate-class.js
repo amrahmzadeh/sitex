@@ -19,3 +19,4 @@ if (comp.includes(target)) {
 } else {
   console.error('Target not found!');
 }
+

@@ -8,3 +8,4 @@ console.log(comp.substring(startIdx - 100, startIdx + 1200));
 const endIdx = comp.indexOf('{/* Social Media Badges */}', startIdx);
 console.log('\nSnippet between cards and Social Media Badges:');
 console.log(comp.substring(endIdx - 150, endIdx + 150));
+

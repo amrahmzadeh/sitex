@@ -16,3 +16,4 @@ inspectSection('Hero CTA', 'CTA Buttons');
 inspectSection('Reservation', 'id="rezervasiya"');
 inspectSection('Contact', 'id="elaqe"');
 inspectSection('Footer', '<footer');
+
