@@ -3569,15 +3569,17 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                     <h3
                       style={{
                         fontFamily: `"${headingFont}", sans-serif`,
-                        fontSize: 16,
+                        fontSize: 15,
                         fontWeight: 800,
                         color: '#1c1b1b',
                         margin: 0,
                         letterSpacing: '-0.02em',
                         whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
                       }}
                     >
-                      Sifariş Səbəti
+                      Səbət
                     </h3>
                     {cartCount > 0 && (
                       <span
@@ -3596,9 +3598,6 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                       </span>
                     )}
                   </div>
-                  <p style={{ margin: 0, fontSize: 11, color: '#7d5250', marginTop: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                    {organization.name || 'Pizza House'}
-                  </p>
                 </div>
               </div>
 
