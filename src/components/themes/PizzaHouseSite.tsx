@@ -1671,20 +1671,40 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
               <span>Rezervasiya et</span>
             </button>
 
-            {/* Cart Counter badge if items added */}
-            {cartCount > 0 && (
-              <button
-                type="button"
-                onClick={() => setIsCartOpen(true)}
-                className="relative w-9 h-9 rounded-full bg-[#d7263d] flex items-center justify-center text-white cursor-pointer shadow-md hover:bg-[#b20028] transition-all hover:scale-105 active:scale-95"
-                title={`${cartCount} məhsul səbətdədir`}
-              >
-                <ShoppingBag size={18} />
-                <span className="absolute -top-1 -right-1 bg-[#fc9430] text-[#663500] text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center shadow-sm">
+            {/* Cart Counter badge / button */}
+            <button
+              type="button"
+              onClick={() => setIsCartOpen(true)}
+              className="relative flex items-center justify-center p-2 rounded-full cursor-pointer transition-all hover:scale-105 active:scale-95 shadow-sm"
+              style={{
+                backgroundColor: cartCount > 0 ? '#d7263d' : 'rgba(255, 255, 255, 0.85)',
+                color: cartCount > 0 ? '#ffffff' : '#1c1b1b',
+                border: cartCount > 0 ? 'none' : '1px solid #f0eded',
+                width: 42,
+                height: 42,
+                boxShadow: cartCount > 0 ? '0 4px 14px rgba(215, 38, 61, 0.35)' : '0 2px 8px rgba(0,0,0,0.04)',
+              }}
+              title={cartCount > 0 ? `${cartCount} məhsul səbətdədir` : 'Səbət boşdur'}
+            >
+              <ShoppingCart size={20} />
+              {cartCount > 0 && (
+                <span
+                  className="absolute -top-1.5 -right-1.5 font-bold flex items-center justify-center shadow-md animate-scale-in"
+                  style={{
+                    backgroundColor: '#ffdcc3',
+                    color: '#914d00',
+                    fontSize: 11,
+                    minWidth: 20,
+                    height: 20,
+                    borderRadius: 9999,
+                    padding: '0 4px',
+                    border: '2px solid #ffffff',
+                  }}
+                >
                   {cartCount}
                 </span>
-              </button>
-            )}
+              )}
+            </button>
 
             {/* Mobile Menu Toggle Button */}
             <button
@@ -2964,66 +2984,101 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
           {isCartOpen && (
             <div
               className="fixed inset-0 z-[100] flex justify-end"
-              style={{ backgroundColor: 'rgba(0,0,0,0.6)' }}
+              style={{
+                backgroundColor: 'rgba(28, 27, 27, 0.45)',
+                backdropFilter: 'blur(6px)',
+                WebkitBackdropFilter: 'blur(6px)',
+                animation: 'fadeIn 0.25s ease-out',
+              }}
               onClick={() => setIsCartOpen(false)}
             >
               <div
                 className="relative h-full w-full flex flex-col"
                 style={{
-                  maxWidth: 420,
-                  backgroundColor: '#fcf9f8',
-                  boxShadow: '-8px 0 32px rgba(0,0,0,0.2)',
+                  maxWidth: 440,
+                  backgroundColor: '#ffffff',
+                  boxShadow: '-12px 0 40px rgba(0, 0, 0, 0.16)',
+                  animation: 'slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
                 }}
                 onClick={(e) => e.stopPropagation()}
               >
                 {/* Header */}
                 <div
                   style={{
-                    padding: '20px 24px',
+                    padding: '22px 24px',
                     borderBottom: '1px solid #f0eded',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
+                    backgroundColor: '#ffffff',
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <ShoppingCart size={22} color="#d7263d" />
-                    <h3
-                      style={{
-                        fontFamily: `"${headingFont}", sans-serif`,
-                        fontSize: 20,
-                        fontWeight: 800,
-                        color: '#1c1b1b',
-                        margin: 0,
-                      }}
-                    >
-                      Səbətiniz
-                    </h3>
-                    <span
-                      style={{
-                        background: '#ffdad9',
-                        color: '#b20028',
-                        fontSize: 12,
-                        fontWeight: 700,
-                        padding: '2px 8px',
-                        borderRadius: 100,
-                      }}
-                    >
-                      {cartCount}
-                    </span>
-                  </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <div
+                      style={{
+                        width: 42,
+                        height: 42,
+                        borderRadius: 14,
+                        backgroundColor: '#ffdad9',
+                        color: '#d7263d',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <ShoppingCart size={22} />
+                    </div>
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <h3
+                          style={{
+                            fontFamily: `"${headingFont}", sans-serif`,
+                            fontSize: 19,
+                            fontWeight: 800,
+                            color: '#1c1b1b',
+                            margin: 0,
+                            letterSpacing: '-0.02em',
+                          }}
+                        >
+                          Sifariş Səbəti
+                        </h3>
+                        {cartCount > 0 && (
+                          <span
+                            style={{
+                              background: '#d7263d',
+                              color: '#ffffff',
+                              fontSize: 11,
+                              fontWeight: 800,
+                              padding: '2px 8px',
+                              borderRadius: 9999,
+                            }}
+                          >
+                            {cartCount}
+                          </span>
+                        )}
+                      </div>
+                      <p style={{ margin: 0, fontSize: 12, color: '#5b403f', marginTop: 2 }}>
+                        {organization.name || 'Pizza House'}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     {cartEntries.length > 0 && (
                       <button
                         type="button"
                         onClick={clearCart}
+                        title="Səbəti təmizlə"
                         style={{
                           border: 'none',
-                          background: 'transparent',
-                          color: '#F87171',
+                          background: '#fff0f0',
+                          color: '#d7263d',
                           fontSize: 12,
-                          fontWeight: 600,
+                          fontWeight: 700,
                           cursor: 'pointer',
+                          padding: '6px 12px',
+                          borderRadius: 8,
+                          transition: 'background 0.2s',
                         }}
                       >
                         Təmizlə
@@ -3034,18 +3089,19 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                       onClick={() => setIsCartOpen(false)}
                       style={{
                         border: 'none',
-                        background: '#f0eded',
+                        background: '#f5f3f2',
                         borderRadius: '50%',
-                        width: 32,
-                        height: 32,
+                        width: 36,
+                        height: 36,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         cursor: 'pointer',
                         color: '#1c1b1b',
+                        transition: 'transform 0.15s, background 0.15s',
                       }}
                     >
-                      <X size={16} />
+                      <X size={18} />
                     </button>
                   </div>
                 </div>
@@ -3054,23 +3110,25 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                 {table && (
                   <div
                     style={{
-                      margin: '12px 20px 0',
-                      padding: '10px 14px',
-                      borderRadius: 12,
-                      backgroundColor: '#ffdad9',
-                      border: '1px solid #ffb3b2',
+                      margin: '14px 20px 0',
+                      padding: '10px 16px',
+                      borderRadius: 14,
+                      backgroundColor: '#ffdcc3',
+                      border: '1px solid #ffc299',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'space-between',
                     }}
                   >
-                    <span style={{ fontSize: 13, fontWeight: 700, color: '#1c1b1b' }}>
-                      📍 {table}
+                    <span style={{ fontSize: 13, fontWeight: 700, color: '#2f1500', display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span>📍</span>
+                      <span>Masa: {table}</span>
                     </span>
+                    <span style={{ fontSize: 11, color: '#914d00', fontWeight: 600 }}>Masaya çatdırılma</span>
                   </div>
                 )}
 
-                {/* Empty state */}
+                {/* Content: Empty or List */}
                 {cartEntries.length === 0 ? (
                   <div
                     style={{
@@ -3079,16 +3137,35 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                       flexDirection: 'column',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      gap: 12,
+                      gap: 16,
                       color: '#5b403f',
-                      padding: '24px',
+                      padding: '32px',
                       textAlign: 'center',
                     }}
                   >
-                    <ShoppingCart size={48} style={{ opacity: 0.3 }} />
-                    <p style={{ fontSize: 16, fontWeight: 600, margin: 0 }}>
-                      Səbətiniz boşdur
-                    </p>
+                    <div
+                      style={{
+                        width: 80,
+                        height: 80,
+                        borderRadius: '50%',
+                        backgroundColor: '#fcf9f8',
+                        border: '2px dashed #e5e2e1',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: '#8f6a00',
+                      }}
+                    >
+                      <ShoppingCart size={36} style={{ opacity: 0.5 }} />
+                    </div>
+                    <div>
+                      <p style={{ fontSize: 18, fontWeight: 800, color: '#1c1b1b', margin: '0 0 6px 0' }}>
+                        Səbətiniz boşdur
+                      </p>
+                      <p style={{ fontSize: 13, color: '#5b403f', margin: 0, maxWidth: 240, lineHeight: 1.5 }}>
+                        Ləzzətli pizzalarımızdan və təamlarımızdan menyudan seçib əlavə edin.
+                      </p>
+                    </div>
                     <button
                       type="button"
                       onClick={() => {
@@ -3099,10 +3176,13 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                         background: '#d7263d',
                         color: '#fff',
                         border: 'none',
-                        borderRadius: 12,
-                        padding: '10px 24px',
+                        borderRadius: 14,
+                        padding: '12px 28px',
                         fontWeight: 700,
+                        fontSize: 14,
                         cursor: 'pointer',
+                        boxShadow: '0 4px 14px rgba(215, 38, 61, 0.28)',
+                        marginTop: 8,
                       }}
                     >
                       Menyuya bax
@@ -3119,6 +3199,7 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                         display: 'flex',
                         flexDirection: 'column',
                         gap: 12,
+                        backgroundColor: '#fcf9f8',
                       }}
                     >
                       {cartEntries.map((entry) => (
@@ -3127,32 +3208,51 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                           style={{
                             display: 'flex',
                             alignItems: 'center',
-                            gap: 12,
-                            padding: '12px',
-                            backgroundColor: '#fff',
-                            borderRadius: 16,
+                            gap: 14,
+                            padding: '14px',
+                            backgroundColor: '#ffffff',
+                            borderRadius: 18,
                             border: '1px solid #f0eded',
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
+                            transition: 'all 0.2s',
                           }}
                         >
-                          {entry.image && (
+                          {entry.image ? (
                             <img
                               src={entry.image}
                               alt={entry.name}
                               style={{
-                                width: 56,
-                                height: 56,
-                                borderRadius: 10,
+                                width: 62,
+                                height: 62,
+                                borderRadius: 12,
                                 objectFit: 'cover',
                                 flexShrink: 0,
+                                backgroundColor: '#f0eded',
                               }}
                             />
+                          ) : (
+                            <div
+                              style={{
+                                width: 62,
+                                height: 62,
+                                borderRadius: 12,
+                                backgroundColor: '#ffdcc3',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: 24,
+                                flexShrink: 0,
+                              }}
+                            >
+                              🍕
+                            </div>
                           )}
                           <div style={{ flex: 1, minWidth: 0 }}>
                             <p
                               style={{
-                                fontWeight: 700,
+                                fontWeight: 800,
                                 color: '#1c1b1b',
-                                fontSize: 14,
+                                fontSize: 15,
                                 margin: 0,
                                 marginBottom: 4,
                                 whiteSpace: 'nowrap',
@@ -3162,35 +3262,47 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                             >
                               {entry.name}
                             </p>
-                            <p style={{ color: '#5b403f', fontSize: 13, margin: 0 }}>
+                            <p style={{ color: '#d7263d', fontSize: 14, fontWeight: 700, margin: 0 }}>
                               {entry.price.toFixed(2)} {organization.currency || 'AZN'}
                             </p>
                           </div>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                          <div
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 6,
+                              backgroundColor: '#fcf9f8',
+                              padding: '4px 6px',
+                              borderRadius: 12,
+                              border: '1px solid #f0eded',
+                            }}
+                          >
                             <button
                               type="button"
                               onClick={() => updateCartQuantity(entry.id, -1)}
+                              title="Azalt"
                               style={{
-                                width: 28,
-                                height: 28,
-                                borderRadius: '50%',
-                                border: '1px solid #f0eded',
-                                background: '#fff',
+                                width: 26,
+                                height: 26,
+                                borderRadius: 8,
+                                border: 'none',
+                                background: '#ffffff',
                                 cursor: 'pointer',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
+                                boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
                               }}
                             >
                               <Minus size={13} color="#5b403f" />
                             </button>
                             <span
                               style={{
-                                fontWeight: 700,
+                                fontWeight: 800,
                                 color: '#1c1b1b',
-                                minWidth: 20,
+                                minWidth: 22,
                                 textAlign: 'center',
-                                fontSize: 14,
+                                fontSize: 13,
                               }}
                             >
                               {entry.quantity}
@@ -3198,27 +3310,30 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                             <button
                               type="button"
                               onClick={() => updateCartQuantity(entry.id, 1)}
+                              title="Artır"
                               style={{
-                                width: 28,
-                                height: 28,
-                                borderRadius: '50%',
+                                width: 26,
+                                height: 26,
+                                borderRadius: 8,
                                 border: 'none',
                                 background: '#d7263d',
                                 cursor: 'pointer',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
+                                boxShadow: '0 2px 6px rgba(215, 38, 61, 0.3)',
                               }}
                             >
-                              <Plus size={13} color="#fff" />
+                              <Plus size={13} color="#ffffff" />
                             </button>
                             <button
                               type="button"
                               onClick={() => removeFromCart(entry.id)}
+                              title="Sil"
                               style={{
-                                width: 28,
-                                height: 28,
-                                borderRadius: '50%',
+                                width: 26,
+                                height: 26,
+                                borderRadius: 8,
                                 border: 'none',
                                 background: 'transparent',
                                 cursor: 'pointer',
@@ -3236,44 +3351,74 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                     </div>
 
                     {/* Note input */}
-                    <div style={{ padding: '0 20px 12px' }}>
+                    <div
+                      style={{
+                        padding: '12px 20px 8px',
+                        backgroundColor: '#ffffff',
+                        borderTop: '1px solid #f0eded',
+                      }}
+                    >
+                      <label
+                        style={{
+                          display: 'block',
+                          fontSize: 12,
+                          fontWeight: 700,
+                          color: '#5b403f',
+                          marginBottom: 6,
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.05em',
+                        }}
+                      >
+                        Sifariş üçün qeyd
+                      </label>
                       <textarea
                         value={cartNote}
                         onChange={(e) => setCartNote(e.target.value)}
-                        placeholder="Qeyd əlavə et (ixtiyari)..."
+                        placeholder="Məsələn: Acılı olmasın, sousu bol olsun..."
                         rows={2}
                         style={{
                           width: '100%',
                           padding: '10px 14px',
                           borderRadius: 12,
-                          border: '1px solid #f0eded',
-                          fontSize: 14,
+                          border: '1px solid #e5e2e1',
+                          fontSize: 13,
                           color: '#1c1b1b',
-                          background: '#fff',
+                          background: '#fcf9f8',
                           resize: 'none',
                           outline: 'none',
                           boxSizing: 'border-box',
+                          fontFamily: 'inherit',
                         }}
                       />
                     </div>
 
                     {/* Total + Checkout */}
-                    <div style={{ padding: '12px 20px 24px', borderTop: '1px solid #f0eded' }}>
+                    <div
+                      style={{
+                        padding: '16px 20px 24px',
+                        borderTop: '1px solid #f0eded',
+                        backgroundColor: '#ffffff',
+                      }}
+                    >
                       <div
                         style={{
                           display: 'flex',
                           justifyContent: 'space-between',
-                          alignItems: 'center',
+                          alignItems: 'baseline',
                           marginBottom: 14,
                         }}
                       >
-                        <span style={{ fontSize: 16, fontWeight: 700, color: '#1c1b1b' }}>
-                          Ümumi məbləğ:
+                        <span style={{ fontSize: 15, fontWeight: 700, color: '#5b403f' }}>
+                          Məhsul sayı: <b style={{ color: '#1c1b1b' }}>{cartCount} ədəd</b>
                         </span>
-                        <span style={{ fontSize: 20, fontWeight: 800, color: '#d7263d' }}>
-                          {cartTotalSum.toFixed(2)} {organization.currency || 'AZN'}
-                        </span>
+                        <div style={{ textAlign: 'right' }}>
+                          <span style={{ fontSize: 12, color: '#5b403f', display: 'block' }}>Yekun məbləğ</span>
+                          <span style={{ fontSize: 22, fontWeight: 900, color: '#d7263d', letterSpacing: '-0.02em' }}>
+                            {cartTotalSum.toFixed(2)} {organization.currency || 'AZN'}
+                          </span>
+                        </div>
                       </div>
+
                       {whatsapp?.phoneNumber && !isOrdersPaused ? (
                         <button
                           type="button"
@@ -3284,19 +3429,20 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                             alignItems: 'center',
                             justifyContent: 'center',
                             gap: 10,
-                            padding: '14px',
-                            borderRadius: 14,
+                            padding: '15px',
+                            borderRadius: 16,
                             border: 'none',
                             backgroundColor: '#25D366',
-                            color: '#fff',
+                            color: '#ffffff',
                             fontWeight: 800,
                             fontSize: 16,
                             cursor: 'pointer',
-                            boxShadow: '0 4px 16px rgba(37,211,102,0.3)',
+                            boxShadow: '0 6px 20px rgba(37,211,102,0.35)',
+                            transition: 'transform 0.15s, box-shadow 0.15s',
                           }}
                         >
-                          <MessageCircle size={20} />
-                          <span>WhatsApp ilə sifariş et</span>
+                          <MessageCircle size={22} />
+                          <span>WhatsApp ilə sifarişi tamamla</span>
                         </button>
                       ) : (
                         <div
@@ -3306,7 +3452,8 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                             fontSize: 14,
                             padding: '12px',
                             background: '#f0eded',
-                            borderRadius: 12,
+                            borderRadius: 14,
+                            fontWeight: 600,
                           }}
                         >
                           {isOrdersPaused
