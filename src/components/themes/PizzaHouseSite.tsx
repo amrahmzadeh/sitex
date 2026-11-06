@@ -3536,40 +3536,45 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
             {/* Header */}
             <div
               style={{
-                padding: '22px 24px',
+                padding: '16px 18px',
                 borderBottom: '1px solid #f0eded',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 backgroundColor: '#ffffff',
                 flexShrink: 0,
+                gap: 8,
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0, flex: 1 }}>
                 <div
                   style={{
-                    width: 42,
-                    height: 42,
-                    borderRadius: 14,
+                    width: 38,
+                    height: 38,
+                    minWidth: 38,
+                    minHeight: 38,
+                    borderRadius: 12,
                     backgroundColor: '#ffdad9',
                     color: '#d7263d',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
+                    flexShrink: 0,
                   }}
                 >
-                  <ShoppingCart size={22} />
+                  <ShoppingCart size={20} />
                 </div>
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{ minWidth: 0, flex: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'nowrap' }}>
                     <h3
                       style={{
                         fontFamily: `"${headingFont}", sans-serif`,
-                        fontSize: 19,
+                        fontSize: 16,
                         fontWeight: 800,
                         color: '#1c1b1b',
                         margin: 0,
                         letterSpacing: '-0.02em',
+                        whiteSpace: 'nowrap',
                       }}
                     >
                       Sifariş Səbəti
@@ -3581,21 +3586,23 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                           color: '#ffffff',
                           fontSize: 11,
                           fontWeight: 800,
-                          padding: '2px 8px',
+                          padding: '1px 7px',
                           borderRadius: 9999,
+                          flexShrink: 0,
+                          lineHeight: '1.4',
                         }}
                       >
                         {cartCount}
                       </span>
                     )}
                   </div>
-                  <p style={{ margin: 0, fontSize: 12, color: '#5b403f', marginTop: 2 }}>
+                  <p style={{ margin: 0, fontSize: 11, color: '#7d5250', marginTop: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                     {organization.name || 'Pizza House'}
                   </p>
                 </div>
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
                 {cartEntries.length > 0 && (
                   <button
                     type="button"
@@ -3605,12 +3612,13 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                       border: 'none',
                       background: '#fff0f0',
                       color: '#d7263d',
-                      fontSize: 12,
+                      fontSize: 11,
                       fontWeight: 700,
                       cursor: 'pointer',
-                      padding: '6px 12px',
+                      padding: '5px 9px',
                       borderRadius: 8,
                       transition: 'background 0.2s',
+                      whiteSpace: 'nowrap',
                     }}
                   >
                     Təmizlə
@@ -3623,17 +3631,18 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                     border: 'none',
                     background: '#f5f3f2',
                     borderRadius: '50%',
-                    width: 36,
-                    height: 36,
+                    width: 32,
+                    height: 32,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     cursor: 'pointer',
                     color: '#1c1b1b',
                     transition: 'transform 0.15s, background 0.15s',
+                    flexShrink: 0,
                   }}
                 >
-                  <X size={18} />
+                  <X size={16} />
                 </button>
               </div>
             </div>
@@ -3741,12 +3750,12 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                       style={{
                         display: 'flex',
                         alignItems: 'center',
-                        gap: 14,
-                        padding: '14px',
+                        gap: 12,
+                        padding: '12px 14px',
                         backgroundColor: '#ffffff',
-                        borderRadius: 18,
+                        borderRadius: 16,
                         border: '1px solid #f0eded',
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
+                        boxShadow: '0 2px 6px rgba(0,0,0,0.02)',
                         transition: 'all 0.2s',
                         flexShrink: 0,
                       }}
@@ -3756,129 +3765,177 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                           src={entry.image}
                           alt={entry.name}
                           style={{
-                            width: 62,
-                            height: 62,
+                            width: 56,
+                            height: 56,
                             borderRadius: 12,
                             objectFit: 'cover',
                             flexShrink: 0,
-                            backgroundColor: '#f0eded',
+                            backgroundColor: '#f5f3f2',
                           }}
                         />
                       ) : (
                         <div
                           style={{
-                            width: 62,
-                            height: 62,
+                            width: 56,
+                            height: 56,
                             borderRadius: 12,
                             backgroundColor: '#ffdcc3',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            fontSize: 24,
+                            fontSize: 22,
                             flexShrink: 0,
                           }}
                         >
                           🍕
                         </div>
                       )}
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <p
-                          style={{
-                            fontWeight: 800,
-                            color: '#1c1b1b',
-                            fontSize: 15,
-                            margin: 0,
-                            marginBottom: 4,
-                            whiteSpace: 'nowrap',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                          }}
-                        >
-                          {entry.name}
-                        </p>
-                        <p style={{ color: '#d7263d', fontSize: 14, fontWeight: 700, margin: 0 }}>
-                          {entry.price.toFixed(2)} {organization.currency || 'AZN'}
-                        </p>
-                      </div>
                       <div
                         style={{
+                          flex: 1,
+                          minWidth: 0,
                           display: 'flex',
-                          alignItems: 'center',
+                          flexDirection: 'column',
                           gap: 6,
-                          backgroundColor: '#fcf9f8',
-                          padding: '4px 6px',
-                          borderRadius: 12,
-                          border: '1px solid #f0eded',
                         }}
                       >
-                        <button
-                          type="button"
-                          onClick={() => updateCartQuantity(entry.id, -1)}
-                          title="Azalt"
+                        <div
                           style={{
-                            width: 26,
-                            height: 26,
-                            borderRadius: 8,
-                            border: 'none',
-                            background: '#ffffff',
-                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'flex-start',
+                            justifyContent: 'space-between',
+                            gap: 6,
+                          }}
+                        >
+                          <h4
+                            style={{
+                              margin: 0,
+                              fontSize: 14,
+                              fontWeight: 800,
+                              color: '#1c1b1b',
+                              lineHeight: '1.25',
+                              wordBreak: 'break-word',
+                            }}
+                          >
+                            {entry.name}
+                          </h4>
+                          <button
+                            type="button"
+                            onClick={() => removeFromCart(entry.id)}
+                            title="Sil"
+                            style={{
+                              border: 'none',
+                              background: 'transparent',
+                              cursor: 'pointer',
+                              padding: '2px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              color: '#a8a29e',
+                              flexShrink: 0,
+                              transition: 'color 0.15s',
+                            }}
+                            onMouseEnter={(e) => (e.currentTarget.style.color = '#d7263d')}
+                            onMouseLeave={(e) => (e.currentTarget.style.color = '#a8a29e')}
+                          >
+                            <Trash2 size={15} />
+                          </button>
+                        </div>
+
+                        <div
+                          style={{
                             display: 'flex',
                             alignItems: 'center',
-                            justifyContent: 'center',
-                            boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+                            justifyContent: 'space-between',
+                            gap: 6,
                           }}
                         >
-                          <Minus size={13} color="#5b403f" />
-                        </button>
-                        <span
-                          style={{
-                            fontWeight: 800,
-                            color: '#1c1b1b',
-                            minWidth: 22,
-                            textAlign: 'center',
-                            fontSize: 13,
-                          }}
-                        >
-                          {entry.quantity}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => updateCartQuantity(entry.id, 1)}
-                          title="Artır"
-                          style={{
-                            width: 26,
-                            height: 26,
-                            borderRadius: 8,
-                            border: 'none',
-                            background: '#d7263d',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            boxShadow: '0 2px 6px rgba(215, 38, 61, 0.3)',
-                          }}
-                        >
-                          <Plus size={13} color="#ffffff" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => removeFromCart(entry.id)}
-                          title="Sil"
-                          style={{
-                            width: 26,
-                            height: 26,
-                            borderRadius: 8,
-                            border: 'none',
-                            background: 'transparent',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            marginLeft: 2,
-                          }}
-                        >
-                          <Trash2 size={14} color="#F87171" />
-                        </button>
+                          <span
+                            style={{
+                              fontSize: 13,
+                              fontWeight: 800,
+                              color: '#d7263d',
+                              whiteSpace: 'nowrap',
+                            }}
+                          >
+                            {(entry.price * entry.quantity).toFixed(2)} {organization.currency || 'AZN'}
+                            {entry.quantity > 1 && (
+                              <span
+                                style={{
+                                  fontSize: 11,
+                                  color: '#7d5250',
+                                  fontWeight: 500,
+                                  marginLeft: 3,
+                                }}
+                              >
+                                ({entry.price.toFixed(2)}/əd)
+                              </span>
+                            )}
+                          </span>
+
+                          <div
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 5,
+                              backgroundColor: '#f8f6f5',
+                              padding: '2px 5px',
+                              borderRadius: 10,
+                              border: '1px solid #f0eded',
+                              flexShrink: 0,
+                            }}
+                          >
+                            <button
+                              type="button"
+                              onClick={() => updateCartQuantity(entry.id, -1)}
+                              title="Azalt"
+                              style={{
+                                width: 24,
+                                height: 24,
+                                borderRadius: 7,
+                                border: 'none',
+                                background: '#ffffff',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                boxShadow: '0 1px 2px rgba(0,0,0,0.06)',
+                              }}
+                            >
+                              <Minus size={11} color="#1c1b1b" />
+                            </button>
+                            <span
+                              style={{
+                                fontWeight: 800,
+                                color: '#1c1b1b',
+                                minWidth: 16,
+                                textAlign: 'center',
+                                fontSize: 13,
+                              }}
+                            >
+                              {entry.quantity}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => updateCartQuantity(entry.id, 1)}
+                              title="Artır"
+                              style={{
+                                width: 24,
+                                height: 24,
+                                borderRadius: 7,
+                                border: 'none',
+                                background: primaryColor || '#d7263d',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                boxShadow: '0 1px 3px rgba(215, 38, 61, 0.3)',
+                              }}
+                            >
+                              <Plus size={11} color="#ffffff" />
+                            </button>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -3965,36 +4022,60 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                         alignItems: 'center',
                         justifyContent: 'center',
                         gap: 10,
-                        padding: '15px',
-                        borderRadius: 16,
+                        padding: '14px',
+                        borderRadius: 14,
                         border: 'none',
                         backgroundColor: '#25D366',
                         color: '#ffffff',
                         fontWeight: 800,
-                        fontSize: 16,
+                        fontSize: 15,
                         cursor: 'pointer',
-                        boxShadow: '0 6px 20px rgba(37,211,102,0.35)',
+                        boxShadow: '0 6px 18px rgba(37,211,102,0.3)',
                         transition: 'transform 0.15s, box-shadow 0.15s',
                       }}
                     >
-                      <MessageCircle size={22} />
+                      <MessageCircle size={20} />
                       <span>WhatsApp ilə sifarişi tamamla</span>
                     </button>
+                  ) : organization.phone && !isOrdersPaused ? (
+                    <a
+                      href={`tel:${organization.phone}`}
+                      style={{
+                        width: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 10,
+                        padding: '14px',
+                        borderRadius: 14,
+                        border: 'none',
+                        backgroundColor: primaryColor || '#d7263d',
+                        color: '#ffffff',
+                        fontWeight: 800,
+                        fontSize: 15,
+                        cursor: 'pointer',
+                        textDecoration: 'none',
+                        boxShadow: `0 6px 18px ${primaryColor}35`,
+                      }}
+                    >
+                      <Phone size={19} />
+                      <span>Zənglə sifarişi tamamla</span>
+                    </a>
                   ) : (
                     <div
                       style={{
                         textAlign: 'center',
                         color: '#5b403f',
-                        fontSize: 14,
+                        fontSize: 13,
                         padding: '12px',
                         background: '#f0eded',
-                        borderRadius: 14,
+                        borderRadius: 12,
                         fontWeight: 600,
                       }}
                     >
                       {isOrdersPaused
                         ? 'Sifarişlər hazırda bağlıdır'
-                        : 'WhatsApp konfiqurasiya edilməyib'}
+                        : 'Sifariş üçün bizimlə əlaqə saxlayın'}
                     </div>
                   )}
                 </div>
