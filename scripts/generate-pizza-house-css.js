@@ -66,3 +66,4 @@ if (content.includes('PIZZA HOUSE PRO TEMPLATE STYLES')) {
 }
 fs.writeFileSync(globalsPath, content);
 console.log('Successfully updated src/app/globals.css with Pizza House classes!');
+
