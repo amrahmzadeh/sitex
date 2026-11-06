@@ -2390,40 +2390,42 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                 </p>
               </div>
 
-              {/* Category Filter Pills */}
-              <div
-                className="flex items-center justify-center flex-wrap gap-2 sm:gap-3 w-full max-w-5xl mx-auto pb-2 mb-10 no-scrollbar"
-                style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  flexWrap: 'wrap',
-                  gap: '0.625rem',
-                  marginBottom: '2.5rem',
-                  paddingBottom: '0.5rem',
-                  marginLeft: 'auto',
-                  marginRight: 'auto',
-                }}
-              >
-                {categoriesList.map((cat) => {
-                  const isSelected = selectedCatId === cat.id;
-                  return (
-                    <button
-                      key={cat.id}
-                      onClick={() => setSelectedCatId(cat.id)}
-                      className={`px-6 py-2.5 rounded-full font-label-lg text-label-lg transition-all cursor-pointer whitespace-nowrap shadow-sm ${
-                        isSelected ? 'font-bold' : 'hover:opacity-90'
-                      }`}
-                      style={
-                        isSelected
-                          ? { backgroundColor: primaryColor, color: '#ffffff', boxShadow: `0 4px 14px ${primaryColor}40` }
-                          : { backgroundColor: '#e5e2e1', color: '#1c1b1b' }
-                      }
-                    >
-                      {cat.name}
-                    </button>
-                  );
-                })}
+              {/* Category Filter Pills (Scrollable horizontally on mobile, centered on desktop) */}
+              <div className="w-full max-w-5xl mx-auto mb-8 sm:mb-10 px-2 sm:px-0">
+                <div
+                  className="flex items-center gap-2 sm:gap-3 overflow-x-auto no-scrollbar py-1 px-2 sm:px-0 justify-start sm:justify-center"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    flexWrap: 'nowrap',
+                    overflowX: 'auto',
+                    WebkitOverflowScrolling: 'touch',
+                    scrollbarWidth: 'none',
+                    gap: '0.625rem',
+                    paddingBottom: '0.5rem',
+                  }}
+                >
+                  {categoriesList.map((cat) => {
+                    const isSelected = selectedCatId === cat.id;
+                    return (
+                      <button
+                        key={cat.id}
+                        type="button"
+                        onClick={() => setSelectedCatId(cat.id)}
+                        className={`shrink-0 px-6 py-2.5 rounded-full font-label-lg text-label-lg transition-all cursor-pointer whitespace-nowrap shadow-sm select-none ${
+                          isSelected ? 'font-bold shadow-md' : 'hover:opacity-90 active:scale-95'
+                        }`}
+                        style={
+                          isSelected
+                            ? { backgroundColor: primaryColor, color: '#ffffff', boxShadow: `0 4px 14px ${primaryColor}40`, flexShrink: 0 }
+                            : { backgroundColor: '#e5e2e1', color: '#1c1b1b', flexShrink: 0 }
+                        }
+                      >
+                        {cat.name}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
 
               {/* 3-Column Menu Grid */}
