@@ -1554,7 +1554,8 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
 .pizza-house-root .h-20 { height: 5rem !important; }
 .pizza-house-root .w-auto { width: auto !important; }
 .pizza-house-root .w-full { width: 100% !important; }
-.pizza-house-root .max-w-7xl { max-width: 80rem !important; }
+.pizza-house-root .max-w-7xl { max-width: 1180px !important; }
+.pizza-house-root .max-w-4xl { max-width: 760px !important; }
 .pizza-house-root .max-w-xl { max-width: 36rem !important; }
 .pizza-house-root .max-w-lg { max-width: 32rem !important; }
 .pizza-house-root .max-w-md { max-width: 28rem !important; }
@@ -1717,18 +1718,14 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
 
 /* ---- DESKTOP XL: 1440px+ ---- */
 @media (min-width: 1440px) {
-  .pizza-house-root .font-display-hero, .pizza-house-root .text-display-hero { font-size: 68px !important; line-height: 76px !important; }
-  .pizza-house-root .font-headline-xl, .pizza-house-root .text-headline-xl { font-size: 48px !important; line-height: 56px !important; }
-  .pizza-house-root .max-w-7xl { max-width: 88rem !important; }
-  .pizza-house-root .h-72 { height: 22rem !important; }
-  .pizza-house-root .h-56 { height: 16rem !important; }
-  .pizza-house-root .h-80 { height: 24rem !important; }
-  .pizza-house-root section.py-16.lg\\:py-24 { padding-top: 7rem !important; padding-bottom: 7rem !important; }
+  .pizza-house-root .max-w-7xl { max-width: 1180px !important; }
+  .pizza-house-root .max-w-4xl { max-width: 760px !important; }
 }
 
-/* ---- DESKTOP XXL: 1920px ---- */
+/* ---- DESKTOP XXL: 1600px+ ---- */
 @media (min-width: 1600px) {
-  .pizza-house-root .font-display-hero, .pizza-house-root .text-display-hero { font-size: 72px !important; line-height: 80px !important; }
+  .pizza-house-root .max-w-7xl { max-width: 1180px !important; }
+  .pizza-house-root .max-w-4xl { max-width: 760px !important; }
 }
 
 /* ---- FIX: no-scrollbar ---- */
@@ -2692,7 +2689,7 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
             <div className="absolute -top-40 right-1/4 w-96 h-96 rounded-full bg-[#b20028]/20 blur-3xl pointer-events-none" />
             <div className="absolute -bottom-40 left-1/4 w-96 h-96 rounded-full bg-[#fc9430]/20 blur-3xl pointer-events-none" />
 
-            <div className="max-w-4xl mx-auto relative z-10">
+            <div className="max-w-2xl mx-auto relative z-10" style={{ maxWidth: '760px' }}>
               {/* Elevated Form Card */}
               <div
                 className="rounded-3xl shadow-2xl border"

@@ -744,7 +744,8 @@
 .pizza-house-root .h-20 { height: 5rem !important; }
 .pizza-house-root .w-auto { width: auto !important; }
 .pizza-house-root .w-full { width: 100% !important; }
-.pizza-house-root .max-w-7xl { max-width: 80rem !important; }
+.pizza-house-root .max-w-7xl { max-width: 1180px !important; }
+.pizza-house-root .max-w-4xl { max-width: 760px !important; }
 .pizza-house-root .max-w-xl { max-width: 36rem !important; }
 .pizza-house-root .max-w-lg { max-width: 32rem !important; }
 .pizza-house-root .max-w-md { max-width: 28rem !important; }
@@ -1583,7 +1584,10 @@
     padding-bottom: 7rem !important;
   }
   .pizza-house-root .max-w-7xl {
-    max-width: 88rem !important;
+    max-width: 1180px !important;
+  }
+  .pizza-house-root .max-w-4xl {
+    max-width: 760px !important;
   }
 }
 
@@ -1687,15 +1691,13 @@
   }
 }
 
-/* ---- FIX: Section max padding for ultra-wide (1920px) ---- */
+/* ---- FIX: Section max width and container capping ---- */
 @media (min-width: 1600px) {
-  .pizza-house-root section {
-    padding-left: max(3rem, calc((100vw - 88rem) / 2 + 3rem)) !important;
-    padding-right: max(3rem, calc((100vw - 88rem) / 2 + 3rem)) !important;
+  .pizza-house-root .max-w-7xl {
+    max-width: 1180px !important;
   }
-  .pizza-house-root .max-w-7xl,
   .pizza-house-root .max-w-4xl {
-    max-width: 88rem !important;
+    max-width: 760px !important;
   }
 }
 
