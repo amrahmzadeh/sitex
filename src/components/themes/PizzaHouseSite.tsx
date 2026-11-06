@@ -1471,9 +1471,11 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
       <header
         className="fixed top-0 left-0 w-full z-50 transition-all border-b"
         style={{
-          backgroundColor: theme.navbarBgColor || '#fcf9f8',
-          borderColor: '#f0eded',
-          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.02), 0 4px 16px rgba(0, 0, 0, 0.03)',
+          backgroundColor: theme.navbarBgColor || 'rgba(252, 249, 248, 0.75)',
+          backdropFilter: 'blur(20px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+          borderColor: 'rgba(240, 237, 237, 0.65)',
+          boxShadow: '0 4px 30px rgba(0, 0, 0, 0.04)',
         }}
       >
         <div className="h-20 max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between">
@@ -1588,7 +1590,15 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
 
         {/* Mobile Navigation Drawer */}
         {mobileDrawerOpen && (
-          <div className="lg:hidden bg-[#fcf9f8] px-6 py-5 shadow-xl border-t border-[#f0eded]">
+          <div
+            className="lg:hidden px-6 py-5 shadow-2xl border-t"
+            style={{
+              backgroundColor: 'rgba(252, 249, 248, 0.94)',
+              backdropFilter: 'blur(20px) saturate(180%)',
+              WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+              borderColor: 'rgba(240, 237, 237, 0.7)',
+            }}
+          >
             <nav className="flex flex-col gap-2">
               {navItems.map((item) => {
                 const isActive = activeSection === item.id;
