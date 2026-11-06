@@ -187,6 +187,7 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
   const headingFont = theme.headingFont || 'Epilogue';
   const bodyFont = theme.bodyFont || 'Inter';
   const fontsUrl = getGoogleFontsUrl(theme);
+  const primaryColor = theme.primaryColor || '#d7263d';
 
   // Mobile drawer state
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
@@ -1745,6 +1746,11 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
 .pizza-house-root .-translate-x-1\\/2 { transform: translateX(-50%) !important; }
 .pizza-house-root .-translate-y-1\\/2 { transform: translateY(-50%) !important; }
 .pizza-house-root .-translate-x-1\\/2.-translate-y-1\\/2 { transform: translate(-50%, -50%) !important; }
+
+/* ---- Color utilities ---- */
+.pizza-house-root .bg-\\[\\#d7263d\\] { background-color: #d7263d !important; }
+.pizza-house-root .hover\\:bg-\\[\\#d7263d\\]:hover { background-color: #d7263d !important; }
+.pizza-house-root .hover\\:bg-\\[\\#b20028\\]:hover { background-color: #b20028 !important; }
 ` }} />
 
       {/* ========================================================
@@ -1807,9 +1813,9 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                   style={
                     isActive
                       ? {
-                          backgroundColor: '#d7263d',
+                          backgroundColor: primaryColor,
                           color: '#ffffff',
-                          boxShadow: '0 2px 8px rgba(215, 38, 61, 0.25)',
+                          boxShadow: `0 2px 8px ${primaryColor}40`,
                         }
                       : { color: '#5b403f' }
                   }
@@ -1835,9 +1841,9 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
               onClick={() => scrollTo('rezervasiya')}
               className="hidden sm:inline-flex items-center gap-2 font-semibold text-sm px-5 py-2.5 rounded-full transition-all cursor-pointer hover:-translate-y-0.5 active:translate-y-0"
               style={{
-                backgroundColor: '#d7263d',
+                backgroundColor: primaryColor,
                 color: '#ffffff',
-                boxShadow: '0 4px 14px rgba(215, 38, 61, 0.28)',
+                boxShadow: `0 4px 14px ${primaryColor}45`,
               }}
             >
               <Calendar size={15} className="text-white/90" />
@@ -1919,11 +1925,21 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                   <button
                     key={item.id}
                     onClick={() => scrollTo(item.id)}
-                    className={`py-2.5 px-4 rounded-xl text-left cursor-pointer transition-colors ${
+                    className="py-3 px-4 rounded-xl text-left cursor-pointer transition-all font-semibold text-base"
+                    style={
                       isActive
-                        ? 'bg-[#d7263d] text-white font-bold shadow-sm'
-                        : 'text-[#5b403f] hover:text-[#b20028] hover:bg-[#f0eded] font-label-lg text-label-lg font-medium'
-                    }`}
+                        ? {
+                            backgroundColor: primaryColor,
+                            color: '#ffffff',
+                            boxShadow: `0 4px 14px ${primaryColor}40`,
+                            fontWeight: 700,
+                          }
+                        : {
+                            backgroundColor: 'transparent',
+                            color: '#1c1b1b',
+                            fontWeight: 500,
+                          }
+                    }
                   >
                     {item.label}
                   </button>
@@ -1932,9 +1948,14 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
               <div className="pt-2">
                 <button
                   onClick={() => scrollTo('rezervasiya')}
-                  className="w-full flex items-center justify-center gap-2 bg-[#d7263d] hover:bg-[#b20028] text-white font-semibold text-sm py-3 rounded-full transition-all cursor-pointer shadow-md"
+                  className="w-full flex items-center justify-center gap-2 font-bold text-base py-3.5 rounded-full transition-all cursor-pointer shadow-md active:scale-95"
+                  style={{
+                    backgroundColor: primaryColor,
+                    color: '#ffffff',
+                    boxShadow: `0 6px 18px ${primaryColor}45`,
+                  }}
                 >
-                  <Calendar size={16} />
+                  <Calendar size={18} />
                   <span>Rezervasiya et</span>
                 </button>
               </div>
@@ -2013,9 +2034,9 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                     onClick={() => scrollTo('menyu')}
                     className="w-full sm:w-auto inline-flex items-center justify-center gap-2 font-semibold text-base px-8 py-3.5 rounded-xl transition-all cursor-pointer hover:-translate-y-0.5"
                     style={{
-                      backgroundColor: '#d7263d',
+                      backgroundColor: primaryColor,
                       color: '#ffffff',
-                      boxShadow: '0 10px 20px -3px rgba(215, 38, 61, 0.3)',
+                      boxShadow: `0 10px 20px -3px ${primaryColor}4d`,
                     }}
                   >
                     <span>{theme.heroCta1 || 'Menyuya bax'}</span>
