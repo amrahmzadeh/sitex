@@ -96,6 +96,7 @@ export interface SiteData {
   workingHoursSettings?: { timezone?: string; pauseOrdersOutsideHours?: boolean; offHoursMessage?: string | null } | null;
   menuCategories: MenuCategory[];
   siteContent?: Record<string, Record<string, any>>;
+  locale?: import('@/modules/site-editor/types').Locale;
 }
 
 const DAY_NAMES = ['Bazar', 'Bazar ertəsi', 'Çərşənbə axşamı', 'Çərşənbə', 'Cümə axşamı', 'Cümə', 'Şənbə'];
@@ -1011,7 +1012,7 @@ export default function RestaurantSite({ data, initialTable }: { data: SiteData;
     return <ProRestaurantSite data={data} theme={theme} table={table} />;
   }
   const { organization, whatsapp, socialLinks, workingHours, menuCategories } = data;
-  const content = getResolvedSiteContent(data.siteContent, organization);
+  const content = getResolvedSiteContent(data.siteContent, organization, theme, data.locale || 'az');
   const { isOrdersPaused, noticeMessage: offHoursNotice } = useWorkingHours({
     workingHours: data.workingHours,
     settings: data.workingHoursSettings,
