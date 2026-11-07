@@ -2,9 +2,19 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import {
-  Search, RefreshCw, Edit2, Ban, CheckCircle2, Trash2,
-  Clock, ChevronLeft, ChevronRight, X, Save,
+  Search,
+  RefreshCw,
+  Edit2,
+  Ban,
+  CheckCircle2,
+  Trash2,
+  Users,
+  X,
+  Save,
 } from 'lucide-react';
+import { DataTable, Column, PageHeader, ConfirmDialog, FormField } from '@/components/common';
+import { apiClient } from '@/lib/api-client';
+import { useToast } from '@/contexts/ToastContext';
 
 interface User {
   id: string;
@@ -52,6 +62,7 @@ function userStatusLabel(u: User) {
 }
 
 export default function AdminUsersPage() {
+  const { success: toastSuccess, error: toastError } = useToast();
   const [users, setUsers] = useState<User[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -64,54 +75,45 @@ export default function AdminUsersPage() {
   const [editForm, setEditForm] = useState({ subscriptionExpiry: '', maxSites: '', customDate: '' });
   const [editLoading, setEditLoading] = useState(false);
   const [editError, setEditError] = useState('');
-  const [editSuccess, setEditSuccess] = useState('');
 
   // Delete confirm
   const [deleteUser, setDeleteUser] = useState<User | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
-
-  const [toast, setToast] = useState('');
 
   const LIMIT = 20;
 
   const fetchUsers = useCallback(async () => {
     setLoading(true);
     try {
-      const params = new URLSearchParams({
-        page: String(page),
-        limit: String(LIMIT),
-        search,
-        status: statusFilter,
+      const data = await apiClient.get<{ users: User[]; total: number }>('/api/admin/users', {
+        params: {
+          page,
+          limit: LIMIT,
+          search,
+          status: statusFilter,
+        },
       });
-      const res = await fetch(`/api/admin/users?${params}`);
-      const data = await res.json();
       setUsers(data.users || []);
       setTotal(data.total || 0);
+    } catch (err: any) {
+      toastError(err.message || 'İstifadəçilər yüklənərkən xəta baş verdi');
     } finally {
       setLoading(false);
     }
-  }, [page, search, statusFilter]);
+  }, [page, search, statusFilter, toastError]);
 
-  useEffect(() => { fetchUsers(); }, [fetchUsers]);
-
-  const showToast = (msg: string) => {
-    setToast(msg);
-    setTimeout(() => setToast(''), 3000);
-  };
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
 
   const handleBan = async (u: User) => {
     const newStatus = u.status === 'BANNED' ? 'ACTIVE' : 'BANNED';
-    const res = await fetch(`/api/admin/users/${u.id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status: newStatus }),
-    });
-    if (res.ok) {
-      showToast(newStatus === 'BANNED' ? 'İstifadəçi bloklandı' : 'İstifadəçi aktivləşdirildi');
+    try {
+      await apiClient.patch(`/api/admin/users/${u.id}`, { status: newStatus });
+      toastSuccess(newStatus === 'BANNED' ? 'İstifadəçi bloklandı' : 'İstifadəçi aktivləşdirildi');
       fetchUsers();
-    } else {
-      const d = await res.json();
-      showToast(d.error || 'Xəta baş verdi');
+    } catch (err: any) {
+      toastError(err.message || 'Əməliyyat icra olunmadı');
     }
   };
 
@@ -123,44 +125,33 @@ export default function AdminUsersPage() {
       customDate: '',
     });
     setEditError('');
-    setEditSuccess('');
   };
 
   const handleEditSave = async () => {
     if (!editUser) return;
     setEditLoading(true);
     setEditError('');
-    setEditSuccess('');
     try {
       const body: Record<string, unknown> = {};
 
-      // subscription
       if (editForm.subscriptionExpiry === 'unlimited') {
         body.subscriptionExpiry = null;
       } else if (editForm.subscriptionExpiry) {
         body.subscriptionExpiry = new Date(editForm.subscriptionExpiry).toISOString();
       }
 
-      // maxSites
       if (editForm.maxSites === '' || editForm.maxSites === 'unlimited') {
         body.maxSites = null;
       } else {
         body.maxSites = parseInt(editForm.maxSites);
       }
 
-      const res = await fetch(`/api/admin/users/${editUser.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setEditError(data.error || 'Xəta baş verdi');
-      } else {
-        setEditSuccess('Dəyişikliklər saxlandı');
-        fetchUsers();
-        setTimeout(() => setEditUser(null), 1200);
-      }
+      await apiClient.patch(`/api/admin/users/${editUser.id}`, body);
+      toastSuccess('Dəyişikliklər saxlandı');
+      setEditUser(null);
+      fetchUsers();
+    } catch (err: any) {
+      setEditError(err.message || 'Yadda saxlanarkən xəta baş verdi');
     } finally {
       setEditLoading(false);
     }
@@ -169,58 +160,195 @@ export default function AdminUsersPage() {
   const handleDelete = async () => {
     if (!deleteUser) return;
     setDeleteLoading(true);
-    const res = await fetch(`/api/admin/users/${deleteUser.id}`, { method: 'DELETE' });
-    setDeleteLoading(false);
-    if (res.ok) {
-      showToast('İstifadəçi silindi');
+    try {
+      await apiClient.delete(`/api/admin/users/${deleteUser.id}`);
+      toastSuccess('İstifadəçi silindi');
       setDeleteUser(null);
       fetchUsers();
-    } else {
-      const d = await res.json();
-      showToast(d.error || 'Xəta baş verdi');
+    } catch (err: any) {
+      toastError(err.message || 'Silinmə zamanı xəta baş verdi');
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
   const totalPages = Math.ceil(total / LIMIT);
 
-  return (
-    <div style={{ maxWidth: 1200 }}>
-      {/* Toast */}
-      {toast && (
-        <div style={{ position: 'fixed', top: 20, right: 20, background: '#1A1A24', border: '1px solid #2A2A3A', borderRadius: 12, padding: '12px 20px', color: '#E8E8F0', fontSize: 14, zIndex: 1000, boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }}>
-          {toast}
-        </div>
-      )}
-
-      <div style={{ marginBottom: 24, display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+  const columns: Column<User>[] = [
+    {
+      key: 'name',
+      header: 'İstifadəçi',
+      render: (u) => (
         <div>
-          <h1 style={{ fontSize: 24, fontWeight: 700, color: '#E8E8F0' }}>İstifadəçilər</h1>
-          <p style={{ color: '#8888A0', fontSize: 14 }}>Cəmi: {total} istifadəçi</p>
+          <p style={{ fontWeight: 600, color: '#E8E8F0', margin: 0 }}>{u.name || 'Ad qeyd olunmayıb'}</p>
+          <p style={{ fontSize: 11, color: '#8888A0', margin: 0 }}>{u.email}</p>
         </div>
-        <div style={{ flex: 1 }} />
-        <button onClick={fetchUsers} style={{ border: '1px solid #2A2A3A', background: 'transparent', color: '#8888A0', borderRadius: 10, padding: '8px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, fontSize: 13 }}>
-          <RefreshCw size={14} /> Yenilə
-        </button>
-      </div>
+      ),
+    },
+    {
+      key: 'status',
+      header: 'Status',
+      render: (u) => {
+        const s = userStatusLabel(u);
+        return (
+          <span
+            style={{
+              padding: '3px 10px',
+              borderRadius: 100,
+              fontSize: 12,
+              fontWeight: 600,
+              background: s.bg,
+              color: s.color,
+            }}
+          >
+            {s.label}
+          </span>
+        );
+      },
+    },
+    {
+      key: 'role',
+      header: 'Rol',
+      render: (u) => (
+        <span
+          style={{
+            fontSize: 11,
+            fontWeight: 700,
+            padding: '2px 8px',
+            borderRadius: 6,
+            background: u.role === 'SUPER_ADMIN' ? 'rgba(248,113,113,0.15)' : 'rgba(255,255,255,0.06)',
+            color: u.role === 'SUPER_ADMIN' ? '#F87171' : '#8888A0',
+          }}
+        >
+          {u.role}
+        </span>
+      ),
+    },
+    {
+      key: 'subscriptionExpiry',
+      header: 'Abunəlik Bitişi',
+      render: (u) => (
+        <span style={{ color: isExpired(u.subscriptionExpiry) ? '#FBBF24' : '#8888A0' }}>
+          {formatDate(u.subscriptionExpiry)}
+        </span>
+      ),
+    },
+    {
+      key: 'sites',
+      header: 'Sayt Limiti',
+      render: (u) => (
+        <span style={{ color: '#8888A0' }}>
+          {u._count.memberships} / {u.maxSites === null ? 'Limitsiz' : u.maxSites}
+        </span>
+      ),
+    },
+    {
+      key: 'createdAt',
+      header: 'Qeydiyyat',
+      render: (u) => (
+        <span style={{ color: '#8888A0', whiteSpace: 'nowrap' }}>
+          {formatDate(u.createdAt)}
+        </span>
+      ),
+    },
+    {
+      key: 'actions',
+      header: 'Əməliyyatlar',
+      render: (u) => (
+        <div style={{ display: 'flex', gap: 6 }}>
+          <button
+            onClick={() => openEdit(u)}
+            title="Redaktə et"
+            style={{
+              background: 'rgba(124,92,252,0.1)',
+              border: 'none',
+              color: '#7C5CFC',
+              borderRadius: 8,
+              padding: '6px 8px',
+              cursor: 'pointer',
+            }}
+          >
+            <Edit2 size={14} />
+          </button>
+          {u.role !== 'SUPER_ADMIN' && (
+            <>
+              <button
+                onClick={() => handleBan(u)}
+                title={u.status === 'BANNED' ? 'Blokdan çıxar' : 'Blokla'}
+                style={{
+                  background: u.status === 'BANNED' ? 'rgba(52,211,153,0.1)' : 'rgba(248,113,113,0.1)',
+                  border: 'none',
+                  color: u.status === 'BANNED' ? '#34D399' : '#F87171',
+                  borderRadius: 8,
+                  padding: '6px 8px',
+                  cursor: 'pointer',
+                }}
+              >
+                {u.status === 'BANNED' ? <CheckCircle2 size={14} /> : <Ban size={14} />}
+              </button>
+              <button
+                onClick={() => setDeleteUser(u)}
+                title="Sil"
+                style={{
+                  background: 'rgba(248,113,113,0.1)',
+                  border: 'none',
+                  color: '#F87171',
+                  borderRadius: 8,
+                  padding: '6px 8px',
+                  cursor: 'pointer',
+                }}
+              >
+                <Trash2 size={14} />
+              </button>
+            </>
+          )}
+        </div>
+      ),
+    },
+  ];
+
+  return (
+    <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+      <PageHeader
+        title="İstifadəçilər"
+        description={`Sistemdə qeydiyyatdan keçmiş cəmi ${total} istifadəçi`}
+        icon={Users}
+        iconColor="#7C5CFC"
+        actions={
+          <button
+            onClick={fetchUsers}
+            className="dash-btn-secondary"
+            style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, padding: '8px 14px' }}
+          >
+            <RefreshCw size={14} /> Yenilə
+          </button>
+        }
+      />
 
       {/* Filters */}
       <div style={{ display: 'flex', gap: 12, marginBottom: 20, flexWrap: 'wrap' }}>
-        <div style={{ position: 'relative', flex: 1, minWidth: 220 }}>
-          <Search size={14} color="#8888A0" style={{ position: 'absolute', left: 12, top: 11 }} />
+        <div style={{ position: 'relative', flex: 1, minWidth: 240 }}>
+          <Search size={14} color="#8888A0" style={{ position: 'absolute', left: 12, top: 13 }} />
           <input
             type="text"
             placeholder="Ad və ya e-poçt axtar..."
             value={search}
-            onChange={e => { setSearch(e.target.value); setPage(1); }}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
             className="dash-input"
-            style={{ paddingLeft: 34 }}
+            style={{ paddingLeft: 34, height: 40, width: '100%' }}
           />
         </div>
         <select
           value={statusFilter}
-          onChange={e => { setStatusFilter(e.target.value); setPage(1); }}
+          onChange={(e) => {
+            setStatusFilter(e.target.value);
+            setPage(1);
+          }}
           className="dash-input"
-          style={{ width: 160 }}
+          style={{ width: 160, height: 40 }}
         >
           <option value="">Bütün statuslar</option>
           <option value="ACTIVE">Aktiv</option>
@@ -228,249 +356,186 @@ export default function AdminUsersPage() {
         </select>
       </div>
 
-      {/* Table */}
-      <div className="dash-card" style={{ overflow: 'hidden' }}>
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
-            <thead>
-              <tr style={{ borderBottom: '1px solid #2A2A3A' }}>
-                {['Ad', 'E-poçt', 'Qeydiyyat', 'Status', 'Müddət', 'Sayt Limiti', 'Saytlar', 'Əməliyyatlar'].map(h => (
-                  <th key={h} style={{ padding: '12px 16px', textAlign: 'left', color: '#8888A0', fontWeight: 600, whiteSpace: 'nowrap' }}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {loading ? (
-                [...Array(5)].map((_, i) => (
-                  <tr key={i}>
-                    {[...Array(8)].map((_, j) => (
-                      <td key={j} style={{ padding: '12px 16px' }}>
-                        <div className="skeleton" style={{ height: 16, borderRadius: 4, width: '80%' }} />
-                      </td>
-                    ))}
-                  </tr>
-                ))
-              ) : users.length === 0 ? (
-                <tr>
-                  <td colSpan={8} style={{ padding: 40, textAlign: 'center', color: '#8888A0' }}>
-                    İstifadəçi tapılmadı
-                  </td>
-                </tr>
-              ) : users.map(u => {
-                const statusInfo = userStatusLabel(u);
-                return (
-                  <tr key={u.id} style={{ borderBottom: '1px solid #1A1A24' }}>
-                    <td style={{ padding: '12px 16px', color: '#E8E8F0', fontWeight: 500 }}>
-                      {u.name || '—'}
-                      {u.role === 'SUPER_ADMIN' && (
-                        <span style={{ marginLeft: 6, fontSize: 10, color: '#F87171', background: 'rgba(248,113,113,0.1)', padding: '2px 6px', borderRadius: 6 }}>
-                          Admin
-                        </span>
-                      )}
-                    </td>
-                    <td style={{ padding: '12px 16px', color: '#8888A0' }}>{u.email}</td>
-                    <td style={{ padding: '12px 16px', color: '#8888A0', whiteSpace: 'nowrap' }}>{formatDate(u.createdAt)}</td>
-                    <td style={{ padding: '12px 16px' }}>
-                      <span style={{ background: statusInfo.bg, color: statusInfo.color, padding: '3px 10px', borderRadius: 100, fontSize: 12, fontWeight: 600 }}>
-                        {statusInfo.label}
-                      </span>
-                    </td>
-                    <td style={{ padding: '12px 16px', color: '#8888A0', whiteSpace: 'nowrap' }}>
-                      {u.subscriptionExpiry
-                        ? <span style={{ color: isExpired(u.subscriptionExpiry) ? '#F87171' : '#E8E8F0' }}>{formatDate(u.subscriptionExpiry)}</span>
-                        : <span style={{ color: '#34D399' }}>Limitsiz</span>}
-                    </td>
-                    <td style={{ padding: '12px 16px', color: '#8888A0' }}>
-                      {u.maxSites === null ? <span style={{ color: '#34D399' }}>Limitsiz</span> : u.maxSites}
-                    </td>
-                    <td style={{ padding: '12px 16px', color: '#7C5CFC', fontWeight: 600 }}>
-                      {u._count.memberships}
-                    </td>
-                    <td style={{ padding: '12px 16px' }}>
-                      <div style={{ display: 'flex', gap: 6 }}>
-                        <button
-                          onClick={() => openEdit(u)}
-                          title="Redaktə et"
-                          style={{ background: 'rgba(124,92,252,0.1)', border: 'none', color: '#7C5CFC', borderRadius: 8, padding: '6px 8px', cursor: 'pointer' }}
-                        >
-                          <Edit2 size={14} />
-                        </button>
-                        <button
-                          onClick={() => handleBan(u)}
-                          title={u.status === 'BANNED' ? 'Aktivləşdir' : 'Blokla'}
-                          disabled={u.role === 'SUPER_ADMIN'}
-                          style={{ background: u.status === 'BANNED' ? 'rgba(52,211,153,0.1)' : 'rgba(248,113,113,0.1)', border: 'none', color: u.status === 'BANNED' ? '#34D399' : '#F87171', borderRadius: 8, padding: '6px 8px', cursor: u.role === 'SUPER_ADMIN' ? 'not-allowed' : 'pointer', opacity: u.role === 'SUPER_ADMIN' ? 0.4 : 1 }}
-                        >
-                          {u.status === 'BANNED' ? <CheckCircle2 size={14} /> : <Ban size={14} />}
-                        </button>
-                        <button
-                          onClick={() => setDeleteUser(u)}
-                          title="Sil"
-                          style={{ background: 'rgba(248,113,113,0.1)', border: 'none', color: '#F87171', borderRadius: 8, padding: '6px 8px', cursor: 'pointer' }}
-                        >
-                          <Trash2 size={14} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+      <DataTable
+        columns={columns}
+        data={users}
+        loading={loading}
+        emptyTitle="İstifadəçi tapılmadı"
+        emptyDescription="Axtarış meyarlarınıza uyğun heç bir istifadəçi mövcud deyil."
+        pagination={{
+          currentPage: page,
+          totalPages,
+          totalCount: total,
+          onPageChange: (p) => setPage(p),
+        }}
+      />
 
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '16px 20px', borderTop: '1px solid #2A2A3A', justifyContent: 'flex-end' }}>
-            <button
-              onClick={() => setPage(p => Math.max(1, p - 1))}
-              disabled={page === 1}
-              style={{ border: '1px solid #2A2A3A', background: 'transparent', color: '#8888A0', borderRadius: 8, padding: '6px 10px', cursor: page === 1 ? 'not-allowed' : 'pointer', opacity: page === 1 ? 0.4 : 1 }}
-            >
-              <ChevronLeft size={14} />
-            </button>
-            <span style={{ fontSize: 13, color: '#8888A0' }}>{page} / {totalPages}</span>
-            <button
-              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-              disabled={page === totalPages}
-              style={{ border: '1px solid #2A2A3A', background: 'transparent', color: '#8888A0', borderRadius: 8, padding: '6px 10px', cursor: page === totalPages ? 'not-allowed' : 'pointer', opacity: page === totalPages ? 0.4 : 1 }}
-            >
-              <ChevronRight size={14} />
-            </button>
-          </div>
-        )}
-      </div>
+      {/* Delete Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={Boolean(deleteUser)}
+        title="İstifadəçini Sil"
+        description={`"${deleteUser?.email}" istifadəçisini və onun yaratdığı bütün saytları və məlumatları silmək istəyirsiniz? Bu əməliyyat geri qaytarıla bilməz.`}
+        confirmLabel="Bəli, sil"
+        cancelLabel="Ləğv et"
+        isDestructive={true}
+        isLoading={deleteLoading}
+        onConfirm={handleDelete}
+        onClose={() => setDeleteUser(null)}
+      />
 
       {/* Edit Modal */}
       {editUser && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
-          <div style={{ background: '#1A1A24', border: '1px solid #2A2A3A', borderRadius: 20, padding: 32, width: '100%', maxWidth: 500, maxHeight: '90vh', overflowY: 'auto' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
-              <h2 style={{ fontSize: 18, fontWeight: 700, color: '#E8E8F0' }}>Redaktə: {editUser.name || editUser.email}</h2>
-              <button onClick={() => setEditUser(null)} style={{ background: 'transparent', border: 'none', color: '#8888A0', cursor: 'pointer' }}>
-                <X size={20} />
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.7)',
+            zIndex: 9999,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 20,
+          }}
+        >
+          <div
+            style={{
+              background: '#1A1A24',
+              border: '1px solid #2A2A3A',
+              borderRadius: 20,
+              padding: 28,
+              width: '100%',
+              maxWidth: 480,
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+              <h2 style={{ fontSize: 18, fontWeight: 700, color: '#E8E8F0', margin: 0 }}>
+                İstifadəçi Redaktəsi
+              </h2>
+              <button
+                onClick={() => setEditUser(null)}
+                style={{ background: 'none', border: 'none', color: '#8888A0', cursor: 'pointer' }}
+              >
+                <X size={18} />
               </button>
             </div>
 
-            {editError && (
-              <div style={{ background: 'rgba(248,113,113,0.1)', border: '1px solid rgba(248,113,113,0.3)', borderRadius: 10, padding: '10px 14px', color: '#F87171', fontSize: 13, marginBottom: 16 }}>
-                {editError}
-              </div>
-            )}
-            {editSuccess && (
-              <div style={{ background: 'rgba(52,211,153,0.1)', border: '1px solid rgba(52,211,153,0.3)', borderRadius: 10, padding: '10px 14px', color: '#34D399', fontSize: 13, marginBottom: 16 }}>
-                {editSuccess}
-              </div>
-            )}
+            <p style={{ color: '#8888A0', fontSize: 13, marginBottom: 16 }}>
+              {editUser.name || 'Ad yoxdur'} ({editUser.email})
+            </p>
 
-            {/* Subscription */}
-            <div style={{ marginBottom: 24 }}>
-              <label className="dash-label">İstifadə Müddəti</label>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 10 }}>
-                {SUBSCRIPTION_PRESETS.map(p => (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <FormField label="Abunəlik Müddəti">
+                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 8 }}>
+                  {SUBSCRIPTION_PRESETS.map((p) => (
+                    <button
+                      key={p.days}
+                      type="button"
+                      onClick={() => setEditForm((f) => ({ ...f, subscriptionExpiry: addDays(p.days) }))}
+                      style={{
+                        padding: '4px 8px',
+                        borderRadius: 6,
+                        border: '1px solid #383334',
+                        background: '#23232B',
+                        color: '#E8E8F0',
+                        fontSize: 11,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      +{p.label}
+                    </button>
+                  ))}
                   <button
-                    key={p.days}
-                    onClick={() => setEditForm(f => ({ ...f, subscriptionExpiry: addDays(p.days) }))}
-                    className="dash-btn-secondary"
-                    style={{ padding: '6px 12px', fontSize: 12 }}
+                    type="button"
+                    onClick={() => setEditForm((f) => ({ ...f, subscriptionExpiry: 'unlimited' }))}
+                    style={{
+                      padding: '4px 8px',
+                      borderRadius: 6,
+                      border: '1px solid #383334',
+                      background: '#23232B',
+                      color: '#00D37D',
+                      fontSize: 11,
+                      cursor: 'pointer',
+                    }}
                   >
-                    +{p.label}
+                    Limitsiz
                   </button>
-                ))}
-                <button
-                  onClick={() => setEditForm(f => ({ ...f, subscriptionExpiry: 'unlimited' }))}
-                  className="dash-btn-secondary"
-                  style={{ padding: '6px 12px', fontSize: 12, color: '#34D399', borderColor: 'rgba(52,211,153,0.3)' }}
-                >
-                  Limitsiz
-                </button>
-              </div>
-              <input
-                type="date"
-                value={editForm.subscriptionExpiry === 'unlimited' ? '' : editForm.subscriptionExpiry}
-                onChange={e => setEditForm(f => ({ ...f, subscriptionExpiry: e.target.value }))}
-                className="dash-input"
-                placeholder="Fərdi tarix seçin"
-              />
-              {editForm.subscriptionExpiry === 'unlimited' && (
-                <p style={{ fontSize: 12, color: '#34D399', marginTop: 4 }}>Limitsiz seçilib</p>
-              )}
-            </div>
+                </div>
+                <input
+                  type="date"
+                  value={editForm.subscriptionExpiry === 'unlimited' ? '' : editForm.subscriptionExpiry}
+                  onChange={(e) => setEditForm((f) => ({ ...f, subscriptionExpiry: e.target.value }))}
+                  className="dash-input"
+                />
+              </FormField>
 
-            {/* Max Sites */}
-            <div style={{ marginBottom: 24 }}>
-              <label className="dash-label">Maksimum Sayt Limiti</label>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 10 }}>
-                {SITE_LIMIT_PRESETS.map(n => (
+              <FormField label="Maksimum Sayt Sayı">
+                <div style={{ display: 'flex', gap: 6, marginBottom: 8 }}>
+                  {SITE_LIMIT_PRESETS.map((lim) => (
+                    <button
+                      key={lim}
+                      type="button"
+                      onClick={() => setEditForm((f) => ({ ...f, maxSites: String(lim) }))}
+                      style={{
+                        padding: '4px 10px',
+                        borderRadius: 6,
+                        border: '1px solid #383334',
+                        background: '#23232B',
+                        color: '#E8E8F0',
+                        fontSize: 11,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      {lim} sayt
+                    </button>
+                  ))}
                   <button
-                    key={n}
-                    onClick={() => setEditForm(f => ({ ...f, maxSites: String(n) }))}
-                    className="dash-btn-secondary"
-                    style={{ padding: '6px 12px', fontSize: 12, background: editForm.maxSites === String(n) ? 'rgba(124,92,252,0.15)' : 'transparent', borderColor: editForm.maxSites === String(n) ? '#7C5CFC' : undefined, color: editForm.maxSites === String(n) ? '#9B7FFF' : undefined }}
+                    type="button"
+                    onClick={() => setEditForm((f) => ({ ...f, maxSites: 'unlimited' }))}
+                    style={{
+                      padding: '4px 10px',
+                      borderRadius: 6,
+                      border: '1px solid #383334',
+                      background: '#23232B',
+                      color: '#00D37D',
+                      fontSize: 11,
+                      cursor: 'pointer',
+                    }}
                   >
-                    {n}
+                    Limitsiz
                   </button>
-                ))}
-                <button
-                  onClick={() => setEditForm(f => ({ ...f, maxSites: 'unlimited' }))}
-                  className="dash-btn-secondary"
-                  style={{ padding: '6px 12px', fontSize: 12, color: '#34D399', borderColor: editForm.maxSites === 'unlimited' ? '#34D399' : 'rgba(52,211,153,0.3)' }}
-                >
-                  Limitsiz
-                </button>
-              </div>
-              {editForm.maxSites !== 'unlimited' && (
+                </div>
                 <input
                   type="number"
-                  min={0}
-                  value={editForm.maxSites}
-                  onChange={e => setEditForm(f => ({ ...f, maxSites: e.target.value }))}
+                  min="0"
+                  placeholder="Limitsiz üçün boş buraxın"
+                  value={editForm.maxSites === 'unlimited' ? '' : editForm.maxSites}
+                  onChange={(e) => setEditForm((f) => ({ ...f, maxSites: e.target.value }))}
                   className="dash-input"
-                  placeholder="Fərdi limit daxil edin"
                 />
-              )}
-              {editForm.maxSites === 'unlimited' && (
-                <p style={{ fontSize: 12, color: '#34D399', marginTop: 4 }}>Limitsiz seçilib</p>
-              )}
+              </FormField>
             </div>
 
-            <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
-              <button onClick={() => setEditUser(null)} className="dash-btn-secondary">
+            {editError && (
+              <p style={{ color: '#F87171', fontSize: 13, marginTop: 12, marginBottom: 0 }}>
+                {editError}
+              </p>
+            )}
+
+            <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 24 }}>
+              <button
+                onClick={() => setEditUser(null)}
+                className="dash-btn-secondary"
+                disabled={editLoading}
+              >
                 Ləğv et
               </button>
               <button
                 onClick={handleEditSave}
                 disabled={editLoading}
                 className="dash-btn-primary"
-                style={{ display: 'flex', alignItems: 'center', gap: 6, opacity: editLoading ? 0.7 : 1 }}
+                style={{ display: 'flex', alignItems: 'center', gap: 6 }}
               >
-                <Save size={14} /> Saxla
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Delete Confirm Modal */}
-      {deleteUser && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
-          <div style={{ background: '#1A1A24', border: '1px solid rgba(248,113,113,0.3)', borderRadius: 20, padding: 32, width: '100%', maxWidth: 440 }}>
-            <h2 style={{ fontSize: 18, fontWeight: 700, color: '#E8E8F0', marginBottom: 12 }}>İstifadəçini Sil</h2>
-            <p style={{ color: '#8888A0', fontSize: 14, marginBottom: 8 }}>
-              <strong style={{ color: '#E8E8F0' }}>{deleteUser.name || deleteUser.email}</strong> adlı istifadəçini və ona aid bütün saytları, menyuları, şəkilləri həmişəlik silmək istəyirsiniz?
-            </p>
-            <p style={{ color: '#F87171', fontSize: 13, marginBottom: 24 }}>
-              ⚠️ Bu əməliyyat geri qaytarıla bilməz.
-            </p>
-            <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
-              <button onClick={() => setDeleteUser(null)} className="dash-btn-secondary">Ləğv et</button>
-              <button
-                onClick={handleDelete}
-                disabled={deleteLoading}
-                className="dash-btn-danger"
-                style={{ opacity: deleteLoading ? 0.7 : 1, background: 'rgba(248,113,113,0.15)', fontWeight: 600 }}
-              >
-                {deleteLoading ? 'Silinir...' : 'Bəli, sil'}
+                <Save size={14} /> {editLoading ? 'Saxlanılır...' : 'Saxla'}
               </button>
             </div>
           </div>
@@ -479,4 +544,3 @@ export default function AdminUsersPage() {
     </div>
   );
 }
-

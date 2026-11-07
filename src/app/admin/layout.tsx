@@ -3,6 +3,8 @@ import { redirect } from 'next/navigation';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import AdminShell from '@/components/admin/AdminShell';
+import { ToastProvider } from '@/contexts/ToastContext';
+import ErrorBoundary from '@/components/common/ErrorBoundary';
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await getServerSession(authOptions);
@@ -18,6 +20,11 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     redirect('/dashboard');
   }
 
-  return <AdminShell>{children}</AdminShell>;
+  return (
+    <ToastProvider>
+      <AdminShell>
+        <ErrorBoundary>{children}</ErrorBoundary>
+      </AdminShell>
+    </ToastProvider>
+  );
 }
-

@@ -1,53 +1,48 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { Save, RefreshCw, UserPlus, LogIn, ShieldCheck } from 'lucide-react';
+import { useEffect, useState, useCallback } from 'react';
+import { Save, RefreshCw, UserPlus, LogIn, Settings as SettingsIcon } from 'lucide-react';
+import { PageHeader, LoadingState } from '@/components/common';
+import { apiClient } from '@/lib/api-client';
+import { useToast } from '@/contexts/ToastContext';
 
-interface Settings {
+interface PlatformSettings {
   registration_enabled: string;
   login_enabled: string;
 }
 
 export default function AdminSettingsPage() {
-  const [settings, setSettings] = useState<Settings>({
+  const { success: toastSuccess, error: toastError } = useToast();
+  const [settings, setSettings] = useState<PlatformSettings>({
     registration_enabled: 'true',
     login_enabled: 'true',
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [message, setMessage] = useState('');
-  const [error, setError] = useState('');
 
-  const fetchSettings = async () => {
+  const fetchSettings = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/admin/settings');
-      const data = await res.json();
+      const data = await apiClient.get<{ settings?: PlatformSettings }>('/api/admin/settings');
       if (data.settings) setSettings(data.settings);
+    } catch (err: any) {
+      toastError(err.message || 'Parametrlər yüklənərkən xəta baş verdi');
     } finally {
       setLoading(false);
     }
-  };
+  }, [toastError]);
 
-  useEffect(() => { fetchSettings(); }, []);
+  useEffect(() => {
+    fetchSettings();
+  }, [fetchSettings]);
 
   const handleSave = async () => {
     setSaving(true);
-    setMessage('');
-    setError('');
     try {
-      const res = await fetch('/api/admin/settings', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(settings),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setError(data.error || 'Xəta baş verdi');
-      } else {
-        setMessage('Parametrlər saxlandı');
-        setTimeout(() => setMessage(''), 3000);
-      }
+      await apiClient.put('/api/admin/settings', settings);
+      toastSuccess('Platforma parametrləri yadda saxlandı');
+    } catch (err: any) {
+      toastError(err.message || 'Yadda saxlanarkən xəta baş verdi');
     } finally {
       setSaving(false);
     }
@@ -59,7 +54,7 @@ export default function AdminSettingsPage() {
     label,
     description,
     icon: Icon,
-    onColor = '#34D399',
+    onColor = '#00D37D',
   }: {
     value: string;
     onChange: (v: string) => void;
@@ -70,20 +65,44 @@ export default function AdminSettingsPage() {
   }) => {
     const isOn = value === 'true';
     return (
-      <div className="dash-card" style={{ padding: 24, marginBottom: 16 }}>
+      <div
+        className="dash-card"
+        style={{
+          padding: 24,
+          marginBottom: 16,
+          borderRadius: 16,
+          background: '#1A1A1E',
+          border: '1px solid #383334',
+        }}
+      >
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <div style={{ width: 48, height: 48, borderRadius: 12, background: isOn ? `${onColor}20` : 'rgba(136,136,160,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <div
+            style={{
+              width: 48,
+              height: 48,
+              borderRadius: 12,
+              background: isOn ? `${onColor}20` : 'rgba(136,136,160,0.1)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+            }}
+          >
             <Icon size={22} color={isOn ? onColor : '#8888A0'} />
           </div>
           <div style={{ flex: 1 }}>
-            <p style={{ fontSize: 16, fontWeight: 600, color: '#E8E8F0', marginBottom: 4 }}>{label}</p>
-            <p style={{ fontSize: 13, color: '#8888A0' }}>{description}</p>
+            <p style={{ fontSize: 16, fontWeight: 600, color: '#E8E8F0', margin: '0 0 4px' }}>
+              {label}
+            </p>
+            <p style={{ fontSize: 13, color: '#8888A0', margin: 0 }}>{description}</p>
           </div>
           <div>
             <button
+              type="button"
               onClick={() => onChange(isOn ? 'false' : 'true')}
               style={{
-                width: 52, height: 28,
+                width: 52,
+                height: 28,
                 borderRadius: 14,
                 border: 'none',
                 background: isOn ? onColor : '#2A2A3A',
@@ -92,20 +111,22 @@ export default function AdminSettingsPage() {
                 transition: 'background 0.2s',
                 flexShrink: 0,
               }}
+              aria-label={label}
             >
-              <div style={{
-                width: 22, height: 22,
-                borderRadius: '50%',
-                background: '#fff',
-                position: 'absolute',
-                top: 3,
-                left: isOn ? 27 : 3,
-                transition: 'left 0.2s',
-              }} />
+              <div
+                style={{
+                  width: 22,
+                  height: 22,
+                  borderRadius: '50%',
+                  background: '#fff',
+                  position: 'absolute',
+                  top: 3,
+                  left: isOn ? 27 : 3,
+                  transition: 'left 0.2s',
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
+                }}
+              />
             </button>
-            <p style={{ fontSize: 11, color: isOn ? onColor : '#F87171', textAlign: 'center', marginTop: 4, fontWeight: 600 }}>
-              {isOn ? 'AKTİV' : 'DEAKTİV'}
-            </p>
           </div>
         </div>
       </div>
@@ -113,80 +134,57 @@ export default function AdminSettingsPage() {
   };
 
   return (
-    <div style={{ maxWidth: 640 }}>
-      <div style={{ marginBottom: 24, display: 'flex', alignItems: 'center', gap: 16 }}>
-        <div>
-          <h1 style={{ fontSize: 24, fontWeight: 700, color: '#E8E8F0' }}>Platforma Parametrləri</h1>
-          <p style={{ color: '#8888A0', fontSize: 14 }}>Qeydiyyat və giriş funksiyalarını idarə edin</p>
-        </div>
-        <div style={{ flex: 1 }} />
-        <button onClick={fetchSettings} style={{ border: '1px solid #2A2A3A', background: 'transparent', color: '#8888A0', borderRadius: 10, padding: '8px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, fontSize: 13 }}>
-          <RefreshCw size={14} /> Yenilə
-        </button>
-      </div>
-
-      {message && (
-        <div style={{ background: 'rgba(52,211,153,0.1)', border: '1px solid rgba(52,211,153,0.3)', borderRadius: 10, padding: '10px 16px', color: '#34D399', fontSize: 14, marginBottom: 20 }}>
-          ✓ {message}
-        </div>
-      )}
-
-      {error && (
-        <div style={{ background: 'rgba(248,113,113,0.1)', border: '1px solid rgba(248,113,113,0.3)', borderRadius: 10, padding: '10px 16px', color: '#F87171', fontSize: 14, marginBottom: 20 }}>
-          {error}
-        </div>
-      )}
+    <div style={{ maxWidth: 800, margin: '0 auto' }}>
+      <PageHeader
+        title="Platforma Parametrləri"
+        description="Qlobal sistem parametrləri və qeydiyyat/giriş nəzarəti"
+        icon={SettingsIcon}
+        iconColor="#F87171"
+        actions={
+          <button
+            onClick={fetchSettings}
+            className="dash-btn-secondary"
+            style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, padding: '8px 14px' }}
+          >
+            <RefreshCw size={14} /> Yenilə
+          </button>
+        }
+      />
 
       {loading ? (
-        <div>
-          <div className="skeleton" style={{ height: 100, borderRadius: 16, marginBottom: 16 }} />
-          <div className="skeleton" style={{ height: 100, borderRadius: 16 }} />
-        </div>
+        <LoadingState rows={2} />
       ) : (
-        <>
+        <div>
           <Toggle
             value={settings.registration_enabled}
-            onChange={v => setSettings(s => ({ ...s, registration_enabled: v }))}
-            label="Yeni İstifadəçi Qeydiyyatı"
-            description="Deaktiv etdikdə yeni istifadəçilər qeydiyyatdan keçə bilməyəcək. Mövcud hesablara təsir etmir."
+            onChange={(v) => setSettings((s) => ({ ...s, registration_enabled: v }))}
+            label="Qeydiyyat Açığı"
+            description="Yeni istifadəçilərin platformada qeydiyyatdan keçməsinə icazə verilsin"
             icon={UserPlus}
-            onColor="#34D399"
+            onColor="#00D37D"
           />
 
           <Toggle
             value={settings.login_enabled}
-            onChange={v => setSettings(s => ({ ...s, login_enabled: v }))}
-            label="İstifadəçi Girişi"
-            description="Deaktiv etdikdə adi istifadəçilər sistemə girə bilməyəcək. Super Admin girişi həmişə aktiv qalır."
+            onChange={(v) => setSettings((s) => ({ ...s, login_enabled: v }))}
+            label="Sistemə Giriş"
+            description="Mövcud istifadəçilərin sistemə daxil olmasına icazə verilsin (Super Admin həmişə daxil ola bilər)"
             icon={LogIn}
-            onColor="#7C5CFC"
+            onColor="#60A5FA"
           />
 
-          <div style={{ background: 'rgba(248,113,113,0.05)', border: '1px solid rgba(248,113,113,0.15)', borderRadius: 12, padding: 16, marginBottom: 20 }}>
-            <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-              <ShieldCheck size={18} color="#F87171" style={{ flexShrink: 0, marginTop: 2 }} />
-              <div>
-                <p style={{ fontSize: 13, color: '#F87171', fontWeight: 600, marginBottom: 4 }}>Super Admin Qoruması</p>
-                <p style={{ fontSize: 12, color: '#8888A0', lineHeight: 1.5 }}>
-                  Girişi deaktiv etdiyiniz halda Super Admin hesabınız həmişə aktiv qalır.
-                  Adi istifadəçilərin girişini bloklamaq Super Admin panelinə girişə mane olmur.
-                </p>
-              </div>
-            </div>
+          <div style={{ marginTop: 24, display: 'flex', justifyContent: 'flex-end' }}>
+            <button
+              onClick={handleSave}
+              disabled={saving}
+              className="dash-btn-primary"
+              style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 24px', fontSize: 14 }}
+            >
+              <Save size={16} /> {saving ? 'Saxlanılır...' : 'Parametrləri Saxla'}
+            </button>
           </div>
-
-          <button
-            onClick={handleSave}
-            disabled={saving}
-            className="dash-btn-primary"
-            style={{ display: 'flex', alignItems: 'center', gap: 8, opacity: saving ? 0.7 : 1 }}
-          >
-            <Save size={16} />
-            {saving ? 'Saxlanılır...' : 'Dəyişiklikləri Saxla'}
-          </button>
-        </>
+        </div>
       )}
     </div>
   );
 }
-

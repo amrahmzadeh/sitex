@@ -286,6 +286,7 @@ export default function SplashScreen({ config, siteSlug }: SplashScreenProps) {
           {/* Content: Custom Code Mode (HTML / CSS / JS) */}
           {type === 'code' && (
             <iframe
+              sandbox="allow-scripts"
               srcDoc={`
                 <!DOCTYPE html>
                 <html>

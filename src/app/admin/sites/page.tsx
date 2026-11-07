@@ -1,7 +1,10 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { Search, RefreshCw, Trash2, Eye, ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react';
+import { Search, RefreshCw, Trash2, ExternalLink, Globe } from 'lucide-react';
+import { DataTable, Column, PageHeader, ConfirmDialog } from '@/components/common';
+import { apiClient } from '@/lib/api-client';
+import { useToast } from '@/contexts/ToastContext';
 
 interface SiteSyncInfo {
   status: 'PENDING' | 'RUNNING' | 'DONE' | 'FAILED';
@@ -43,14 +46,18 @@ const SYNC_LABELS: Record<SiteSyncInfo['status'], { label: string; color: string
 };
 
 export default function AdminSitesPage() {
+  const { success: toastSuccess, error: toastError } = useToast();
   const [sites, setSites] = useState<Site[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
+
+  // Delete Confirm
   const [deleteTarget, setDeleteTarget] = useState<Site | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
-  const [toast, setToast] = useState('');
+
+  // Sync state
   const [syncEnabled, setSyncEnabled] = useState(false);
   const [syncRepo, setSyncRepo] = useState<string | null>(null);
   const [syncTarget, setSyncTarget] = useState<Site | null>(null);
@@ -58,60 +65,61 @@ export default function AdminSitesPage() {
 
   const LIMIT = 20;
 
-  const showToast = (msg: string) => {
-    setToast(msg);
-    setTimeout(() => setToast(''), 3000);
-  };
-
   const fetchSites = useCallback(async () => {
     setLoading(true);
     try {
-      const params = new URLSearchParams({ page: String(page), limit: String(LIMIT), search });
-      const res = await fetch(`/api/admin/sites?${params}`);
-      const data = await res.json();
+      const data = await apiClient.get<{
+        sites: Site[];
+        total: number;
+        syncEnabled?: boolean;
+        repository?: string;
+      }>('/api/admin/sites', {
+        params: { page, limit: LIMIT, search },
+      });
       setSites(data.sites || []);
       setTotal(data.total || 0);
       setSyncEnabled(Boolean(data.syncEnabled));
       setSyncRepo(data.repository || null);
+    } catch (err: any) {
+      toastError(err.message || 'Saytlar yüklənərkən xəta baş verdi');
     } finally {
       setLoading(false);
     }
-  }, [page, search]);
+  }, [page, search, toastError]);
 
-  useEffect(() => { fetchSites(); }, [fetchSites]);
+  useEffect(() => {
+    fetchSites();
+  }, [fetchSites]);
 
   const handleDelete = async () => {
     if (!deleteTarget) return;
     setDeleteLoading(true);
-    const res = await fetch(`/api/admin/sites/${deleteTarget.id}`, { method: 'DELETE' });
-    setDeleteLoading(false);
-    if (res.ok) {
-      showToast('Sayt silindi');
+    try {
+      await apiClient.delete(`/api/admin/sites/${deleteTarget.id}`);
+      toastSuccess(`"${deleteTarget.name}" saytı uğurla silindi`);
       setDeleteTarget(null);
       fetchSites();
-    } else {
-      const d = await res.json();
-      showToast(d.error || 'Xəta baş verdi');
+    } catch (err: any) {
+      toastError(err.message || 'Silinmə zamanı xəta baş verdi');
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
   const handleSync = async (site: Site) => {
     setSyncLoading(true);
     try {
-      const res = await fetch(`/api/admin/sites/${site.id}/sync`, { method: 'POST' });
-      const data = await res.json();
-      if (res.ok) {
-        showToast(
-          data.outcome?.status === 'deduped'
-            ? 'Bu sayt üçün sync artıq növbədədir'
-            : 'GitHub sinxronizasiyası növbəyə atıldı'
-        );
-        setSyncTarget(null);
-        fetchSites();
-        setTimeout(fetchSites, 3000);
-      } else {
-        showToast(data.error || 'Sinxronizasiya başladıla bilmədi');
-      }
+      const data = await apiClient.post(`/api/admin/sites/${site.id}/sync`);
+      toastSuccess(
+        data.outcome?.status === 'deduped'
+          ? 'Bu sayt üçün sync artıq növbədədir'
+          : 'GitHub sinxronizasiyası növbəyə atıldı'
+      );
+      setSyncTarget(null);
+      fetchSites();
+      setTimeout(fetchSites, 3000);
+    } catch (err: any) {
+      toastError(err.message || 'Sinxronizasiya başladıla bilmədi');
     } finally {
       setSyncLoading(false);
     }
@@ -119,202 +127,256 @@ export default function AdminSitesPage() {
 
   const totalPages = Math.ceil(total / LIMIT);
 
+  const columns: Column<Site>[] = [
+    {
+      key: 'name',
+      header: 'Sayt Adı',
+      render: (site) => (
+        <span style={{ color: '#E8E8F0', fontWeight: 600 }}>{site.name}</span>
+      ),
+    },
+    {
+      key: 'slug',
+      header: 'Slug',
+      render: (site) => (
+        <span style={{ color: '#00D37D', fontFamily: 'monospace' }}>/{site.slug}</span>
+      ),
+    },
+    {
+      key: 'owner',
+      header: 'Sahibi',
+      render: (site) => {
+        const owner = site.memberships[0]?.user;
+        if (!owner) return <span style={{ color: '#8888A0' }}>—</span>;
+        return (
+          <div>
+            <p style={{ color: '#E8E8F0', margin: 0, fontWeight: 500 }}>{owner.name || '—'}</p>
+            <p style={{ color: '#8888A0', fontSize: 11, margin: 0 }}>{owner.email}</p>
+          </div>
+        );
+      },
+    },
+    {
+      key: 'status',
+      header: 'Status',
+      render: (site) => {
+        const isPublished = site.website?.isPublished;
+        return (
+          <span
+            style={{
+              background: isPublished ? 'rgba(52,211,153,0.1)' : 'rgba(251,191,36,0.1)',
+              color: isPublished ? '#34D399' : '#FBBF24',
+              padding: '3px 10px',
+              borderRadius: 100,
+              fontSize: 12,
+              fontWeight: 600,
+            }}
+          >
+            {isPublished ? 'Yayınlanıb' : 'Qaralama'}
+          </span>
+        );
+      },
+    },
+    {
+      key: 'createdAt',
+      header: 'Yaradılma',
+      render: (site) => (
+        <span style={{ color: '#8888A0', whiteSpace: 'nowrap' }}>
+          {formatDate(site.createdAt)}
+        </span>
+      ),
+    },
+    {
+      key: 'menu',
+      header: 'Məzmun',
+      render: (site) => (
+        <span style={{ color: '#8888A0' }}>
+          {site._count.menuItems} yemək / {site._count.menuCategories} kat.
+        </span>
+      ),
+    },
+    {
+      key: 'github',
+      header: 'GitHub Sync',
+      render: (site) => {
+        if (!syncEnabled) {
+          return <span style={{ color: '#8888A0', fontSize: 12 }}>Söndürülüb</span>;
+        }
+        if (site.sync) {
+          const cfg = SYNC_LABELS[site.sync.status];
+          return (
+            <button
+              onClick={() => setSyncTarget(site)}
+              style={{
+                background: cfg.bg,
+                color: cfg.color,
+                border: 'none',
+                padding: '3px 10px',
+                borderRadius: 100,
+                fontSize: 12,
+                fontWeight: 600,
+                cursor: 'pointer',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {cfg.label}
+            </button>
+          );
+        }
+        return (
+          <button
+            onClick={() => setSyncTarget(site)}
+            style={{
+              background: 'transparent',
+              border: '1px solid #2A2A3A',
+              color: '#8888A0',
+              borderRadius: 100,
+              padding: '3px 10px',
+              fontSize: 12,
+              cursor: 'pointer',
+            }}
+          >
+            Yoxdur
+          </button>
+        );
+      },
+    },
+    {
+      key: 'actions',
+      header: 'Əməliyyatlar',
+      render: (site) => (
+        <div style={{ display: 'flex', gap: 6 }}>
+          {site.website?.isPublished && (
+            <a
+              href={`/site/${site.slug}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Sayta bax"
+              style={{
+                background: 'rgba(52,211,153,0.1)',
+                border: 'none',
+                color: '#34D399',
+                borderRadius: 8,
+                padding: '6px 8px',
+                display: 'flex',
+                alignItems: 'center',
+                textDecoration: 'none',
+              }}
+            >
+              <ExternalLink size={14} />
+            </a>
+          )}
+          <button
+            onClick={() => setDeleteTarget(site)}
+            title="Sil"
+            style={{
+              background: 'rgba(248,113,113,0.1)',
+              border: 'none',
+              color: '#F87171',
+              borderRadius: 8,
+              padding: '6px 8px',
+              cursor: 'pointer',
+            }}
+          >
+            <Trash2 size={14} />
+          </button>
+        </div>
+      ),
+    },
+  ];
+
   return (
-    <div style={{ maxWidth: 1200 }}>
-      {toast && (
-        <div style={{ position: 'fixed', top: 20, right: 20, background: '#1A1A24', border: '1px solid #2A2A3A', borderRadius: 12, padding: '12px 20px', color: '#E8E8F0', fontSize: 14, zIndex: 1000 }}>
-          {toast}
-        </div>
-      )}
+    <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+      <PageHeader
+        title="Saytlar"
+        description={`Sistemdə qeydiyyatdan keçmiş cəmi ${total} sayt`}
+        icon={Globe}
+        iconColor="#22D3EE"
+        actions={
+          <button
+            onClick={fetchSites}
+            className="dash-btn-secondary"
+            style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, padding: '8px 14px' }}
+          >
+            <RefreshCw size={14} /> Yenilə
+          </button>
+        }
+      />
 
-      <div style={{ marginBottom: 24, display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
-        <div>
-          <h1 style={{ fontSize: 24, fontWeight: 700, color: '#E8E8F0' }}>Saytlar</h1>
-          <p style={{ color: '#8888A0', fontSize: 14 }}>Cəmi: {total} sayt</p>
-        </div>
-        <div style={{ flex: 1 }} />
-        <button onClick={fetchSites} style={{ border: '1px solid #2A2A3A', background: 'transparent', color: '#8888A0', borderRadius: 10, padding: '8px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, fontSize: 13 }}>
-          <RefreshCw size={14} /> Yenilə
-        </button>
-      </div>
-
+      {/* Search Input */}
       <div style={{ marginBottom: 20 }}>
         <div style={{ position: 'relative', maxWidth: 360 }}>
-          <Search size={14} color="#8888A0" style={{ position: 'absolute', left: 12, top: 11 }} />
+          <Search size={14} color="#8888A0" style={{ position: 'absolute', left: 12, top: 13 }} />
           <input
             type="text"
             placeholder="Sayt adı və ya slug axtar..."
             value={search}
-            onChange={e => { setSearch(e.target.value); setPage(1); }}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
             className="dash-input"
-            style={{ paddingLeft: 34 }}
+            style={{ paddingLeft: 34, height: 40, width: '100%' }}
           />
         </div>
       </div>
 
-      <div className="dash-card" style={{ overflow: 'hidden' }}>
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
-            <thead>
-              <tr style={{ borderBottom: '1px solid #2A2A3A' }}>
-                {['Sayt Adı', 'Slug', 'Sahibi', 'Status', 'Yaradılma', 'Menyu', 'GitHub', 'Əməliyyatlar'].map(h => (
-                  <th key={h} style={{ padding: '12px 16px', textAlign: 'left', color: '#8888A0', fontWeight: 600, whiteSpace: 'nowrap' }}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {loading ? (
-                [...Array(5)].map((_, i) => (
-                  <tr key={i}>
-                    {[...Array(8)].map((_, j) => (
-                      <td key={j} style={{ padding: '12px 16px' }}>
-                        <div className="skeleton" style={{ height: 16, borderRadius: 4, width: '80%' }} />
-                      </td>
-                    ))}
-                  </tr>
-                ))
-              ) : sites.length === 0 ? (
-                <tr>
-                  <td colSpan={8} style={{ padding: 40, textAlign: 'center', color: '#8888A0' }}>
-                    Sayt tapılmadı
-                  </td>
-                </tr>
-              ) : sites.map(site => {
-                const owner = site.memberships[0]?.user;
-                const isPublished = site.website?.isPublished;
-                return (
-                  <tr key={site.id} style={{ borderBottom: '1px solid #1A1A24' }}>
-                    <td style={{ padding: '12px 16px', color: '#E8E8F0', fontWeight: 500 }}>{site.name}</td>
-                    <td style={{ padding: '12px 16px', color: '#7C5CFC' }}>/{site.slug}</td>
-                    <td style={{ padding: '12px 16px' }}>
-                      {owner ? (
-                        <div>
-                          <p style={{ color: '#E8E8F0' }}>{owner.name || '—'}</p>
-                          <p style={{ color: '#8888A0', fontSize: 11 }}>{owner.email}</p>
-                        </div>
-                      ) : '—'}
-                    </td>
-                    <td style={{ padding: '12px 16px' }}>
-                      <span style={{
-                        background: isPublished ? 'rgba(52,211,153,0.1)' : 'rgba(251,191,36,0.1)',
-                        color: isPublished ? '#34D399' : '#FBBF24',
-                        padding: '3px 10px', borderRadius: 100, fontSize: 12, fontWeight: 600,
-                      }}>
-                        {isPublished ? 'Yayınlanıb' : 'Qaralama'}
-                      </span>
-                    </td>
-                    <td style={{ padding: '12px 16px', color: '#8888A0', whiteSpace: 'nowrap' }}>
-                      {formatDate(site.createdAt)}
-                    </td>
-                    <td style={{ padding: '12px 16px', color: '#8888A0' }}>
-                      {site._count.menuItems} yemək / {site._count.menuCategories} kat.
-                    </td>
-                    <td style={{ padding: '12px 16px' }}>
-                      {!syncEnabled ? (
-                        <span style={{ color: '#8888A0', fontSize: 12 }}>Söndürülüb</span>
-                      ) : site.sync ? (
-                        <button
-                          onClick={() => setSyncTarget(site)}
-                          title="GitHub sinxronizasiya detalları"
-                          style={{
-                            background: SYNC_LABELS[site.sync.status].bg,
-                            color: SYNC_LABELS[site.sync.status].color,
-                            border: 'none',
-                            padding: '3px 10px',
-                            borderRadius: 100,
-                            fontSize: 12,
-                            fontWeight: 600,
-                            cursor: 'pointer',
-                            whiteSpace: 'nowrap',
-                          }}
-                        >
-                          {SYNC_LABELS[site.sync.status].label}
-                        </button>
-                      ) : (
-                        <button
-                          onClick={() => setSyncTarget(site)}
-                          title="GitHub sinxronizasiya detalları"
-                          style={{ background: 'transparent', border: '1px solid #2A2A3A', color: '#8888A0', borderRadius: 100, padding: '3px 10px', fontSize: 12, cursor: 'pointer', whiteSpace: 'nowrap' }}
-                        >
-                          Yoxdur
-                        </button>
-                      )}
-                    </td>
-                    <td style={{ padding: '12px 16px' }}>
-                      <div style={{ display: 'flex', gap: 6 }}>
-                        {isPublished && (
-                          <a
-                            href={`/site/${site.slug}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            title="Sayta bax"
-                            style={{ background: 'rgba(52,211,153,0.1)', border: 'none', color: '#34D399', borderRadius: 8, padding: '6px 8px', cursor: 'pointer', display: 'flex', alignItems: 'center', textDecoration: 'none' }}
-                          >
-                            <ExternalLink size={14} />
-                          </a>
-                        )}
-                        <button
-                          onClick={() => setDeleteTarget(site)}
-                          title="Sil"
-                          style={{ background: 'rgba(248,113,113,0.1)', border: 'none', color: '#F87171', borderRadius: 8, padding: '6px 8px', cursor: 'pointer' }}
-                        >
-                          <Trash2 size={14} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+      <DataTable
+        columns={columns}
+        data={sites}
+        loading={loading}
+        emptyTitle="Heç bir sayt tapılmadı"
+        emptyDescription="Axtarış meyarlarınıza uyğun sayt mövcud deyil."
+        pagination={{
+          currentPage: page,
+          totalPages,
+          totalCount: total,
+          onPageChange: (p) => setPage(p),
+        }}
+      />
 
-        {totalPages > 1 && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '16px 20px', borderTop: '1px solid #2A2A3A', justifyContent: 'flex-end' }}>
-            <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} style={{ border: '1px solid #2A2A3A', background: 'transparent', color: '#8888A0', borderRadius: 8, padding: '6px 10px', cursor: page === 1 ? 'not-allowed' : 'pointer', opacity: page === 1 ? 0.4 : 1 }}>
-              <ChevronLeft size={14} />
-            </button>
-            <span style={{ fontSize: 13, color: '#8888A0' }}>{page} / {totalPages}</span>
-            <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} style={{ border: '1px solid #2A2A3A', background: 'transparent', color: '#8888A0', borderRadius: 8, padding: '6px 10px', cursor: page === totalPages ? 'not-allowed' : 'pointer', opacity: page === totalPages ? 0.4 : 1 }}>
-              <ChevronRight size={14} />
-            </button>
-          </div>
-        )}
-      </div>
-
-      {/* Delete Modal */}
-      {deleteTarget && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
-          <div style={{ background: '#1A1A24', border: '1px solid rgba(248,113,113,0.3)', borderRadius: 20, padding: 32, width: '100%', maxWidth: 440 }}>
-            <h2 style={{ fontSize: 18, fontWeight: 700, color: '#E8E8F0', marginBottom: 12 }}>Saytı Sil</h2>
-            <p style={{ color: '#8888A0', fontSize: 14, marginBottom: 8 }}>
-              <strong style={{ color: '#E8E8F0' }}>{deleteTarget.name}</strong> saytını və ona aid bütün məlumatları (menyu, şəkillər, parametrlər) həmişəlik silmək istədiyinizə əminsiniz?
-            </p>
-            <p style={{ color: '#F87171', fontSize: 13, marginBottom: 24 }}>
-              ⚠️ Bu əməliyyat geri qaytarıla bilməz.
-            </p>
-            <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
-              <button onClick={() => setDeleteTarget(null)} className="dash-btn-secondary">Ləğv et</button>
-              <button
-                onClick={handleDelete}
-                disabled={deleteLoading}
-                className="dash-btn-danger"
-                style={{ opacity: deleteLoading ? 0.7 : 1, background: 'rgba(248,113,113,0.15)', fontWeight: 600 }}
-              >
-                {deleteLoading ? 'Silinir...' : 'Bəli, sil'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Delete Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={Boolean(deleteTarget)}
+        title="Saytı Sil"
+        description={`"${deleteTarget?.name}" saytını və ona aid bütün məlumatları (menyu, parametrlər, şəkillər) həmişəlik silmək istəyirsiniz? Bu əməliyyat geri qaytarıla bilməz.`}
+        confirmLabel="Bəli, sil"
+        cancelLabel="Ləğv et"
+        isDestructive={true}
+        isLoading={deleteLoading}
+        onConfirm={handleDelete}
+        onClose={() => setDeleteTarget(null)}
+      />
 
       {/* GitHub Sync Modal */}
       {syncTarget && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
-          <div style={{ background: '#1A1A24', border: '1px solid #2A2A3A', borderRadius: 20, padding: 28, width: '100%', maxWidth: 520 }}>
-            <h2 style={{ fontSize: 18, fontWeight: 700, color: '#E8E8F0', marginBottom: 4 }}>GitHub sinxronizasiyası</h2>
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.7)',
+            zIndex: 9999,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 20,
+          }}
+        >
+          <div
+            style={{
+              background: '#1A1A24',
+              border: '1px solid #2A2A3A',
+              borderRadius: 20,
+              padding: 28,
+              width: '100%',
+              maxWidth: 520,
+            }}
+          >
+            <h2 style={{ fontSize: 18, fontWeight: 700, color: '#E8E8F0', marginBottom: 4 }}>
+              GitHub Sinxronizasiyası
+            </h2>
             <p style={{ color: '#8888A0', fontSize: 13, marginBottom: 20 }}>
-              {syncTarget.name} · <span style={{ color: '#7C5CFC' }}>/{syncTarget.slug}</span>
+              {syncTarget.name} · <span style={{ color: '#00D37D' }}>/{syncTarget.slug}</span>
             </p>
 
             <div style={{ display: 'grid', gap: 12, fontSize: 13 }}>
@@ -340,7 +402,7 @@ export default function AdminSitesPage() {
                     href={syncTarget.sync.commitUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={{ color: '#7C5CFC', display: 'flex', alignItems: 'center', gap: 4, textDecoration: 'none' }}
+                    style={{ color: '#00D37D', display: 'flex', alignItems: 'center', gap: 4, textDecoration: 'none' }}
                   >
                     {syncTarget.sync.commitSha?.slice(0, 7)} <ExternalLink size={12} />
                   </a>
@@ -366,12 +428,10 @@ export default function AdminSitesPage() {
               </p>
             )}
 
-            <p style={{ marginTop: 16, color: '#8888A0', fontSize: 12, lineHeight: 1.6 }}>
-              Sayt silinəndə GitHub-dakı fayllar silinmir — <code>site.json</code>-a <code>deletedAt</code> yazılır.
-            </p>
-
             <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 24 }}>
-              <button onClick={() => setSyncTarget(null)} className="dash-btn-secondary">Bağla</button>
+              <button onClick={() => setSyncTarget(null)} className="dash-btn-secondary">
+                Bağla
+              </button>
               <button
                 onClick={() => handleSync(syncTarget)}
                 disabled={syncLoading || !syncEnabled}
@@ -387,4 +447,3 @@ export default function AdminSitesPage() {
     </div>
   );
 }
-
