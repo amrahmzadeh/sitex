@@ -1,36 +1,30 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/db';
+import { verifyTenantAccess, tenantError } from '@/lib/tenant-auth';
 import { writeFile, mkdir } from 'fs/promises';
 import path from 'path';
+import crypto from 'crypto';
 
-async function verifyAccess(orgId: string) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user) return null;
-  const userId = (session.user as { id: string }).id;
-  return prisma.membership.findUnique({
-    where: { userId_organizationId: { userId, organizationId: orgId } },
-  });
-}
+/**
+ * Beyaz listedeki MIME türleri ve karşılık gelen uzantılar.
+ * file-type paketi magic-byte'tan MIME döndürür; bu haritayla uzantıya çeviririz.
+ */
+const ALLOWED_RASTER: Record<string, string> = {
+  'image/jpeg': '.jpg',
+  'image/png': '.png',
+  'image/webp': '.webp',
+  'image/gif': '.gif',
+  'image/avif': '.avif',
+};
 
-const ALLOWED_IMAGE_TYPES = [
-  'image/jpeg',
-  'image/png',
-  'image/webp',
-  'image/gif',
-  'image/svg+xml',
-];
+const ALLOWED_VIDEO: Record<string, string> = {
+  'video/mp4': '.mp4',
+  'video/webm': '.webm',
+  'video/quicktime': '.mov',
+};
 
-const ALLOWED_VIDEO_TYPES = [
-  'video/mp4',
-  'video/webm',
-  'video/quicktime',
-  'video/ogg',
-  'video/x-m4v',
-];
+const ALL_ALLOWED = { ...ALLOWED_RASTER, ...ALLOWED_VIDEO };
 
-const ALLOWED_TYPES = [...ALLOWED_IMAGE_TYPES, ...ALLOWED_VIDEO_TYPES];
 const MAX_IMAGE_SIZE = 15 * 1024 * 1024; // 15MB
 const MAX_VIDEO_SIZE = 100 * 1024 * 1024; // 100MB
 
@@ -46,10 +40,8 @@ export async function POST(
 ) {
   try {
     const { orgId } = await params;
-    const membership = await verifyAccess(orgId);
-    if (!membership) {
-      return NextResponse.json({ error: 'İcazəsiz giriş' }, { status: 401 });
-    }
+    const access = await verifyTenantAccess(orgId);
+    if (!access.ok) return tenantError(access);
 
     const formData = await req.formData();
     const file = formData.get('file') as File;
@@ -58,30 +50,50 @@ export async function POST(
       return NextResponse.json({ error: 'Fayl tələb olunur' }, { status: 400 });
     }
 
-    const isVideo = ALLOWED_VIDEO_TYPES.includes(file.type) || file.type.startsWith('video/');
-    const isImage = ALLOWED_IMAGE_TYPES.includes(file.type) || file.type.startsWith('image/');
+    // --- Sunucu tarafı boyut kontrolü ---
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
 
-    if (!isImage && !isVideo) {
+    // --- Magic-byte ile gerçek MIME tipi algılama ---
+    // file-type ESM-only olduğundan dynamic import kullanıyoruz
+    const { fileTypeFromBuffer } = await import('file-type');
+    const detected = await fileTypeFromBuffer(buffer);
+
+    if (!detected) {
+      // SVG ve diğer text tabanlı formatlar magic-byte ile algılanamaz.
+      // SVG'yi GÜVENLİK NEDENİYLE REDDEDİYORUZ — XSS vektörü.
       return NextResponse.json(
-        { error: 'Yalnız şəkil (JPEG, PNG, WebP) və video (MP4, WebM, MOV) faylları qəbul edilir' },
+        {
+          error: 'Fayl növü müəyyən edilə bilmədi. Yalnız JPEG, PNG, WebP, GIF, AVIF və video (MP4, WebM, MOV) qəbul edilir. SVG qəbul edilmir.',
+        },
         { status: 400 }
       );
     }
 
+    const detectedMime = detected.mime;
+    const allowedExt = ALL_ALLOWED[detectedMime];
+
+    if (!allowedExt) {
+      return NextResponse.json(
+        {
+          error: `Bu fayl növü qəbul edilmir: ${detectedMime}. Yalnız JPEG, PNG, WebP, GIF, AVIF və video (MP4, WebM, MOV) icazə verilir.`,
+        },
+        { status: 400 }
+      );
+    }
+
+    // --- Boyut limiti (gerçek MIME'ye göre) ---
+    const isVideo = detectedMime.startsWith('video/');
     const maxSize = isVideo ? MAX_VIDEO_SIZE : MAX_IMAGE_SIZE;
-    if (file.size > maxSize) {
+    if (buffer.length > maxSize) {
       return NextResponse.json(
         { error: `Fayl ölçüsü ${isVideo ? '100MB' : '15MB'}-dan böyük ola bilməz` },
         { status: 400 }
       );
     }
 
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-
-    // Generate unique filename
-    const ext = path.extname(file.name) || (isVideo ? '.mp4' : '.jpg');
-    const filename = `${Date.now()}-${Math.random().toString(36).substring(7)}${ext}`;
+    // --- Güvenli dosya adı: istemciden ALINMAZ ---
+    const filename = `${crypto.randomUUID()}${allowedExt}`;
 
     const cwd = process.cwd();
     const siteRoot = getSiteRoot(cwd);
@@ -113,10 +125,10 @@ export async function POST(
       mediaAsset = await prisma.mediaAsset.create({
         data: {
           organizationId: orgId,
-          filename: file.name,
+          filename,
           url,
-          mimeType: file.type || (isVideo ? 'video/mp4' : 'image/jpeg'),
-          size: file.size,
+          mimeType: detectedMime,
+          size: buffer.length,
           data: base64Data,
         },
       });
