@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
   Phone,
   Mail,
@@ -14,6 +14,7 @@ import {
   Star,
   Check,
   CheckCircle,
+  ChevronLeft,
   ChevronRight,
   Sparkles,
   ShoppingBag,
@@ -220,6 +221,42 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
   }, [menuCategories]);
 
   const [selectedCatId, setSelectedCatId] = useState<string>(categoriesList[0]?.id || 'pizzalar');
+
+  // Category horizontal scroll state & drag support for desktop
+  const categoryScrollRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+  const [isDraggingCategory, setIsDraggingCategory] = useState(false);
+  const [dragStartX, setDragStartX] = useState(0);
+  const [dragStartScrollLeft, setDragStartScrollLeft] = useState(0);
+  const [hasDraggedCategory, setHasDraggedCategory] = useState(false);
+
+  const checkCategoryScroll = () => {
+    const el = categoryScrollRef.current;
+    if (!el) return;
+    const { scrollLeft, scrollWidth, clientWidth } = el;
+    setCanScrollLeft(scrollLeft > 6);
+    setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 6);
+  };
+
+  useEffect(() => {
+    checkCategoryScroll();
+    const el = categoryScrollRef.current;
+    if (!el) return;
+    el.addEventListener('scroll', checkCategoryScroll, { passive: true });
+    window.addEventListener('resize', checkCategoryScroll);
+    return () => {
+      el.removeEventListener('scroll', checkCategoryScroll);
+      window.removeEventListener('resize', checkCategoryScroll);
+    };
+  }, [categoriesList]);
+
+  const scrollCategories = (direction: 'left' | 'right') => {
+    const el = categoryScrollRef.current;
+    if (!el) return;
+    const amount = direction === 'left' ? -260 : 260;
+    el.scrollBy({ left: amount, behavior: 'smooth' });
+  };
 
   // Active items to display
   const activeMenuItems = useMemo(() => {
@@ -2479,10 +2516,58 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                 </p>
               </div>
 
-              {/* Category Filter Pills (Scrollable horizontally on mobile, centered on desktop) */}
-              <div className="w-full max-w-5xl mx-auto mb-8 sm:mb-10 px-2 sm:px-0">
+              {/* Category Filter Pills (Scrollable horizontally, with fade masks & desktop controls) */}
+              <div className="relative w-full max-w-5xl mx-auto mb-8 sm:mb-10 px-1 sm:px-2">
+                {/* Left Fade Mask + Nav Arrow */}
                 <div
-                  className="flex items-center gap-2 sm:gap-3 overflow-x-auto no-scrollbar py-1 px-2 sm:px-0 justify-start sm:justify-center"
+                  className={`absolute left-0 top-0 bottom-0 w-12 sm:w-16 z-10 pointer-events-none flex items-center justify-start pl-1 sm:pl-2 transition-opacity duration-300 ${
+                    canScrollLeft ? 'opacity-100' : 'opacity-0'
+                  }`}
+                  style={{
+                    background: 'linear-gradient(to right, #fcf9f8 45%, rgba(252, 249, 248, 0))',
+                  }}
+                >
+                  {canScrollLeft && (
+                    <button
+                      type="button"
+                      onClick={() => scrollCategories('left')}
+                      className="pointer-events-auto w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white shadow-md border border-[#f0eded] flex items-center justify-center text-[#1c1b1b] hover:bg-[#f5f2f1] active:scale-95 transition-all"
+                      aria-label="Əvvəlki kateqoriyalar"
+                    >
+                      <ChevronLeft size={18} />
+                    </button>
+                  )}
+                </div>
+
+                {/* Pills scroll container */}
+                <div
+                  ref={categoryScrollRef}
+                  onWheel={(e) => {
+                    if (e.deltaY !== 0 && categoryScrollRef.current) {
+                      categoryScrollRef.current.scrollLeft += e.deltaY;
+                    }
+                  }}
+                  onMouseDown={(e) => {
+                    const el = categoryScrollRef.current;
+                    if (!el) return;
+                    setIsDraggingCategory(true);
+                    setHasDraggedCategory(false);
+                    setDragStartX(e.pageX - el.offsetLeft);
+                    setDragStartScrollLeft(el.scrollLeft);
+                  }}
+                  onMouseMove={(e) => {
+                    if (!isDraggingCategory) return;
+                    const el = categoryScrollRef.current;
+                    if (!el) return;
+                    e.preventDefault();
+                    const x = e.pageX - el.offsetLeft;
+                    const walk = (x - dragStartX) * 1.5;
+                    if (Math.abs(walk) > 4) setHasDraggedCategory(true);
+                    el.scrollLeft = dragStartScrollLeft - walk;
+                  }}
+                  onMouseUp={() => setIsDraggingCategory(false)}
+                  onMouseLeave={() => setIsDraggingCategory(false)}
+                  className="flex items-center gap-2 sm:gap-3 overflow-x-auto no-scrollbar py-1 px-4 sm:px-8 select-none scroll-smooth cursor-grab active:cursor-grabbing"
                   style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -2492,6 +2577,7 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                     scrollbarWidth: 'none',
                     gap: '0.625rem',
                     paddingBottom: '0.5rem',
+                    justifyContent: 'flex-start',
                   }}
                 >
                   {categoriesList.map((cat) => {
@@ -2500,7 +2586,11 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                       <button
                         key={cat.id}
                         type="button"
-                        onClick={() => setSelectedCatId(cat.id)}
+                        onClick={(e) => {
+                          if (hasDraggedCategory) return;
+                          setSelectedCatId(cat.id);
+                          e.currentTarget.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+                        }}
                         className={`shrink-0 px-6 py-2.5 rounded-full font-label-lg text-label-lg transition-all cursor-pointer whitespace-nowrap shadow-sm select-none ${
                           isSelected ? 'font-bold shadow-md' : 'hover:opacity-90 active:scale-95'
                         }`}
@@ -2514,6 +2604,27 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                       </button>
                     );
                   })}
+                </div>
+
+                {/* Right Fade Mask + Nav Arrow */}
+                <div
+                  className={`absolute right-0 top-0 bottom-0 w-12 sm:w-16 z-10 pointer-events-none flex items-center justify-end pr-1 sm:pr-2 transition-opacity duration-300 ${
+                    canScrollRight ? 'opacity-100' : 'opacity-0'
+                  }`}
+                  style={{
+                    background: 'linear-gradient(to left, #fcf9f8 45%, rgba(252, 249, 248, 0))',
+                  }}
+                >
+                  {canScrollRight && (
+                    <button
+                      type="button"
+                      onClick={() => scrollCategories('right')}
+                      className="pointer-events-auto w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white shadow-md border border-[#f0eded] flex items-center justify-center text-[#1c1b1b] hover:bg-[#f5f2f1] active:scale-95 transition-all"
+                      aria-label="Növbəti kateqoriyalar"
+                    >
+                      <ChevronRight size={18} />
+                    </button>
+                  )}
                 </div>
               </div>
 
