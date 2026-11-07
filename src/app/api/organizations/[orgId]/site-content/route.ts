@@ -1,5 +1,5 @@
 // GET  /api/organizations/[orgId]/site-content  → draft content map
-// PUT  /api/organizations/[orgId]/site-content  → update draft & published
+// PUT  /api/organizations/[orgId]/site-content  → update draft only (publishedContent untouched)
 // DELETE /api/organizations/[orgId]/site-content → revert block to default
 
 import { NextResponse } from 'next/server';
@@ -58,9 +58,11 @@ export async function PUT(
     return NextResponse.json({ error: 'Yanlış format' }, { status: 400 });
   }
 
-  // Upsert each block into draftContent AND publishedContent for immediate site updates
+  // SADECE draftContent güncellenir — publishedContent'e dokunulmaz.
+  // Yayınlama ayrı endpoint üzerinden yapılır: POST .../site-content/publish
   const ops = [];
   for (const [pageKey, blocks] of Object.entries(contentMap)) {
+    if (!blocks || typeof blocks !== 'object') continue;
     for (const [blockKey, doc] of Object.entries(blocks)) {
       ops.push(
         prisma.siteContent.upsert({
@@ -69,12 +71,12 @@ export async function PUT(
             organizationId: orgId,
             pageKey,
             blockKey,
-            draftContent: doc as object,
-            publishedContent: doc as object,
+            draftContent: (doc as object) ?? {},
+            publishedContent: {},
           },
           update: {
-            draftContent: doc as object,
-            publishedContent: doc as object,
+            draftContent: (doc as object) ?? {},
+            // publishedContent DEĞİŞTİRİLMEZ
           },
         })
       );
@@ -83,17 +85,10 @@ export async function PUT(
 
   await prisma.$transaction(ops);
 
-  // Clear cache for the live site
-  const org = await prisma.organization.findUnique({
-    where: { id: orgId },
-    select: { slug: true },
-  });
-  if (org?.slug) {
-    revalidatePath(`/site/${org.slug}`);
-    revalidatePath(`/`);
-  }
+  // Draft kayıtları canlı siteyi etkilemez — revalidate yapılmaz.
+  // Canlı site yalnızca POST .../site-content/publish sonrası güncellenir.
 
-  return NextResponse.json({ success: true });
+  return NextResponse.json({ success: true, mode: 'draft_saved' });
 }
 
 // ---- DELETE (bir bloku sil — default-a qaytar) ----
