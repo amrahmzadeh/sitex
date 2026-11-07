@@ -10,6 +10,14 @@ registerBlock({
   hasVisibilityToggle: true,
   fields: [
     {
+      key: 'badgeText',
+      type: 'text',
+      label: 'Başlıq üstü Rozetka / Etiket (Məs: 🍕 Odun sobasında hazırlanır)',
+      i18n: true,
+      placeholder: 'Odun sobasında hazırlanır',
+      default: { az: 'Odun sobasında hazırlanır', en: 'Prepared in wood-fired oven', ru: 'Приготовлено в дровяной печи' },
+    },
+    {
       key: 'title',
       type: 'text',
       label: 'Baş başlıq',

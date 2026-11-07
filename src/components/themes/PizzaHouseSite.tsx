@@ -2056,7 +2056,7 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                   }}
                 >
                   <span className="text-lg">🍕</span>
-                  <span>{theme.heroBadgeText || 'Odun sobasında hazırlanır'}</span>
+                  <span>{content.hero?.badgeText || theme.heroBadgeText || 'Odun sobasında hazırlanır'}</span>
                 </div>
 
                 {/* H1 Heading */}

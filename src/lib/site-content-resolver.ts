@@ -27,6 +27,9 @@ export function getResolvedSiteContent(siteContent: any, organization?: any, the
 
   // Hero
   const heroBlock = resolveBlock(siteContent, 'hero', 'hero.main');
+  const heroBadgeText = (heroBlock.fields.badgeText !== undefined)
+    ? (t(heroBlock.fields.badgeText, 'az') || (typeof heroBlock.fields.badgeText === 'string' ? heroBlock.fields.badgeText : ''))
+    : (orgTheme?.heroBadgeText || 'Odun sobasında hazırlanır');
   const heroTitle = t(heroBlock.fields.title, 'az');
   const heroSubtitle = t(heroBlock.fields.subtitle, 'az');
   const heroBgImage = (heroBlock.fields.backgroundImage as any)?.url || (typeof heroBlock.fields.backgroundImage === 'string' ? heroBlock.fields.backgroundImage : null);
@@ -185,6 +188,7 @@ export function getResolvedSiteContent(siteContent: any, organization?: any, the
     hero: {
       visible: heroBlock.visible,
       hasContent: heroBlock.hasContent,
+      badgeText: heroBadgeText,
       title: heroTitle,
       subtitle: heroSubtitle,
       backgroundImage: heroBgImage,
