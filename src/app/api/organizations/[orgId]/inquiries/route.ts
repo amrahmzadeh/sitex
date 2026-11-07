@@ -1,20 +1,7 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { ContactSubmissionStatus } from '@prisma/client';
-
-async function verifyAccess(orgId: string) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user) return null;
-  const user = session.user as { id: string; role?: string };
-  if (user.role === 'SUPER_ADMIN') {
-    return { role: 'OWNER', userId: user.id };
-  }
-  return prisma.membership.findUnique({
-    where: { userId_organizationId: { userId: user.id, organizationId: orgId } },
-  });
-}
+import { verifyTenantAccess, tenantError } from '@/lib/tenant-auth';
 
 export async function GET(
   req: Request,
@@ -22,10 +9,8 @@ export async function GET(
 ) {
   try {
     const { orgId } = await params;
-    const access = await verifyAccess(orgId);
-    if (!access) {
-      return NextResponse.json({ error: 'İcazəsiz giriş' }, { status: 401 });
-    }
+    const access = await verifyTenantAccess(orgId);
+    if (!access.ok) return tenantError(access);
 
     const { searchParams } = new URL(req.url);
     const statusParam = searchParams.get('status');
@@ -94,10 +79,8 @@ export async function POST(
 ) {
   try {
     const { orgId } = await params;
-    const access = await verifyAccess(orgId);
-    if (!access) {
-      return NextResponse.json({ error: 'İcazəsiz giriş' }, { status: 401 });
-    }
+    const access = await verifyTenantAccess(orgId);
+    if (!access.ok) return tenantError(access);
 
     const body = await req.json().catch(() => null);
     if (!body?.fullName || !body?.message) {

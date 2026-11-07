@@ -1,6 +1,4 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import {
   DEFAULT_WEEK_SCHEDULE,
@@ -10,15 +8,7 @@ import {
   WorkingHoursEntry,
 } from '@/lib/working-hours';
 import { scheduleSiteSync } from '@/lib/site-sync/schedule';
-
-async function verifyAccess(orgId: string) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user) return null;
-  const userId = (session.user as { id: string }).id;
-  return prisma.membership.findUnique({
-    where: { userId_organizationId: { userId, organizationId: orgId } },
-  });
-}
+import { verifyTenantAccess, tenantError } from '@/lib/tenant-auth';
 
 export async function GET(
   _req: Request,
@@ -26,10 +16,8 @@ export async function GET(
 ) {
   try {
     const { orgId } = await params;
-    const membership = await verifyAccess(orgId);
-    if (!membership) {
-      return NextResponse.json({ error: 'İcazəsiz giriş' }, { status: 401 });
-    }
+    const access = await verifyTenantAccess(orgId);
+    if (!access.ok) return tenantError(access);
 
     const [dbHours, dbSettings] = await Promise.all([
       prisma.workingHours.findMany({
@@ -84,10 +72,8 @@ export async function PUT(
 ) {
   try {
     const { orgId } = await params;
-    const membership = await verifyAccess(orgId);
-    if (!membership || membership.role === 'EDITOR') {
-      return NextResponse.json({ error: 'İcazəsiz giriş' }, { status: 401 });
-    }
+    const access = await verifyTenantAccess(orgId, 'ADMIN');
+    if (!access.ok) return tenantError(access);
 
     const body = await req.json().catch(() => null);
     if (!body || typeof body !== 'object') {

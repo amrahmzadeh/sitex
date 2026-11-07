@@ -22,6 +22,13 @@ export async function GET() {
     }
 
     const userId = (session.user as { id: string }).id;
+
+    // Banned/subscription check
+    const userCheck = await checkUserAccess(userId);
+    if (!userCheck.ok) {
+      return NextResponse.json({ error: userCheck.error }, { status: 403 });
+    }
+
     const memberships = await prisma.membership.findMany({
       where: { userId },
       include: {

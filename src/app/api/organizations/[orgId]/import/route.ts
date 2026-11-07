@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/db';
+import { verifyTenantAccess, tenantError } from '@/lib/tenant-auth';
 
 function slugify(text: string) {
   return text
@@ -19,18 +18,8 @@ export async function POST(
 ) {
   try {
     const { orgId } = await params;
-    const session = await getServerSession(authOptions);
-    if (!session?.user) {
-      return NextResponse.json({ error: 'İcazəsiz giriş' }, { status: 401 });
-    }
-
-    const userId = (session.user as { id: string }).id;
-    const membership = await prisma.membership.findUnique({
-      where: { userId_organizationId: { userId, organizationId: orgId } },
-    });
-    if (!membership || membership.role !== 'OWNER') {
-      return NextResponse.json({ error: 'Yalnız sayt sahibi import edə bilər' }, { status: 403 });
-    }
+    const access = await verifyTenantAccess(orgId, 'OWNER');
+    if (!access.ok) return tenantError(access);
 
     const body = await req.json();
     const {

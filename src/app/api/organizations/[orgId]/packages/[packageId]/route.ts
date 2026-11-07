@@ -1,16 +1,6 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/db';
-
-async function verifyAccess(orgId: string) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user) return null;
-  const userId = (session.user as { id: string }).id;
-  return prisma.membership.findUnique({
-    where: { userId_organizationId: { userId, organizationId: orgId } },
-  });
-}
+import { verifyTenantAccess, tenantError } from '@/lib/tenant-auth';
 
 export async function PATCH(
   req: Request,
@@ -18,10 +8,8 @@ export async function PATCH(
 ) {
   try {
     const { orgId, packageId } = await params;
-    const membership = await verifyAccess(orgId);
-    if (!membership) {
-      return NextResponse.json({ error: 'İcazəsiz giriş' }, { status: 401 });
-    }
+    const access = await verifyTenantAccess(orgId);
+    if (!access.ok) return tenantError(access);
 
     const body = await req.json();
     const updated = await prisma.package.update({
@@ -59,10 +47,8 @@ export async function DELETE(
 ) {
   try {
     const { orgId, packageId } = await params;
-    const membership = await verifyAccess(orgId);
-    if (!membership) {
-      return NextResponse.json({ error: 'İcazəsiz giriş' }, { status: 401 });
-    }
+    const access = await verifyTenantAccess(orgId);
+    if (!access.ok) return tenantError(access);
 
     await prisma.package.deleteMany({
       where: { id: packageId, organizationId: orgId },

@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/db';
+import { verifyTenantAccess, tenantError } from '@/lib/tenant-auth';
 
 export async function GET(
   _req: Request,
@@ -9,18 +8,8 @@ export async function GET(
 ) {
   try {
     const { orgId } = await params;
-    const session = await getServerSession(authOptions);
-    if (!session?.user) {
-      return NextResponse.json({ error: 'İcazəsiz giriş' }, { status: 401 });
-    }
-
-    const userId = (session.user as { id: string }).id;
-    const membership = await prisma.membership.findUnique({
-      where: { userId_organizationId: { userId, organizationId: orgId } },
-    });
-    if (!membership) {
-      return NextResponse.json({ error: 'İcazəsiz giriş' }, { status: 403 });
-    }
+    const access = await verifyTenantAccess(orgId);
+    if (!access.ok) return tenantError(access);
 
     const org = await prisma.organization.findUnique({
       where: { id: orgId },
@@ -131,4 +120,3 @@ export async function GET(
     return NextResponse.json({ error: 'Xəta baş verdi' }, { status: 500 });
   }
 }
-

@@ -4,19 +4,8 @@
 
 import { NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/db';
-
-// ---- Yetkilendirme yardımcısı ----
-async function verifyAccess(orgId: string) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user) return null;
-  const userId = (session.user as { id: string }).id;
-  return prisma.membership.findUnique({
-    where: { userId_organizationId: { userId, organizationId: orgId } },
-  });
-}
+import { verifyTenantAccess, tenantError } from '@/lib/tenant-auth';
 
 // ---- GET ----
 export async function GET(
@@ -24,8 +13,8 @@ export async function GET(
   { params }: { params: Promise<{ orgId: string }> }
 ) {
   const { orgId } = await params;
-  const membership = await verifyAccess(orgId);
-  if (!membership) return NextResponse.json({ error: 'İcazəsiz giriş' }, { status: 401 });
+  const access = await verifyTenantAccess(orgId);
+  if (!access.ok) return tenantError(access);
 
   const rows = await prisma.siteContent.findMany({
     where: { organizationId: orgId },
@@ -48,8 +37,8 @@ export async function PUT(
   { params }: { params: Promise<{ orgId: string }> }
 ) {
   const { orgId } = await params;
-  const membership = await verifyAccess(orgId);
-  if (!membership) return NextResponse.json({ error: 'İcazəsiz giriş' }, { status: 401 });
+  const access = await verifyTenantAccess(orgId);
+  if (!access.ok) return tenantError(access);
 
   const body = await req.json();
   const contentMap = body.content as Record<string, Record<string, unknown>>;
@@ -97,8 +86,8 @@ export async function DELETE(
   { params }: { params: Promise<{ orgId: string }> }
 ) {
   const { orgId } = await params;
-  const membership = await verifyAccess(orgId);
-  if (!membership) return NextResponse.json({ error: 'İcazəsiz giriş' }, { status: 401 });
+  const access = await verifyTenantAccess(orgId, 'ADMIN');
+  if (!access.ok) return tenantError(access);
 
   const body = await req.json();
   const { pageKey, blockKey } = body as { pageKey: string; blockKey: string };

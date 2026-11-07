@@ -1,30 +1,18 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/db';
+import { verifyTenantAccess, tenantError } from '@/lib/tenant-auth';
 
-async function verifyAccess(orgId: string) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user) return null;
-  const userRole = (session.user as { role?: string }).role;
-  // Admin xaric hec bir istifadeci tema deyise bilmez
-  if (userRole !== 'SUPER_ADMIN') return null;
-  const userId = (session.user as { id: string }).id;
-  return prisma.membership.findUnique({
-    where: { userId_organizationId: { userId, organizationId: orgId } },
-  });
-}
-
-// Save draft theme
+// Save draft theme — yalnız SUPER_ADMIN
 export async function PUT(
   req: Request,
   { params }: { params: Promise<{ orgId: string }> }
 ) {
   try {
     const { orgId } = await params;
-    const membership = await verifyAccess(orgId);
-    if (!membership) {
-      return NextResponse.json({ error: 'İcazəsiz giriş' }, { status: 401 });
+    const access = await verifyTenantAccess(orgId);
+    if (!access.ok) return tenantError(access);
+    if (access.userRole !== 'SUPER_ADMIN') {
+      return NextResponse.json({ error: 'İcazəsiz giriş' }, { status: 403 });
     }
 
     const body = await req.json();

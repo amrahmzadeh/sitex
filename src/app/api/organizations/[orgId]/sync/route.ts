@@ -1,6 +1,4 @@
 import { NextResponse, after } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { isSiteSyncEnabled } from '@/lib/site-sync/config';
 import {
@@ -9,21 +7,10 @@ import {
   getSiteSyncStatus,
   processSyncQueue,
 } from '@/lib/site-sync/sync-service';
+import { verifyTenantAccess, tenantError } from '@/lib/tenant-auth';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
-
-async function getMembership(orgId: string) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user) return null;
-
-  const userId = (session.user as { id: string }).id;
-  const membership = await prisma.membership.findUnique({
-    where: { userId_organizationId: { userId, organizationId: orgId } },
-  });
-
-  return membership ? { membership, userId } : null;
-}
 
 // Saytın GitHub sinxronizasiya vəziyyəti (repository adı və token qaytarılmır).
 export async function GET(
@@ -31,10 +18,8 @@ export async function GET(
   { params }: { params: Promise<{ orgId: string }> }
 ) {
   const { orgId } = await params;
-  const access = await getMembership(orgId);
-  if (!access) {
-    return NextResponse.json({ error: 'İcazəsiz giriş' }, { status: 401 });
-  }
+  const access = await verifyTenantAccess(orgId);
+  if (!access.ok) return tenantError(access);
 
   try {
     const status = await getSiteSyncStatus(orgId);
@@ -51,10 +36,8 @@ export async function POST(
   { params }: { params: Promise<{ orgId: string }> }
 ) {
   const { orgId } = await params;
-  const access = await getMembership(orgId);
-  if (!access || access.membership.role === 'EDITOR') {
-    return NextResponse.json({ error: 'İcazəsiz giriş' }, { status: 401 });
-  }
+  const access = await verifyTenantAccess(orgId, 'ADMIN');
+  if (!access.ok) return tenantError(access);
 
   if (!isSiteSyncEnabled()) {
     return NextResponse.json(

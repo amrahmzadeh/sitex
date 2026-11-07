@@ -1,17 +1,7 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { scheduleSiteSync } from '@/lib/site-sync/schedule';
-
-async function verifyAccess(orgId: string) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user) return null;
-  const userId = (session.user as { id: string }).id;
-  return prisma.membership.findUnique({
-    where: { userId_organizationId: { userId, organizationId: orgId } },
-  });
-}
+import { verifyTenantAccess, tenantError } from '@/lib/tenant-auth';
 
 // Publish site: copy draft to published
 export async function POST(
@@ -20,10 +10,8 @@ export async function POST(
 ) {
   try {
     const { orgId } = await params;
-    const membership = await verifyAccess(orgId);
-    if (!membership || membership.role === 'EDITOR') {
-      return NextResponse.json({ error: 'İcazəsiz giriş' }, { status: 401 });
-    }
+    const access = await verifyTenantAccess(orgId, 'ADMIN');
+    if (!access.ok) return tenantError(access);
 
     const website = await prisma.website.findUnique({
       where: { organizationId: orgId },
@@ -44,7 +32,7 @@ export async function POST(
     });
 
     // Publish cavabı GitHub-ı gözləmir: sync fon rejimində növbəyə atılır.
-    scheduleSiteSync(orgId, 'publish', membership.userId);
+    scheduleSiteSync(orgId, 'publish', access.userId);
 
     return NextResponse.json({ website: updated });
   } catch (error) {

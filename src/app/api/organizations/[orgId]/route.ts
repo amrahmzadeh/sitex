@@ -1,22 +1,9 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { organizationSchema } from '@/lib/validations';
 import { logAudit } from '@/lib/admin';
 import { scheduleSiteSync } from '@/lib/site-sync/schedule';
-
-async function verifyAccess(orgId: string) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user) return null;
-
-  const userId = (session.user as { id: string }).id;
-  const membership = await prisma.membership.findUnique({
-    where: { userId_organizationId: { userId, organizationId: orgId } },
-  });
-
-  return membership;
-}
+import { verifyTenantAccess, tenantError } from '@/lib/tenant-auth';
 
 export async function GET(
   _req: Request,
@@ -24,10 +11,8 @@ export async function GET(
 ) {
   try {
     const { orgId } = await params;
-    const membership = await verifyAccess(orgId);
-    if (!membership) {
-      return NextResponse.json({ error: 'İcazəsiz giriş' }, { status: 401 });
-    }
+    const access = await verifyTenantAccess(orgId);
+    if (!access.ok) return tenantError(access);
 
     const organization = await prisma.organization.findUnique({
       where: { id: orgId },
@@ -57,7 +42,7 @@ export async function GET(
       return NextResponse.json({ error: 'Tapılmadı' }, { status: 404 });
     }
 
-    return NextResponse.json({ organization, role: membership.role });
+    return NextResponse.json({ organization, role: access.membershipRole || access.userRole });
   } catch (error) {
     console.error('Get organization error:', error);
     return NextResponse.json({ error: 'Xəta baş verdi' }, { status: 500 });
@@ -70,10 +55,8 @@ export async function PATCH(
 ) {
   try {
     const { orgId } = await params;
-    const membership = await verifyAccess(orgId);
-    if (!membership || membership.role === 'EDITOR') {
-      return NextResponse.json({ error: 'İcazəsiz giriş' }, { status: 401 });
-    }
+    const access = await verifyTenantAccess(orgId, 'ADMIN');
+    if (!access.ok) return tenantError(access);
 
     const body = await req.json();
     const { footerTagline, ...orgFields } = body;
@@ -121,21 +104,8 @@ export async function DELETE(
 ) {
   try {
     const { orgId } = await params;
-    const session = await getServerSession(authOptions);
-    if (!session?.user) {
-      return NextResponse.json({ error: 'İcazəsiz giriş' }, { status: 401 });
-    }
-
-    const userId = (session.user as { id: string }).id;
-
-    // Verify user is OWNER of this organization
-    const membership = await prisma.membership.findUnique({
-      where: { userId_organizationId: { userId, organizationId: orgId } },
-    });
-
-    if (!membership || membership.role !== 'OWNER') {
-      return NextResponse.json({ error: 'Bu əməliyyat üçün icazəniz yoxdur' }, { status: 403 });
-    }
+    const access = await verifyTenantAccess(orgId, 'OWNER');
+    if (!access.ok) return tenantError(access);
 
     const org = await prisma.organization.findUnique({
       where: { id: orgId },
@@ -147,13 +117,13 @@ export async function DELETE(
     }
 
     // GitHub-da fayllar silinmir — sayt soft-delete kimi işarələnir (admin bərpa edə bilər).
-    scheduleSiteSync(orgId, 'delete', userId);
+    scheduleSiteSync(orgId, 'delete', access.userId);
 
     // Delete organization - all related data cascades via Prisma schema
     await prisma.organization.delete({ where: { id: orgId } });
 
     // Log audit
-    await logAudit(userId, 'DELETE_SITE', 'SITE', orgId, { siteName: org.name });
+    await logAudit(access.userId, 'DELETE_SITE', 'SITE', orgId, { siteName: org.name });
 
     return NextResponse.json({ success: true });
   } catch (error) {

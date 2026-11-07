@@ -301,6 +301,24 @@ export async function verifyOrgPermission(
   const userId = (session.user as { id: string }).id;
   const userRole = (session.user as { role?: string }).role;
 
+  // DB'den kullanıcı durumunu kontrol et (JWT'ye güvenme)
+  const dbUser = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { status: true, subscriptionExpiry: true },
+  });
+
+  if (!dbUser || dbUser.status === 'BANNED') {
+    return { ok: false, error: 'Hesabınız bloklanmışdır', status: 403 };
+  }
+
+  if (
+    userRole !== 'SUPER_ADMIN' &&
+    dbUser.subscriptionExpiry &&
+    new Date(dbUser.subscriptionExpiry) < new Date()
+  ) {
+    return { ok: false, error: 'İstifadə müddətiniz bitmişdir', status: 403 };
+  }
+
   // Super Admin has all access
   if (userRole === 'SUPER_ADMIN') {
     return { ok: true, userId, role: userRole };
