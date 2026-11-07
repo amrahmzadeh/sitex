@@ -1,7 +1,8 @@
 // hero.schema.ts — Ana Səhifə Hero bölümü
+import type { BlockSchema } from '../types';
 import { registerBlock } from '../block-registry';
 
-registerBlock({
+export const heroBlockSchema: BlockSchema = {
   key: 'hero.main',
   pageKey: 'hero',
   label: 'Hero (Üst Bölüm)',
@@ -235,4 +236,6 @@ registerBlock({
       },
     },
   ],
-});
+};
+
+registerBlock(heroBlockSchema);

@@ -1,7 +1,8 @@
 // about.schema.ts — Haqqımızda səhifəsi
+import type { BlockSchema } from '../types';
 import { registerBlock } from '../block-registry';
 
-registerBlock({
+export const aboutBlockSchema: BlockSchema = {
   key: 'about.story',
   pageKey: 'about',
   label: 'Bizim Hekayəmiz',
@@ -163,5 +164,7 @@ registerBlock({
       default: [],
     },
   ],
-});
+};
+
+registerBlock(aboutBlockSchema);
 

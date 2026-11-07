@@ -1,7 +1,8 @@
 // reservation.schema.ts — Rezervasiya bölümü
+import type { BlockSchema } from '../types';
 import { registerBlock } from '../block-registry';
 
-registerBlock({
+export const reservationBlockSchema: BlockSchema = {
   key: 'reservation.form',
   pageKey: 'reservation',
   label: 'Rezervasiya Forması',
@@ -72,5 +73,7 @@ registerBlock({
       default: { az: 'Rezervasiya et', en: 'Reserve', ru: 'Забронировать' },
     },
   ],
-});
+};
+
+registerBlock(reservationBlockSchema);
 

@@ -3,14 +3,31 @@
 // ============================================================
 
 import type { BlockSchema } from './types';
+import { heroBlockSchema } from './schemas/hero.schema';
+import { aboutBlockSchema } from './schemas/about.schema';
+import { contactBlockSchema } from './schemas/contact.schema';
+import { menuBlockSchema } from './schemas/menu.schema';
+import { galleryBlockSchema } from './schemas/gallery.schema';
+import { reservationBlockSchema } from './schemas/reservation.schema';
+
+const defaultSchemas: BlockSchema[] = [
+  heroBlockSchema,
+  aboutBlockSchema,
+  contactBlockSchema,
+  menuBlockSchema,
+  galleryBlockSchema,
+  reservationBlockSchema,
+];
 
 const registry = new Map<string, BlockSchema>();
 
+// İlkin schema-ları qeydiyyatdan keçir
+for (const schema of defaultSchemas) {
+  registry.set(schema.key, schema);
+}
+
 /** Yeni blok tipi qeydiyyatdan keçirir */
 export function registerBlock(schema: BlockSchema): void {
-  if (registry.has(schema.key)) {
-    console.warn(`[site-editor] Block already registered: ${schema.key}`);
-  }
   registry.set(schema.key, schema);
 }
 
@@ -37,4 +54,3 @@ export function getPages(): string[] {
   }
   return Array.from(pages);
 }
-

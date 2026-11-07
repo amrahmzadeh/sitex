@@ -2,21 +2,8 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
-import dynamic from 'next/dynamic';
 import { Loader2, PenLine } from 'lucide-react';
-
-const SiteEditorShell = dynamic(
-  () => import('@/modules/site-editor/components/SiteEditorShell'),
-  {
-    ssr: false,
-    loading: () => (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', minHeight: 300, gap: 12, color: '#8888A0' }}>
-        <Loader2 size={22} style={{ animation: 'spin 1s linear infinite' }} />
-        Redaktor yüklənir...
-      </div>
-    ),
-  }
-);
+import SiteEditorShell from '@/modules/site-editor/components/SiteEditorShell';
 
 function useCurrentOrg() {
   const [org, setOrg] = useState<{ id: string; slug: string } | null>(null);

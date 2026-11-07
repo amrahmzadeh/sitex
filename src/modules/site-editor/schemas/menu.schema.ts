@@ -1,7 +1,8 @@
 // menu.schema.ts — Menyu səhifəsi
+import type { BlockSchema } from '../types';
 import { registerBlock } from '../block-registry';
 
-registerBlock({
+export const menuBlockSchema: BlockSchema = {
   key: 'menu.header',
   pageKey: 'menu',
   label: 'Menyu Üst Bölümü',
@@ -56,5 +57,7 @@ registerBlock({
       default: { az: 'Menyu yüklənir...', en: 'Menu loading...', ru: 'Меню загружается...' },
     },
   ],
-});
+};
+
+registerBlock(menuBlockSchema);
 

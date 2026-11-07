@@ -1,7 +1,8 @@
 // contact.schema.ts — Əlaqə səhifəsi
+import type { BlockSchema } from '../types';
 import { registerBlock } from '../block-registry';
 
-registerBlock({
+export const contactBlockSchema: BlockSchema = {
   key: 'contact.info',
   pageKey: 'contact',
   label: 'Əlaqə Məlumatları',
@@ -64,5 +65,7 @@ registerBlock({
       showIf: (fields) => fields.formEnabled === true,
     },
   ],
-});
+};
+
+registerBlock(contactBlockSchema);
 

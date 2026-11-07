@@ -1,7 +1,8 @@
 // gallery.schema.ts — Qalareya səhifəsi
+import type { BlockSchema } from '../types';
 import { registerBlock } from '../block-registry';
 
-registerBlock({
+export const galleryBlockSchema: BlockSchema = {
   key: 'gallery.header',
   pageKey: 'gallery',
   label: 'Qalareya Üst Bölümü',
@@ -52,5 +53,7 @@ registerBlock({
       default: true,
     },
   ],
-});
+};
+
+registerBlock(galleryBlockSchema);
 
