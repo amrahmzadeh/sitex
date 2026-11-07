@@ -12,17 +12,6 @@ import {
   isNavItemVisible,
   isFoodCategory,
 } from '../src/modules/navigation';
-import {
-  componentRegistry,
-  listComponents,
-  getComponent,
-} from '../src/modules/builder/registry/componentRegistry';
-import '../src/modules/builder/registry/builtinComponents';
-import {
-  serializeTemplateToTheme,
-  exportTemplateAsJSON,
-  importTemplateFromJSON,
-} from '../src/modules/builder/serializer';
 
 test('Theme Registry: Mövcud 4 daxili tema qeydiyyatdan keçib', () => {
   const elegant = getTheme('elegant');
@@ -232,70 +221,5 @@ test('Navigation: Müəssisə Saytı > Restoran və Kafe olduqda yalnız Menyu g
   assert.ok(inquiriesItem, 'Müraciətlər nav item mövcuddur');
   assert.equal(isNavItemVisible(inquiriesItem, personalOfficialContext), true, 'Şəxsi və Rəsmi Sayt üçün Müraciətlər görünməlidir');
   assert.equal(isNavItemVisible(inquiriesItem, restaurantContext), true, 'Restoran üçün də Müraciətlər görünməlidir');
-});
-
-test('Builder Component Registry: Bütün zəruri 14 komponent qeydiyyatdadır', () => {
-  const requiredComponents = [
-    'navbar',
-    'hero',
-    'text',
-    'image',
-    'button',
-    'menu_list',
-    'features',
-    'testimonials',
-    'contact_form',
-    'map',
-    'footer',
-    'divider',
-    'container',
-    'gallery',
-  ];
-
-  const registered = listComponents().map((c) => c.type);
-  for (const req of requiredComponents) {
-    assert.ok(registered.includes(req), `Komponent tapılmadı: ${req}`);
-    const comp = getComponent(req);
-    assert.ok(comp?.propSchema, `${req} üçün propSchema mövcuddur`);
-  }
-});
-
-test('Builder Component Registry: Böyük/kiçik hərf və ayraçdan asılı olmayan normalizasiya', () => {
-  // menu_list, menuList, menu-list, MENU_LIST eyni komponenti tapmalıdır
-  const standard = getComponent('menu_list');
-  assert.ok(standard, 'menu_list tapıldı');
-  assert.equal(getComponent('menuList')?.type, 'menu_list');
-  assert.equal(getComponent('menu-list')?.type, 'menu_list');
-  assert.equal(getComponent('MENU_LIST')?.type, 'menu_list');
-  assert.equal(getComponent('Navbar')?.type, 'navbar');
-  assert.equal(getComponent('contact-form')?.type, 'contact_form');
-  assert.equal(getComponent('contactForm')?.type, 'contact_form');
-});
-
-test('Builder Serializer: Template sənədini ThemeDefinition-a və JSON-a çevirmək', () => {
-  const sampleDoc = {
-    id: 'doc-123',
-    name: 'Gözəl Restoran Teması',
-    slug: 'gozel-restoran-temasi',
-    description: 'Açıqlama',
-    version: '1.0.0',
-    tokens: { primary: '#FF0000' },
-    nodes: [
-      { id: '1', type: 'navbar', props: { brandName: 'Dadlı' } },
-      { id: '2', type: 'hero', props: { title: 'Xoş gəlmisiniz' } },
-    ],
-    updatedAt: new Date().toISOString(),
-  };
-
-  const json = exportTemplateAsJSON(sampleDoc);
-  const reimported = importTemplateFromJSON(json);
-  assert.equal(reimported.name, sampleDoc.name);
-  assert.equal(reimported.nodes.length, 2);
-
-  const themeDef = serializeTemplateToTheme(sampleDoc);
-  assert.equal(themeDef.id, 'doc-123');
-  assert.equal(themeDef.source, 'custom');
-  assert.equal(themeDef.sections.length, 2);
-  assert.ok(ThemeDefinitionSchema.safeParse(themeDef).success);
 });
 

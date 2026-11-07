@@ -216,7 +216,6 @@ export default function DashboardShell({ children }: { children: React.ReactNode
     </div>
   );
 
-  const isBuilder = pathname === '/dashboard/builder' || pathname?.startsWith('/dashboard/builder');
   const isSiteEditor = pathname === '/dashboard/site-editor' || pathname?.startsWith('/dashboard/site-editor');
 
   // Employee Route Protection Check
@@ -243,14 +242,6 @@ export default function DashboardShell({ children }: { children: React.ReactNode
         }
       }
     }
-  }
-
-  if (isBuilder) {
-    return (
-      <div style={{ width: '100vw', height: '100dvh', overflow: 'hidden', background: '#090A0D' }}>
-        {children}
-      </div>
-    );
   }
 
   return (
