@@ -18,6 +18,11 @@ export function isNavItemVisible(
 
   // Employee specific permission check
   if (userRole === 'EMPLOYEE') {
+    // Employees cannot access site design/theme or splash screen
+    if (item.id === 'theme' || item.id === 'splash') {
+      return false;
+    }
+
     if (item.id === 'employees') {
       const canAccessEmployees =
         employeePermissions?.[item.id]?.canView || employeePermissions?.[item.id]?.canManage;

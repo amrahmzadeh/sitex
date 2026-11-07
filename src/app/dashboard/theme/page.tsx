@@ -2,1115 +2,1345 @@
 
 import { useEffect, useState, useMemo, useRef } from 'react';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Loader2,
-  Save,
-  Globe,
+  Palette,
   Eye,
   Check,
-  Palette,
-  MessageCircle,
-  Layers,
-  Monitor,
-  Smartphone,
-  Sparkles,
-  Clock,
-  Utensils,
-  BookOpen,
-  FileText,
-  Share2,
   CheckCircle2,
-  Sliders,
-  ExternalLink,
-  Code,
-  History,
-  Plus,
-  Download,
+  Sparkles,
+  Search,
   Upload,
-  Copy,
-  Settings as SettingsIcon,
-  Image as ImageIcon,
+  Download,
+  Trash2,
+  ExternalLink,
+  Loader2,
+  RotateCcw,
+  Sliders,
+  Flame,
+  Layers,
+  X,
+  AlertCircle,
+  HelpCircle,
+  Globe,
 } from 'lucide-react';
-import { defaultThemes, ThemeConfig, BRAND_FONTS } from '@/lib/themes';
-import RestaurantSite, { SiteData, GalleryItem, MenuCategory } from '@/components/themes/RestaurantSite';
-import ThemeLibrary from '@/components/dashboard/ThemeLibrary';
-import {
-  ThemeEditorTab,
-  ViewportMode,
-  ComponentTarget,
-  ThemeVersionRecord,
-  STLCodeEditor,
-  VisualThemeBuilder,
-  LivePreviewEngine,
-  ThemeAssetsManager,
-  ThemeVersionHistory,
-  ThemeManagementModal,
-  ThemeSettingsPanel,
-} from '@/components/dashboard/theme-editor';
-import { themeConfigToSTL, convertSTLToThemeConfig } from '@/modules/stl';
+import { defaultThemes, ThemeConfig } from '@/lib/themes';
 import { useCurrentOrg } from '@/contexts/CurrentOrgContext';
-import dynamic from 'next/dynamic';
+import RestaurantSite from '@/components/themes/RestaurantSite';
 
-const ThemeCustomizerTab = dynamic(() => import('@/components/dashboard/theme-editor/ThemeCustomizerTab'), {
-  ssr: false,
-  loading: () => <div style={{ padding: 24, color: '#8888A0' }}>Yüklənir...</div>,
-});
+interface ThemeItem extends ThemeConfig {
+  source?: 'builtin' | 'custom';
+  createdAt?: string;
+}
 
+const CATEGORIES = [
+  { id: 'all', label: 'Bütün Temalar' },
+  { id: 'restoran', label: 'Restoran və Kafe' },
+  { id: 'biznes', label: 'Biznes və Şirkət' },
+  { id: 'modern', label: 'Müasir və Minimal' },
+  { id: 'dark', label: 'Qaranlıq (Dark)' },
+  { id: 'pro', label: 'Pro Şablonlar' },
+];
 
-export default function ThemePage() {
-  const { data: session, status: sessionStatus } = useSession();
-  const router = useRouter();
-  const isSuperAdmin = (session?.user as { role?: string })?.role === 'SUPER_ADMIN';
+function ThemeMiniCard({
+  theme,
+  isActive,
+  onPreview,
+  onApply,
+  onExport,
+  onDelete,
+  isApplying,
+}: {
+  theme: ThemeItem;
+  isActive: boolean;
+  onPreview: (theme: ThemeItem) => void;
+  onApply: (theme: ThemeItem, publishImmediately?: boolean) => void;
+  onExport: (theme: ThemeItem) => void;
+  onDelete?: (theme: ThemeItem) => void;
+  isApplying: boolean;
+}) {
+  const isDark =
+    theme.backgroundColor === '#121416' ||
+    theme.backgroundColor?.toLowerCase().startsWith('#1') ||
+    theme.backgroundColor?.toLowerCase().startsWith('#2');
 
-  useEffect(() => {
-    if (sessionStatus !== 'loading' && !isSuperAdmin) {
-      router.replace('/dashboard');
-    }
-  }, [sessionStatus, isSuperAdmin, router]);
+  const bgStyle =
+    theme.siteBgType === 'gradient' && theme.siteGradientFrom && theme.siteGradientTo
+      ? `linear-gradient(${theme.siteGradientDir || '135deg'}, ${theme.siteGradientFrom}, ${theme.siteGradientTo})`
+      : theme.backgroundColor || '#121416';
 
-  const { orgId } = useCurrentOrg();
-  const [theme, setTheme] = useState<ThemeConfig>(defaultThemes.elegant);
-  const [stlCode, setStlCode] = useState<string>(() => themeConfigToSTL(defaultThemes.elegant));
-  const [activeTab, setActiveTab] = useState<ThemeEditorTab | 'customizer'>('builder');
-  const [viewport, setViewport] = useState<ViewportMode>('desktop');
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean>(false);
-  const [selectedComponent, setSelectedComponent] = useState<ComponentTarget>('all');
-  const [modalType, setModalType] = useState<'create' | 'duplicate' | 'rename' | 'import' | 'export' | null>(null);
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      className={`dash-card theme-card ${isActive ? 'is-active' : ''}`}
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        borderRadius: 16,
+        overflow: 'hidden',
+        border: isActive ? '2px solid #00D37D' : '1px solid #383334',
+        background: '#1A1A1E',
+        boxShadow: isActive ? '0 0 20px rgba(0, 211, 125, 0.2)' : 'none',
+        position: 'relative',
+        transition: 'all 0.25s ease',
+      }}
+    >
+      {/* Mini Visual Preview Area */}
+      <div
+        style={{
+          height: 180,
+          background: bgStyle,
+          color: theme.textColor || '#FFFFFF',
+          padding: 16,
+          position: 'relative',
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          borderBottom: '1px solid rgba(255,255,255,0.08)',
+          cursor: 'pointer',
+        }}
+        onClick={() => onPreview(theme)}
+      >
+        {/* Top bar inside mini preview */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '6px 12px',
+            borderRadius: 8,
+            background:
+              theme.headerStyle === 'glass'
+                ? 'rgba(255,255,255,0.1)'
+                : theme.headerStyle === 'solid'
+                ? theme.secondaryColor || '#1B1B2F'
+                : 'rgba(0,0,0,0.2)',
+            backdropFilter: 'blur(8px)',
+            border: '1px solid rgba(255,255,255,0.08)',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <div
+              style={{
+                width: 8,
+                height: 8,
+                borderRadius: '50%',
+                background: theme.primaryColor,
+                boxShadow: `0 0 8px ${theme.primaryColor}`,
+              }}
+            />
+            <span
+              style={{
+                fontSize: 11,
+                fontWeight: 700,
+                fontFamily: theme.headingFont || 'sans-serif',
+                color: theme.textColor || '#FFFFFF',
+              }}
+            >
+              {theme.name}
+            </span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            <span style={{ width: 12, height: 3, borderRadius: 2, background: 'rgba(255,255,255,0.3)' }} />
+            <span style={{ width: 12, height: 3, borderRadius: 2, background: 'rgba(255,255,255,0.3)' }} />
+            <span
+              style={{
+                width: 18,
+                height: 10,
+                borderRadius: 4,
+                background: theme.primaryColor,
+                display: 'inline-block',
+              }}
+            />
+          </div>
+        </div>
 
-  // Undo / Redo history
-  const [history, setHistory] = useState<ThemeConfig[]>([defaultThemes.elegant]);
-  const [historyIdx, setHistoryIdx] = useState<number>(0);
+        {/* Hero title & badges */}
+        <div style={{ padding: '6px 2px' }}>
+          <div style={{ display: 'flex', gap: 6, marginBottom: 4 }}>
+            <span
+              style={{
+                padding: '2px 8px',
+                borderRadius: 999,
+                background: `${theme.primaryColor}22`,
+                border: `1px solid ${theme.primaryColor}55`,
+                fontSize: 9,
+                fontWeight: 700,
+                color: theme.primaryColor,
+                letterSpacing: '0.04em',
+                textTransform: 'uppercase',
+              }}
+            >
+              {theme.isProTemplate ? '✦ PRO ŞABLON' : '✦ DİZAYN'}
+            </span>
+            {theme.source === 'custom' && (
+              <span
+                style={{
+                  padding: '2px 8px',
+                  borderRadius: 999,
+                  background: 'rgba(124, 92, 252, 0.2)',
+                  border: '1px solid rgba(124, 92, 252, 0.4)',
+                  fontSize: 9,
+                  fontWeight: 700,
+                  color: '#A78BFA',
+                }}
+              >
+                Fərdi Tema
+              </span>
+            )}
+          </div>
+          <h4
+            style={{
+              margin: 0,
+              fontSize: 16,
+              fontWeight: 800,
+              fontFamily: theme.headingFont || 'sans-serif',
+              color: theme.textColor,
+              lineHeight: 1.2,
+            }}
+          >
+            {theme.name}
+          </h4>
+          <p
+            style={{
+              margin: '3px 0 0',
+              fontSize: 10,
+              opacity: 0.75,
+              color: theme.textColor,
+            }}
+          >
+            {theme.headingFont} + {theme.bodyFont}
+          </p>
+        </div>
 
-  // Versions history
-  const [versions, setVersions] = useState<ThemeVersionRecord[]>([]);
+        {/* Sample card & button */}
+        <div style={{ display: 'flex', gap: 6 }}>
+          <div
+            style={{
+              flex: 1,
+              padding: '4px 8px',
+              borderRadius: theme.borderRadius || '8px',
+              background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
+              border: '1px solid rgba(255,255,255,0.08)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}
+          >
+            <span style={{ fontSize: 9, opacity: 0.9 }}>Nümunə menyu</span>
+            <span style={{ fontSize: 9, fontWeight: 700, color: theme.primaryColor }}>₼ 12.00</span>
+          </div>
+          <div
+            style={{
+              padding: '4px 10px',
+              borderRadius: theme.borderRadius || '8px',
+              background: theme.buttonStyle === 'solid' ? theme.primaryColor : 'transparent',
+              color: theme.buttonStyle === 'solid' ? (isDark ? '#0F0F14' : '#FFF') : theme.primaryColor,
+              border: `1px solid ${theme.primaryColor}`,
+              fontSize: 9,
+              fontWeight: 700,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            Sifariş
+          </div>
+        </div>
 
-  const [previewTheme, setPreviewTheme] = useState<ThemeConfig | null>(null);
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
-  const [slug, setSlug] = useState('');
-  const [orgLogo, setOrgLogo] = useState('');
-  const [orgName, setOrgName] = useState('');
-  // B04 fix: narrow orgData type (Prisma Organization shape, partial)
-  type OrgData = {
-    name?: string; slug?: string; logo?: string; description?: string;
-    phone?: string; email?: string; address?: string; city?: string;
-    mapUrl?: string; currency?: string; siteCategory?: string; siteSubcategory?: string;
-    website?: { draftTheme?: Partial<ThemeConfig>; pagesConfig?: unknown; theme?: unknown };
-    whatsappSettings?: { countryCode: string; phoneNumber: string; orderMessage: string; buttonText: string; isEnabled: boolean };
-    socialLinks?: Array<{ platform: string; url: string }>;
-    workingHours?: Array<{ dayOfWeek: number; openTime: string; closeTime: string; isClosed: boolean }>;
-    galleryItems?: GalleryItem[]; menuCategories?: MenuCategory[];
-  };
-  const [orgData, setOrgData] = useState<OrgData | null>(null);
-  const [previewDevice, setPreviewDevice] = useState<'desktop' | 'mobile'>('desktop');
+        {/* Hover preview overlay hint */}
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            background: 'rgba(0,0,0,0.5)',
+            opacity: 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 8,
+            transition: 'opacity 0.2s',
+            backdropFilter: 'blur(3px)',
+          }}
+          className="preview-hover-hint"
+        >
+          <span
+            style={{
+              padding: '8px 14px',
+              borderRadius: 20,
+              background: '#00D37D',
+              color: '#0F0F14',
+              fontSize: 12,
+              fontWeight: 700,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+            }}
+          >
+            <Eye size={14} /> Tam önizləmə
+          </span>
+        </div>
+      </div>
+
+      {/* Card Info & Actions */}
+      <div style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 12, flex: 1 }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <h3 style={{ fontSize: 16, fontWeight: 700, color: '#F5F5F7', margin: 0 }}>{theme.name}</h3>
+              {isActive && (
+                <span
+                  style={{
+                    background: 'rgba(0,211,125,0.15)',
+                    color: '#00D37D',
+                    padding: '2px 8px',
+                    borderRadius: 12,
+                    fontSize: 11,
+                    fontWeight: 700,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 4,
+                  }}
+                >
+                  <Check size={12} /> Aktiv
+                </span>
+              )}
+            </div>
+            <p style={{ fontSize: 12, color: '#8888A0', margin: '4px 0 0', lineHeight: 1.4 }}>
+              {theme.description || 'Hazır dizayn və tipoqrafiya konfiqurasiyası.'}
+            </p>
+          </div>
+        </div>
+
+        {/* Color Palette Indicators */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 'auto' }}>
+          <span style={{ fontSize: 11, color: '#6E6E80' }}>Rənglər:</span>
+          <div style={{ display: 'flex', gap: 4 }}>
+            {[theme.primaryColor, theme.secondaryColor, theme.accentColor, theme.backgroundColor].map((col, idx) => (
+              <span
+                key={idx}
+                title={col}
+                style={{
+                  width: 16,
+                  height: 16,
+                  borderRadius: 4,
+                  background: col,
+                  border: '1px solid rgba(255,255,255,0.15)',
+                  display: 'inline-block',
+                }}
+              />
+            ))}
+          </div>
+          <span style={{ marginLeft: 'auto', fontSize: 11, color: '#8888A0', fontFamily: 'monospace' }}>
+            {theme.headingFont}
+          </span>
+        </div>
+
+        {/* Action Buttons */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingTop: 10, borderTop: '1px solid #2A2A32' }}>
+          <button
+            onClick={() => onPreview(theme)}
+            className="dash-btn-secondary"
+            style={{
+              flex: 1,
+              padding: '8px 12px',
+              fontSize: 12,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 6,
+            }}
+          >
+            <Eye size={14} /> Önizlə
+          </button>
+
+          {isActive ? (
+            <button
+              disabled
+              style={{
+                flex: 1.2,
+                padding: '8px 12px',
+                fontSize: 12,
+                borderRadius: 10,
+                border: '1px solid #00D37D',
+                background: 'rgba(0,211,125,0.15)',
+                color: '#00D37D',
+                fontWeight: 700,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 6,
+                cursor: 'default',
+              }}
+            >
+              <CheckCircle2 size={14} /> Seçilib
+            </button>
+          ) : (
+            <button
+              onClick={() => onApply(theme)}
+              disabled={isApplying}
+              className="dash-btn-primary"
+              style={{
+                flex: 1.2,
+                padding: '8px 12px',
+                fontSize: 12,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 6,
+              }}
+            >
+              {isApplying ? (
+                <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} />
+              ) : (
+                <Sparkles size={14} />
+              )}
+              Aktiv et
+            </button>
+          )}
+
+          {/* Export button */}
+          <button
+            onClick={() => onExport(theme)}
+            title="Temanı JSON olaraq yüklə"
+            style={{
+              padding: 8,
+              borderRadius: 8,
+              background: '#23232B',
+              border: '1px solid #383334',
+              color: '#8888A0',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Download size={14} />
+          </button>
+
+          {/* Delete custom theme button */}
+          {theme.source === 'custom' && onDelete && (
+            <button
+              onClick={() => onDelete(theme)}
+              title="Temanı sil"
+              style={{
+                padding: 8,
+                borderRadius: 8,
+                background: 'rgba(248, 113, 113, 0.1)',
+                border: '1px solid rgba(248, 113, 113, 0.2)',
+                color: '#F87171',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <Trash2 size={14} />
+            </button>
+          )}
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+export default function ThemeLibraryPage() {
+  const { data: session } = useSession();
+  const { orgId, org, refresh: refreshOrg } = useCurrentOrg();
+
+  const [themes, setThemes] = useState<ThemeItem[]>(() =>
+    Object.values(defaultThemes).map((t) => ({ ...t, source: 'builtin' }))
+  );
+  const [activeThemeId, setActiveThemeId] = useState<string>('elegant');
+  const [currentThemeConfig, setCurrentThemeConfig] = useState<ThemeConfig | null>(null);
+
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [publishing, setPublishing] = useState(false);
-  const [saved, setSaved] = useState(false);
-  const [published, setPublished] = useState(false);
-  const [saveError, setSaveError] = useState<string | null>(null);
+  const [applyingThemeId, setApplyingThemeId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
-  useEffect(() => {
+  // Preview Modal
+  const [previewingTheme, setPreviewingTheme] = useState<ThemeItem | null>(null);
+
+  // Import Modal
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [importJsonText, setImportJsonText] = useState('');
+  const [importError, setImportError] = useState('');
+  const [importing, setImporting] = useState(false);
+  const importFileInputRef = useRef<HTMLInputElement>(null);
+
+  // Notification Toast
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3500);
+  };
+
+  // Fetch themes and current site theme
+  const loadData = async () => {
     if (!orgId) return;
-    fetch(`/api/organizations/${orgId}`)
-      .then(r => r.json())
-      .then(d => {
-        if (d.organization) {
-          setOrgData(d.organization);
-          if (d.organization.website?.draftTheme) {
-            const dt = d.organization.website.draftTheme as Partial<ThemeConfig>;
-            const loadedTheme: ThemeConfig = {
-              ...defaultThemes.elegant,
-              ...dt,
-              isProTemplate: Boolean(dt.isProTemplate),
-            };
-            setTheme(loadedTheme);
-            setStlCode(themeConfigToSTL(loadedTheme));
-            setHistory([loadedTheme]);
-            setHistoryIdx(0);
-          }
-          setSlug(d.organization.slug || '');
-          setOrgLogo(d.organization.logo || '');
-          setOrgName(d.organization.name || '');
+    setLoading(true);
+    try {
+      const [themesRes, orgThemeRes] = await Promise.all([
+        fetch('/api/themes'),
+        fetch(`/api/organizations/${orgId}/theme`),
+      ]);
+
+      if (themesRes.ok) {
+        const d = await themesRes.json();
+        if (d.themes && Array.isArray(d.themes)) {
+          // Map ThemeDefinition to ThemeItem / ThemeConfig
+          const mapped: ThemeItem[] = d.themes.map((t: any) => ({
+            id: t.id,
+            name: t.name,
+            description: t.description,
+            category: Array.isArray(t.category) ? t.category : [t.category || 'all'],
+            primaryColor: t.tokens?.colors?.primary || t.primaryColor || '#00D37D',
+            secondaryColor: t.tokens?.colors?.secondary || t.secondaryColor || '#121212',
+            accentColor: t.tokens?.colors?.accent || t.accentColor || '#00D37D',
+            backgroundColor: t.tokens?.colors?.background || t.backgroundColor || '#121416',
+            textColor: t.tokens?.colors?.text || t.textColor || '#FFFFFF',
+            headingFont: t.tokens?.typography?.headingFont || t.headingFont || 'Outfit',
+            bodyFont: t.tokens?.typography?.bodyFont || t.bodyFont || 'Inter',
+            borderRadius: t.tokens?.radius?.borderRadius || t.borderRadius || '12px',
+            heroHeight: t.tokens?.spacing?.heroHeight || t.heroHeight || '85vh',
+            heroOverlay: t.tokens?.spacing?.heroOverlay ?? t.heroOverlay ?? 0.5,
+            templateId: t.templateId || t.id,
+            buttonStyle: t.layout?.buttonStyle || t.buttonStyle || 'solid',
+            cardStyle: t.layout?.cardStyle || t.cardStyle || 'elevated',
+            headerStyle: t.layout?.headerStyle || t.headerStyle || 'solid',
+            footerStyle: t.layout?.footerStyle || t.footerStyle || 'dark',
+            source: t.source || 'builtin',
+            isProTemplate: t.isProTemplate || false,
+            createdAt: t.createdAt,
+          }));
+
+          // Merge with defaultThemes without duplicates
+          const existingIds = new Set(mapped.map((m) => m.id));
+          const builtinDefaults = Object.values(defaultThemes)
+            .filter((dt) => !existingIds.has(dt.id))
+            .map((dt) => ({ ...dt, source: 'builtin' as const }));
+
+          setThemes([...mapped, ...builtinDefaults]);
         }
-      })
-      .finally(() => setLoading(false));
+      }
+
+      if (orgThemeRes.ok) {
+        const od = await orgThemeRes.json();
+        if (od.theme) {
+          setCurrentThemeConfig(od.theme);
+          if (od.theme.id) setActiveThemeId(od.theme.id);
+          else if (od.theme.templateId) setActiveThemeId(od.theme.templateId);
+        }
+      }
+    } catch (err) {
+      console.error('Load themes error:', err);
+      showToast('Temalar yüklənərkən xəta baş verdi', 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadData();
   }, [orgId]);
 
-  // B23 fix: warn user about unsaved changes on page unload
-  useEffect(() => {
-    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (historyIdx > 0) {
-        e.preventDefault();
-        e.returnValue = '';
-      }
-    };
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, [historyIdx]);
+  // Filtered themes
+  const filteredThemes = useMemo(() => {
+    return themes.filter((t) => {
+      // Category filter
+      if (selectedCategory !== 'all') {
+        const catStr = (t.category || []).join(' ').toLowerCase();
+        const nameStr = t.name.toLowerCase();
+        const descStr = (t.description || '').toLowerCase();
 
-  // Load versions from localStorage
-  useEffect(() => {
+        if (selectedCategory === 'restoran') {
+          if (!catStr.includes('restoran') && !catStr.includes('kafe') && !descStr.includes('restoran')) {
+            return false;
+          }
+        } else if (selectedCategory === 'biznes') {
+          if (!catStr.includes('biznes') && !catStr.includes('muessise') && !descStr.includes('biznes')) {
+            return false;
+          }
+        } else if (selectedCategory === 'dark') {
+          const isDark =
+            t.backgroundColor === '#121416' ||
+            t.backgroundColor?.toLowerCase().startsWith('#1') ||
+            t.backgroundColor?.toLowerCase().startsWith('#0');
+          if (!isDark) return false;
+        } else if (selectedCategory === 'pro') {
+          if (!t.isProTemplate) return false;
+        } else if (selectedCategory === 'modern') {
+          if (!catStr.includes('modern') && !nameStr.includes('modern') && !nameStr.includes('müasir')) {
+            return false;
+          }
+        }
+      }
+
+      // Search filter
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        const matchesName = t.name.toLowerCase().includes(q);
+        const matchesDesc = (t.description || '').toLowerCase().includes(q);
+        const matchesFont = t.headingFont.toLowerCase().includes(q) || t.bodyFont.toLowerCase().includes(q);
+        if (!matchesName && !matchesDesc && !matchesFont) return false;
+      }
+
+      return true;
+    });
+  }, [themes, selectedCategory, searchQuery]);
+
+  // Apply Theme to Site
+  const handleApplyTheme = async (themeToApply: ThemeItem, publishNow: boolean = false) => {
     if (!orgId) return;
-    const key = `sitex_theme_versions_${orgId}`;
-    const stored = localStorage.getItem(key);
-    if (stored) {
-      try {
-        // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: initial version load from localStorage
-        setVersions(JSON.parse(stored));
-      } catch {
-        setVersions([]);
-      }
-    } else {
-      const now = Date.now();
-      const initialVer: ThemeVersionRecord = {
-        id: 'ver_init_' + now,
-        version: '1.0',
-        title: 'İlkin Tema Versiyası',
-        timestamp: now,
-        author: 'SiteX Sistemi',
-        trigger: 'auto',
-        theme: defaultThemes.elegant,
-        stlCode: themeConfigToSTL(defaultThemes.elegant),
-      };
-      setVersions([initialVer]);
-      localStorage.setItem(key, JSON.stringify([initialVer]));
-    }
-  }, [orgId]);
+    setApplyingThemeId(themeToApply.id);
 
-  const pushThemeChange = (newTheme: ThemeConfig) => {
-    const nextHist = history.slice(0, historyIdx + 1);
-    nextHist.push(newTheme);
-    if (nextHist.length > 50) nextHist.shift();
-    setHistory(nextHist);
-    setHistoryIdx(nextHist.length - 1);
-    setTheme(newTheme);
-    setStlCode(themeConfigToSTL(newTheme));
-  };
-
-  const handleUndo = () => {
-    if (historyIdx > 0) {
-      const prev = history[historyIdx - 1];
-      setHistoryIdx(historyIdx - 1);
-      setTheme(prev);
-      setStlCode(themeConfigToSTL(prev));
-    }
-  };
-
-  const handleRedo = () => {
-    if (historyIdx < history.length - 1) {
-      const next = history[historyIdx + 1];
-      setHistoryIdx(historyIdx + 1);
-      setTheme(next);
-      setStlCode(themeConfigToSTL(next));
-    }
-  };
-
-  const recordVersion = (
-    title: string,
-    note?: string,
-    trigger: ThemeVersionRecord['trigger'] = 'manual',
-    customTheme?: ThemeConfig
-  ) => {
-    const t = customTheme || theme;
-    const currentList = versions;
-    // eslint-disable-next-line react-hooks/purity -- Date.now() is in an event callback, not in render
-    const now = Date.now();
-    const newVer: ThemeVersionRecord = {
-      id: 'ver_' + now,
-      version: `${currentList.length + 1}.0`,
-      title,
-      note,
-      timestamp: now,
-      author: orgName || 'SiteX User',
-      trigger,
-      theme: t,
-      stlCode: themeConfigToSTL(t),
-    };
-    const updated = [newVer, ...currentList].slice(0, 30);
-    setVersions(updated);
-    if (orgId) {
-      localStorage.setItem(`sitex_theme_versions_${orgId}`, JSON.stringify(updated));
-    }
-  };
-
-  const saveDraft = async (): Promise<boolean> => {
-    if (!orgId) return false;
-    setSaving(true);
-    setSaveError(null);
     try {
       const res = await fetch(`/api/organizations/${orgId}/theme`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ theme }),
+        body: JSON.stringify({
+          theme: themeToApply,
+          publishImmediately: publishNow,
+        }),
       });
+
+      const data = await res.json();
       if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        setSaveError(data.error || `Saxlama xətası (${res.status})`);
-        return false;
+        throw new Error(data.error || 'Tema tətbiq edilə bilmədi');
       }
-      setSaved(true);
-      recordVersion('Qaralama Saxlandı', 'İstifadəçi tərəfindən saxlanıldı', 'manual');
-      setTimeout(() => setSaved(false), 3000);
-      return true;
-    } catch {
-      setSaveError('Şəbəkə xətası baş verdi');
-      return false;
-    } finally { setSaving(false); }
-  };
 
-  const publish = async () => {
-    if (!orgId) return;
-    setPublishing(true);
-    setSaveError(null);
-    try {
-      const ok = await saveDraft();
-      if (!ok) return; // B03 fix: abort publish if save failed
-      const res = await fetch(`/api/organizations/${orgId}/publish`, { method: 'POST' });
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        setSaveError(data.error || `Yayınlama xətası (${res.status})`);
-        return;
-      }
-      setPublished(true);
-      recordVersion('Saytda Yayınlandı', 'Canlı saytda aktiv edildi', 'publish');
-      setTimeout(() => setPublished(false), 3000);
-    } catch {
-      setSaveError('Şəbəkə xətası baş verdi');
-    } finally { setPublishing(false); }
-  };
-
-  const applyTheme = async (t: ThemeConfig) => {
-    const nextTheme: ThemeConfig = {
-      ...(defaultThemes[t.id] || t),
-      ...t,
-      isProTemplate: Boolean(t.isProTemplate),
-    };
-    pushThemeChange(nextTheme);
-    setPreviewTheme(null);
-
-    if (orgId) {
-      setSaving(true);
-      try {
-        await fetch(`/api/organizations/${orgId}/theme`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ theme: nextTheme }),
-        });
-        recordVersion(`"${t.name}" Teması Tətbiq Edildi`, 'Kitabxanadan seçildi', 'manual', nextTheme);
-        setToastMessage(`"${t.name}" teması uğurla tətbiq edildi!`);
-        setTimeout(() => setToastMessage(null), 3500);
-      } catch (err) {
-        console.error('Tema tətbiq olunarkən xəta:', err);
-      } finally {
-        setSaving(false);
-      }
+      setActiveThemeId(themeToApply.id);
+      setCurrentThemeConfig(themeToApply);
+      showToast(
+        publishNow
+          ? `"${themeToApply.name}" canlı sayta uğurla tətbiq edildi!`
+          : `"${themeToApply.name}" saytın qaralamasına tətbiq olundu. "Yayınla" düyməsi ilə canlıya verə bilərsiniz.`
+      );
+      if (previewingTheme) setPreviewingTheme(null);
+      refreshOrg();
+    } catch (err: any) {
+      showToast(err.message || 'Xəta baş verdi', 'error');
+    } finally {
+      setApplyingThemeId(null);
     }
   };
 
-  const handleCreateTheme = (name: string, description: string, baseId?: string) => {
-    const base = (baseId && defaultThemes[baseId]) ? defaultThemes[baseId] : defaultThemes.modern;
-    // eslint-disable-next-line react-hooks/purity -- Date.now() used in event handler, not render path
-    const newId = 'custom-' + Date.now();
-    const created: ThemeConfig = {
-      ...base,
-      id: newId,
-      name,
-      description,
+  // Export Theme to JSON file
+  const handleExportTheme = (themeToExport: ThemeItem) => {
+    const exportData = {
+      schemaVersion: '1.0.0',
+      exportedAt: new Date().toISOString(),
+      theme: themeToExport,
     };
-    pushThemeChange(created);
-    recordVersion(`Yeni Tema: "${name}"`, description, 'manual', created);
-    setToastMessage(`"${name}" adlı yeni tema yaradıldı və tətbiq edildi!`);
-    setTimeout(() => setToastMessage(null), 3500);
+
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `theme-${themeToExport.id}-${Date.now()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast(`"${themeToExport.name}" JSON faylı yükləndi`);
   };
 
-  const handleDuplicateTheme = (name: string) => {
-    // eslint-disable-next-line react-hooks/purity -- Date.now() used in event handler, not render path
-    const newId = 'copy-' + Date.now();
-    const duplicated: ThemeConfig = {
-      ...theme,
-      id: newId,
-      name,
+  // Delete Custom Theme
+  const handleDeleteTheme = async (themeToDelete: ThemeItem) => {
+    if (themeToDelete.source !== 'custom') {
+      showToast('Daxili sistem temaları silinə bilməz', 'error');
+      return;
+    }
+
+    if (!confirm(`"${themeToDelete.name}" temasını silmək istədiyinizdən əminsiniz?`)) {
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/themes?id=${encodeURIComponent(themeToDelete.id)}`, {
+        method: 'DELETE',
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Silinmə uğursuz oldu');
+      }
+
+      setThemes((prev) => prev.filter((t) => t.id !== themeToDelete.id));
+      showToast('Tema uğurla silindi');
+    } catch (err: any) {
+      showToast(err.message || 'Xəta baş verdi', 'error');
+    }
+  };
+
+  // Import Theme from JSON
+  const handleImportSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setImportError('');
+    if (!importJsonText.trim()) {
+      setImportError('JSON mətni daxil edin və ya fayl seçin');
+      return;
+    }
+
+    try {
+      setImporting(true);
+      const parsed = JSON.parse(importJsonText);
+      const themeObj = parsed.theme || parsed;
+
+      if (!themeObj.name || !themeObj.primaryColor) {
+        throw new Error('Etibarsız tema strukturu: "name" və "primaryColor" zəruridir');
+      }
+
+      const newId = themeObj.id ? `custom-${themeObj.id}-${Date.now()}` : `custom-${Date.now()}`;
+      const themePayload: ThemeItem = {
+        ...themeObj,
+        id: newId,
+        source: 'custom',
+        createdAt: new Date().toISOString(),
+      };
+
+      // Register theme in backend
+      const res = await fetch('/api/themes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: themePayload.id,
+          name: themePayload.name,
+          slug: themePayload.id,
+          description: themePayload.description || 'İdxal edilmiş fərdi tema',
+          category: themePayload.category || ['fərdi'],
+          version: '1.0.0',
+          tokens: {
+            colors: {
+              primary: themePayload.primaryColor,
+              secondary: themePayload.secondaryColor || '#1B1B2F',
+              accent: themePayload.accentColor || themePayload.primaryColor,
+              background: themePayload.backgroundColor || '#121416',
+              text: themePayload.textColor || '#FFFFFF',
+            },
+            typography: {
+              headingFont: themePayload.headingFont || 'Outfit',
+              bodyFont: themePayload.bodyFont || 'Inter',
+            },
+            spacing: {
+              heroHeight: themePayload.heroHeight || '85vh',
+              heroOverlay: themePayload.heroOverlay ?? 0.5,
+            },
+            radius: {
+              borderRadius: themePayload.borderRadius || '12px',
+            },
+          },
+          layout: {
+            headerStyle: themePayload.headerStyle || 'solid',
+            footerStyle: themePayload.footerStyle || 'dark',
+            buttonStyle: themePayload.buttonStyle || 'solid',
+            cardStyle: themePayload.cardStyle || 'elevated',
+          },
+          sections: [],
+        }),
+      });
+
+      if (!res.ok) {
+        const d = await res.json();
+        throw new Error(d.error || 'Tema serverdə qeydiyyatdan keçmədi');
+      }
+
+      setThemes((prev) => [themePayload, ...prev]);
+      setShowImportModal(false);
+      setImportJsonText('');
+      showToast(`"${themePayload.name}" uğurla idxal edildi!`);
+    } catch (err: any) {
+      setImportError(err.message || 'JSON formatı yanlışdır');
+    } finally {
+      setImporting(false);
+    }
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const content = event.target?.result as string;
+      setImportJsonText(content);
+      setImportError('');
     };
-    pushThemeChange(duplicated);
-    recordVersion(`Kopya: "${name}"`, 'Əvvəlki temadan kopyalandı', 'manual', duplicated);
-    setToastMessage(`"${name}" nüsxəsi yaradıldı!`);
-    setTimeout(() => setToastMessage(null), 3500);
+    reader.readAsText(file);
   };
-
-  const handleRenameTheme = (newName: string) => {
-    const updated: ThemeConfig = {
-      ...theme,
-      name: newName,
-    };
-    pushThemeChange(updated);
-    setToastMessage(`Tema adı "${newName}" olaraq dəyişdirildi!`);
-    setTimeout(() => setToastMessage(null), 3500);
-  };
-
-  const handleImportTheme = (imported: ThemeConfig, importedStl?: string) => {
-    pushThemeChange(imported);
-    if (importedStl) setStlCode(importedStl);
-    recordVersion(`İdxal: "${imported.name || 'İdxal edilmiş tema'}"`, 'Fayldan daxil edildi', 'import', imported);
-    setToastMessage(`"${imported.name || 'Tema'}" uğurla idxal edildi!`);
-    setTimeout(() => setToastMessage(null), 3500);
-  };
-
-  const handleResetDefault = () => {
-    const resetTheme = defaultThemes.elegant;
-    pushThemeChange(resetTheme);
-    recordVersion('Standart Temaya Sıfırlama', 'İlkin parametrlərə qaytarıldı', 'manual', resetTheme);
-    setToastMessage('Tema standart ayarlara sıfırlandı!');
-    setTimeout(() => setToastMessage(null), 3500);
-  };
-
-  const handleRestoreVersion = (ver: ThemeVersionRecord) => {
-    pushThemeChange(ver.theme);
-    if (ver.stlCode) setStlCode(ver.stlCode);
-    setToastMessage(`v${ver.version} ("${ver.title}") uğurla bərpa edildi!`);
-    setTimeout(() => setToastMessage(null), 3500);
-  };
-
-  const effectiveTheme = previewTheme || theme;
-  const isProActive = Boolean(effectiveTheme.isProTemplate);
-
-  const previewSiteData = useMemo<SiteData>(() => {
-    const rawCategories = orgData?.menuCategories || [];
-    const validCategories = rawCategories.filter((c) => Array.isArray(c.menuItems) && c.menuItems.length > 0);
-
-    const categories = validCategories.length > 0 ? validCategories : [
-      {
-        id: 'cat-1',
-        name: 'Aş Çeşidləri',
-        slug: 'as-cesidleri',
-        isVisible: true,
-        menuItems: [
-          {
-            id: 'item-1',
-            name: 'Toyuq Plov (kiçik)',
-            slug: 'toyuq-plov-kicik',
-            description: 'Zəfəranlı uzun düyü, zərif bişmiş toyuq əti, təbii kərə yağı ilə doyumlu kiçik porsiya.',
-            price: 2.80,
-            image: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80',
-            isFeatured: true,
-            isNew: false,
-            isPopular: true,
-            portionSize: 'Kiçik porsiya',
-          },
-          {
-            id: 'item-2',
-            name: 'Toyuq Plov (böyük)',
-            slug: 'toyuq-plov-boyuk',
-            description: 'Bol toyuq tikələri və ətirli plov ilə zənginləşdirilmiş doyurucu böyük porsiya.',
-            price: 4.20,
-            image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80',
-            video: 'https://assets.mixkit.co/videos/preview/mixkit-top-view-of-a-dish-with-rice-and-chicken-42861-large.mp4',
-            isFeatured: true,
-            isNew: false,
-            isPopular: true,
-            portionSize: 'Böyük porsiya',
-          },
-        ],
-      },
-      {
-        id: 'cat-2',
-        name: 'Qulyaşlar',
-        slug: 'qulyaslar',
-        isVisible: true,
-        menuItems: [
-          {
-            id: 'item-3',
-            name: 'Ətli Qulyaş',
-            slug: 'etli-qulyas',
-            description: 'Yumşaq mal əti, qatı ətirli sous və istəyə uyğun qarnir.',
-            price: 3.80,
-            image: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=800&q=80',
-            isFeatured: false,
-            isNew: true,
-            isPopular: false,
-            portionSize: 'Klassik',
-          },
-          {
-            id: 'item-4',
-            name: 'Toyuqlu Qulyaş',
-            slug: 'toyuqlu-qulyas',
-            description: 'Zərif toyuq filesi, şirin bibər və xüsusi tomat sousu ilə ləzzətli seçim.',
-            price: 3.20,
-            image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=800&q=80',
-            isFeatured: false,
-            isNew: false,
-            isPopular: true,
-            portionSize: 'Yüngül & Dadlı',
-          },
-        ],
-      },
-    ];
-
-    return {
-      organization: {
-        name: orgName || orgData?.name || 'Restoran',
-        slug: slug || orgData?.slug || 'restoran',
-        logo: orgLogo || orgData?.logo || undefined,
-        description: orgData?.description || 'Ənənəvi dad və keyfiyyəti bir araya gətirən məkan.',
-        phone: orgData?.phone || '+994 55 366 77 07',
-        email: orgData?.email || '',
-        address: orgData?.address || 'Bakı, Azərbaycan',
-        city: orgData?.city || 'Bakı',
-        mapUrl: orgData?.mapUrl || '',
-        currency: orgData?.currency || 'AZN',
-        siteCategory: orgData?.siteCategory,
-        siteSubcategory: orgData?.siteSubcategory,
-      },
-      website: {
-        theme: {
-          ...effectiveTheme,
-          isProTemplate: isProActive,
-        },
-        draftTheme: effectiveTheme,
-        pagesConfig: orgData?.website?.pagesConfig,
-        seoTitle: orgName,
-        seoDescription: orgData?.description,
-      },
-      whatsapp: orgData?.whatsappSettings || {
-        countryCode: '994',
-        phoneNumber: orgData?.phone || '553667707',
-        orderMessage: 'Salam! Sifariş vermək istəyirəm: {name} - {price} AZN',
-        buttonText: 'WhatsApp Sifariş',
-        isEnabled: true,
-      },
-      socialLinks: orgData?.socialLinks?.length
-        ? orgData.socialLinks
-        : [
-            { platform: 'instagram', url: 'https://instagram.com' },
-            { platform: 'facebook', url: 'https://facebook.com' },
-            { platform: 'whatsapp', url: 'https://wa.me' },
-          ],
-      workingHours: orgData?.workingHours && orgData.workingHours.length > 0 ? orgData.workingHours : [
-        { dayOfWeek: 1, openTime: '09:00', closeTime: '22:00', isClosed: false },
-        { dayOfWeek: 2, openTime: '09:00', closeTime: '22:00', isClosed: false },
-        { dayOfWeek: 3, openTime: '09:00', closeTime: '22:00', isClosed: false },
-        { dayOfWeek: 4, openTime: '09:00', closeTime: '22:00', isClosed: false },
-        { dayOfWeek: 5, openTime: '09:00', closeTime: '22:00', isClosed: false },
-        { dayOfWeek: 6, openTime: '09:00', closeTime: '22:00', isClosed: false },
-        { dayOfWeek: 0, openTime: '', closeTime: '', isClosed: true },
-      ],
-      menuCategories: categories,
-      galleryItems: orgData?.galleryItems || [],
-    };
-  }, [orgData, orgName, slug, orgLogo, effectiveTheme, isProActive]);
-
-  if (sessionStatus === 'loading' || loading) {
-    return <div style={{ display: 'grid', gap: 16 }}>{[...Array(5)].map((_, i) => <div key={i} className="skeleton" style={{ height: 60, borderRadius: 12 }} />)}</div>;
-  }
-
-  if (!isSuperAdmin) {
-    return null;
-  }
 
   return (
-    <>
-      <link
-        rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Bebas+Neue&family=Cinzel:wght@600;700;900&family=Cormorant+Garamond:ital,wght@0,600;1,600&family=Dancing+Script:wght@700&family=DM+Serif+Display:ital@0;1&family=Great+Vibes&family=Kaushan+Script&family=Lobster&family=Marcellus&family=Montserrat:wght@700;800&family=Oswald:wght@600&family=Outfit:wght@700;800&family=Pacifico&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Prata&family=Righteous&family=Satisfy&display=swap"
-      />
-      <style>{`
-        @media (max-width: 1080px) {
-          .theme-workspace-grid {
-            grid-template-columns: 1fr !important;
-            height: auto !important;
-            min-height: unset !important;
-          }
-        }
-        .sitex-preview-canvas header,
-        .sitex-preview-canvas [data-theme-header] {
-          position: relative !important;
-          top: 0 !important;
-          left: auto !important;
-          right: auto !important;
-          width: 100% !important;
-          max-width: 100% !important;
-          z-index: 10 !important;
-        }
-        .sitex-preview-canvas {
-          contain: layout paint;
-          transform: translateZ(0);
-        }
-        .sitex-preview-canvas .restaurant-site-container,
-        .sitex-preview-canvas .pro-restaurant-site,
-        .sitex-preview-canvas .speech-academy-root {
-          overflow-x: clip !important;
-          position: relative !important;
-          width: 100% !important;
-          max-width: 100% !important;
-        }
-      `}</style>
+    <div style={{ maxWidth: 1200, margin: '0 auto', paddingBottom: 60 }}>
+      {/* Toast Notification */}
+      <AnimatePresence>
+        {toast && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            style={{
+              position: 'fixed',
+              top: 24,
+              right: 24,
+              zIndex: 99999,
+              background: toast.type === 'success' ? '#00D37D' : '#F87171',
+              color: toast.type === 'success' ? '#0F0F14' : '#FFFFFF',
+              padding: '12px 20px',
+              borderRadius: 12,
+              fontWeight: 600,
+              fontSize: 14,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
+            }}
+          >
+            {toast.type === 'success' ? <CheckCircle2 size={18} /> : <AlertCircle size={18} />}
+            {toast.message}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      {/* Top Header & Tab Navigation */}
-      <div style={{ marginBottom: 20, display: 'flex', flexDirection: 'column', gap: 14 }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <h1 style={{ fontSize: 22, fontWeight: 700, color: '#FFFFFF', margin: 0, display: 'flex', alignItems: 'center', gap: 10 }}>
-                <Palette size={24} color="#00D37D" />
-                Tema Redaktoru
-              </h1>
-              <span
-                style={{
-                  fontSize: 12,
-                  padding: '3px 10px',
-                  borderRadius: 999,
-                  background: 'rgba(0,211,125,0.15)',
-                  color: '#00D37D',
-                  fontWeight: 600,
-                  border: '1px solid rgba(0,211,125,0.3)',
-                }}
-              >
-                {theme.name || 'SiteX Tema'}
-              </span>
+      {/* Header */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'flex-start',
+          justifyContent: 'space-between',
+          gap: 20,
+          marginBottom: 32,
+          flexWrap: 'wrap',
+        }}
+      >
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div
+              style={{
+                width: 44,
+                height: 44,
+                borderRadius: 12,
+                background: 'rgba(0, 211, 125, 0.15)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <Palette size={24} color="#00D37D" />
             </div>
-            <p style={{ fontSize: 13, color: '#8888A0', margin: '4px 0 0' }}>
-              Wix və Webflow səviyyəsində vizual redaktor, STL proqramlaşdırma dili və canlı önizləmə sistemi.
-            </p>
+            <div>
+              <h1 style={{ fontSize: 26, fontWeight: 800, color: '#F5F5F7', margin: 0 }}>Tema Kitabxanası</h1>
+              <p style={{ color: '#8888A0', fontSize: 14, margin: '4px 0 0' }}>
+                Saytınız üçün peşəkar dizayn temalarını seçin, önizləyin və aktivləşdirin
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Header Action Buttons */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <button
+            onClick={() => setShowImportModal(true)}
+            className="dash-btn-secondary"
+            style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, padding: '10px 16px' }}
+          >
+            <Upload size={16} /> Tema İdxal et (JSON)
+          </button>
+          <button
+            onClick={loadData}
+            title="Yenilə"
+            className="dash-btn-secondary"
+            style={{ padding: 10 }}
+          >
+            <RotateCcw size={16} />
+          </button>
+        </div>
+      </div>
+
+      {/* Active Theme Status Banner */}
+      {currentThemeConfig && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          style={{
+            padding: '16px 20px',
+            borderRadius: 14,
+            background: 'linear-gradient(135deg, rgba(0,211,125,0.08) 0%, rgba(26,26,30,0.8) 100%)',
+            border: '1px solid rgba(0,211,125,0.25)',
+            marginBottom: 28,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: 16,
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+            <div
+              style={{
+                width: 14,
+                height: 14,
+                borderRadius: '50%',
+                background: '#00D37D',
+                boxShadow: '0 0 10px #00D37D',
+              }}
+            />
+            <div>
+              <span style={{ fontSize: 12, color: '#8888A0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                Hazırda Aktiv Tema
+              </span>
+              <h3 style={{ fontSize: 18, fontWeight: 700, color: '#FFFFFF', margin: '2px 0 0' }}>
+                {currentThemeConfig.name}
+              </h3>
+            </div>
+            <div style={{ display: 'flex', gap: 4, marginLeft: 8 }}>
+              {[
+                currentThemeConfig.primaryColor,
+                currentThemeConfig.secondaryColor,
+                currentThemeConfig.accentColor,
+                currentThemeConfig.backgroundColor,
+              ].map((c, i) => (
+                <span
+                  key={i}
+                  style={{
+                    width: 14,
+                    height: 14,
+                    borderRadius: 4,
+                    background: c,
+                    display: 'inline-block',
+                    border: '1px solid rgba(255,255,255,0.2)',
+                  }}
+                />
+              ))}
+            </div>
           </div>
 
-          {/* Top Quick Actions */}
-          <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
-            <button
-              type="button"
-              onClick={() => setModalType('create')}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6,
-                padding: '7px 12px',
-                borderRadius: 8,
-                border: '1px solid #3A3A4E',
-                background: '#1F2230',
-                color: '#E0E2EC',
-                fontSize: 12,
-                fontWeight: 600,
-                cursor: 'pointer',
-              }}
-            >
-              <Plus size={13} color="#00D37D" />
-              Yeni Tema
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setModalType('duplicate')}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6,
-                padding: '7px 12px',
-                borderRadius: 8,
-                border: '1px solid #3A3A4E',
-                background: '#1F2230',
-                color: '#E0E2EC',
-                fontSize: 12,
-                fontWeight: 600,
-                cursor: 'pointer',
-              }}
-            >
-              <Copy size={13} color="#7C5CFC" />
-              Kopyala
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setModalType('import')}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6,
-                padding: '7px 12px',
-                borderRadius: 8,
-                border: '1px solid #3A3A4E',
-                background: '#1F2230',
-                color: '#E0E2EC',
-                fontSize: 12,
-                fontWeight: 600,
-                cursor: 'pointer',
-              }}
-            >
-              <Upload size={13} color="#38BDF8" />
-              İdxal Et
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setModalType('export')}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6,
-                padding: '7px 12px',
-                borderRadius: 8,
-                border: '1px solid #3A3A4E',
-                background: '#1F2230',
-                color: '#E0E2EC',
-                fontSize: 12,
-                fontWeight: 600,
-                cursor: 'pointer',
-              }}
-            >
-              <Download size={13} color="#F59E0B" />
-              İxrac Et
-            </button>
-
-            {slug && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            {org?.website?.isPublished && org?.slug && (
               <a
-                href={`/site/${slug}`}
+                href={`/site/${org.slug}`}
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
                 style={{
                   display: 'flex',
                   alignItems: 'center',
                   gap: 6,
-                  padding: '7px 12px',
+                  padding: '8px 14px',
                   borderRadius: 8,
-                  border: '1px solid #3A3A4E',
-                  background: 'rgba(255,255,255,0.03)',
-                  color: '#B0B0C0',
                   fontSize: 12,
+                  color: '#00D37D',
                   textDecoration: 'none',
+                  background: 'rgba(0,211,125,0.1)',
+                  border: '1px solid rgba(0,211,125,0.2)',
                 }}
               >
-                <ExternalLink size={13} />
-                Saytı aç
+                <Globe size={14} /> Canlı Saytda Gör
               </a>
             )}
+          </div>
+        </motion.div>
+      )}
 
-            <button
-              onClick={saveDraft}
-              disabled={saving}
-              className="dash-btn-secondary"
-              style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, padding: '7px 14px' }}
-            >
-              {saving ? <Loader2 size={13} style={{ animation: 'spin 1s linear infinite' }} /> : saved ? <Check size={13} color="#34D399" /> : <Save size={13} />}
-              {saved ? 'Saxlandı' : 'Qaralama saxla'}
-            </button>
-
-            <button
-              onClick={publish}
-              disabled={publishing}
-              className="dash-btn-primary"
-              style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, padding: '7px 16px' }}
-            >
-              {publishing ? <Loader2 size={13} style={{ animation: 'spin 1s linear infinite' }} /> : published ? <Check size={13} /> : <Globe size={13} />}
-              {published ? 'Yayınlandı!' : 'Yayınla'}
-            </button>
+      {/* Search and Category Filters */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginBottom: 28 }}>
+        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
+          {/* Search Bar */}
+          <div style={{ position: 'relative', flex: 1, minWidth: 260 }}>
+            <Search
+              size={18}
+              style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#8888A0' }}
+            />
+            <input
+              type="text"
+              placeholder="Tema adı, tipoqrafiya və ya kateqoriya axtar..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="dash-input"
+              style={{ paddingLeft: 42, width: '100%', height: 44, borderRadius: 12 }}
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                style={{
+                  position: 'absolute',
+                  right: 12,
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: 'none',
+                  border: 'none',
+                  color: '#8888A0',
+                  cursor: 'pointer',
+                }}
+              >
+                <X size={16} />
+              </button>
+            )}
           </div>
         </div>
 
-        {/* Tab Switcher */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, borderBottom: '1px solid #2A2A3A', paddingBottom: 10, overflowX: 'auto' }}>
-          {[
-            { id: 'builder', label: 'Vizual Redaktor', icon: Palette, color: '#00D37D' },
-            { id: 'code', label: 'STL Kod Redaktoru', icon: Code, color: '#7C5CFC' },
-            { id: 'library', label: 'Tema Kitabxanası', icon: Sparkles, color: '#38BDF8' },
-            { id: 'assets', label: 'Aktivlər & Şəkillər', icon: ImageIcon, color: '#F59E0B' },
-            { id: 'versions', label: 'Versiya Tarixçəsi', icon: History, color: '#EC4899' },
-            { id: 'settings', label: 'Parametrlər', icon: SettingsIcon, color: '#94A3B8' },
-            { id: 'customizer', label: 'Qabaqcıl Detallar', icon: Sliders, color: '#C4B5FD' },
-          ].map((tabItem) => {
-            const Icon = tabItem.icon;
-            const isActive = activeTab === tabItem.id;
+        {/* Category Pills */}
+        <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 4 }}>
+          {CATEGORIES.map((cat) => {
+            const active = selectedCategory === cat.id;
             return (
               <button
-                key={tabItem.id}
-                type="button"
-                onClick={() => setActiveTab(tabItem.id as ThemeEditorTab)}
+                key={cat.id}
+                onClick={() => setSelectedCategory(cat.id)}
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 8,
                   padding: '8px 16px',
-                  borderRadius: 8,
-                  border: isActive ? `1px solid ${tabItem.color}` : '1px solid transparent',
-                  background: isActive ? `${tabItem.color}18` : 'transparent',
-                  color: isActive ? tabItem.color : '#8888A0',
-                  fontWeight: isActive ? 700 : 500,
+                  borderRadius: 10,
                   fontSize: 13,
+                  fontWeight: active ? 600 : 400,
+                  border: active ? '1px solid #00D37D' : '1px solid #383334',
+                  background: active ? 'rgba(0,211,125,0.15)' : '#1A1A1E',
+                  color: active ? '#00D37D' : '#8888A0',
                   cursor: 'pointer',
-                  transition: 'all 0.15s',
                   whiteSpace: 'nowrap',
+                  transition: 'all 0.15s ease',
                 }}
               >
-                <Icon size={16} />
-                {tabItem.label}
+                {cat.label}
               </button>
             );
           })}
         </div>
-
-        {/* Uğur Bildirişi Toast */}
-        {toastMessage && (
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 10,
-              padding: '12px 18px',
-              borderRadius: 10,
-              background: 'rgba(0, 211, 125, 0.15)',
-              border: '1.5px solid #00D37D',
-              color: '#00D37D',
-              fontSize: 13,
-              fontWeight: 600,
-              boxShadow: '0 4px 16px rgba(0, 211, 125, 0.2)',
-            }}
-          >
-            <CheckCircle2 size={18} />
-            <span>{toastMessage}</span>
-          </div>
-        )}
-
-        {/* Xəta Bildirişi Toast (B02/B03 fix) */}
-        {saveError && (
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: 10,
-              padding: '12px 18px',
-              borderRadius: 10,
-              background: 'rgba(239, 68, 68, 0.12)',
-              border: '1.5px solid #EF4444',
-              color: '#F87171',
-              fontSize: 13,
-              fontWeight: 600,
-              boxShadow: '0 4px 16px rgba(239, 68, 68, 0.15)',
-            }}
-          >
-            <span>⚠ {saveError}</span>
-            <button
-              type="button"
-              onClick={() => setSaveError(null)}
-              style={{ background: 'none', border: 'none', color: '#F87171', cursor: 'pointer', padding: 0, fontSize: 16, lineHeight: 1 }}
-              aria-label="Xəta bildirişini bağla"
-            >×</button>
-          </div>
-        )}
       </div>
 
-      {/* Visual Builder Workspace */}
-      {activeTab === 'builder' && (
+      {/* Main Theme Grid */}
+      {loading ? (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 20 }}>
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="skeleton" style={{ height: 340, borderRadius: 16 }} />
+          ))}
+        </div>
+      ) : filteredThemes.length === 0 ? (
         <div
-          className="theme-workspace-grid"
           style={{
-            display: 'grid',
-            gridTemplateColumns: isSidebarCollapsed ? '1fr' : 'minmax(340px, 420px) 1fr',
-            gap: 20,
-            alignItems: 'start',
-            height: 'calc(100vh - 200px)',
-            minHeight: 700,
-            transition: 'grid-template-columns 0.2s ease',
+            padding: 60,
+            textAlign: 'center',
+            background: '#1A1A1E',
+            borderRadius: 16,
+            border: '1px solid #383334',
           }}
         >
-          {!isSidebarCollapsed && (
-            <VisualThemeBuilder
+          <Palette size={48} style={{ color: '#8888A0', margin: '0 auto 16px', opacity: 0.4 }} />
+          <h3 style={{ fontSize: 18, fontWeight: 700, color: '#F5F5F7', margin: 0 }}>Uyğun tema tapılmadı</h3>
+          <p style={{ color: '#8888A0', fontSize: 14, margin: '8px 0 20px' }}>
+            Axtarış sözünü dəyişin və ya başqa bir kateqoriya seçin.
+          </p>
+          <button
+            onClick={() => {
+              setSearchQuery('');
+              setSelectedCategory('all');
+            }}
+            className="dash-btn-secondary"
+            style={{ padding: '8px 16px', fontSize: 13 }}
+          >
+            Bütün temaları göstər
+          </button>
+        </div>
+      ) : (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 20 }}>
+          {filteredThemes.map((theme) => (
+            <ThemeMiniCard
+              key={theme.id}
               theme={theme}
-              onChange={pushThemeChange}
-              onUndo={handleUndo}
-              onRedo={handleRedo}
-              canUndo={historyIdx > 0}
-              canRedo={historyIdx < history.length - 1}
-              selectedComponent={selectedComponent}
-              onSelectComponent={setSelectedComponent}
+              isActive={activeThemeId === theme.id || currentThemeConfig?.name === theme.name}
+              onPreview={(t) => setPreviewingTheme(t)}
+              onApply={(t) => handleApplyTheme(t, false)}
+              onExport={handleExportTheme}
+              onDelete={handleDeleteTheme}
+              isApplying={applyingThemeId === theme.id}
             />
-          )}
-          <LivePreviewEngine
-            theme={theme}
-            siteData={previewSiteData}
-            slug={slug}
-            viewport={viewport}
-            onViewportChange={setViewport}
-            selectedComponent={selectedComponent}
-            onSelectComponent={setSelectedComponent}
-            isSidebarCollapsed={isSidebarCollapsed}
-            onToggleSidebar={() => setIsSidebarCollapsed((prev) => !prev)}
-          />
+          ))}
         </div>
       )}
 
-      {/* STL Code Editor Workspace */}
-      {activeTab === 'code' && (
-        <div
-          className="theme-workspace-grid"
-          style={{
-            display: 'grid',
-            gridTemplateColumns: isSidebarCollapsed ? '1fr' : 'minmax(480px, 1.2fr) minmax(360px, 1fr)',
-            gap: 20,
-            alignItems: 'start',
-            height: 'calc(100vh - 200px)',
-            minHeight: 700,
-            transition: 'grid-template-columns 0.2s ease',
-          }}
-        >
-          {!isSidebarCollapsed && (
-            <STLCodeEditor
-              initialCode={stlCode}
-              onCodeChange={setStlCode}
-              onCompileSuccess={(ast) => {
-                try {
-                  const converted = convertSTLToThemeConfig(ast, theme);
-                  setTheme(converted);
-                } catch {
-                  // ignore
-                }
-              }}
-            />
-          )}
-          <LivePreviewEngine
-            theme={theme}
-            siteData={previewSiteData}
-            slug={slug}
-            viewport={viewport}
-            onViewportChange={setViewport}
-            selectedComponent={selectedComponent}
-            onSelectComponent={setSelectedComponent}
-            isSidebarCollapsed={isSidebarCollapsed}
-            onToggleSidebar={() => setIsSidebarCollapsed((prev) => !prev)}
-          />
-        </div>
-      )}
-
-      {/* Assets Manager Workspace */}
-      {activeTab === 'assets' && (
-        <ThemeAssetsManager
-          theme={theme}
-          orgId={orgId}
-          onChange={pushThemeChange}
-        />
-      )}
-
-      {/* Version History Workspace */}
-      {activeTab === 'versions' && (
-        <ThemeVersionHistory
-          versions={versions}
-          currentTheme={theme}
-          onRestore={handleRestoreVersion}
-          onCreateSnapshot={(title, note) => recordVersion(title, note, 'manual')}
-        />
-      )}
-
-      {/* Settings Workspace */}
-      {activeTab === 'settings' && (
-        <ThemeSettingsPanel
-          theme={theme}
-          onChange={pushThemeChange}
-          onResetDefault={handleResetDefault}
-        />
-      )}
-
-      {/* Library or Customizer Workspaces */}
-      {(activeTab === 'library' || activeTab === 'customizer') && (
-        <div
-          className="theme-workspace-grid"
-          style={{
-            display: 'grid',
-            gridTemplateColumns: activeTab === 'library' ? 'minmax(0, 1.4fr) minmax(360px, 460px)' : '340px 1fr',
-            gap: 24,
-            alignItems: 'start',
-            maxWidth: '100%',
-          }}
-        >
-        {/* Left Panel */}
-        {activeTab === 'library' ? (
-          <ThemeLibrary
-            activeTheme={theme}
-            previewTheme={previewTheme}
-            onPreview={(t) => setPreviewTheme(t)}
-            onApply={applyTheme}
-            onCancelPreview={() => setPreviewTheme(null)}
-            onSwitchToCustomizer={() => setActiveTab('builder')}
-            isSaving={saving}
-          />
-        ) : (
-          <ThemeCustomizerTab
-            theme={theme}
-            setTheme={setTheme}
-            saveDraft={saveDraft}
-            publish={publish}
-            saving={saving}
-            saved={saved}
-            publishing={publishing}
-            published={published}
-            orgId={orgId}
-            orgName={orgName}
-            applyTheme={applyTheme}
-          />
-        )}
-
-      {/* Preview */}
-      <div style={{ position: 'sticky', top: 20 }}>
-        {previewTheme && (
-          <div
+      {/* Fullscreen Interactive Preview Modal */}
+      <AnimatePresence>
+        {previewingTheme && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             style={{
-              marginBottom: 12,
-              padding: '10px 14px',
-              borderRadius: 10,
-              background: 'linear-gradient(135deg, rgba(124, 92, 252, 0.25), rgba(0, 211, 125, 0.15))',
-              border: '1.5px solid #7C5CFC',
+              position: 'fixed',
+              inset: 0,
+              zIndex: 9999,
+              background: 'rgba(0,0,0,0.85)',
+              backdropFilter: 'blur(8px)',
+              display: 'flex',
+              flexDirection: 'column',
+              padding: 20,
+            }}
+          >
+            {/* Modal Top Bar */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '12px 20px',
+                borderRadius: 12,
+                background: '#1A1A1E',
+                border: '1px solid #383334',
+                marginBottom: 16,
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <span style={{ fontSize: 18, fontWeight: 800, color: '#F5F5F7' }}>{previewingTheme.name}</span>
+                <span
+                  style={{
+                    padding: '2px 8px',
+                    borderRadius: 999,
+                    background: `${previewingTheme.primaryColor}25`,
+                    color: previewingTheme.primaryColor,
+                    fontSize: 11,
+                    fontWeight: 700,
+                  }}
+                >
+                  Canlı Önizləmə
+                </span>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <button
+                  onClick={() => handleApplyTheme(previewingTheme, false)}
+                  disabled={applyingThemeId === previewingTheme.id}
+                  className="dash-btn-primary"
+                  style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 16px', fontSize: 13 }}
+                >
+                  {applyingThemeId === previewingTheme.id ? (
+                    <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} />
+                  ) : (
+                    <Sparkles size={16} />
+                  )}
+                  Bu Temanı Aktiv et
+                </button>
+                <button
+                  onClick={() => setPreviewingTheme(null)}
+                  style={{
+                    padding: 8,
+                    borderRadius: 8,
+                    background: '#23232B',
+                    border: '1px solid #383334',
+                    color: '#8888A0',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <X size={18} />
+                </button>
+              </div>
+            </div>
+
+            {/* Modal Preview Body */}
+            <div
+              style={{
+                flex: 1,
+                borderRadius: 14,
+                overflow: 'hidden',
+                border: '1px solid #383334',
+                background: previewingTheme.backgroundColor || '#121416',
+                position: 'relative',
+              }}
+            >
+              <div style={{ height: '100%', overflowY: 'auto' }}>
+                <RestaurantSite
+                  data={{
+                    organization: {
+                      id: org?.id,
+                      name: org?.name || previewingTheme.name,
+                      slug: org?.slug || 'preview',
+                      description: org?.description || previewingTheme.description,
+                      phone: org?.phone || '+994 50 123 45 67',
+                      email: org?.email || 'info@sitex.az',
+                      address: org?.address || 'Nizami küç. 45, Bakı',
+                      city: org?.city || 'Bakı',
+                      currency: 'AZN',
+                      siteCategory: org?.siteCategory || 'restoran-ve-qida-sayti',
+                    },
+                    website: {
+                      theme: previewingTheme as unknown as Record<string, unknown>,
+                      draftTheme: previewingTheme as unknown as Record<string, unknown>,
+                      publishedTheme: previewingTheme as unknown as Record<string, unknown>,
+                    },
+                    socialLinks: [],
+                    workingHours: [],
+                    menuCategories: [
+                      {
+                        id: 'c1',
+                        name: 'İsti Yeməklər',
+                        slug: 'isti-yemekler',
+                        isVisible: true,
+                        menuItems: [
+                          {
+                            id: 'i1',
+                            name: 'Şefin Xüsusi Steak-i',
+                            slug: 'sefin-xususi-steaki',
+                            description: 'Mərmər ət, rozmarin və zərif kərə yağı sousu ilə',
+                            price: 28,
+                            isFeatured: true,
+                            isNew: true,
+                            isPopular: true,
+                          },
+                        ],
+                      },
+                      {
+                        id: 'c2',
+                        name: 'Desertlər',
+                        slug: 'desertler',
+                        isVisible: true,
+                        menuItems: [
+                          {
+                            id: 'i2',
+                            name: 'Tiramisu Klasik',
+                            slug: 'tiramisu-klasik',
+                            description: 'Mascarpone pendiri və espresso aroması ilə',
+                            price: 9,
+                            isFeatured: false,
+                            isNew: false,
+                            isPopular: true,
+                          },
+                        ],
+                      },
+                    ],
+                  }}
+                />
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Import Modal */}
+      <AnimatePresence>
+        {showImportModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            style={{
+              position: 'fixed',
+              inset: 0,
+              zIndex: 9999,
+              background: 'rgba(0,0,0,0.75)',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: 8,
-              boxShadow: '0 4px 16px rgba(124, 92, 252, 0.25)',
+              justifyContent: 'center',
+              padding: 20,
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: '#FFFFFF' }}>
-              <Eye size={16} color="#C4B5FD" />
-              <span>
-                <strong>&ldquo;{previewTheme.name}&rdquo;</strong> canlı önizlənilir
-              </span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <button
-                type="button"
-                onClick={() => setPreviewTheme(null)}
-                style={{
-                  background: 'rgba(255,255,255,0.08)',
-                  border: '1px solid rgba(255,255,255,0.2)',
-                  borderRadius: 6,
-                  color: '#FFFFFF',
-                  fontSize: 11,
-                  fontWeight: 600,
-                  padding: '4px 10px',
-                  cursor: 'pointer',
-                }}
-              >
-                Çıx
-              </button>
-              <button
-                type="button"
-                disabled={saving}
-                onClick={() => applyTheme(previewTheme)}
-                style={{
-                  background: '#00D37D',
-                  border: 'none',
-                  borderRadius: 6,
-                  color: '#0D1117',
-                  fontSize: 11,
-                  fontWeight: 700,
-                  padding: '4px 12px',
-                  cursor: saving ? 'not-allowed' : 'pointer',
-                }}
-              >
-                {saving ? 'Tətbiq edilir...' : 'Tətbiq et'}
-              </button>
-            </div>
-          </div>
+            <motion.div
+              initial={{ scale: 0.95 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.95 }}
+              className="dash-card"
+              style={{
+                width: '100%',
+                maxWidth: 540,
+                padding: 24,
+                borderRadius: 16,
+                background: '#1A1A1E',
+                border: '1px solid #383334',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+                <h3 style={{ fontSize: 18, fontWeight: 700, color: '#F5F5F7', margin: 0 }}>
+                  Yeni Tema İdxal et (JSON)
+                </h3>
+                <button
+                  onClick={() => setShowImportModal(false)}
+                  style={{ background: 'none', border: 'none', color: '#8888A0', cursor: 'pointer' }}
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              <form onSubmit={handleImportSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                <div>
+                  <label className="dash-label" style={{ marginBottom: 6, display: 'block' }}>
+                    JSON Faylı Seçin:
+                  </label>
+                  <input
+                    type="file"
+                    accept=".json"
+                    ref={importFileInputRef}
+                    onChange={handleFileUpload}
+                    style={{ display: 'none' }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => importFileInputRef.current?.click()}
+                    className="dash-btn-secondary"
+                    style={{
+                      width: '100%',
+                      padding: '12px 16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 8,
+                      border: '1px dashed #383334',
+                      borderRadius: 10,
+                    }}
+                  >
+                    <Upload size={16} /> Fayl seçin (.json)
+                  </button>
+                </div>
+
+                <div>
+                  <label className="dash-label" style={{ marginBottom: 6, display: 'block' }}>
+                    və ya JSON Mətnini Yapışdırın:
+                  </label>
+                  <textarea
+                    rows={8}
+                    value={importJsonText}
+                    onChange={(e) => {
+                      setImportJsonText(e.target.value);
+                      setImportError('');
+                    }}
+                    placeholder='{"name": "Mənim Xüsusi Temam", "primaryColor": "#00D37D", ...}'
+                    className="dash-input"
+                    style={{
+                      width: '100%',
+                      fontFamily: 'monospace',
+                      fontSize: 12,
+                      padding: 12,
+                      borderRadius: 10,
+                      background: '#121215',
+                    }}
+                  />
+                </div>
+
+                {importError && (
+                  <p style={{ fontSize: 12, color: '#F87171', margin: 0 }}>
+                    {importError}
+                  </p>
+                )}
+
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 8 }}>
+                  <button
+                    type="button"
+                    onClick={() => setShowImportModal(false)}
+                    className="dash-btn-secondary"
+                    style={{ padding: '8px 16px', fontSize: 13 }}
+                  >
+                    Ləğv et
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={importing}
+                    className="dash-btn-primary"
+                    style={{ padding: '8px 18px', fontSize: 13, display: 'flex', alignItems: 'center', gap: 6 }}
+                  >
+                    {importing && <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} />}
+                    İdxal et və Yadda Saxla
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </motion.div>
         )}
-
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <h2 style={{ fontSize: 18, fontWeight: 700, color: '#E8E8F0', margin: 0 }}>Canlı Önizləmə</h2>
-            {slug && (
-              <a
-                href={`/site/${slug}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#7C5CFC', textDecoration: 'none' }}
-              >
-                <Eye size={14} /> Yayınlanmış saytı aç
-              </a>
-            )}
-          </div>
-
-          {/* Device switcher */}
-          <div style={{ display: 'flex', alignItems: 'center', background: '#1e2022', padding: 3, borderRadius: 8, border: '1px solid #2A2A3A', gap: 4 }}>
-            <button
-              type="button"
-              onClick={() => setPreviewDevice('desktop')}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6,
-                padding: '4px 10px',
-                borderRadius: 6,
-                border: 'none',
-                cursor: 'pointer',
-                fontSize: 12,
-                fontWeight: 600,
-                background: previewDevice === 'desktop' ? '#7C5CFC' : 'transparent',
-                color: previewDevice === 'desktop' ? '#fff' : '#8888A0',
-                transition: 'all 0.15s',
-              }}
-            >
-              <Monitor size={14} /> Masaüstü
-            </button>
-            <button
-              type="button"
-              onClick={() => setPreviewDevice('mobile')}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6,
-                padding: '4px 10px',
-                borderRadius: 6,
-                border: 'none',
-                cursor: 'pointer',
-                fontSize: 12,
-                fontWeight: 600,
-                background: previewDevice === 'mobile' ? '#7C5CFC' : 'transparent',
-                color: previewDevice === 'mobile' ? '#fff' : '#8888A0',
-                transition: 'all 0.15s',
-              }}
-            >
-              <Smartphone size={14} /> Mobil
-            </button>
-          </div>
-        </div>
-
-        {/* Real Live Site Viewport Container */}
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            background: previewDevice === 'mobile' ? '#0c0e10' : 'transparent',
-            padding: previewDevice === 'mobile' ? '16px 0' : 0,
-            borderRadius: 18,
-          }}
-        >
-          <div
-            className="sitex-preview-canvas"
-            style={{
-              width: previewDevice === 'mobile' ? 390 : '100%',
-              height: 'calc(100vh - 120px)',
-              minHeight: 800,
-              borderRadius: 16,
-              overflow: 'hidden',
-              overflowY: 'auto',
-              border: previewDevice === 'mobile' ? '8px solid #282a2c' : '1px solid #2A2A3A',
-              boxShadow: previewDevice === 'mobile' ? '0 16px 40px rgba(0,0,0,0.8)' : '0 8px 30px rgba(0,0,0,0.4)',
-              transform: 'translateZ(0)',
-              position: 'relative',
-              isolation: 'isolate',
-              contain: 'paint layout',
-              background: effectiveTheme.backgroundColor || '#121416',
-            }}
-          >
-            <RestaurantSite data={previewSiteData} />
-          </div>
-        </div>
-      </div>
+      </AnimatePresence>
     </div>
-    )}
-
-    {/* Theme Management Modal */}
-    <ThemeManagementModal
-      type={modalType}
-      currentTheme={theme}
-      onClose={() => setModalType(null)}
-      onCreateTheme={handleCreateTheme}
-      onDuplicateTheme={handleDuplicateTheme}
-      onRenameTheme={handleRenameTheme}
-      onImportTheme={handleImportTheme}
-    />
-    </>
   );
 }

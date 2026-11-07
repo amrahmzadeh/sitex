@@ -116,20 +116,20 @@ test('Navigation: Menyu elementi yalnız restoran və kafe kateqoriyalarında g�
   assert.equal(isNavItemVisible(menuItem, { category: null, subcategory: null }), true);
 });
 
-test('Navigation: Tema Redaktoru və Splash Screen yalnız SUPER_ADMIN üçün görünür', () => {
+test('Navigation: Tema Kitabxanası bütün istifadəçilərə, Splash Screen isə yalnız SUPER_ADMIN üçün görünür', () => {
   const themeItem = dashboardNavItems.find((item) => item.id === 'theme');
   const splashItem = dashboardNavItems.find((item) => item.id === 'splash');
 
   assert.ok(themeItem, 'Tema nav item mövcuddur');
+  assert.equal(themeItem.label, 'Tema Kitabxanası');
   assert.ok(splashItem, 'Splash nav item mövcuddur');
 
-  // Normal USER üçün gizli olmalıdır
-  assert.equal(isNavItemVisible(themeItem, null, 'USER'), false);
+  // Tema Kitabxanası normal USER üçün görünməlidir
+  assert.equal(isNavItemVisible(themeItem, null, 'USER'), true);
+  // Splash Screen isə normal USER üçün gizli olmalıdır
   assert.equal(isNavItemVisible(splashItem, null, 'USER'), false);
-  assert.equal(isNavItemVisible(themeItem, null, null), false);
-  assert.equal(isNavItemVisible(splashItem, null, undefined), false);
 
-  // SUPER_ADMIN üçün görünməlidir
+  // SUPER_ADMIN üçün hər ikisi görünməlidir
   assert.equal(isNavItemVisible(themeItem, null, 'SUPER_ADMIN'), true);
   assert.equal(isNavItemVisible(splashItem, null, 'SUPER_ADMIN'), true);
 });

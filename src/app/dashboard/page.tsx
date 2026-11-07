@@ -208,7 +208,7 @@ export default function DashboardPage() {
                 : { href: '/dashboard/services', icon: Briefcase, label: 'Xidmət əlavə et', color: '#00D37D' },
             ];
           })().concat([
-            ...(isSuperAdmin ? [{ href: '/dashboard/theme', icon: Globe, label: 'Tema dəyiş', color: '#22D3EE' }] : []),
+            { href: '/dashboard/theme', icon: Globe, label: 'Tema seç', color: '#22D3EE' },
             { href: '/dashboard/social', icon: Share2, label: 'Sosial Media', color: '#E1306C' },
             { href: '/dashboard/whatsapp', icon: ArrowRight, label: 'WhatsApp qur', color: '#34D399' },
             { href: '/dashboard/new-organization', icon: Plus, label: 'Sayt yarat', color: '#FBBF24' },

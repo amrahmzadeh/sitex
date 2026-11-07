@@ -56,6 +56,12 @@ class ThemeRegistry {
     return list;
   }
 
+  public deleteTheme(id: string): boolean {
+    const theme = this.themes.get(id);
+    if (!theme || theme.source === 'builtin') return false;
+    return this.themes.delete(id);
+  }
+
   public getAllThemes(): ThemeDefinition[] {
     return Array.from(this.themes.values());
   }
@@ -63,6 +69,7 @@ class ThemeRegistry {
 
 export const themeRegistry = new ThemeRegistry();
 export const registerTheme = (theme: ThemeDefinition) => themeRegistry.registerTheme(theme);
+export const deleteTheme = (id: string) => themeRegistry.deleteTheme(id);
 export const getTheme = (idOrSlug: string) => themeRegistry.getTheme(idOrSlug);
 export const listThemes = (options?: { category?: string; source?: 'builtin' | 'custom' }) =>
   themeRegistry.listThemes(options);

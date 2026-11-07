@@ -34,7 +34,13 @@ export const SYSTEM_MODULES: SystemModuleDefinition[] = [
     description: 'Saytın blokları və mətnlərinin redaktəsi',
     actions: ['view', 'edit', 'manage'],
   },
-  // NOTE: 'theme' is superAdminOnly — not included here so it cannot be granted to employees
+  {
+    id: 'theme',
+    label: 'Tema Kitabxanası',
+    category: 'settings',
+    description: 'Saytın dizayn temasının seçilməsi və idarəsi',
+    actions: ['view', 'edit', 'manage'],
+  },
   {
     id: 'menu',
     label: 'Menyu',

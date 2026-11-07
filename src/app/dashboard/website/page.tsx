@@ -196,7 +196,7 @@ export default function WebsitePage() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
           {[
             ...(isSuperAdmin ? [
-              { title: 'Tema redaktoru', desc: 'Rənglər, fontlar, dizayn', href: '/dashboard/theme', color: '#00D37D' },
+              { title: 'Tema Kitabxanası', desc: 'Rənglər, fontlar, dizayn', href: '/dashboard/theme', color: '#00D37D' },
               { title: 'Splash Screen', desc: 'Video və animasiya ekranı', href: '/dashboard/splash', color: '#EC4899' },
             ] : []),
             ...(isMenuSupportedCategory(siteCategory, siteSubcategory) || isMenuActive({ id: orgId || undefined, category: siteCategory || undefined, subcategory: siteSubcategory || undefined })
