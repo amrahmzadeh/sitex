@@ -78,6 +78,8 @@ export interface FieldSchema {
   /** Blok daxilindəki görünürlük şərti */
   showIf?: (fields: BlockContent) => boolean;
   hint?: string;
+  /** Form daxilində bölmə ayırıcı başlığı */
+  section?: string;
 }
 
 /** Bir blok tanımı */

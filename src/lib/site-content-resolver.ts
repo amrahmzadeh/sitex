@@ -102,26 +102,41 @@ export function getResolvedSiteContent(siteContent: any, organization?: any, the
       }))
     : [];
 
-  const feature1Title = (aboutBlock.fields.feature1Title !== undefined)
-    ? (t(aboutBlock.fields.feature1Title, 'az') || (typeof aboutBlock.fields.feature1Title === 'string' ? aboutBlock.fields.feature1Title : ''))
-    : (orgTheme?.aboutFeature1Title || 'Təzə inqrediyentlər');
-  const feature1Desc = (aboutBlock.fields.feature1Desc !== undefined)
-    ? (t(aboutBlock.fields.feature1Desc, 'az') || (typeof aboutBlock.fields.feature1Desc === 'string' ? aboutBlock.fields.feature1Desc : ''))
-    : (orgTheme?.aboutFeature1Desc || 'Hər gün seçilmiş təbii tərəvəzlər və xalis pendir növləri.');
+  const feature1Title = (heroBlock.fields.feature1Title !== undefined && heroBlock.fields.feature1Title !== '')
+    ? (t(heroBlock.fields.feature1Title, 'az') || (typeof heroBlock.fields.feature1Title === 'string' ? heroBlock.fields.feature1Title : ''))
+    : (aboutBlock.fields.feature1Title !== undefined && aboutBlock.fields.feature1Title !== '')
+      ? (t(aboutBlock.fields.feature1Title, 'az') || (typeof aboutBlock.fields.feature1Title === 'string' ? aboutBlock.fields.feature1Title : ''))
+      : (orgTheme?.aboutFeature1Title || 'Təzə inqrediyentlər');
 
-  const feature2Title = (aboutBlock.fields.feature2Title !== undefined)
-    ? (t(aboutBlock.fields.feature2Title, 'az') || (typeof aboutBlock.fields.feature2Title === 'string' ? aboutBlock.fields.feature2Title : ''))
-    : (orgTheme?.aboutFeature2Title || 'Sürətli xidmət');
-  const feature2Desc = (aboutBlock.fields.feature2Desc !== undefined)
-    ? (t(aboutBlock.fields.feature2Desc, 'az') || (typeof aboutBlock.fields.feature2Desc === 'string' ? aboutBlock.fields.feature2Desc : ''))
-    : (orgTheme?.aboutFeature2Desc || 'Sifarişiniz isti və xırçıltılı şəkildə masanıza operativ çatdırılır.');
+  const feature1Desc = (heroBlock.fields.feature1Desc !== undefined && heroBlock.fields.feature1Desc !== '')
+    ? (t(heroBlock.fields.feature1Desc, 'az') || (typeof heroBlock.fields.feature1Desc === 'string' ? heroBlock.fields.feature1Desc : ''))
+    : (aboutBlock.fields.feature1Desc !== undefined && aboutBlock.fields.feature1Desc !== '')
+      ? (t(aboutBlock.fields.feature1Desc, 'az') || (typeof aboutBlock.fields.feature1Desc === 'string' ? aboutBlock.fields.feature1Desc : ''))
+      : (orgTheme?.aboutFeature1Desc || 'Hər gün seçilmiş təbii tərəvəzlər və xalis pendir növləri.');
 
-  const feature3Title = (aboutBlock.fields.feature3Title !== undefined)
-    ? (t(aboutBlock.fields.feature3Title, 'az') || (typeof aboutBlock.fields.feature3Title === 'string' ? aboutBlock.fields.feature3Title : ''))
-    : (orgTheme?.aboutFeature3Title || 'Rahat atmosfer');
-  const feature3Desc = (aboutBlock.fields.feature3Desc !== undefined)
-    ? (t(aboutBlock.fields.feature3Desc, 'az') || (typeof aboutBlock.fields.feature3Desc === 'string' ? aboutBlock.fields.feature3Desc : ''))
-    : (orgTheme?.aboutFeature3Desc || 'Ailəniz və dostlarınızla xoş xatirələr yaratmaq üçün isti və səmimi məkan.');
+  const feature2Title = (heroBlock.fields.feature2Title !== undefined && heroBlock.fields.feature2Title !== '')
+    ? (t(heroBlock.fields.feature2Title, 'az') || (typeof heroBlock.fields.feature2Title === 'string' ? heroBlock.fields.feature2Title : ''))
+    : (aboutBlock.fields.feature2Title !== undefined && aboutBlock.fields.feature2Title !== '')
+      ? (t(aboutBlock.fields.feature2Title, 'az') || (typeof aboutBlock.fields.feature2Title === 'string' ? aboutBlock.fields.feature2Title : ''))
+      : (orgTheme?.aboutFeature2Title || 'Sürətli xidmət');
+
+  const feature2Desc = (heroBlock.fields.feature2Desc !== undefined && heroBlock.fields.feature2Desc !== '')
+    ? (t(heroBlock.fields.feature2Desc, 'az') || (typeof heroBlock.fields.feature2Desc === 'string' ? heroBlock.fields.feature2Desc : ''))
+    : (aboutBlock.fields.feature2Desc !== undefined && aboutBlock.fields.feature2Desc !== '')
+      ? (t(aboutBlock.fields.feature2Desc, 'az') || (typeof aboutBlock.fields.feature2Desc === 'string' ? aboutBlock.fields.feature2Desc : ''))
+      : (orgTheme?.aboutFeature2Desc || 'Sifarişiniz isti və xırçıltılı şəkildə masanıza operativ çatdırılır.');
+
+  const feature3Title = (heroBlock.fields.feature3Title !== undefined && heroBlock.fields.feature3Title !== '')
+    ? (t(heroBlock.fields.feature3Title, 'az') || (typeof heroBlock.fields.feature3Title === 'string' ? heroBlock.fields.feature3Title : ''))
+    : (aboutBlock.fields.feature3Title !== undefined && aboutBlock.fields.feature3Title !== '')
+      ? (t(aboutBlock.fields.feature3Title, 'az') || (typeof aboutBlock.fields.feature3Title === 'string' ? aboutBlock.fields.feature3Title : ''))
+      : (orgTheme?.aboutFeature3Title || 'Rahat atmosfer');
+
+  const feature3Desc = (heroBlock.fields.feature3Desc !== undefined && heroBlock.fields.feature3Desc !== '')
+    ? (t(heroBlock.fields.feature3Desc, 'az') || (typeof heroBlock.fields.feature3Desc === 'string' ? heroBlock.fields.feature3Desc : ''))
+    : (aboutBlock.fields.feature3Desc !== undefined && aboutBlock.fields.feature3Desc !== '')
+      ? (t(aboutBlock.fields.feature3Desc, 'az') || (typeof aboutBlock.fields.feature3Desc === 'string' ? aboutBlock.fields.feature3Desc : ''))
+      : (orgTheme?.aboutFeature3Desc || 'Ailəniz və dostlarınızla xoş xatirələr yaratmaq üçün isti və səmimi məkan.');
 
   let aboutFeatures: Array<{ title: string; description: string; icon: string }> = [
     {

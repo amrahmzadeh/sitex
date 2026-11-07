@@ -39,9 +39,14 @@ export default function BlockForm({
   onChange,
   onVisibilityChange,
 }: BlockFormProps) {
+  // Support both { fields: { ... } } wrapper and flat { ... } content
+  const docFields = (contentDoc && typeof contentDoc === 'object' && 'fields' in contentDoc && contentDoc.fields && typeof contentDoc.fields === 'object')
+    ? (contentDoc.fields as BlockContent)
+    : (contentDoc && typeof contentDoc === 'object' && !('fields' in contentDoc) ? (contentDoc as BlockContent) : undefined);
+
   const fields = useMemo(
-    () => mergeWithDefaults(contentDoc?.fields, schema.fields),
-    [contentDoc, schema.fields]
+    () => mergeWithDefaults(docFields, schema.fields),
+    [docFields, schema.fields]
   );
 
   const hasI18nFields = schema.fields.some((f) => f.i18n);
@@ -136,16 +141,35 @@ export default function BlockForm({
           // showIf şərti
           if (fieldSchema.showIf && !fieldSchema.showIf(fields)) return null;
           return (
-            <FieldEditor
-              key={fieldSchema.key}
-              schema={fieldSchema}
-              value={fields[fieldSchema.key]}
-              locale={locale}
-              orgId={orgId}
-              onChange={(val) => {
-                onChange({ ...fields, [fieldSchema.key]: val });
-              }}
-            />
+            <div key={fieldSchema.key} style={{ display: 'contents' }}>
+              {fieldSchema.section && (
+                <div
+                  style={{
+                    marginTop: 14,
+                    padding: '10px 14px',
+                    background: 'rgba(255, 255, 255, 0.04)',
+                    borderLeft: `4px solid ${C.accent}`,
+                    borderRadius: '0 8px 8px 0',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                  }}
+                >
+                  <span style={{ fontSize: 13, fontWeight: 700, color: C.text, letterSpacing: '0.02em' }}>
+                    {fieldSchema.section}
+                  </span>
+                </div>
+              )}
+              <FieldEditor
+                schema={fieldSchema}
+                value={fields[fieldSchema.key]}
+                locale={locale}
+                orgId={orgId}
+                onChange={(val) => {
+                  onChange({ ...fields, [fieldSchema.key]: val });
+                }}
+              />
+            </div>
           );
         })}
       </div>

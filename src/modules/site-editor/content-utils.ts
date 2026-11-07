@@ -49,8 +49,14 @@ export function mergeWithDefaults(
   fields: FieldSchema[]
 ): BlockContent {
   const defaults = buildDefaultContent(fields);
-  if (!dbContent) return defaults;
-  return { ...defaults, ...dbContent };
+  if (!dbContent || typeof dbContent !== 'object' || Array.isArray(dbContent)) return defaults;
+  const merged: BlockContent = { ...defaults };
+  for (const [k, v] of Object.entries(dbContent)) {
+    if (v !== undefined && v !== null && v !== '') {
+      merged[k] = v;
+    }
+  }
+  return merged;
 }
 
 /** Boş string-leri trim edir, i18n obyeləri normalize edir */
