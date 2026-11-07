@@ -2666,16 +2666,50 @@ export default function PizzaHouseSite({ data, theme, table }: PizzaHouseSitePro
                         </div>
 
                         {/* Title & Price */}
-                        <div className="flex items-start justify-between gap-2 mb-2" style={{ marginBottom: '0.5rem' }}>
-                          <h3 className="font-headline-md text-headline-md font-bold text-[#1c1b1b]">
+                        <div className="flex items-start justify-between gap-3 mb-2.5" style={{ marginBottom: '0.625rem' }}>
+                          <h3 className="font-headline-md text-headline-md font-bold text-[#1c1b1b] flex-1 leading-snug">
                             {item.name}
                           </h3>
-                          <span
-                            className="inline-block px-3 py-1 rounded-full font-headline-sm text-headline-sm font-bold shrink-0"
-                            style={{ backgroundColor: '#ffdea0', color: '#261a00' }}
-                          >
-                            {priceFormatted}
-                          </span>
+                          <div className="shrink-0 flex flex-col items-end">
+                            {item.discountPrice && item.discountPrice < item.price ? (
+                              <>
+                                <span className="text-[11px] text-[#5b403f]/60 line-through font-medium whitespace-nowrap">
+                                  {formatPrice(item.price, organization.currency || 'AZN')}
+                                </span>
+                                <span
+                                  className="inline-flex items-baseline gap-1 px-3 py-1 rounded-full font-bold whitespace-nowrap shadow-sm border mt-0.5"
+                                  style={{
+                                    backgroundColor: '#ffdad9',
+                                    borderColor: '#ffb4ab',
+                                    color: '#b20028',
+                                  }}
+                                >
+                                  <span className="text-base sm:text-lg font-extrabold tracking-tight">
+                                    {item.discountPrice.toFixed(2)}
+                                  </span>
+                                  <span className="text-[11px] font-bold uppercase tracking-wider opacity-90">
+                                    {organization.currency || 'AZN'}
+                                  </span>
+                                </span>
+                              </>
+                            ) : (
+                              <span
+                                className="inline-flex items-baseline gap-1 px-3 py-1 rounded-full font-bold whitespace-nowrap shadow-sm border"
+                                style={{
+                                  backgroundColor: '#fff4f0',
+                                  borderColor: '#fbdad2',
+                                  color: primaryColor,
+                                }}
+                              >
+                                <span className="text-base sm:text-lg font-extrabold tracking-tight">
+                                  {typeof item.price === 'number' ? item.price.toFixed(2) : item.price}
+                                </span>
+                                <span className="text-[11px] font-bold uppercase tracking-wider opacity-90">
+                                  {organization.currency || 'AZN'}
+                                </span>
+                              </span>
+                            )}
+                          </div>
                         </div>
 
                         {/* Description */}
