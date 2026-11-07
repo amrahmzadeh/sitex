@@ -6,7 +6,7 @@ import {
   Layers, UtensilsCrossed, Package, Images, MessageSquareText,
   Check, AlertCircle, Loader2, ExternalLink, ShieldCheck, Info
 } from 'lucide-react';
-
+import { useCurrentOrg } from '@/contexts/CurrentOrgContext';
 interface ModuleSettings {
   menu: boolean;
   packages: boolean;
@@ -21,7 +21,7 @@ interface Organization {
 }
 
 export default function SiteModulesPage() {
-  const [currentOrg, setCurrentOrg] = useState<Organization | null>(null);
+  const { org: currentOrg } = useCurrentOrg();
   const [modules, setModules] = useState<ModuleSettings>({
     menu: true,
     packages: true,
@@ -31,21 +31,6 @@ export default function SiteModulesPage() {
   const [loading, setLoading] = useState(true);
   const [updatingKey, setUpdatingKey] = useState<string | null>(null);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
-
-  // Load organization
-  useEffect(() => {
-    fetch('/api/organizations')
-      .then((r) => r.json())
-      .then((d) => {
-        if (d.organizations?.length) {
-          const saved = typeof window !== 'undefined' ? localStorage.getItem('currentOrgId') : null;
-          const found = d.organizations.find((o: Organization) => o.id === saved);
-          setCurrentOrg(found || d.organizations[0]);
-        }
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, []);
 
   // Fetch module settings
   const loadModules = async (orgId: string) => {

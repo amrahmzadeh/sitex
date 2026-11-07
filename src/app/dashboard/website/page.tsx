@@ -7,58 +7,19 @@ import { Globe, Check, Loader2, Eye, Trash2, X, Palette, RefreshCw } from 'lucid
 import { useRouter } from 'next/navigation';
 import { getSiteTypeLabel } from '@/config/site-categories';
 import { isMenuSupportedCategory, isMenuActive } from '@/modules/navigation';
-
-function useCurrentOrg() {
-  const [data, setData] = useState<{
-    orgId: string | null;
-    slug: string;
-    isPublished: boolean;
-    siteCategory: string | null;
-    siteSubcategory: string | null;
-    templateId: string | null;
-    templateVersion: string | null;
-    templateSource: string | null;
-  }>({
-    orgId: null,
-    slug: '',
-    isPublished: false,
-    siteCategory: null,
-    siteSubcategory: null,
-    templateId: null,
-    templateVersion: null,
-    templateSource: null,
-  });
-  useEffect(() => {
-    const saved = localStorage.getItem('currentOrgId');
-    const fetchOrg = (id: string) => {
-      fetch(`/api/organizations/${id}`).then(r => r.json()).then(d => {
-        setData({
-          orgId: id,
-          slug: d.organization?.slug || '',
-          isPublished: d.organization?.website?.isPublished || false,
-          siteCategory: d.organization?.siteCategory || null,
-          siteSubcategory: d.organization?.siteSubcategory || null,
-          templateId: d.organization?.templateId || null,
-          templateVersion: d.organization?.templateVersion || null,
-          templateSource: d.organization?.templateSource || null,
-        });
-      });
-    };
-    if (saved) { fetchOrg(saved); return; }
-    fetch('/api/organizations').then(r => r.json()).then(d => {
-      if (d.organizations?.[0]) { localStorage.setItem('currentOrgId', d.organizations[0].id); fetchOrg(d.organizations[0].id); }
-    });
-  }, []);
-  return data;
-}
+import { useCurrentOrg } from '@/contexts/CurrentOrgContext';
 
 export default function WebsitePage() {
   const { data: session } = useSession();
   const isSuperAdmin = (session?.user as { role?: string })?.role === 'SUPER_ADMIN';
-  const {
-    orgId, slug, isPublished, siteCategory, siteSubcategory,
-    templateId, templateVersion, templateSource,
-  } = useCurrentOrg();
+  const { orgId, org } = useCurrentOrg();
+  const slug = org?.slug || '';
+  const isPublished = org?.website?.isPublished || false;
+  const siteCategory = org?.siteCategory || null;
+  const siteSubcategory = org?.siteSubcategory || null;
+  const templateId = org?.templateId || null;
+  const templateVersion = org?.templateVersion || null;
+  const templateSource = org?.templateSource || null;
   const [publishing, setPublishing] = useState(false);
   const [published, setPublished] = useState(false);
   const router = useRouter();

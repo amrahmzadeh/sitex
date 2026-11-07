@@ -21,7 +21,7 @@ import {
   DEFAULT_OFF_HOURS_MESSAGE,
   validateDaySchedule,
 } from '@/lib/working-hours';
-
+import { useCurrentOrg } from '@/contexts/CurrentOrgContext';
 interface Organization {
   id: string;
   name: string;
@@ -41,7 +41,7 @@ const TIMEZONES = [
 ];
 
 export default function WorkingHoursPage() {
-  const [currentOrg, setCurrentOrg] = useState<Organization | null>(null);
+  const { org: currentOrg } = useCurrentOrg();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
@@ -60,31 +60,6 @@ export default function WorkingHoursPage() {
 
   // Track active break editors
   const [breakOpen, setBreakOpen] = useState<Record<number, boolean>>({});
-
-  // Fetch current org
-  const loadOrg = useCallback(() => {
-    fetch('/api/organizations')
-      .then((r) => r.json())
-      .then((d) => {
-        if (d.organizations?.length) {
-          const saved = typeof window !== 'undefined' ? localStorage.getItem('currentOrgId') : null;
-          const found = d.organizations.find((o: Organization) => o.id === saved);
-          setCurrentOrg(found || d.organizations[0]);
-        }
-      })
-      .catch(() => {});
-  }, []);
-
-  useEffect(() => {
-    loadOrg();
-    const handleOrgUpdate = () => loadOrg();
-    window.addEventListener('org-updated', handleOrgUpdate);
-    window.addEventListener('storage', handleOrgUpdate);
-    return () => {
-      window.removeEventListener('org-updated', handleOrgUpdate);
-      window.removeEventListener('storage', handleOrgUpdate);
-    };
-  }, [loadOrg]);
 
   // Fetch hours for selected org
   const fetchHours = useCallback(async (orgId: string) => {

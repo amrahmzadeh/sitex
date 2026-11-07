@@ -4,21 +4,10 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { MessageCircle, Loader2, Check, ExternalLink, Phone } from 'lucide-react';
 import { formatWhatsAppUrl } from '@/lib/utils';
-
-function useCurrentOrg() {
-  const [orgId, setOrgId] = useState<string | null>(null);
-  useEffect(() => {
-    const saved = localStorage.getItem('currentOrgId');
-    if (saved) { setOrgId(saved); return; }
-    fetch('/api/organizations').then(r => r.json()).then(d => {
-      if (d.organizations?.[0]) { setOrgId(d.organizations[0].id); localStorage.setItem('currentOrgId', d.organizations[0].id); }
-    });
-  }, []);
-  return orgId;
-}
+import { useCurrentOrg } from '@/contexts/CurrentOrgContext';
 
 export default function WhatsAppPage() {
-  const orgId = useCurrentOrg();
+  const { orgId } = useCurrentOrg();
   const [form, setForm] = useState({
     countryCode: '+994',
     phoneNumber: '',

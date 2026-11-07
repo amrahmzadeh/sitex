@@ -13,27 +13,13 @@ import {
   Share2, Shield, Download, X, ShieldAlert,
 } from 'lucide-react';
 import { dashboardNavItems, isNavItemVisible } from '@/modules/navigation';
-
-interface Organization {
-  id: string;
-  name: string;
-  slug: string;
-  logo?: string;
-  siteCategory?: string | null;
-  siteSubcategory?: string | null;
-  website?: {
-    isPublished: boolean;
-    pagesConfig?: any;
-    draftTheme?: any;
-  };
-}
+import { useCurrentOrg } from '@/contexts/CurrentOrgContext';
 
 export default function DashboardShell({ children }: { children: React.ReactNode }) {
   const { data: session } = useSession();
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [orgs, setOrgs] = useState<Organization[]>([]);
-  const [currentOrg, setCurrentOrg] = useState<Organization | null>(null);
+  const { org: currentOrg, orgs, switchOrg } = useCurrentOrg();
 
   const isSuperAdmin = (session?.user as { role?: string })?.role === 'SUPER_ADMIN';
   const isEmployee = (session?.user as { role?: string })?.role === 'EMPLOYEE';
@@ -54,49 +40,6 @@ export default function DashboardShell({ children }: { children: React.ReactNode
     }
   }, [isEmployee]);
 
-  useEffect(() => {
-    fetch('/api/organizations')
-      .then((r) => r.json())
-      .then((d) => {
-        if (d.organizations?.length) {
-          setOrgs(d.organizations);
-          const saved = typeof window !== 'undefined' ? localStorage.getItem('currentOrgId') : null;
-          const found = d.organizations.find((o: Organization) => o.id === saved);
-          const selected = found || d.organizations[0];
-          setCurrentOrg(selected);
-          if (selected?.id) {
-            localStorage.setItem('currentOrgId', selected.id);
-          }
-        } else {
-          setOrgs([]);
-          setCurrentOrg(null);
-        }
-      })
-      .catch(() => {});
-  }, [pathname]);
-
-  useEffect(() => {
-    const handleOrgUpdate = () => {
-      fetch('/api/organizations')
-        .then((r) => r.json())
-        .then((d) => {
-          if (d.organizations?.length) {
-            setOrgs(d.organizations);
-            const saved = typeof window !== 'undefined' ? localStorage.getItem('currentOrgId') : null;
-            const found = d.organizations.find((o: Organization) => o.id === saved);
-            setCurrentOrg(found || d.organizations[0]);
-          }
-        })
-        .catch(() => {});
-    };
-    window.addEventListener('org-updated', handleOrgUpdate);
-    window.addEventListener('storage', handleOrgUpdate);
-    return () => {
-      window.removeEventListener('org-updated', handleOrgUpdate);
-      window.removeEventListener('storage', handleOrgUpdate);
-    };
-  }, []);
-
   // Close sidebar on route change
   useEffect(() => {
     setSidebarOpen(false);
@@ -113,15 +56,6 @@ export default function DashboardShell({ children }: { children: React.ReactNode
       }
     };
   }, [sidebarOpen]);
-
-  const switchOrg = (org: Organization) => {
-    setCurrentOrg(org);
-    localStorage.setItem('currentOrgId', org.id);
-    if (typeof window !== 'undefined') {
-      window.dispatchEvent(new CustomEvent('org-updated', { detail: { id: org.id } }));
-      window.dispatchEvent(new Event('storage'));
-    }
-  };
 
   const isActive = (href: string) =>
     href === '/dashboard' ? pathname === '/dashboard' : pathname.startsWith(href);

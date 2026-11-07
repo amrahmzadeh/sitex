@@ -7,7 +7,7 @@ import {
   Loader2, ChevronDown, ChevronUp, Trash2, ArrowRightLeft,
   Check, Info, FileCheck, Layers
 } from 'lucide-react';
-
+import { useCurrentOrg } from '@/contexts/CurrentOrgContext';
 interface Organization {
   id: string;
   name: string;
@@ -25,8 +25,7 @@ interface ImportOptions {
 }
 
 export default function ExportImportPage() {
-  const [orgs, setOrgs] = useState<Organization[]>([]);
-  const [currentOrg, setCurrentOrg] = useState<Organization | null>(null);
+    const { org: currentOrg, orgs, switchOrg } = useCurrentOrg();
   const [activeTab, setActiveTab] = useState<'export' | 'import'>('export');
 
   // Export state
@@ -50,19 +49,6 @@ export default function ExportImportPage() {
   });
   const [showAdvanced, setShowAdvanced] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    fetch('/api/organizations')
-      .then((r) => r.json())
-      .then((d) => {
-        if (d.organizations?.length) {
-          setOrgs(d.organizations);
-          const saved = localStorage.getItem('currentOrgId');
-          const found = d.organizations.find((o: Organization) => o.id === saved);
-          setCurrentOrg(found || d.organizations[0]);
-        }
-      });
-  }, []);
 
   const handleExport = async () => {
     if (!currentOrg) return;
@@ -166,8 +152,7 @@ export default function ExportImportPage() {
             onChange={(e) => {
               const org = orgs.find((o) => o.id === e.target.value);
               if (org) {
-                setCurrentOrg(org);
-                localStorage.setItem('currentOrgId', org.id);
+                switchOrg(org);
               }
             }}
           >

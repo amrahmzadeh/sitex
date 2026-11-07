@@ -6,7 +6,7 @@ import {
   Images, Plus, Trash2, ArrowUp, ArrowDown, ExternalLink,
   Upload, Link2, Check, AlertCircle, Eye, EyeOff, Loader2, RefreshCw
 } from 'lucide-react';
-
+import { useCurrentOrg } from '@/contexts/CurrentOrgContext';
 interface GalleryItem {
   id: string;
   url: string;
@@ -16,14 +16,8 @@ interface GalleryItem {
   isVisible: boolean;
 }
 
-interface Organization {
-  id: string;
-  name: string;
-  slug: string;
-}
-
 export default function GalleryPage() {
-  const [currentOrg, setCurrentOrg] = useState<Organization | null>(null);
+  const { org: currentOrg } = useCurrentOrg();
   const [items, setItems] = useState<GalleryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -37,21 +31,6 @@ export default function GalleryPage() {
   const [adding, setAdding] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  // Load organization
-  useEffect(() => {
-    fetch('/api/organizations')
-      .then((r) => r.json())
-      .then((d) => {
-        if (d.organizations?.length) {
-          const saved = typeof window !== 'undefined' ? localStorage.getItem('currentOrgId') : null;
-          const found = d.organizations.find((o: Organization) => o.id === saved);
-          setCurrentOrg(found || d.organizations[0]);
-        }
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, []);
 
   // Fetch gallery items
   const loadGallery = async (orgId: string) => {

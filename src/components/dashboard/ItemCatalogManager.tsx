@@ -8,6 +8,7 @@ import {
   Tag, DollarSign, Eye, EyeOff, Star, Flame, Sparkles, Upload, ChevronDown, Film,
   Search, Check, Briefcase, Package, ArrowRight, ToggleLeft, ToggleRight, UtensilsCrossed
 } from 'lucide-react';
+import { useCurrentOrg } from '@/contexts/CurrentOrgContext';
 
 interface Category {
   id: string;
@@ -39,29 +40,9 @@ interface ItemCatalogManagerProps {
   type: 'services' | 'products';
 }
 
-function useCurrentOrg() {
-  const [orgId, setOrgId] = useState<string | null>(null);
-  useEffect(() => {
-    const saved = localStorage.getItem('currentOrgId');
-    if (saved) {
-      setOrgId(saved);
-      return;
-    }
-    fetch('/api/organizations')
-      .then((r) => r.json())
-      .then((d) => {
-        if (d.organizations?.[0]) {
-          setOrgId(d.organizations[0].id);
-          localStorage.setItem('currentOrgId', d.organizations[0].id);
-        }
-      });
-  }, []);
-  return orgId;
-}
-
 export default function ItemCatalogManager({ type }: ItemCatalogManagerProps) {
   const router = useRouter();
-  const orgId = useCurrentOrg();
+  const { orgId } = useCurrentOrg();
   const isServices = type === 'services';
 
   const title = isServices ? 'Xidmətlər' : 'Məhsullar';

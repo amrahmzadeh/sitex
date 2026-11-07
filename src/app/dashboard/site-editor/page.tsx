@@ -1,57 +1,13 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { Loader2, PenLine } from 'lucide-react';
 import SiteEditorShell from '@/modules/site-editor/components/SiteEditorShell';
-
-function useCurrentOrg() {
-  const [org, setOrg] = useState<{ id: string; slug: string } | null>(null);
-
-  const loadOrg = useCallback((targetId?: string | null) => {
-    const id = targetId || (typeof window !== 'undefined' ? localStorage.getItem('currentOrgId') : null);
-    if (!id) {
-      fetch('/api/organizations')
-        .then((r) => r.json())
-        .then((d) => {
-          if (d.organizations?.length) {
-            const first = d.organizations[0];
-            setOrg({ id: first.id, slug: first.slug });
-            localStorage.setItem('currentOrgId', first.id);
-          }
-        })
-        .catch(() => {});
-      return;
-    }
-    fetch(`/api/organizations/${id}`)
-      .then((r) => r.json())
-      .then((d) => {
-        if (d.organization) {
-          setOrg({ id: d.organization.id, slug: d.organization.slug });
-        }
-      })
-      .catch(() => {});
-  }, []);
-
-  useEffect(() => {
-    loadOrg();
-    const handleOrgChange = (e?: any) => {
-      loadOrg(e?.detail?.id);
-    };
-    window.addEventListener('org-updated', handleOrgChange);
-    window.addEventListener('storage', handleOrgChange);
-    return () => {
-      window.removeEventListener('org-updated', handleOrgChange);
-      window.removeEventListener('storage', handleOrgChange);
-    };
-  }, [loadOrg]);
-
-  return org;
-}
+import { useCurrentOrg } from '@/contexts/CurrentOrgContext';
 
 export default function SiteEditorPage() {
   const { status } = useSession();
-  const org = useCurrentOrg();
+  const { org } = useCurrentOrg();
 
   if (status === 'loading') {
     return (

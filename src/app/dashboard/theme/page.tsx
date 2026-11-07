@@ -49,38 +49,7 @@ import {
   ThemeSettingsPanel,
 } from '@/components/dashboard/theme-editor';
 import { themeConfigToSTL, convertSTLToThemeConfig } from '@/modules/stl';
-
-function useCurrentOrg() {
-  const [orgId, setOrgId] = useState<string | null>(null);
-  useEffect(() => {
-    const saved = localStorage.getItem('currentOrgId');
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: sync from storage before async fetch
-    if (saved) { setOrgId(saved); return; }
-    fetch('/api/organizations').then(r => r.json()).then(d => {
-      if (d.organizations?.[0]) { setOrgId(d.organizations[0].id); localStorage.setItem('currentOrgId', d.organizations[0].id); }
-    });
-  }, []);
-
-  // B09 fix: react to org switches made in DashboardShell
-  useEffect(() => {
-    const handleOrgUpdated = (e: Event) => {
-      const id = (e as CustomEvent<{ id: string }>).detail?.id;
-      if (id) setOrgId(id);
-    };
-    const handleStorage = () => {
-      const id = localStorage.getItem('currentOrgId');
-      if (id) setOrgId(id);
-    };
-    window.addEventListener('org-updated', handleOrgUpdated);
-    window.addEventListener('storage', handleStorage);
-    return () => {
-      window.removeEventListener('org-updated', handleOrgUpdated);
-      window.removeEventListener('storage', handleStorage);
-    };
-  }, []);
-
-  return orgId;
-}
+import { useCurrentOrg } from '@/contexts/CurrentOrgContext';
 
 const FONTS = ['Inter', 'Playfair Display', 'Outfit', 'Merriweather', 'Source Sans 3', 'Lora', 'Raleway', 'Poppins'];
 
@@ -387,7 +356,7 @@ export default function ThemePage() {
     }
   }, [sessionStatus, isSuperAdmin, router]);
 
-  const orgId = useCurrentOrg();
+  const { orgId } = useCurrentOrg();
   const [theme, setTheme] = useState<ThemeConfig>(defaultThemes.elegant);
   const [stlCode, setStlCode] = useState<string>(() => themeConfigToSTL(defaultThemes.elegant));
   const [activeTab, setActiveTab] = useState<ThemeEditorTab | 'customizer'>('builder');

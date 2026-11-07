@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { isFoodCategory, isMenuActive } from '@/modules/navigation';
 import { parseSetItems, serializeSetItems, formatSetSummary, type SetItemEntry } from '@/lib/set-dishes';
+import { useCurrentOrg } from '@/contexts/CurrentOrgContext';
 
 interface Category { id: string; name: string; description?: string; isVisible: boolean; sortOrder: number; _count?: { menuItems: number }; }
 interface MenuItem {
@@ -19,24 +20,9 @@ interface MenuItem {
   prepTime?: string; isSet?: boolean; setItems?: string | null;
 }
 
-function useCurrentOrg() {
-  const [orgId, setOrgId] = useState<string | null>(null);
-  useEffect(() => {
-    const saved = localStorage.getItem('currentOrgId');
-    if (saved) { setOrgId(saved); return; }
-    fetch('/api/organizations').then(r => r.json()).then(d => {
-      if (d.organizations?.[0]) {
-        setOrgId(d.organizations[0].id);
-        localStorage.setItem('currentOrgId', d.organizations[0].id);
-      }
-    });
-  }, []);
-  return orgId;
-}
-
 export default function MenuPage() {
   const router = useRouter();
-  const orgId = useCurrentOrg();
+  const { orgId } = useCurrentOrg();
   const [categories, setCategories] = useState<Category[]>([]);
   const [items, setItems] = useState<MenuItem[]>([]);
   const [loading, setLoading] = useState(true);

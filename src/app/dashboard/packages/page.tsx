@@ -7,7 +7,7 @@ import {
   Check, AlertCircle, Eye, EyeOff, Loader2, ArrowUp, ArrowDown,
   Sparkles, Tag, DollarSign, ListChecks, Layers, Image as ImageIcon, X
 } from 'lucide-react';
-
+import { useCurrentOrg } from '@/contexts/CurrentOrgContext';
 interface PackageItem {
   id: string;
   name: string;
@@ -32,7 +32,7 @@ interface Organization {
 }
 
 export default function PackagesPage() {
-  const [currentOrg, setCurrentOrg] = useState<Organization | null>(null);
+  const { org: currentOrg } = useCurrentOrg();
   const [packages, setPackages] = useState<PackageItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -54,21 +54,6 @@ export default function PackagesPage() {
   const [formBadgeText, setFormBadgeText] = useState('');
   const [formFeatures, setFormFeatures] = useState<string[]>(['']);
   const [formIsActive, setFormIsActive] = useState(true);
-
-  // Load organization
-  useEffect(() => {
-    fetch('/api/organizations')
-      .then((r) => r.json())
-      .then((d) => {
-        if (d.organizations?.length) {
-          const saved = typeof window !== 'undefined' ? localStorage.getItem('currentOrgId') : null;
-          const found = d.organizations.find((o: Organization) => o.id === saved);
-          setCurrentOrg(found || d.organizations[0]);
-        }
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, []);
 
   // Fetch packages
   const loadPackages = async (orgId: string) => {

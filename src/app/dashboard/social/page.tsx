@@ -5,21 +5,7 @@ import { useSession } from 'next-auth/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Trash2, Save, Check, Loader2, ExternalLink, Eye, EyeOff, Sparkles, Image as ImageIcon, RefreshCw } from 'lucide-react';
 import { PLATFORM_INFO } from '@/components/themes/SocialIcons';
-
-function useCurrentOrg() {
-  const [orgId, setOrgId] = useState<string | null>(null);
-  useEffect(() => {
-    const saved = localStorage.getItem('currentOrgId');
-    if (saved) { setOrgId(saved); return; }
-    fetch('/api/organizations').then(r => r.json()).then(d => {
-      if (d.organizations?.[0]) {
-        setOrgId(d.organizations[0].id);
-        localStorage.setItem('currentOrgId', d.organizations[0].id);
-      }
-    });
-  }, []);
-  return orgId;
-}
+import { useCurrentOrg } from '@/contexts/CurrentOrgContext';
 
 const PLATFORMS_LIST = Object.entries(PLATFORM_INFO).map(([value, info]) => ({
   value,
@@ -53,7 +39,7 @@ interface SocialFeedPostItem {
 export default function SocialPage() {
   const { data: session } = useSession();
   const isSuperAdmin = (session?.user as { role?: string })?.role === 'SUPER_ADMIN';
-  const orgId = useCurrentOrg();
+  const { orgId } = useCurrentOrg();
   const [activeTab, setActiveTab] = useState<'links' | 'feed'>('links');
   
   // Links state

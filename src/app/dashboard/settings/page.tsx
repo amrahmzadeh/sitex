@@ -5,22 +5,11 @@ import { motion } from 'framer-motion';
 import { Settings, Loader2, Check, Upload, User, Lock, Mail } from 'lucide-react';
 import { useRef } from 'react';
 import { useSession } from 'next-auth/react';
-
-function useCurrentOrg() {
-  const [orgId, setOrgId] = useState<string | null>(null);
-  useEffect(() => {
-    const saved = localStorage.getItem('currentOrgId');
-    if (saved) { setOrgId(saved); return; }
-    fetch('/api/organizations').then(r => r.json()).then(d => {
-      if (d.organizations?.[0]) { setOrgId(d.organizations[0].id); localStorage.setItem('currentOrgId', d.organizations[0].id); }
-    });
-  }, []);
-  return orgId;
-}
+import { useCurrentOrg } from '@/contexts/CurrentOrgContext';
 
 export default function SettingsPage() {
   const { data: session, update: updateSession } = useSession();
-  const orgId = useCurrentOrg();
+  const { orgId } = useCurrentOrg();
 
   // Business form state
   const [form, setForm] = useState({ name: '', description: '', footerTagline: '', phone: '', email: '', address: '', city: '', mapUrl: '', logo: '' });

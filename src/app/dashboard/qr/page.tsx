@@ -7,6 +7,7 @@ import {
   Check, Loader2, Globe, Table2, Layers, Eye, Package,
   FileText, Sparkles,
 } from 'lucide-react';
+import { useCurrentOrg } from '@/contexts/CurrentOrgContext';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface QRDesign {
@@ -346,40 +347,6 @@ async function downloadSVG({
   setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
 }
 
-// ─── Hook: Current Org ────────────────────────────────────────────────────────
-function useCurrentOrg() {
-  const [orgId, setOrgId] = useState<string | null>(null);
-  const [orgInfo, setOrgInfo] = useState<OrgInfo | null>(null);
-
-  useEffect(() => {
-    const load = (id: string) => {
-      setOrgId(id);
-      fetch(`/api/organizations/${id}`)
-        .then(r => r.json())
-        .then(d => {
-          if (d.organization) {
-            setOrgInfo({ name: d.organization.name, slug: d.organization.slug, siteCategory: d.organization.siteCategory ?? null, siteSubcategory: d.organization.siteSubcategory ?? null });
-          }
-        })
-        .catch(() => {});
-    };
-    const saved = localStorage.getItem('currentOrgId');
-    if (saved) { load(saved); return; }
-    fetch('/api/organizations')
-      .then(r => r.json())
-      .then(d => {
-        if (d.organizations?.[0]) {
-          const id = d.organizations[0].id;
-          localStorage.setItem('currentOrgId', id);
-          load(id);
-        }
-      })
-      .catch(() => {});
-  }, []);
-
-  return { orgId, orgInfo };
-}
-
 // ─── QR Canvas Renderer (On-Screen Preview) ───────────────────────────────────
 function QRCanvas({
   url,
@@ -524,7 +491,8 @@ function QRCard({
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 export default function QRPage() {
-  const { orgId, orgInfo } = useCurrentOrg();
+  const { orgId, org } = useCurrentOrg();
+  const orgInfo = org ? { name: org.name, slug: org.slug, siteCategory: org.siteCategory ?? null, siteSubcategory: org.siteSubcategory ?? null } : null;
   const [tableCount, setTableCount] = useState(10);
   const [design, setDesign] = useState<QRDesign>(DEFAULT_DESIGN);
   const [activeTab, setActiveTab] = useState<'general' | 'tables' | 'design' | 'manage' | 'site'>('general');

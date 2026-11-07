@@ -9,37 +9,7 @@ import {
   Check, Loader2, RefreshCw, X, AlertCircle
 } from 'lucide-react';
 import SplashScreen, { SplashConfig } from '@/components/themes/SplashScreen';
-
-function useCurrentOrg() {
-  const [data, setData] = useState<{ orgId: string | null; slug: string }>({ orgId: null, slug: '' });
-
-  useEffect(() => {
-    const saved = localStorage.getItem('currentOrgId');
-    const fetchOrg = (id: string) => {
-      fetch(`/api/organizations/${id}`)
-        .then((r) => r.json())
-        .then((d) => {
-          setData({ orgId: id, slug: d.organization?.slug || '' });
-        });
-    };
-
-    if (saved) {
-      fetchOrg(saved);
-      return;
-    }
-
-    fetch('/api/organizations')
-      .then((r) => r.json())
-      .then((d) => {
-        if (d.organizations?.[0]) {
-          localStorage.setItem('currentOrgId', d.organizations[0].id);
-          fetchOrg(d.organizations[0].id);
-        }
-      });
-  }, []);
-
-  return data;
-}
+import { useCurrentOrg } from '@/contexts/CurrentOrgContext';
 
 const CODE_TEMPLATES = [
   {
@@ -150,7 +120,8 @@ export default function SplashPage() {
     }
   }, [sessionStatus, isSuperAdmin, router]);
 
-  const { orgId, slug } = useCurrentOrg();
+  const { orgId, org } = useCurrentOrg();
+  const slug = org?.slug || '';
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);

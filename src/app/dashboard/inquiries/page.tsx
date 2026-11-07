@@ -22,6 +22,7 @@ import {
   User,
 } from 'lucide-react';
 import { formatWhatsAppUrl } from '@/lib/utils';
+import { useCurrentOrg } from '@/contexts/CurrentOrgContext';
 
 type InquiryStatus = 'NEW' | 'IN_PROGRESS' | 'RESOLVED' | 'ARCHIVED';
 
@@ -48,29 +49,8 @@ interface StatusCounts {
   archived: number;
 }
 
-function useCurrentOrg() {
-  const [orgId, setOrgId] = useState<string | null>(null);
-  useEffect(() => {
-    const saved = localStorage.getItem('currentOrgId');
-    if (saved) {
-      setOrgId(saved);
-      return;
-    }
-    fetch('/api/organizations')
-      .then((r) => r.json())
-      .then((d) => {
-        if (d.organizations?.[0]) {
-          setOrgId(d.organizations[0].id);
-          localStorage.setItem('currentOrgId', d.organizations[0].id);
-        }
-      })
-      .catch(() => {});
-  }, []);
-  return orgId;
-}
-
 export default function InquiriesDashboardPage() {
-  const orgId = useCurrentOrg();
+  const { orgId } = useCurrentOrg();
   const [inquiries, setInquiries] = useState<ContactSubmission[]>([]);
   const [counts, setCounts] = useState<StatusCounts>({
     total: 0,
