@@ -118,10 +118,12 @@ export async function POST(
 
     const url = `/uploads/${orgId}/${filename}`;
 
-    // For images or reasonably sized files, store base64 in DB for multi-instance fallback
+    // Yalnız 1MB-a qədər olan kiçik şəkillər multi-instance DB ehtiyat nüsxəsi kimi saxlanılır
+    // 1MB-dan yuxarı fayllar (böyük şəkillər və videolar) yalnız diskdə saxlanılır (DB şişməsinin qarşısını almaq üçün)
     let mediaAsset = null;
     try {
-      const base64Data = buffer.length <= 15 * 1024 * 1024 ? buffer.toString('base64') : null;
+      const isSmallImage = !isVideo && buffer.length <= 1 * 1024 * 1024;
+      const base64Data = isSmallImage ? buffer.toString('base64') : null;
       mediaAsset = await prisma.mediaAsset.create({
         data: {
           organizationId: orgId,
