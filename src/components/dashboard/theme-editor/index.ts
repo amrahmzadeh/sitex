@@ -7,3 +7,5 @@ export { default as ThemeVersionHistory } from './ThemeVersionHistory';
 export { default as ThemeManagementModal } from './ThemeManagementModal';
 export { default as ThemeSettingsPanel } from './ThemeSettingsPanel';
 
+
+export { default as ThemeCustomizerTab } from './ThemeCustomizerTab';
