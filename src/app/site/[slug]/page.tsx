@@ -6,8 +6,7 @@ import { SplashConfig } from '@/components/themes/SplashScreen';
 import { prisma } from '@/lib/db';
 import { resolveGoogleMapsEmbedUrl } from '@/lib/maps';
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+export const revalidate = 60;
 
 interface SiteData {
   organization: {

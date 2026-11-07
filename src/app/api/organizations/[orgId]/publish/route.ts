@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { prisma } from '@/lib/db';
 import { scheduleSiteSync } from '@/lib/site-sync/schedule';
 import { verifyTenantAccess, tenantError } from '@/lib/tenant-auth';
@@ -33,6 +34,15 @@ export async function POST(
 
     // Publish cavabı GitHub-ı gözləmir: sync fon rejimində növbəyə atılır.
     scheduleSiteSync(orgId, 'publish', access.userId);
+
+    const org = await prisma.organization.findUnique({
+      where: { id: orgId },
+      select: { slug: true },
+    });
+    if (org?.slug) {
+      revalidatePath(`/site/${org.slug}`);
+      revalidatePath('/');
+    }
 
     return NextResponse.json({ website: updated });
   } catch (error) {
