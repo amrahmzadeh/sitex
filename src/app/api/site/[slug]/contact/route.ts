@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { computeWorkingStatus, DEFAULT_OFF_HOURS_MESSAGE } from '@/lib/working-hours';
+import { sendInquiryNotification } from '@/lib/notifications';
 
 export async function POST(
   req: Request,
@@ -76,6 +77,17 @@ export async function POST(
         metadata: body.metadata || null,
       },
     });
+
+    // Fon rejimində Telegram / Webhook bildirişi göndər (istifadəçini gözlətmir)
+    sendInquiryNotification({
+      orgName: org.name,
+      fullName,
+      phone,
+      email,
+      service,
+      subject,
+      message,
+    }).catch(() => {});
 
     return NextResponse.json({
       success: true,
