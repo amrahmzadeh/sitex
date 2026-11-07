@@ -65,6 +65,7 @@ export default function SiteEditorShell({ orgId, slug }: SiteEditorShellProps) {
   const [error, setError] = useState('');
   const [isDirty, setIsDirty] = useState(false);
   const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const saveDraftRef = useRef<((silent?: boolean) => Promise<void>) | undefined>(undefined);
 
   // Responsive UI state
   const [isMobile, setIsMobile] = useState(false);
@@ -128,9 +129,9 @@ export default function SiteEditorShell({ orgId, slug }: SiteEditorShellProps) {
   const triggerAutoSave = useCallback(() => {
     if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
     autoSaveTimer.current = setTimeout(() => {
-      saveDraft(true);
+      saveDraftRef.current?.(true);
     }, 2500);
-  }, [draftMap]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   const saveDraft = useCallback(async (silent = false) => {
     if (!isDirty) return;
@@ -154,6 +155,9 @@ export default function SiteEditorShell({ orgId, slug }: SiteEditorShellProps) {
       setSaving(false);
     }
   }, [orgId, draftMap, isDirty]);
+
+  // Keep ref in sync so triggerAutoSave always calls latest saveDraft
+  saveDraftRef.current = saveDraft;
 
   const publish = async () => {
     await saveDraft();
