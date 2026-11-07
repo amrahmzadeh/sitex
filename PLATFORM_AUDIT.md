@@ -210,7 +210,7 @@ export async function verifyTenantAccess(orgId: string, requiredRole?: 'OWNER' |
 - [ ] `theme/page.tsx` və `qr/page.tsx` komponentlərini tablar üzrə ayrı fayllara bölmək; `jspdf`-i dinamik `await import()` ilə yükləmək.
 
 ### Mərhələ 3: Uzunmüddətli Miqyaslanma və İnkişaf (1 Ay+)
-- [ ] Şəkil və media fayllarını MySQL bazasından çıxarıb Cloudflare R2 / AWS S3 obyekt yaddaşına köçürmək.
 - [ ] İctimai sayt (`/site/[slug]`) üçün `revalidate = 60` və ya On-Demand Revalidation (`revalidateTag`) aktiv etmək.
 - [ ] Əlaqə formaları üçün Telegram bot və SMTP bildiriş xidməti qurmaq.
 - [ ] `/dashboard/analytics` və `/dashboard/billing` modullarını Stripe/yerli ödəniş sistemləri və sadə analitika ilə təmin etmək.
+
